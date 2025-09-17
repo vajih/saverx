@@ -4,28 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SaveRx.ai – Let our AI help cut your prescription costs today</title>
-  <meta name="description" content="SaveRx.ai finds discounts on your medications in seconds. Real stories, real savings.">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="description" content="Find discounts on your medications in seconds. Real stories, real savings.">
   <link rel="stylesheet" href="styles.css" />
-  <!-- Open Graph for sharing -->
-  <meta property="og:title" content="SaveRx.ai – AI to cut your prescription costs">
-  <meta property="og:description" content="Find discounts on your medications in seconds.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.saverx.ai/">
-  <meta property="og:image" content="https://www.saverx.ai/og-image.jpg">
 </head>
 <body>
-  <header class="site-header container">
-    <a class="brand" href="#">
-      <!-- Replace with your real logo -->
-      <img src="assets/logo.svg" alt="SaveRx.ai logo" height="36" />
-      <span>SaveRx.ai</span>
-    </a>
-    <nav aria-label="Top">
-      <a href="#about">About</a>
-      <a href="#faq">FAQ</a>
-      <a href="#privacy">Privacy Policy</a>
-    </nav>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#">
+        <img src="assets/logo.svg" alt="SaveRx.ai logo" class="brand-logo" />
+        <span class="brand-name">SaveRx.ai</span>
+      </a>
+      <nav class="top-nav" aria-label="Main">
+        <a href="#how">How It Works</a>
+        <a href="#coverage">Coverage</a>
+        <a href="#early-access">Early Access</a>
+      </nav>
+    </div>
   </header>
 
   <main>
@@ -35,35 +30,37 @@
         <div class="hero-copy">
           <h1>Let our AI help cut your prescription costs today</h1>
           <p class="subhead">Find discounts on your medications in seconds.</p>
-          <button class="btn btn-primary" id="cta-search">Search</button>
+          <a class="btn btn-primary" href="#coverage" id="cta-search">Search</a>
         </div>
-        <div class="hero-visual" aria-hidden="true">
-          <!-- Optional hero image -->
-          <img src="assets/hero.jpg" alt="" />
+        <div class="hero-visual">
+          <!-- If you don’t have hero.jpg yet, keep this <div> (with gradient bg)
+               or place your image at assets/hero.jpg -->
+          <img src="assets/hero.jpg" alt="" onerror="this.closest('.hero-visual').classList.add('fallback')" />
         </div>
       </div>
     </section>
 
     <!-- TESTIMONIAL -->
-    <section class="container">
-      <blockquote class="testimonial">
-        <p>“As a Repatha user, my cost went from <strong>$528</strong> to <strong>$15</strong> per refill —
-          saving <strong>$513</strong> each time, or over <strong>$6,000</strong> a year.”</p>
-        <small class="note">Individual savings vary.</small>
-      </blockquote>
+    <section class="section">
+      <div class="container">
+        <blockquote class="testimonial">
+          <p>“As a Repatha user, my cost went from <strong>$528</strong> to <strong>$15</strong> per refill —
+            saving <strong>$513</strong> each time, or over <strong>$6,000</strong> a year.”</p>
+          <small class="note">Individual savings vary.</small>
+        </blockquote>
+      </div>
     </section>
 
     <!-- COVERAGE -->
-    <section class="container coverage" id="coverage">
-      <h2>Tell us about your coverage so we can find the best savings for you</h2>
-      <form id="coverage-form">
-        <fieldset>
-          <legend class="sr-only">Coverage options</legend>
+    <section class="section" id="coverage">
+      <div class="container">
+        <h2 class="h2">Tell us about your coverage so we can find the best savings for you</h2>
+        <form id="coverage-form" class="coverage-form">
           <label class="radio"><input type="radio" name="coverage" value="private" required> Private insurance</label>
           <label class="radio"><input type="radio" name="coverage" value="government"> Government insurance (e.g., Medicare)</label>
           <label class="radio"><input type="radio" name="coverage" value="none"> No insurance</label>
-        </fieldset>
-      </form>
+        </form>
+      </div>
     </section>
 
     <!-- IMPACT -->
@@ -85,57 +82,64 @@
     </section>
 
     <!-- HOW IT WORKS -->
-    <section class="container how">
-      <h2>How It Works</h2>
-      <ol class="steps">
-        <li>
-          <div class="icon">🔎</div>
-          <h3>Search</h3>
-          <p>Enter your prescription details</p>
-        </li>
-        <li>
-          <div class="icon">💳</div>
-          <h3>Apply</h3>
-          <p>Get a manufacturer savings card</p>
-        </li>
-        <li>
-          <div class="icon">👛</div>
-          <h3>Save</h3>
-          <p>Pay less at the pharmacy</p>
-        </li>
-      </ol>
+    <section class="section" id="how">
+      <div class="container">
+        <h2 class="h2">How It Works</h2>
+        <ol class="steps">
+          <li>
+            <div class="icon" aria-hidden="true">🔎</div>
+            <h3>Search</h3>
+            <p>Enter your prescription details.</p>
+          </li>
+          <li>
+            <div class="icon" aria-hidden="true">💳</div>
+            <h3>Apply</h3>
+            <p>Get a manufacturer savings card.</p>
+          </li>
+          <li>
+            <div class="icon" aria-hidden="true">👛</div>
+            <h3>Save</h3>
+            <p>Pay less at the pharmacy.</p>
+          </li>
+        </ol>
+      </div>
     </section>
 
     <!-- HELP STRIP -->
     <section class="help-strip">
-      <div class="container">
-        <p class="help-text">Need help saving on prescriptions? <a href="#contact">We’re here to guide you.</a></p>
+      <div class="container help-inner">
+        <p class="help-text">Need help saving on prescriptions? <a href="#early-access">We’re here to guide you.</a></p>
       </div>
     </section>
 
-    <!-- EMAIL CAPTURE (MVP) -->
-    <section class="container newsletter" id="early-access">
-      <h2>Get Early Access</h2>
-      <p>Join our early-access list for AI-powered prescription savings.</p>
-      <!-- Simple Formspree example; replace with your endpoint -->
-      <form id="email-form" action="https://formspree.io/f/your-form-id" method="POST">
-        <label class="sr-only" for="fname">First name</label>
-        <input id="fname" name="firstName" type="text" placeholder="First name" required>
-        <label class="sr-only" for="email">Email address</label>
-        <input id="email" name="email" type="email" placeholder="Email address" required>
-        <button class="btn btn-primary" type="submit">Get Early Access</button>
-      </form>
-      <small class="privacy">We’ll never share your email. Privacy guaranteed.</small>
+    <!-- EMAIL CAPTURE -->
+    <section class="section" id="early-access">
+      <div class="container newsletter">
+        <h2 class="h2">Get Early Access</h2>
+        <p>Join our early-access list for AI-powered prescription savings.</p>
+        <!-- Replace action with your email service endpoint -->
+        <form id="email-form" action="https://formspree.io/f/your-form-id" method="POST" class="newsletter-form">
+          <label class="sr-only" for="fname">First name</label>
+          <input id="fname" name="firstName" type="text" placeholder="First name" required>
+          <label class="sr-only" for="email">Email address</label>
+          <input id="email" name="email" type="email" placeholder="Email address" required>
+          <button class="btn btn-primary" type="submit">Get Early Access</button>
+        </form>
+        <small class="privacy">We’ll never share your email. Privacy guaranteed.</small>
+      </div>
     </section>
   </main>
 
-  <footer class="site-footer container">
-    <p id="about"><strong>About:</strong> SaveRx.ai helps people lower prescription costs using smart matching and manufacturer programs.</p>
-    <p id="faq"><strong>FAQ:</strong> Coverage varies by medication and insurance. Savings not available for federal programs.</p>
-    <p id="privacy"><strong>Privacy:</strong> We collect the minimum information needed to contact you and provide savings options.</p>
-    <p>© <span id="year"></span> SaveRx.ai</p>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>About:</strong> SaveRx.ai helps people lower prescription costs using smart matching and manufacturer programs.</p>
+      <p><strong>FAQ:</strong> Coverage varies by medication and insurance. Savings not available for federal programs.</p>
+      <p><strong>Privacy:</strong> We collect the minimum information needed to contact you and provide savings options.</p>
+      <p>© <span id="year"></span> SaveRx.ai</p>
+    </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>
