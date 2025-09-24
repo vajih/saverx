@@ -1,20 +1,180 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pharmacy Savings | SaveRx.ai</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Your savings request is in. See next steps and explore pharmacy options to lower your out-of-pocket cost." />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Pharmacy Savings | SaveRx.ai" />
+  <meta property="og:description" content="We’re preparing your savings. Review next steps and pharmacy options." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://vajih.github.io/my-site/pharmacy.html" />
+  <meta property="og:image" content="https://vajih.github.io/my-site/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Page-specific light touches */
+    .hero-confirm { background: var(--card); padding: 1.6rem 0; }
+    .breadcrumbs { font-size: .95rem; color: var(--muted); margin-bottom: .5rem; }
+    .breadcrumbs a { color: var(--ink); text-decoration: none; }
+    .panel { background:#fff; border:1px solid var(--border); border-radius:.9rem; padding:1rem; }
+    .grid-2 { display:grid; gap:1rem; grid-template-columns: 1.1fr .9fr; }
+    .callout { border-left:4px solid var(--brand); }
+    .kicker { color: var(--teal); font-weight: 700; letter-spacing: .3px; text-transform: uppercase; font-size: .9rem; }
+    .pharmacy-table { width:100%; border-collapse:collapse; }
+    .pharmacy-table th, .pharmacy-table td { text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--border); }
+    .muted { color: var(--muted); }
+    .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; }
+    @media (max-width: 900px){ .grid-2 { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="brand">SaveRx.ai</a>
+  <!-- Header -->
+  <header class="site-header" aria-labelledby="site-title">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.svg" alt="SaveRx.ai logo" class="brand-logo" loading="eager" />
+        <span class="brand-name" id="site-title">SaveRx.ai</span>
+      </a>
+      <nav class="top-nav" aria-label="Main">
+        <a href="index.html#how">How It Works</a>
+        <a href="index.html#coverage">Coverage</a>
+        <a href="index.html#early-access">Early Access</a>
+      </nav>
     </div>
   </header>
-  <main class="container" style="padding:3rem; text-align:center;">
-    <h1>Your Pharmacy Savings Page</h1>
-    <p>This page will soon show detailed pharmacy savings options.</p>
+
+  <main>
+    <!-- Confirmation Hero -->
+    <section class="hero-confirm" aria-labelledby="hero-title">
+      <div class="container">
+        <p class="breadcrumbs"><a href="index.html">Home</a> · Pharmacy Savings</p>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="kicker">You're in</p>
+            <h1 id="hero-title">We’re preparing your savings</h1>
+            <p class="subhead">Thanks for submitting your email. In the next few minutes you’ll receive a message with steps to claim your savings.</p>
+            <div class="btn-row" style="margin-top:.6rem;">
+              <a class="btn btn-primary" href="drugs/repatha.html">Back to Repatha</a>
+              <a class="btn" href="index.html">Go to Homepage</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <img src="assets/hero-1200.jpg" alt="" loading="eager"
+                 onerror="this.closest('.hero-visual').classList.add('fallback')" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next steps & Guidance -->
+    <section class="section" aria-labelledby="steps-title">
+      <div class="container grid-2">
+        <div class="panel callout">
+          <h2 class="h2" id="steps-title">What happens next</h2>
+          <ol>
+            <li><strong>Check your inbox:</strong> Look for an email from SaveRx.ai with instructions.</li>
+            <li><strong>Follow the steps:</strong> If you’re eligible for a manufacturer copay card, we’ll guide you through applying and using it at the pharmacy.</li>
+            <li><strong>Show at pickup:</strong> Bring the savings details (or card/code) when you pick up your prescription.</li>
+          </ol>
+          <p class="muted" style="margin-top:.5rem;">Didn’t get the email? Check spam, or <a href="index.html#early-access">join the list again</a> with a different address.</p>
+        </div>
+
+        <div class="panel">
+          <h3>Need help right now?</h3>
+          <p>We’re here to make this easy. If you’re unsure which option fits your situation, start with the coverage you have:</p>
+          <ul>
+            <li><strong>Commercial (private) insurance:</strong> You may be eligible for a manufacturer copay program.</li>
+            <li><strong>Medicare/Medicaid:</strong> Manufacturer copay cards are usually not available; we’ll share other ways to reduce cost.</li>
+            <li><strong>No insurance:</strong> We’ll point to pharmacy options and assistance resources.</li>
+          </ul>
+          <div class="btn-row" style="margin-top:.6rem;">
+            <a class="btn btn-primary" href="drugs/repatha.html#coverage">Check eligibility</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Placeholder: Pharmacy options -->
+    <section class="section" aria-labelledby="pharm-title">
+      <div class="container">
+        <h2 class="h2" id="pharm-title">Pharmacy options (coming soon)</h2>
+        <div class="panel">
+          <p class="muted" style="margin-bottom:.75rem;">We’ll soon list real-time options here. For now, this is a sample layout.</p>
+          <table class="pharmacy-table" aria-label="Sample pharmacy options">
+            <thead>
+              <tr>
+                <th>Pharmacy</th>
+                <th>Fulfillment</th>
+                <th>Est. Price</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Local Pharmacy A</td>
+                <td>In-store</td>
+                <td>$—</td>
+                <td><a class="btn btn-primary" href="drugs/repatha.html">View steps</a></td>
+              </tr>
+              <tr>
+                <td>Mail-order B</td>
+                <td>Mail</td>
+                <td>$—</td>
+                <td><a class="btn btn-primary" href="drugs/repatha.html">View steps</a></td>
+              </tr>
+              <tr>
+                <td>Pharmacy C</td>
+                <td>In-store</td>
+                <td>$—</td>
+                <td><a class="btn btn-primary" href="drugs/repatha.html">View steps</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="muted" style="margin-top:.5rem;">Prices vary by pharmacy, dose, and location; we’ll include specifics as they become available.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust & privacy -->
+    <section class="impact" aria-labelledby="trust-title">
+      <div class="container">
+        <h2 class="sr-only" id="trust-title">Trust and privacy</h2>
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-value">10,000+</div>
+            <div class="impact-label">Users helped</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-value">$6,000,000+</div>
+            <div class="impact-label">Total savings</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-value">$230</div>
+            <div class="impact-label">Average per user</div>
+          </div>
+        </div>
+        <p class="muted" style="text-align:center; margin-top:.6rem;">We respect your privacy. We collect only what we need to help you save.</p>
+      </div>
+    </section>
   </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <div class="container footer-inner">
+      <h2 class="sr-only" id="footer-title">Site information</h2>
+      <p><strong>About:</strong> SaveRx.ai helps people lower prescription costs using smart matching and manufacturer programs.</p>
+      <p><strong>FAQ:</strong> Coverage varies by medication and insurance. Manufacturer copay cards are generally not available for federal programs.</p>
+      <p><strong>Privacy:</strong> We collect the minimum information needed to contact you and provide savings options.</p>
+      <p>© <span id="year"></span> SaveRx.ai</p>
+    </div>
+  </footer>
+
+  <script src="scripts.js"></script>
 </body>
 </html>
