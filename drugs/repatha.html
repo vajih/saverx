@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Repatha® (evolocumab) Savings & Discounts | SaveRx.ai</title>
   <meta name="description" content="Find Repatha cost savings and assistance options. See real savings examples, eligibility, and how to pay less—fast. Not affiliated with the manufacturer. Results vary." />
+
+  <!-- Social/SEO -->
   <meta property="og:title" content="Repatha Savings & Discounts | SaveRx.ai" />
   <meta property="og:description" content="Real savings example and assistance guidance for Repatha. Find options in seconds." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://vajih.github.io/my-site/drugs/repatha.html" />
   <meta property="og:image" content="https://vajih.github.io/my-site/og.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
+
   <link rel="icon" href="../assets/favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
   <style>
@@ -25,9 +28,40 @@
     .table { width:100%; border-collapse: collapse; }
     .table th, .table td { text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--border); }
     @media (max-width: 900px){ .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      width: 90%; max-width: 400px;
+      text-align: center;
+    }
+    .modal-content input[type="email"] {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 1rem 0;
+      border: 1px solid #ccc;
+      border-radius: 0.3rem;
+    }
+    .close {
+      float: right;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="../index.html">
@@ -43,6 +77,7 @@
   </header>
 
   <main>
+    <!-- Hero -->
     <section class="drug-hero" aria-labelledby="drug-title">
       <div class="container">
         <p class="breadcrumbs">
@@ -62,6 +97,7 @@
       </div>
     </section>
 
+    <!-- Real savings example -->
     <section class="section" aria-labelledby="example-title">
       <div class="container grid-2">
         <div class="panel callout">
@@ -70,6 +106,7 @@
           <p class="note-small">Individual savings vary. Example based on a verified SaveRx.ai user; monthly refill assumption for annual estimate.</p>
           <a class="btn btn-primary" href="../index.html#early-access">Get Early Access</a>
         </div>
+
         <div class="panel">
           <h3>How the math works</h3>
           <table class="table" aria-label="Savings math">
@@ -85,6 +122,25 @@
       </div>
     </section>
 
+    <!-- === Get Savings CTA Button === -->
+    <div class="container" style="text-align:center; margin-top:2rem;">
+      <button id="get-savings-btn" class="btn btn-primary">Get Your Savings</button>
+    </div>
+
+    <!-- === Email Modal === -->
+    <div id="emailModal" class="modal">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2>Claim Your Savings</h2>
+        <p>Enter your email to receive your Repatha savings link.</p>
+        <form id="emailForm">
+          <input type="email" id="userEmail" placeholder="you@example.com" required />
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Coverage section -->
     <section class="section" id="coverage" aria-labelledby="eligibility-title">
       <div class="container panel">
         <h2 class="h2" id="eligibility-title">Check eligibility</h2>
@@ -101,6 +157,7 @@
       </div>
     </section>
 
+    <!-- Assistance options -->
     <section class="section" aria-labelledby="assist-title">
       <div class="container grid-2">
         <div class="panel">
@@ -124,12 +181,13 @@
       </div>
     </section>
 
+    <!-- FAQ section -->
     <section class="section" aria-labelledby="faq-title">
       <div class="container">
         <h2 class="h2" id="faq-title">Repatha savings FAQs</h2>
         <div class="panel">
           <details><summary>Can I use manufacturer copay support with Medicare?</summary>
-            <p>Generally no. Federal program beneficiaries (Medicare/Medicaid) are typically ineligible for manufacturer copay assistance. We’ll suggest other paths where possible.</p>
+            <p>Generally no. Federal program beneficiaries (Medicare/Medicaid) are typically ineligible for manufacturer copay assistance.</p>
           </details>
           <details><summary>Are these prices guaranteed?</summary>
             <p>No. Prices vary by pharmacy, plan, dose, and location. Examples are estimates; individual results vary.</p>
@@ -138,28 +196,13 @@
             <p>Not always. Some savings apply at your existing pharmacy; sometimes a different pharmacy or mail-order offers a lower price.</p>
           </details>
           <details><summary>Is SaveRx.ai affiliated with Repatha’s manufacturer?</summary>
-            <p>No. SaveRx.ai is independent and not affiliated with the manufacturer. We help you navigate available affordability options.</p>
+            <p>No. SaveRx.ai is independent and not affiliated with the manufacturer.</p>
           </details>
         </div>
       </div>
-      <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          { "@type": "Question", "name": "Can I use manufacturer copay support with Medicare?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Generally no. Federal program beneficiaries (Medicare/Medicaid) are typically ineligible for manufacturer copay assistance." } },
-          { "@type": "Question", "name": "Are these prices guaranteed?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. Prices vary by pharmacy, plan, dose, and location. Examples are estimates; individual results vary." } },
-          { "@type": "Question", "name": "Do I need to change pharmacies?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Not always. Some savings apply at your existing pharmacy; sometimes a different pharmacy or mail-order offers a lower price." } },
-          { "@type": "Question", "name": "Is SaveRx.ai affiliated with Repatha’s manufacturer?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. SaveRx.ai is independent and not affiliated with the manufacturer." } }
-        ]
-      }
-      </script>
     </section>
 
+    <!-- Disclaimer -->
     <section class="section" aria-labelledby="disclaimer-title">
       <div class="container">
         <div class="panel">
