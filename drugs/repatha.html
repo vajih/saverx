@@ -129,16 +129,26 @@
 
     <!-- === Email Modal === -->
     <div id="emailModal" class="modal">
-      <div class="modal-content">
+    <div class="modal-content">
         <span id="closeModal" class="close">&times;</span>
         <h2>Claim Your Savings</h2>
         <p>Enter your email to receive your Repatha savings link.</p>
-        <form id="emailForm">
-          <input type="email" id="userEmail" placeholder="you@example.com" required />
-          <button type="submit" class="btn btn-primary">Submit</button>
+
+        <!-- Replace ACTION with your Apps Script Web App URL -->
+        <form id="emailForm"
+            action="https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec"
+            method="POST">
+        <input type="email" name="email" id="userEmail" placeholder="you@example.com" required />
+        <!-- Helpful metadata -->
+        <input type="hidden" name="drug" value="Repatha" />
+        <input type="hidden" name="source" value="repatha_modal" />
+        <input type="hidden" name="ua" id="uaField" value="" />
+        <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-      </div>
+
     </div>
+    </div>
+
 
     <!-- Coverage section -->
     <section class="section" id="coverage" aria-labelledby="eligibility-title">
