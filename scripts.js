@@ -30,25 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('get-savings-btn');
   const close = document.getElementById('closeModal');
   const form = document.getElementById('emailForm');
+  const uaField = document.getElementById('uaField');
 
-  if (btn) {
-    btn.addEventListener('click', () => modal.style.display = 'block');
-  }
-  if (close) {
-    close.addEventListener('click', () => modal.style.display = 'none');
-  }
-  window.onclick = (e) => {
-    if (e.target === modal) modal.style.display = 'none';
-  };
+  if (uaField) uaField.value = navigator.userAgent; // capture UA
+
+  if (btn && modal) btn.addEventListener('click', () => modal.style.display = 'block');
+  if (close && modal) close.addEventListener('click', () => modal.style.display = 'none');
+  window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
   if (form) {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const email = document.getElementById('userEmail').value.trim();
-      if (!email) return;
-      // TODO: send email to backend or service if desired
-      // For now redirect to pharmacy page
-      window.location.href = '../pharmacy.html';
+    form.addEventListener('submit', (e) => {
+      // If there's no action, use JS redirect workflow (legacy). If action exists, allow normal POST.
+      if (!form.action) {
+        e.preventDefault();
+        const email = document.getElementById('userEmail')?.value?.trim();
+        if (!email) return;
+        window.location.href = '../pharmacy.html';
+      }
+      // else: normal POST to Apps Script → it will redirect to pharmacy.html for us
     });
   }
 });
+
