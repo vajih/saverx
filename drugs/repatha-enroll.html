@@ -8,223 +8,250 @@
   <link rel="icon" href="../assets/favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
   <style>
-    :root { --bg:#0b1220; --card:#121a2b; --ink:#f5f7ff; --muted:#aab3c5; --accent:#57c3ff; --danger:#ff6b6b; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background:linear-gradient(180deg, #08101d, #0b1220); color:var(--ink); }
-    .page { min-height:100vh; display:grid; place-items:center; padding:24px; }
-    .card { width:100%; max-width:720px; background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
-    .header { padding:28px 28px 0; }
-    .title { font-size:22px; font-weight:700; letter-spacing:.2px; }
-    .subtitle { margin-top:6px; color:var(--muted); font-size:14px; }
-    .steps { display:flex; gap:8px; margin:16px 28px 0; }
-    .step { flex:1; height:4px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; }
-    .step.active > span { display:block; height:100%; background:var(--accent); }
-    .body { padding:24px 28px 28px; }
-    form { display:grid; gap:16px; }
-    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    label { font-size:13px; color:#cbd4e6; display:block; margin-bottom:6px; }
-    input, select { width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:#0f1626; color:var(--ink); outline:none; }
-    input::placeholder { color:#93a0b6; }
-    .hint { font-size:12px; color:#93a0b6; }
-    .elig { font-size:12px; color:#cfe6ff; background:rgba(87,195,255,.12); border:1px solid rgba(87,195,255,.35); padding:10px 12px; border-radius:12px; }
-    .error { font-size:12px; color:#ffe1e1; background:rgba(255,107,107,.15); border:1px solid rgba(255,107,107,.35); padding:10px 12px; border-radius:12px; display:none; }
-    .actions { display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
-    button { padding:12px 16px; border-radius:12px; border:none; cursor:pointer; font-weight:600; }
-    .btn-secondary { background:#0f1626; color:var(--ink); border:1px solid rgba(255,255,255,.14); }
-    .btn-primary { background:var(--accent); color:#001524; }
-    .btn-disabled { opacity:.6; cursor:not-allowed; }
-
-    /* Success screen */
-    .success { text-align:center; padding:24px; display:none; }
-    .success h3 { margin:0 0 8px; }
-    .success p { color:var(--muted); }
-
-    /* Hide step 2 initially */
-    #step2 { display:none; }
-
-    /* Honeypot */
-    .hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
-
-    @media (max-width:720px) { .row { grid-template-columns:1fr; } }
+    /* Light enhancements using site tokens */
+    .enroll-hero { background: var(--card); padding: 1.4rem 0; }
+    .steps { display:flex; gap:.4rem; margin:.75rem 0 0; }
+    .step { flex:1; height:6px; background:var(--border); border-radius:999px; overflow:hidden; }
+    .step > span { display:block; height:100%; background:var(--brand); width:0%; transition:width .25s ease; }
+    .step--active > span { width:100%; }
+    .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+    @media (max-width: 800px){ .field-grid { grid-template-columns:1fr; } }
+    .hint { color: var(--muted); font-size:.9rem; margin:.25rem 0 0; }
+    .elig { background: #F2F8FF; border:1px solid var(--border); color:#0A2A4A; padding:.75rem; border-radius:.6rem; font-size:.9rem; }
+    .error { background:#FFF5F5; border:1px solid #ffd1d1; color:#8a1f1f; padding:.6rem .7rem; border-radius:.5rem; font-size:.9rem; display:none; }
+    .actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:.6rem; }
+    .success { text-align:center; padding:1rem; display:none; }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="card">
-      <div class="header">
-        <div class="title">Repatha® Copay Card – Quick Enrollment</div>
-        <div class="subtitle">2 easy steps. For commercially insured patients only.</div>
-        <div class="steps">
-          <div class="step" id="s1"><span style="width:100%"></span></div>
-          <div class="step" id="s2"><span style="width:0%"></span></div>
-        </div>
-      </div>
-
-      <div class="body">
-        <div id="formWrap">
-          <form id="repathaForm">
-            <!-- STEP 1 -->
-            <section id="step1">
-              <div class="elig">
-                Eligibility: Only patients with <strong>commercial insurance</strong> may be eligible.
-                Patients covered by government programs (e.g., Medicare/Medicaid) are <strong>not</strong> eligible.
-              </div>
-
-              <div class="row">
-                <div>
-                  <label for="firstName">First Name</label>
-                  <input id="firstName" name="firstName" required placeholder="First" />
-                </div>
-                <div>
-                  <label for="lastName">Last Name</label>
-                  <input id="lastName" name="lastName" required placeholder="Last" />
-                </div>
-              </div>
-
-              <div class="row">
-                <div>
-                  <label for="dob">Date of Birth</label>
-                  <input id="dob" name="dob" type="date" required />
-                </div>
-                <div></div>
-              </div>
-
-              <div>
-                <label for="address">Address</label>
-                <input id="address" name="address" required placeholder="Street address" />
-              </div>
-
-              <div class="row">
-                <div>
-                  <label for="city">City</label>
-                  <input id="city" name="city" required />
-                </div>
-                <div>
-                  <label for="state">State/Province</label>
-                  <input id="state" name="state" required />
-                </div>
-              </div>
-
-              <div class="row">
-                <div>
-                  <label for="zip">ZIP/Postal Code</label>
-                  <input id="zip" name="zip" required />
-                </div>
-                <div>
-                  <label for="phone">Phone</label>
-                  <input id="phone" name="phone" required pattern="[0-9()+\\-\\s]{7,}" placeholder="(###) ###-####" />
-                </div>
-              </div>
-
-              <div class="row">
-                <div>
-                  <label for="email">Email</label>
-                  <input id="email" name="email" type="email" required placeholder="you@example.com" />
-                </div>
-                <div>
-                  <label for="insuranceStatus">Insurance Status</label>
-                  <select id="insuranceStatus" name="insuranceStatus" required>
-                    <option value="">Select…</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="medicare">Medicare</option>
-                    <option value="medicaid">Medicaid</option>
-                    <option value="uninsured">Uninsured</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="error" id="eligError">Sorry, only commercially insured patients are eligible for this copay program.</div>
-
-              <div class="actions">
-                <button type="button" class="btn-primary" id="nextBtn">Next</button>
-              </div>
-            </section>
-
-            <!-- STEP 2 -->
-            <section id="step2">
-              <div>
-                <label>
-                  <input type="checkbox" id="confirmEligibility" name="confirmEligibility" required />
-                  I confirm that I have commercial insurance and meet the eligibility requirements.
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  <input type="checkbox" id="consent" name="consent" required />
-                  I authorize the use of my information to enroll me in the Repatha® Copay Card program and agree to the privacy policy.
-                </label>
-              </div>
-
-              <div>
-                <label>
-                  <input type="checkbox" id="optIn" name="optIn" />
-                  Yes, I’d like to receive therapy updates and support services.
-                </label>
-              </div>
-
-              <p class="hint">By submitting, you consent to program terms. Program terms may change at any time.</p>
-
-              <!-- Honeypot field for spam bots -->
-              <div class="hp">
-                <label for="website">Website</label>
-                <input id="website" name="website" autocomplete="off" />
-              </div>
-
-              <!-- Extra metadata (not user-editable) -->
-              <input type="hidden" name="userAgent" id="userAgent" />
-              <input type="hidden" name="referrer" id="referrer" />
-
-              <div class="actions">
-                <button type="button" class="btn-secondary" id="backBtn">Back</button>
-                <button type="submit" class="btn-primary" id="submitBtn">Submit & Finish</button>
-              </div>
-            </section>
-          </form>
-        </div>
-
-        <div class="success" id="success">
-          <h3>Thanks! Your information has been received.</h3>
-          <p>We’ll email next steps. If you qualify, you’ll receive your copay card details shortly.</p>
-        </div>
-      </div>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html">
+        <img src="../assets/logo.svg" alt="SaveRx.ai logo" class="brand-logo" />
+        <span class="brand-name">SaveRx.ai</span>
+      </a>
+      <nav class="top-nav" aria-label="Main">
+        <a href="../index.html#how">How It Works</a>
+        <a href="../index.html#coverage">Coverage</a>
+        <a href="../index.html#early-access">Early Access</a>
+      </nav>
     </div>
-  </div>
+  </header>
 
+  <main>
+    <!-- Hero -->
+    <section class="enroll-hero" aria-labelledby="enroll-title">
+      <div class="container">
+        <h1 id="enroll-title" class="h2">Repatha® Copay Card – Enrollment</h1>
+        <p class="note-small">2 quick steps. For commercially insured patients only.</p>
+        <div class="steps" aria-hidden="true">
+          <div class="step step--active" id="s1"><span></span></div>
+          <div class="step" id="s2"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="panel">
+          <div id="formWrap">
+            <form id="repathaForm" class="form" autocomplete="on">
+              <!-- STEP 1 -->
+              <section id="step1">
+                <p class="elig">
+                  Eligibility: Only patients with <strong>commercial insurance</strong> may be eligible.
+                  Patients covered by government programs (e.g., Medicare/Medicaid) are <strong>not</strong> eligible.
+                </p>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="firstName" class="label">First Name</label>
+                    <input id="firstName" name="firstName" class="input" required placeholder="First" autocomplete="given-name" />
+                  </div>
+                  <div class="field">
+                    <label for="lastName" class="label">Last Name</label>
+                    <input id="lastName" name="lastName" class="input" required placeholder="Last" autocomplete="family-name" />
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="dob" class="label">Date of Birth</label>
+                    <input id="dob" name="dob" type="date" class="input" required />
+                  </div>
+                  <div></div>
+                </div>
+
+                <div class="field">
+                  <label for="address" class="label">Address</label>
+                  <input id="address" name="address" class="input" required placeholder="Street address" autocomplete="address-line1" />
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="city" class="label">City</label>
+                    <input id="city" name="city" class="input" required autocomplete="address-level2" />
+                  </div>
+                  <div class="field">
+                    <label for="state" class="label">State/Province</label>
+                    <input id="state" name="state" class="input" required autocomplete="address-level1" />
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="zip" class="label">ZIP/Postal Code</label>
+                    <input id="zip" name="zip" class="input" required inputmode="numeric" autocomplete="postal-code" />
+                  </div>
+                  <div class="field">
+                    <label for="phone" class="label">Phone</label>
+                    <input id="phone" name="phone" class="input" required inputmode="tel" placeholder="(###) ###-####" />
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="email" class="label">Email</label>
+                    <input id="email" name="email" type="email" class="input" required placeholder="you@example.com" autocomplete="email" />
+                  </div>
+                  <div class="field">
+                    <label for="insuranceStatus" class="label">Insurance Status</label>
+                    <select id="insuranceStatus" name="insuranceStatus" class="input" required>
+                      <option value="">Select…</option>
+                      <option value="commercial">Commercial</option>
+                      <option value="medicare">Medicare</option>
+                      <option value="medicaid">Medicaid</option>
+                      <option value="uninsured">Uninsured</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="error" id="eligError">Sorry, only commercially insured patients are eligible for this copay program.</div>
+
+                <div class="actions">
+                  <button type="button" class="btn" id="nextBtn">Next</button>
+                </div>
+              </section>
+
+              <!-- STEP 2 -->
+              <section id="step2" style="display:none;">
+                <div class="field">
+                  <label class="checkbox">
+                    <input type="checkbox" id="confirmEligibility" name="confirmEligibility" required />
+                    <span>I confirm that I have commercial insurance and meet the eligibility requirements.</span>
+                  </label>
+                </div>
+
+                <div class="field">
+                  <label class="checkbox">
+                    <input type="checkbox" id="consent" name="consent" required />
+                    <span>I authorize the use of my information to enroll me in the Repatha® Copay Card program and agree to the privacy policy.</span>
+                  </label>
+                </div>
+
+                <div class="field">
+                  <label class="checkbox">
+                    <input type="checkbox" id="optIn" name="optIn" />
+                    <span>Yes, I’d like to receive therapy updates and support services.</span>
+                  </label>
+                </div>
+
+                <p class="hint">By submitting, you consent to program terms. Program terms may change at any time.</p>
+
+                <!-- Honeypot -->
+                <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
+                  <label for="website">Website</label>
+                  <input id="website" name="website" autocomplete="off" />
+                </div>
+
+                <!-- metadata -->
+                <input type="hidden" name="userAgent" id="userAgent" />
+                <input type="hidden" name="referrer" id="referrer" />
+
+                <div class="actions">
+                  <button type="button" class="btn btn-secondary" id="backBtn">Back</button>
+                  <button type="submit" class="btn btn-primary" id="submitBtn">Submit & Finish</button>
+                </div>
+              </section>
+            </form>
+          </div>
+
+          <div class="success" id="success">
+            <h3 class="h3">Thanks! Your information has been received.</h3>
+            <p class="note-small">We’ll email next steps. If you qualify, you’ll receive your copay card details shortly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <div class="container footer-inner">
+      <h2 class="sr-only" id="footer-title">Site information</h2>
+      <p>© <span id="year"></span> SaveRx.ai</p>
+    </div>
+  </footer>
+
+  <script src="../scripts.js"></script>
   <script>
-    // ==== CONFIG: your Apps Script Web App URL ====
+    // ==== CONFIG: Apps Script Web App URL ====
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNUPxR1j2q42KLBGOFUfRZGrKOoZVF89-hiwh90EV4F6wvWsDtY15muRrmGXwjT1sNrA/exec';
 
-    // ==== UI Logic ====
+    // Elements
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const nextBtn = document.getElementById('nextBtn');
     const backBtn = document.getElementById('backBtn');
-    const s1Bar = document.querySelector('#s1 span');
-    const s2Bar = document.querySelector('#s2 span');
+    const s1Bar = document.getElementById('s1');
+    const s2Bar = document.getElementById('s2');
     const eligError = document.getElementById('eligError');
     const insurance = document.getElementById('insuranceStatus');
     const form = document.getElementById('repathaForm');
     const success = document.getElementById('success');
 
+    const phone = document.getElementById('phone');
+    const zip = document.getElementById('zip');
+    const emailField = document.getElementById('email');
+
     // meta
     document.getElementById('userAgent').value = navigator.userAgent;
     document.getElementById('referrer').value = document.referrer || location.href;
 
+    // Prefill email from ?email=...
+    const params = new URLSearchParams(location.search);
+    if (params.get('email')) {
+      emailField.value = params.get('email');
+    }
+
+    // Input masks
+    phone.addEventListener('input', () => {
+      const digits = phone.value.replace(/\D/g, '').slice(0,10); // US 10-digit
+      let out = digits;
+      if (digits.length > 6) out = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+      else if (digits.length > 3) out = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+      else if (digits.length > 0) out = `(${digits}`;
+      phone.value = out;
+    });
+
+    zip.addEventListener('input', () => {
+      const digits = zip.value.replace(/\D/g, '').slice(0,9); // ZIP or ZIP+4
+      zip.value = digits.length > 5 ? `${digits.slice(0,5)}-${digits.slice(5)}` : digits;
+    });
+
     function goStep2() {
       step1.style.display = 'none';
       step2.style.display = 'block';
-      s1Bar.style.width = '100%';
-      s2Bar.style.width = '100%';
+      s1Bar.classList.add('step--active');
+      s2Bar.classList.add('step--active');
       eligError.style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function goStep1() {
       step2.style.display = 'none';
       step1.style.display = 'block';
-      s1Bar.style.width = '100%';
-      s2Bar.style.width = '0%';
+      s2Bar.classList.remove('step--active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -250,27 +277,24 @@
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
-      submitBtn.classList.add('btn-disabled');
+      submitBtn.classList.add('is-loading');
 
       try {
         const fd = new FormData(form);
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: fd });
         if (res.ok) {
-          // Optional: brief success before redirect
           document.getElementById('formWrap').style.display = 'none';
           success.style.display = 'block';
-          setTimeout(() => {
-            window.location.href = '../pharmacy.html';
-          }, 900);
+          setTimeout(() => { window.location.href = '../pharmacy.html'; }, 900);
         } else {
           alert('Submission failed. Please try again.');
           submitBtn.disabled = false;
-          submitBtn.classList.remove('btn-disabled');
+          submitBtn.classList.remove('is-loading');
         }
       } catch (err) {
         alert('Network error. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.classList.remove('btn-disabled');
+        submitBtn.classList.remove('is-loading');
       }
     });
   </script>
