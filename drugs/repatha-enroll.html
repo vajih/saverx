@@ -8,19 +8,62 @@
   <link rel="icon" href="../assets/favicon.svg" />
   <link rel="stylesheet" href="../styles.css" />
   <style>
-    /* Light enhancements using site tokens */
+    /* ------- Visual polish that reuses site tokens ------- */
     .enroll-hero { background: var(--card); padding: 1.4rem 0; }
-    .steps { display:flex; gap:.4rem; margin:.75rem 0 0; }
-    .step { flex:1; height:6px; background:var(--border); border-radius:999px; overflow:hidden; }
-    .step > span { display:block; height:100%; background:var(--brand); width:0%; transition:width .25s ease; }
-    .step--active > span { width:100%; }
-    .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
-    @media (max-width: 800px){ .field-grid { grid-template-columns:1fr; } }
-    .hint { color: var(--muted); font-size:.9rem; margin:.25rem 0 0; }
-    .elig { background: #F2F8FF; border:1px solid var(--border); color:#0A2A4A; padding:.75rem; border-radius:.6rem; font-size:.9rem; }
-    .error { background:#FFF5F5; border:1px solid #ffd1d1; color:#8a1f1f; padding:.6rem .7rem; border-radius:.5rem; font-size:.9rem; display:none; }
-    .actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:.6rem; }
-    .success { text-align:center; padding:1rem; display:none; }
+    .subhead { color: var(--muted); margin: .2rem 0 0; }
+
+    .steps { display:flex; gap:.75rem; margin:.9rem 0 0; }
+    .step-pill {
+      display:flex; align-items:center; gap:.5rem;
+      padding:.35rem .6rem; border:1px solid var(--border); border-radius:999px; background:#fff;
+      font-size:.9rem; color:#122;
+    }
+    .step-pill .num {
+      width:1.35rem; height:1.35rem; display:grid; place-items:center;
+      background:var(--border); color:#345; border-radius:999px; font-weight:700; font-size:.85rem;
+    }
+    .step-pill.active { border-color: var(--brand); }
+    .step-pill.active .num { background: var(--brand); color:#fff; }
+    .step-divider { flex:1; height:2px; background:var(--border); align-self:center; border-radius:2px; }
+
+    .panel-title { font-weight:700; margin:0 0 .6rem; }
+    .fieldset { margin: 0 0 1.1rem; }
+    .legend {
+      font-weight:700; margin-bottom:.6rem; font-size:1rem;
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .legend .tag { padding:.1rem .45rem; border:1px solid var(--border); border-radius:.4rem; font-size:.8rem; color:var(--muted); }
+
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+    .grid-3 { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:.8rem; }
+    @media (max-width: 900px){
+      .grid-2, .grid-3 { grid-template-columns:1fr; }
+    }
+
+    .label { display:block; font-weight:600; margin:0 0 .35rem; }
+    .input, .select {
+      width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:.6rem; font:inherit; background:#fff;
+    }
+    .input:focus, .select:focus { outline:2px solid rgba(0, 120, 255, .2); border-color:#9ac7ff; }
+    .hint { color: var(--muted); font-size:.9rem; margin:.35rem 0 0; }
+    .invalid { border-color:#e66 !important; background:#fff7f7; }
+    .field-error { color:#8a1f1f; font-size:.85rem; margin:.3rem 0 0; display:none; }
+
+    .elig { background:#F2F8FF; border:1px solid var(--border); color:#0A2A4A; padding:.75rem; border-radius:.6rem; font-size:.92rem; }
+    .elig-error { background:#FFF5F5; border:1px solid #ffd1d1; color:#8a1f1f; padding:.6rem .7rem; border-radius:.5rem; font-size:.9rem; display:none; }
+
+    .actions { display:flex; justify-content:flex-end; gap:.6rem; margin-top:1rem; }
+    .btn[disabled], .is-loading { opacity:.6; cursor:not-allowed; }
+
+    .success { text-align:center; padding:1.25rem; display:none; }
+    .success .h3 { margin:0 0 .3rem; }
+
+    /* Small visual summary card at top of Step 2 */
+    .summary {
+      background:#fff; border:1px solid var(--border); border-radius:.6rem; padding:.7rem .8rem; margin: 0 0 .9rem;
+      display:flex; flex-wrap:wrap; gap:.5rem 1rem; font-size:.95rem;
+    }
+    .summary b { font-weight:700; }
   </style>
 </head>
 <body>
@@ -44,10 +87,12 @@
     <section class="enroll-hero" aria-labelledby="enroll-title">
       <div class="container">
         <h1 id="enroll-title" class="h2">Repatha® Copay Card – Enrollment</h1>
-        <p class="note-small">2 quick steps. For commercially insured patients only.</p>
+        <p class="subhead">2 quick steps. For commercially insured patients only.</p>
+
         <div class="steps" aria-hidden="true">
-          <div class="step step--active" id="s1"><span></span></div>
-          <div class="step" id="s2"><span></span></div>
+          <div class="step-pill active" id="stepBadge1"><span class="num">1</span> Patient & Coverage</div>
+          <div class="step-divider"></div>
+          <div class="step-pill" id="stepBadge2"><span class="num">2</span> Confirm & Consent</div>
         </div>
       </div>
     </section>
@@ -55,69 +100,81 @@
     <section class="section">
       <div class="container">
         <div class="panel">
+          <h2 class="panel-title">Enrollment form</h2>
+
           <div id="formWrap">
-            <form id="repathaForm" class="form" autocomplete="on">
+            <form id="repathaForm" class="form" autocomplete="on" novalidate>
               <!-- STEP 1 -->
-              <section id="step1">
+              <section id="step1" class="fieldset">
                 <p class="elig">
                   Eligibility: Only patients with <strong>commercial insurance</strong> may be eligible.
                   Patients covered by government programs (e.g., Medicare/Medicaid) are <strong>not</strong> eligible.
                 </p>
 
-                <div class="field-grid">
+                <div class="legend">Patient details <span class="tag">Required</span></div>
+                <div class="grid-2">
                   <div class="field">
-                    <label for="firstName" class="label">First Name</label>
+                    <label for="firstName" class="label">First name</label>
                     <input id="firstName" name="firstName" class="input" required placeholder="First" autocomplete="given-name" />
+                    <div class="field-error" data-for="firstName">Please enter first name.</div>
                   </div>
                   <div class="field">
-                    <label for="lastName" class="label">Last Name</label>
+                    <label for="lastName" class="label">Last name</label>
                     <input id="lastName" name="lastName" class="input" required placeholder="Last" autocomplete="family-name" />
+                    <div class="field-error" data-for="lastName">Please enter last name.</div>
                   </div>
                 </div>
 
-                <div class="field-grid">
+                <div class="grid-2">
                   <div class="field">
-                    <label for="dob" class="label">Date of Birth</label>
+                    <label for="dob" class="label">Date of birth</label>
                     <input id="dob" name="dob" type="date" class="input" required />
+                    <div class="field-error" data-for="dob">Please choose your date of birth.</div>
                   </div>
-                  <div></div>
                 </div>
 
+                <div class="legend">Address</div>
                 <div class="field">
-                  <label for="address" class="label">Address</label>
-                  <input id="address" name="address" class="input" required placeholder="Street address" autocomplete="address-line1" />
+                  <label for="address" class="label">Street address</label>
+                  <input id="address" name="address" class="input" required placeholder="123 Main St" autocomplete="address-line1" />
+                  <div class="field-error" data-for="address">Please enter your street address.</div>
                 </div>
-
-                <div class="field-grid">
+                <div class="grid-3">
                   <div class="field">
                     <label for="city" class="label">City</label>
                     <input id="city" name="city" class="input" required autocomplete="address-level2" />
+                    <div class="field-error" data-for="city">Please enter city.</div>
                   </div>
                   <div class="field">
                     <label for="state" class="label">State/Province</label>
                     <input id="state" name="state" class="input" required autocomplete="address-level1" />
+                    <div class="field-error" data-for="state">Please enter state/province.</div>
+                  </div>
+                  <div class="field">
+                    <label for="zip" class="label">ZIP/Postal code</label>
+                    <input id="zip" name="zip" class="input" required inputmode="numeric" autocomplete="postal-code" />
+                    <div class="field-error" data-for="zip">Please enter ZIP/postal code.</div>
                   </div>
                 </div>
 
-                <div class="field-grid">
-                  <div class="field">
-                    <label for="zip" class="label">ZIP/Postal Code</label>
-                    <input id="zip" name="zip" class="input" required inputmode="numeric" autocomplete="postal-code" />
-                  </div>
+                <div class="legend">Contact & coverage</div>
+                <div class="grid-2">
                   <div class="field">
                     <label for="phone" class="label">Phone</label>
                     <input id="phone" name="phone" class="input" required inputmode="tel" placeholder="(###) ###-####" />
+                    <div class="field-error" data-for="phone">Please enter phone number.</div>
                   </div>
-                </div>
-
-                <div class="field-grid">
                   <div class="field">
                     <label for="email" class="label">Email</label>
                     <input id="email" name="email" type="email" class="input" required placeholder="you@example.com" autocomplete="email" />
+                    <div class="field-error" data-for="email">Please enter a valid email.</div>
                   </div>
+                </div>
+
+                <div class="grid-2">
                   <div class="field">
-                    <label for="insuranceStatus" class="label">Insurance Status</label>
-                    <select id="insuranceStatus" name="insuranceStatus" class="input" required>
+                    <label for="insuranceStatus" class="label">Insurance status</label>
+                    <select id="insuranceStatus" name="insuranceStatus" class="select" required>
                       <option value="">Select…</option>
                       <option value="commercial">Commercial</option>
                       <option value="medicare">Medicare</option>
@@ -125,10 +182,12 @@
                       <option value="uninsured">Uninsured</option>
                       <option value="other">Other</option>
                     </select>
+                    <div class="field-error" data-for="insuranceStatus">Please choose your insurance type.</div>
+                    <p class="hint">Manufacturer copay programs typically exclude federal program beneficiaries.</p>
                   </div>
                 </div>
 
-                <div class="error" id="eligError">Sorry, only commercially insured patients are eligible for this copay program.</div>
+                <div class="elig-error" id="eligError">Only commercially insured patients are eligible for this copay program.</div>
 
                 <div class="actions">
                   <button type="button" class="btn" id="nextBtn">Next</button>
@@ -136,19 +195,25 @@
               </section>
 
               <!-- STEP 2 -->
-              <section id="step2" style="display:none;">
+              <section id="step2" class="fieldset" style="display:none;">
+                <!-- Quick summary surfaced from Step 1 -->
+                <div class="summary" aria-live="polite" id="miniSummary"></div>
+
+                <div class="legend">Confirm & consent <span class="tag">Required</span></div>
                 <div class="field">
                   <label class="checkbox">
                     <input type="checkbox" id="confirmEligibility" name="confirmEligibility" required />
-                    <span>I confirm that I have commercial insurance and meet the eligibility requirements.</span>
+                    <span>I confirm I have commercial insurance and meet the eligibility requirements.</span>
                   </label>
+                  <div class="field-error" data-for="confirmEligibility">Please confirm eligibility.</div>
                 </div>
 
                 <div class="field">
                   <label class="checkbox">
                     <input type="checkbox" id="consent" name="consent" required />
-                    <span>I authorize the use of my information to enroll me in the Repatha® Copay Card program and agree to the privacy policy.</span>
+                    <span>I authorize use of my information to enroll me in the Repatha® Copay Card program and agree to the privacy policy.</span>
                   </label>
+                  <div class="field-error" data-for="consent">Consent is required to proceed.</div>
                 </div>
 
                 <div class="field">
@@ -200,101 +265,150 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNUPxR1j2q42KLBGOFUfRZGrKOoZVF89-hiwh90EV4F6wvWsDtY15muRrmGXwjT1sNrA/exec';
 
     // Elements
+    const form = document.getElementById('repathaForm');
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const nextBtn = document.getElementById('nextBtn');
     const backBtn = document.getElementById('backBtn');
-    const s1Bar = document.getElementById('s1');
-    const s2Bar = document.getElementById('s2');
     const eligError = document.getElementById('eligError');
-    const insurance = document.getElementById('insuranceStatus');
-    const form = document.getElementById('repathaForm');
-    const success = document.getElementById('success');
+    const miniSummary = document.getElementById('miniSummary');
+    const badge1 = document.getElementById('stepBadge1');
+    const badge2 = document.getElementById('stepBadge2');
 
-    const phone = document.getElementById('phone');
-    const zip = document.getElementById('zip');
-    const emailField = document.getElementById('email');
+    const fields = {
+      firstName: document.getElementById('firstName'),
+      lastName: document.getElementById('lastName'),
+      dob: document.getElementById('dob'),
+      address: document.getElementById('address'),
+      city: document.getElementById('city'),
+      state: document.getElementById('state'),
+      zip: document.getElementById('zip'),
+      phone: document.getElementById('phone'),
+      email: document.getElementById('email'),
+      insuranceStatus: document.getElementById('insuranceStatus'),
+      confirmEligibility: document.getElementById('confirmEligibility'),
+      consent: document.getElementById('consent'),
+      optIn: document.getElementById('optIn'),
+    };
 
-    // meta
+    // metadata
     document.getElementById('userAgent').value = navigator.userAgent;
     document.getElementById('referrer').value = document.referrer || location.href;
 
-    // Prefill email from ?email=...
+    // Prefill email from ?email=
     const params = new URLSearchParams(location.search);
-    if (params.get('email')) {
-      emailField.value = params.get('email');
-    }
+    if (params.get('email')) fields.email.value = params.get('email');
 
-    // Input masks
-    phone.addEventListener('input', () => {
-      const digits = phone.value.replace(/\D/g, '').slice(0,10); // US 10-digit
+    // Input masks (US style)
+    fields.phone.addEventListener('input', () => {
+      const digits = fields.phone.value.replace(/\D/g, '').slice(0,10);
       let out = digits;
       if (digits.length > 6) out = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
       else if (digits.length > 3) out = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
       else if (digits.length > 0) out = `(${digits}`;
-      phone.value = out;
+      fields.phone.value = out;
     });
 
-    zip.addEventListener('input', () => {
-      const digits = zip.value.replace(/\D/g, '').slice(0,9); // ZIP or ZIP+4
-      zip.value = digits.length > 5 ? `${digits.slice(0,5)}-${digits.slice(5)}` : digits;
+    fields.zip.addEventListener('input', () => {
+      const digits = fields.zip.value.replace(/\D/g, '').slice(0,9);
+      fields.zip.value = digits.length > 5 ? `${digits.slice(0,5)}-${digits.slice(5)}` : digits;
     });
+
+    // Validation helpers
+    function showError(input, msg) {
+      input.classList.add('invalid');
+      const el = document.querySelector(`.field-error[data-for="${input.id}"]`);
+      if (el) { el.textContent = msg || el.textContent; el.style.display = 'block'; }
+    }
+    function clearError(input) {
+      input.classList.remove('invalid');
+      const el = document.querySelector(`.field-error[data-for="${input.id}"]`);
+      if (el) el.style.display = 'none';
+    }
+    Object.values(fields).forEach(el => {
+      if (!el || el.tagName === 'BUTTON' || el.type === 'hidden') return;
+      el.addEventListener('input', () => clearError(el));
+      el.addEventListener('change', () => clearError(el));
+    });
+
+    function validateStep1() {
+      let ok = true;
+      const reqIds = ['firstName','lastName','dob','address','city','state','zip','phone','email','insuranceStatus'];
+      for (const id of reqIds) {
+        const el = fields[id];
+        const val = (el.value || '').trim();
+        if (!val) { showError(el, 'This field is required.'); ok = false; continue; }
+        if (id === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) { showError(el, 'Enter a valid email.'); ok = false; }
+      }
+      if (fields.insuranceStatus.value !== 'commercial') {
+        eligError.style.display = 'block'; ok = false;
+      } else {
+        eligError.style.display = 'none';
+      }
+      return ok;
+    }
+
+    function buildSummary() {
+      miniSummary.innerHTML =
+        `<div><b>${fields.firstName.value} ${fields.lastName.value}</b></div>` +
+        `<div>DOB: ${fields.dob.value || '-'}</div>` +
+        `<div>${fields.city.value || ''}${fields.city.value ? ',' : ''} ${fields.state.value || ''}</div>` +
+        `<div>Email: ${fields.email.value || '-'}</div>` +
+        `<div>Insurance: ${fields.insuranceStatus.value || '-'}</div>`;
+    }
 
     function goStep2() {
       step1.style.display = 'none';
       step2.style.display = 'block';
-      s1Bar.classList.add('step--active');
-      s2Bar.classList.add('step--active');
-      eligError.style.display = 'none';
+      badge1.classList.add('active');
+      badge2.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      buildSummary();
     }
     function goStep1() {
       step2.style.display = 'none';
       step1.style.display = 'block';
-      s2Bar.classList.remove('step--active');
+      badge2.classList.remove('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     nextBtn.addEventListener('click', () => {
-      const requiredIds = ['firstName','lastName','dob','address','city','state','zip','phone','email','insuranceStatus'];
-      for (const id of requiredIds) {
-        const el = document.getElementById(id);
-        if (!el.value || (el.tagName === 'SELECT' && el.value === '')) {
-          el.focus();
-          return;
-        }
+      // Clear any old errors
+      Object.values(fields).forEach(clearError);
+      if (validateStep1()) goStep2();
+      else {
+        // focus first invalid
+        const firstInvalid = document.querySelector('.invalid');
+        if (firstInvalid) firstInvalid.focus();
       }
-      if (insurance.value !== 'commercial') {
-        eligError.style.display = 'block';
-        return;
-      }
-      goStep2();
     });
-
     backBtn.addEventListener('click', goStep1);
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Minimal step-2 checks
+      let ok = true;
+      if (!fields.confirmEligibility.checked) { showError(fields.confirmEligibility, 'Please confirm eligibility.'); ok = false; }
+      if (!fields.consent.checked) { showError(fields.consent, 'Consent is required.'); ok = false; }
+      if (!ok) return;
+
       const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true; submitBtn.classList.add('is-loading');
 
       try {
         const fd = new FormData(form);
         const res = await fetch(SCRIPT_URL, { method: 'POST', body: fd });
         if (res.ok) {
           document.getElementById('formWrap').style.display = 'none';
-          success.style.display = 'block';
+          document.getElementById('success').style.display = 'block';
           setTimeout(() => { window.location.href = '../pharmacy.html'; }, 900);
         } else {
           alert('Submission failed. Please try again.');
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('is-loading');
+          submitBtn.disabled = false; submitBtn.classList.remove('is-loading');
         }
       } catch (err) {
         alert('Network error. Please try again.');
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('is-loading');
+        submitBtn.disabled = false; submitBtn.classList.remove('is-loading');
       }
     });
   </script>
