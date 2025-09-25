@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" ry="12" fill="#ff6600"></rect>
+  <!-- RX letters -->
+  <text x="50%" y="50%" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="32" fill="white" text-anchor="middle" dominant-baseline="middle">
+    Rx
+  </text>
+</svg>
