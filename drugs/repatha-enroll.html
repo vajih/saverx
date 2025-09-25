@@ -147,12 +147,24 @@
                   </div>
                   <div class="field">
                     <label for="state" class="label">State/Province</label>
-                    <input id="state" name="state" class="input" required autocomplete="address-level1" />
+                    <input id="state" name="state" class="input" required list="states" autocomplete="address-level1" />
+                    <datalist id="states">
+                      <option value="AL"><option value="AK"><option value="AZ"><option value="AR"><option value="CA">
+                      <option value="CO"><option value="CT"><option value="DE"><option value="DC"><option value="FL">
+                      <option value="GA"><option value="HI"><option value="ID"><option value="IL"><option value="IN">
+                      <option value="IA"><option value="KS"><option value="KY"><option value="LA"><option value="ME">
+                      <option value="MD"><option value="MA"><option value="MI"><option value="MN"><option value="MS">
+                      <option value="MO"><option value="MT"><option value="NE"><option value="NV"><option value="NH">
+                      <option value="NJ"><option value="NM"><option value="NY"><option value="NC"><option value="ND">
+                      <option value="OH"><option value="OK"><option value="OR"><option value="PA"><option value="RI">
+                      <option value="SC"><option value="SD"><option value="TN"><option value="TX"><option value="UT">
+                      <option value="VT"><option value="VA"><option value="WA"><option value="WV"><option value="WI"><option value="WY">
+                    </datalist>
                     <div class="field-error" data-for="state">Please enter state/province.</div>
                   </div>
                   <div class="field">
                     <label for="zip" class="label">ZIP/Postal code</label>
-                    <input id="zip" name="zip" class="input" required inputmode="numeric" autocomplete="postal-code" />
+                    <input id="zip" name="zip" class="input" required inputmode="numeric" maxlength="10" autocomplete="postal-code" />
                     <div class="field-error" data-for="zip">Please enter ZIP/postal code.</div>
                   </div>
                 </div>
@@ -161,7 +173,7 @@
                 <div class="grid-2">
                   <div class="field">
                     <label for="phone" class="label">Phone</label>
-                    <input id="phone" name="phone" class="input" required inputmode="tel" placeholder="(###) ###-####" />
+                    <input id="phone" name="phone" class="input" required inputmode="tel" placeholder="(###) ###-####" maxlength="14" />
                     <div class="field-error" data-for="phone">Please enter phone number.</div>
                   </div>
                   <div class="field">
@@ -172,19 +184,15 @@
                 </div>
 
                 <div class="grid-2">
-                    <div class="field">
-                        <label for="sexAtBirth" class="label">Sex at birth</label>
-                        <select id="sexAtBirth" name="sexAtBirth" class="select">
-                        <option value="">Prefer not to say</option>
-                        <option value="female">Female</option>
-                        <option value="male">Male</option>
-                        </select>
-                        <p class="hint">Optional. Some manufacturer programs request this for verification.</p>
-                    </div>
-                    </div>
-
-
-                <div class="grid-2">
+                  <div class="field">
+                    <label for="sexAtBirth" class="label">Sex at birth</label>
+                    <select id="sexAtBirth" name="sexAtBirth" class="select" required>
+                      <option value="">Select…</option>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                    </select>
+                    <div class="field-error" data-for="sexAtBirth">Please select an option.</div>
+                  </div>
                   <div class="field">
                     <label for="insuranceStatus" class="label">Insurance status</label>
                     <select id="insuranceStatus" name="insuranceStatus" class="select" required>
@@ -203,7 +211,7 @@
                 <div class="elig-error" id="eligError">Only commercially insured patients are eligible for this copay program.</div>
 
                 <div class="actions">
-                  <button type="button" class="btn" id="nextBtn">Next</button>
+                  <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
                 </div>
               </section>
 
@@ -298,6 +306,7 @@
       zip: document.getElementById('zip'),
       phone: document.getElementById('phone'),
       email: document.getElementById('email'),
+      sexAtBirth: document.getElementById('sexAtBirth'),
       insuranceStatus: document.getElementById('insuranceStatus'),
       confirmEligibility: document.getElementById('confirmEligibility'),
       consent: document.getElementById('consent'),
@@ -344,9 +353,12 @@
       el.addEventListener('change', () => clearError(el));
     });
 
+    // Require all fields before advancing
     function validateStep1() {
       let ok = true;
-      const reqIds = ['firstName','lastName','dob','address','city','state','zip','phone','email','insuranceStatus'];
+      const reqIds = [
+        'firstName','lastName','dob','address','city','state','zip','phone','email','sexAtBirth','insuranceStatus'
+      ];
       for (const id of reqIds) {
         const el = fields[id];
         const val = (el.value || '').trim();
@@ -367,7 +379,8 @@
         `<div>DOB: ${fields.dob.value || '-'}</div>` +
         `<div>${fields.city.value || ''}${fields.city.value ? ',' : ''} ${fields.state.value || ''}</div>` +
         `<div>Email: ${fields.email.value || '-'}</div>` +
-        `<div>Insurance: ${fields.insuranceStatus.value || '-'}</div>`;
+        `<div>Insurance: ${fields.insuranceStatus.value || '-'}</div>` +
+        `<div>Sex at birth: ${fields.sexAtBirth.options[fields.sexAtBirth.selectedIndex]?.text || '-'}</div>`;
     }
 
     function goStep2() {
@@ -386,11 +399,10 @@
     }
 
     nextBtn.addEventListener('click', () => {
-      // Clear any old errors
+      // Clear old errors, then validate
       Object.values(fields).forEach(clearError);
       if (validateStep1()) goStep2();
       else {
-        // focus first invalid
         const firstInvalid = document.querySelector('.invalid');
         if (firstInvalid) firstInvalid.focus();
       }
@@ -399,7 +411,7 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Minimal step-2 checks
+      // Require both confirmations
       let ok = true;
       if (!fields.confirmEligibility.checked) { showError(fields.confirmEligibility, 'Please confirm eligibility.'); ok = false; }
       if (!fields.consent.checked) { showError(fields.consent, 'Consent is required.'); ok = false; }
@@ -410,15 +422,11 @@
 
       try {
         const fd = new FormData(form);
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: fd });
-        if (res.ok) {
-          document.getElementById('formWrap').style.display = 'none';
-          document.getElementById('success').style.display = 'block';
-          setTimeout(() => { window.location.href = '../pharmacy.html'; }, 900);
-        } else {
-          alert('Submission failed. Please try again.');
-          submitBtn.disabled = false; submitBtn.classList.remove('is-loading');
-        }
+        await fetch(SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+        // Can't read response in no-cors; proceed optimistically
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        setTimeout(() => { window.location.href = '../pharmacy.html'; }, 900);
       } catch (err) {
         alert('Network error. Please try again.');
         submitBtn.disabled = false; submitBtn.classList.remove('is-loading');
