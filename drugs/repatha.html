@@ -129,26 +129,20 @@
 
     <!-- === Email Modal === -->
     <div id="emailModal" class="modal">
-    <div class="modal-content">
+      <div class="modal-content">
         <span id="closeModal" class="close">&times;</span>
         <h2>Claim Your Savings</h2>
         <p>Enter your email to receive your Repatha savings link.</p>
 
-        <!-- Replace ACTION with your Apps Script Web App URL -->
-        <form id="emailForm"
-            action="https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec"
-            method="POST">
-        <input type="email" name="email" id="userEmail" placeholder="you@example.com" required />
-        <!-- Helpful metadata -->
-        <input type="hidden" name="drug" value="Repatha" />
-        <input type="hidden" name="source" value="repatha_modal" />
-        <input type="hidden" name="ua" id="uaField" value="" />
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <form id="emailForm" method="POST" novalidate>
+          <input type="email" name="email" id="userEmail" placeholder="you@example.com" required />
+          <input type="hidden" name="drug" value="Repatha" />
+          <input type="hidden" name="source" value="repatha_modal" />
+          <input type="hidden" name="ua" id="uaField" value="" />
+          <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-
+      </div>
     </div>
-    </div>
-
 
     <!-- Coverage section -->
     <section class="section" id="coverage" aria-labelledby="eligibility-title">
@@ -235,5 +229,34 @@
   </footer>
 
   <script src="../scripts.js"></script>
+  <script>
+    const emailModal = document.getElementById('emailModal');
+    const getBtn = document.getElementById('get-savings-btn');
+    const closeBtn = document.getElementById('closeModal');
+    const uaField = document.getElementById('uaField');
+    uaField.value = navigator.userAgent;
+
+    getBtn?.addEventListener('click', () => emailModal.style.display = 'block');
+    closeBtn?.addEventListener('click', () => emailModal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+      if (e.target === emailModal) emailModal.style.display = 'none';
+    });
+
+    const emailForm = document.getElementById('emailForm');
+    emailForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(emailForm);
+
+      const LEAD_URL = 'https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec';
+
+      try {
+        await fetch(LEAD_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+        emailModal.style.display = 'none';
+        window.location.href = './repatha-enroll.html';
+      } catch (err) {
+        alert('Sorry, something went wrong. Please try again.');
+      }
+    });
+  </script>
 </body>
 </html>
