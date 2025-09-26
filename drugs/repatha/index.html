@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>SaveRx | Repatha® Co-Pay Card Enrollment Assist</title>
+  <meta name="description" content="Use your personal SaveRx assist link to copy your info, then finish Repatha® Co-Pay enrollment on Amgen’s official site. Patient-completed, no bots." />
+
+  <!-- Canonical (adjust if your repo/site path differs) -->
+  <link rel="canonical" href="https://vajih.github.io/my-site/repatha/">
+
+  <!-- Favicon / OG image from your assets -->
+  <link rel="icon" href="../assets/favicon.png">
+  <meta property="og:title" content="SaveRx | Repatha® Co-Pay Card Enrollment Assist">
+  <meta property="og:description" content="Open your personal assist link, copy details, then finish on Amgen’s site.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vajih.github.io/my-site/repatha/">
+  <meta property="og:image" content="../assets/saverx-card.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SaveRx | Repatha® Co-Pay Card Enrollment Assist">
+  <meta name="twitter:description" content="Use your SaveRx assist link to complete enrollment on Amgen’s site.">
+  <meta name="twitter:image" content="../assets/saverx-card.png">
+
+  <!-- Site-wide styles -->
+  <link rel="stylesheet" href="../styles.css" />
+
+  <!-- Very light fallback variables (won’t override your CSS) -->
+  <style>
+    :root { --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --brand:#111; }
+    body.repatha { background: var(--bg); color: var(--ink); }
+  </style>
+</head>
+<body class="repatha">
+  <div class="wrap container">
+    <!-- Header -->
+    <header class="site-header flex-between">
+      <div class="brand flex-start gap-12">
+        <img src="../assets/logo.svg" alt="SaveRx" class="logo" width="36" height="36" />
+        <div class="brand-copy">
+          <div class="brand-name">SaveRx</div>
+          <div class="brand-sub muted">Repatha® Co-Pay Card — Enrollment Assist</div>
+        </div>
+      </div>
+      <span class="badge pill muted">Patient-completed • No bots</span>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero card grid-2" id="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Finish your Repatha® Co-Pay enrollment with less friction</h1>
+        <p>Open your secure SaveRx assist link to copy your details, then complete enrollment on Amgen’s official website. Fast, compliant, and patient-controlled.</p>
+        <div class="cta row gap-8">
+          <a class="btn primary" href="#get-link">Find my personal assist link</a>
+          <a class="btn" href="https://www.repatha.com/enrollment" target="_blank" rel="noopener noreferrer">Go to Amgen Enrollment</a>
+        </div>
+        <p class="note muted">Need help by phone? Call <strong>1-844-REPATHA</strong>.</p>
+      </div>
+
+      <aside class="checklist card-plain">
+        <h3>What you’ll need</h3>
+        <ul class="list">
+          <li>Name, date of birth, ZIP</li>
+          <li>Email and mobile phone</li>
+          <li>Sex at birth</li>
+        </ul>
+        <p class="note muted">Tip: your SaveRx assist page includes one-tap “Copy” buttons next to each field.</p>
+      </aside>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works grid-3" aria-label="How it works">
+      <div class="card">
+        <h3>1) Open your personal assist link</h3>
+        <p>You’ll receive a secure link from SaveRx by email or text. It displays your saved details for easy copying.</p>
+      </div>
+      <div class="card">
+        <h3>2) Copy details</h3>
+        <p>Use the “Copy” buttons next to each field. No auto-submission; you stay in control.</p>
+      </div>
+      <div class="card">
+        <h3>3) Finish on Amgen’s site</h3>
+        <p>Click “Open Amgen Enrollment” and complete the official form. SaveRx only records that you opened and completed.</p>
+      </div>
+    </section>
+
+    <!-- Paste-link tool (client side only) -->
+    <section id="get-link" class="card" aria-labelledby="link-title">
+      <h3 id="link-title">Have your link already?</h3>
+      <p class="note muted">If you’ve received a SaveRx message with your personal link, open it from there. To test locally, paste your assist link below (handled entirely in your browser).</p>
+
+      <div class="input-row">
+        <input
+          id="assistUrl"
+          class="input"
+          type="url"
+          inputmode="url"
+          placeholder="Paste your SaveRx Assist link (https://script.google.com/.../exec?email=...&t=...)"
+          aria-label="Paste your SaveRx Assist link" />
+        <button id="goBtn" class="btn primary">Open link</button>
+      </div>
+
+      <p class="note muted" style="margin-top:.5rem">Don’t have it? Ask SaveRx support to resend your personal link.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" aria-label="FAQ">
+      <h3>FAQ</h3>
+
+      <details class="card">
+        <summary>Is SaveRx enrolling me automatically?</summary>
+        <div class="body">
+          <p>No. By program Terms, enrollment must be completed by the patient (or legal representative) on Amgen’s official website. SaveRx simply helps you copy your details to save time.</p>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary>Does SaveRx store my information?</summary>
+        <div class="body">
+          <p>SaveRx stores only the information you already provided to us. The assist page shows it back to you with convenient “Copy” buttons. We do not auto-submit to Amgen, and this public page does not collect any data.</p>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary>What if my link doesn’t work?</summary>
+        <div class="body">
+          <p>Personal links are secure and can expire when refreshed. Ask SaveRx support to resend a new link, or go directly to <a href="https://www.repatha.com/enrollment" target="_blank" rel="noopener">Amgen’s enrollment</a> and complete it manually.</p>
+        </div>
+      </details>
+
+      <div class="callout info" role="note" aria-label="Program support">
+        For questions about program eligibility or website issues, call <strong>1-844-REPATHA</strong>.
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer muted">
+      <p class="eyebrow">Disclosures</p>
+      <p>Repatha® is a registered trademark of Amgen Inc. SaveRx is an independent service and is not affiliated with or endorsed by Amgen. This page does not provide medical advice. Always follow instructions on the manufacturer’s website and from your healthcare provider.</p>
+      <p>© <span id="yr"></span> SaveRx. All rights reserved. • <a href="../privacy.html">Privacy</a> • <a href="../terms.html">Terms</a></p>
+    </footer>
+  </div>
+
+  <!-- Your site-wide JS -->
+  <script src="../scripts.js"></script>
+
+  <!-- Small, page-scoped init that plays nice with your scripts.js -->
+  <script>
+    (function(){
+      // Year stamp
+      var yr = document.getElementById('yr');
+      if (yr) yr.textContent = new Date().getFullYear();
+
+      // Open pasted assist link in a new tab (client-only)
+      var go = document.getElementById('goBtn');
+      var input = document.getElementById('assistUrl');
+      if (go && input) {
+        go.addEventListener('click', function(e){
+          e.preventDefault();
+          var u = (input.value || '').trim();
+          if (!u) { alert('Paste your personal SaveRx Assist link first.'); return; }
+          try { new URL(u); } catch(err){ alert('Please paste a valid link.'); return; }
+          window.open(u, '_blank', 'noopener,noreferrer');
+        });
+      }
+
+      // If your scripts.js exposes a page hook, call it.
+      if (window.SaveRx && typeof window.SaveRx.initRepathaPage === 'function') {
+        window.SaveRx.initRepathaPage();
+      }
+    })();
+  </script>
+
+  <noscript>
+    <div class="wrap">
+      <p><strong>Note:</strong> JavaScript is disabled. You can still visit <a href="https://www.repatha.com/enrollment" target="_blank" rel="noopener">Amgen’s enrollment</a>.</p>
+    </div>
+  </noscript>
+</body>
+</html>
