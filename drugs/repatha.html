@@ -1,63 +1,129 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!--
+    ===========================================
+    SaveRx.ai – Repatha® Savings Landing Page
+    ===========================================
+
+    PURPOSE
+    - Educate users about ways to lower out-of-pocket cost for Repatha® (evolocumab)
+    - Capture email → route users into a guided enrollment flow (repatha-enroll.html)
+    - Provide coverage-aware guidance (private / government / none)
+
+    KEY FEATURES
+    - Strong, honest value prop with an example (not a guarantee)
+    - A11y-first structure (landmarks, labels, keyboard traps)
+    - Mobile-focused sticky CTA
+    - Simple, robust email capture with honeypot spam protection
+    - Silent lead posting to Google Apps Script backend
+    - SEO: metadata, canonical, OpenGraph, FAQ schema, breadcrumbs schema
+
+    DEPENDENCIES
+    - ../styles.css  (global styles and tokens)
+    - ../scripts.js  (site-wide JS; this file includes page-specific JS)
+    - Assets referenced: ../assets/logo.svg, ../assets/hero-1200.jpg, ../assets/favicon.svg
+  -->
+
+  <!-- Character set and responsive viewport -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Repatha® (evolocumab) Savings & Discounts | SaveRx.ai</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <meta name="description" content="Find Repatha cost savings and assistance options. See real savings examples, eligibility, and how to pay less—fast. Not affiliated with the manufacturer. Results vary." />
 
-  <!-- Social/SEO -->
-  <meta property="og:title" content="Repatha Savings & Discounts | SaveRx.ai" />
-  <meta property="og:description" content="Real savings example and assistance guidance for Repatha. Find options in seconds." />
+  <!-- Page title for browsers and SEO -->
+  <title>Repatha® (evolocumab) Savings & Assistance | SaveRx.ai</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+  <!--
+    Meta description: concise, user-centered, non-deceptive.
+    Keep under ~160 chars to avoid truncation on most SERPs.
+  -->
+  <meta name="description" content="Lower your out-of-pocket cost for Repatha® (evolocumab). See real savings, fast eligibility checks, and step-by-step guidance. Independent resource." />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Canonical URL helps consolidate duplicate/alternate URLs -->
+  <link rel="canonical" href="https://vajih.github.io/my-site/drugs/repatha.html" />
+
+  <!-- Social/OG metadata improves link previews -->
+  <meta property="og:title" content="Repatha® Savings & Assistance | SaveRx.ai" />
+  <meta property="og:description" content="Cut your Repatha cost with clear steps based on your coverage. Real example: $528 → $15/refill." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://vajih.github.io/my-site/drugs/repatha.html" />
   <meta property="og:image" content="https://vajih.github.io/my-site/og.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <link rel="icon" href="../assets/favicon.svg" />
+  <!-- Global styles (design tokens, layout, components) -->
   <link rel="stylesheet" href="../styles.css" />
 
+  <!--
+    Page-specific styles:
+    Here we only include small, page-specific classes if needed.
+    Most styling lives in ../styles.css to keep things DRY and reusable.
+  -->
   <style>
-    /* Page-specific light touches that use your design tokens */
-    .drug-hero { background: var(--card); padding: 1.6rem 0; }
-    .breadcrumbs { font-size: .95rem; color: var(--muted); margin-bottom: .5rem; }
-    .breadcrumbs a { color: var(--ink); text-decoration: none; }
-    .pill-badge { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .5rem; border-radius:.5rem; background:#fff; border:1px solid var(--border); font-size:.9rem; }
-    .panel { background:#fff; border:1px solid var(--border); border-radius:.9rem; padding:1rem; }
-    .grid-2 { display:grid; gap:1rem; grid-template-columns: 1.1fr .9fr; }
-    .callout { border-left:4px solid var(--brand); }
-    .note-small { color: var(--muted); font-size:.9rem; }
-    .table { width:100%; border-collapse: collapse; }
-    .table th, .table td { text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--border); }
-    @media (max-width: 900px){ .grid-2 { grid-template-columns: 1fr; } }
-
-    /* Modal – restyled to match site + a11y */
-    .modal { display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.45); }
-    .modal-card {
-      background:#fff; border:1px solid var(--border); border-radius:.9rem;
-      width:min(420px, 92%); margin:10vh auto 0; padding:1.25rem 1.25rem 1rem;
-      box-shadow:var(--shadow-lg, 0 10px 30px rgba(0,0,0,.15));
-    }
-    .modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
-    .modal-title { font-weight:700; font-size:1.15rem; }
-    .close { border:0; background:transparent; font-size:1.4rem; line-height:1; cursor:pointer; color:var(--ink); opacity:.6; }
-    .modal p { color:var(--muted); margin:.25rem 0 1rem; }
-    .modal input[type="email"] {
-      width:100%; padding:.7rem .8rem; border:1px solid var(--border); border-radius:.5rem; font:inherit;
-    }
-    .modal .actions { display:flex; justify-content:flex-end; margin-top:1rem; }
-    .sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); border:0; }
+    .coverage-guidance { margin-top: .75rem; display:none; }
+    .coverage-guidance.active { display:block; }
   </style>
+
+  <!--
+    Structured Data: Breadcrumbs and FAQ
+    - Helps Google understand page hierarchy and answer common questions.
+    - Keep answers short and consistent with on-page content.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"Home","item":"https://vajih.github.io/my-site/index.html"},
+      {"@type":"ListItem","position":2,"name":"Savings","item":"https://vajih.github.io/my-site/index.html#how"},
+      {"@type":"ListItem","position":3,"name":"Repatha"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json" id="faq-json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Can I use manufacturer copay with Medicare?",
+        "acceptedAnswer":{"@type":"Answer","text":"Generally no. Federal program beneficiaries (e.g., Medicare/Medicaid) are typically ineligible for manufacturer copay assistance."}
+      },
+      {
+        "@type":"Question",
+        "name":"Are prices guaranteed?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. Prices vary by pharmacy, plan, dose, and location. Examples are estimates; individual results vary."}
+      },
+      {
+        "@type":"Question",
+        "name":"Do I need to change pharmacies?",
+        "acceptedAnswer":{"@type":"Answer","text":"Not always. Some savings apply at your existing pharmacy; sometimes a different pharmacy or mail order offers a lower price."}
+      },
+      {
+        "@type":"Question",
+        "name":"Is SaveRx.ai affiliated with Repatha’s manufacturer?",
+        "acceptedAnswer":{"@type":"Answer","text":"No. SaveRx.ai is independent and not affiliated with the manufacturer."}
+      }
+    ]
+  }
+  </script>
 </head>
+
 <body>
-  <!-- Header -->
-  <header class="site-header">
+  <!-- ======= Global Header (Site-wide navigation and brand) ======= -->
+  <header class="site-header" role="banner">
     <div class="container header-inner">
+      <!-- Brand: logo + wordmark -->
       <a class="brand" href="../index.html">
         <img src="../assets/logo.svg" alt="SaveRx.ai logo" class="brand-logo" loading="eager" />
         <span class="brand-name">SaveRx.ai</span>
       </a>
+
+      <!-- Primary nav; keep links minimal for conversion -->
       <nav class="top-nav" aria-label="Main">
         <a href="../index.html#how">How It Works</a>
         <a href="../index.html#coverage">Coverage</a>
@@ -66,121 +132,218 @@
     </div>
   </header>
 
-  <main>
-    <!-- Hero -->
+  <!-- ======= Main Content Landmark ======= -->
+  <main id="main">
+    <!--
+      HERO SECTION
+      - Clear headline and value proposition
+      - Visual content on the right (hidden from a11y since purely decorative)
+      - Primary CTA near fold
+    -->
     <section class="drug-hero" aria-labelledby="drug-title">
       <div class="container">
-        <p class="breadcrumbs">
+        <!-- Breadcrumbs: provide hierarchy; ensure enough color contrast -->
+        <p class="breadcrumbs" aria-label="Breadcrumbs">
           <a href="../index.html">Home</a> · <a href="../index.html#how">Savings</a> · Repatha
         </p>
+
         <div class="hero-grid">
+          <!-- Left: copy and CTA -->
           <div class="hero-copy">
-            <h1 id="drug-title">Repatha® (evolocumab) – Savings & Assistance</h1>
-            <p class="subhead">Find options to lower your out-of-pocket costs quickly and confidently.</p>
+            <h1 id="drug-title">Repatha® (evolocumab) — Cut Your Cost With Clear Steps</h1>
+            <p class="subhead">We map the best savings based on your coverage and walk you through it in minutes.</p>
+
+            <!-- A quick product category tag -->
             <div class="pill-badge" aria-hidden="true">💊 PCSK9 inhibitor</div>
+
+            <!-- Trust chips set expectations and prevent confusion -->
+            <div class="trust" style="margin-top:.75rem">
+              <span class="chip">Independent resource</span>
+              <span class="chip">Fast, step-by-step guidance</span>
+              <span class="chip">No medical advice</span>
+            </div>
+
+            <!-- Primary CTA: opens email modal -->
+            <div style="margin-top:1rem;">
+              <button id="get-savings-btn" class="btn btn-primary">Get Your Savings</button>
+            </div>
           </div>
-          <div class="hero-visual">
-            <img src="../assets/hero-1200.jpg" alt="" loading="eager"
+
+          <!-- Right: decorative image; mark aria-hidden to avoid screen reader noise -->
+          <div class="hero-visual" aria-hidden="true">
+            <img src="../assets/hero-1200.jpg" alt=""
+                 loading="eager"
                  onerror="this.closest('.hero-visual').classList.add('fallback')" />
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Real savings example -->
+    <!--
+      REAL SAVINGS EXAMPLE + MATH
+      - Sets expectation: results vary, not a guarantee
+      - Provides transparent math with 12-month estimate
+    -->
     <section class="section" aria-labelledby="example-title">
       <div class="container grid-2">
+        <!-- Testimonial-style savings example -->
         <div class="panel callout">
           <h2 class="h2" id="example-title">Real savings example</h2>
-          <p>“As a Repatha user, my cost went from <strong>$528</strong> to <strong>$15</strong> per refill—saving <strong>$513</strong> each time, or about <strong>$6,000</strong> a year.”</p>
-          <p class="note-small">Individual savings vary. Example based on a verified SaveRx.ai user; monthly refill assumption for annual estimate.</p>
-          <a class="btn btn-primary" href="../index.html#early-access">Get Early Access</a>
+          <p>“My Repatha cost went from <strong>$528</strong> to <strong>$15</strong> per refill—saving <strong>$513</strong> each time (~<strong>$6,000</strong>/yr).”</p>
+          <p class="note-small">Actual savings vary. Estimate assumes monthly refills.</p>
+          <button class="btn btn-primary" data-open-modal="emailModal">Claim Your Savings</button>
         </div>
 
+        <!-- Transparent math table -->
         <div class="panel">
           <h3>How the math works</h3>
           <table class="table" aria-label="Savings math">
             <tbody>
-              <tr><th>Old cost / refill</th><td>$528</td></tr>
-              <tr><th>New cost / refill</th><td>$15</td></tr>
-              <tr><th>Savings / refill</th><td>$513</td></tr>
-              <tr><th>Est. annual (12 refills)</th><td>$6,156</td></tr>
+              <tr><th scope="row">Old cost / refill</th><td>$528</td></tr>
+              <tr><th scope="row">New cost / refill</th><td>$15</td></tr>
+              <tr><th scope="row">Savings / refill</th><td>$513</td></tr>
+              <tr><th scope="row">Est. annual (12 refills)</th><td>$6,156</td></tr>
             </tbody>
           </table>
-          <p class="note-small">Annual savings depend on your dose and refill frequency.</p>
+          <p class="note-small">Annual savings depend on dose and refill frequency.</p>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <div class="container" style="text-align:center; margin-top:2rem;">
-      <button id="get-savings-btn" class="btn btn-primary">Get Your Savings</button>
-    </div>
-
-    <!-- Email Modal (accessible) -->
-    <div id="emailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
-      <div class="modal-card">
-        <div class="modal-head">
-          <div class="modal-title" id="modalTitle">Claim Your Savings</div>
-          <button id="closeModal" class="close" aria-label="Close">&times;</button>
-        </div>
-        <p id="modalDesc">Enter your email to receive your Repatha savings link.</p>
-
-        <form id="emailForm" method="POST" novalidate>
-          <label for="userEmail" class="sr-only">Email</label>
-          <input type="email" name="email" id="userEmail" placeholder="you@example.com" required />
-          <input type="hidden" name="drug" value="Repatha" />
-          <input type="hidden" name="source" value="repatha_modal" />
-          <input type="hidden" name="ua" id="uaField" value="" />
-          <div class="actions">
-            <button type="submit" class="btn btn-primary">Submit</button>
+    <!--
+      HOW IT WORKS
+      - Simple 3-step flow; minimizes cognitive load
+      - Scannable headings, muted explanations
+    -->
+    <section class="section" aria-labelledby="how-title">
+      <div class="container panel">
+        <h2 class="h2" id="how-title">How it works</h2>
+        <div class="grid-3">
+          <div class="step">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div>
+              <h3 class="h4" style="margin:0 0 .25rem;">Tell us your coverage</h3>
+              <p class="note-small">Private insurance, Medicare/Medicaid, or no insurance.</p>
+            </div>
           </div>
-        </form>
+          <div class="step">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div>
+              <h3 class="h4" style="margin:0 0 .25rem;">Get the best path</h3>
+              <p class="note-small">We show the exact steps to apply or compare prices.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div>
+              <h3 class="h4" style="margin:0 0 .25rem;">Use at the pharmacy</h3>
+              <p class="note-small">Simple instructions you can share with your pharmacist.</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Coverage -->
+    <!--
+      COVERAGE INPUT + DYNAMIC GUIDANCE
+      - Radio buttons collect the user's coverage type
+      - Below we reveal tailored guidance blocks
+      - Each block includes a CTA that opens the email modal
+    -->
     <section class="section" id="coverage" aria-labelledby="eligibility-title">
       <div class="container panel">
         <h2 class="h2" id="eligibility-title">Check eligibility</h2>
-        <p>Coverage impacts which savings options you can use. Choose your situation:</p>
+        <p>Coverage determines which savings you can use. Choose your situation:</p>
+
+        <!-- Radios must share the same "name" to be mutually exclusive -->
         <form id="coverage-form" class="coverage-form">
           <fieldset>
             <legend class="sr-only">Coverage options</legend>
-            <label class="radio"><input type="radio" name="coverage" value="private" required> Private insurance</label>
-            <label class="radio"><input type="radio" name="coverage" value="government"> Government insurance (e.g., Medicare)</label>
-            <label class="radio"><input type="radio" name="coverage" value="none"> No insurance</label>
+            <label class="radio">
+              <input type="radio" name="coverage" value="private" required>
+              Private insurance
+            </label>
+            <label class="radio">
+              <input type="radio" name="coverage" value="government">
+              Government insurance (e.g., Medicare)
+            </label>
+            <label class="radio">
+              <input type="radio" name="coverage" value="none">
+              No insurance
+            </label>
           </fieldset>
         </form>
-        <p class="note-small">Manufacturer copay programs typically aren’t available for Medicare/Medicaid.</p>
+
+        <!-- Guidance shown when "Private" selected -->
+        <div id="guidance-private" class="coverage-guidance" aria-live="polite">
+          <h3 class="h4">If you have private insurance</h3>
+          <ul>
+            <li><strong>Likely eligible</strong> for manufacturer copay support.</li>
+            <li>We’ll help you apply and get your card/code.</li>
+            <li>Show the card/code at the pharmacy to reduce your copay.</li>
+          </ul>
+          <button class="btn btn-primary" data-open-modal="emailModal">Start Application</button>
+        </div>
+
+        <!-- Guidance shown when "Government" selected -->
+        <div id="guidance-government" class="coverage-guidance" aria-live="polite">
+          <h3 class="h4">If you’re on Medicare/Medicaid</h3>
+          <ul>
+            <li>Manufacturer copay support is <strong>usually not allowed</strong>.</li>
+            <li>We’ll check plan coverage and compare pharmacy pricing.</li>
+            <li>We’ll prep questions for your plan/pharmacy to lower cost.</li>
+          </ul>
+          <button class="btn btn-primary" data-open-modal="emailModal">Get Lower-Cost Options</button>
+        </div>
+
+        <!-- Guidance shown when "None" selected -->
+        <div id="guidance-none" class="coverage-guidance" aria-live="polite">
+          <h3 class="h4">If you have no insurance</h3>
+          <ul>
+            <li>We’ll compare cash prices across pharmacies.</li>
+            <li>We’ll share mail-order or discount options where applicable.</li>
+            <li>We’ll prep a doctor note template to discuss alternatives.</li>
+          </ul>
+          <button class="btn btn-primary" data-open-modal="emailModal">Compare Prices</button>
+        </div>
+
+        <p class="note-small" style="margin-top:.75rem;">Manufacturer copay programs typically aren’t available for Medicare/Medicaid.</p>
       </div>
     </section>
 
-    <!-- Assistance options -->
+    <!--
+      ASSISTANCE OVERVIEW
+      - Sets expectations around the kinds of savings approaches
+      - Reassures users about what SaveRx.ai actually delivers
+    -->
     <section class="section" aria-labelledby="assist-title">
       <div class="container grid-2">
         <div class="panel">
-          <h2 class="h2" id="assist-title">Common ways people save</h2>
+          <h2 class="h2" id="assist-title">Ways people save on Repatha</h2>
           <ul>
-            <li><strong>Manufacturer copay assistance:</strong> If eligible (usually commercial insurance), apply and present the card/code at the pharmacy.</li>
-            <li><strong>Pharmacy price comparison:</strong> Some pharmacies or mail-order options can be lower. We help you compare.</li>
-            <li><strong>Alternative fills:</strong> Your prescriber may consider alternatives in class/dose/quantity (discuss with your clinician).</li>
+            <li><strong>Manufacturer copay assistance:</strong> For eligible commercial plans; apply, then show card/code at the pharmacy.</li>
+            <li><strong>Pharmacy comparison:</strong> Some pharmacies or mail-order options can be lower; we check for you.</li>
+            <li><strong>Clinical alternatives:</strong> Your prescriber may adjust quantity or consider alternatives. We provide talking points.</li>
           </ul>
           <p class="note-small">We’ll guide you through what to ask your pharmacy or prescriber.</p>
         </div>
         <div class="panel">
           <h3>What you’ll get from SaveRx.ai</h3>
           <ul>
-            <li>Personalized savings guidance based on your coverage.</li>
-            <li>Step-by-step instructions to apply copay support (if eligible).</li>
-            <li>Simple explanations you can show your pharmacist.</li>
+            <li>Coverage-based savings plan tailored to you.</li>
+            <li>Step-by-step application instructions (when eligible).</li>
+            <li>Simple pharmacist-friendly instructions for checkout.</li>
           </ul>
-          <a class="btn btn-primary" href="../index.html#early-access">Join Early Access</a>
+          <button class="btn btn-primary" data-open-modal="emailModal">Join Free & Get Steps</button>
         </div>
       </div>
     </section>
 
-    <!-- FAQ -->
+    <!--
+      FAQ
+      - Uses native <details> for simple disclosure
+      - Copy mirrors the structured data content
+    -->
     <section class="section" aria-labelledby="faq-title">
       <div class="container">
         <h2 class="h2" id="faq-title">Repatha savings FAQs</h2>
@@ -201,7 +364,11 @@
       </div>
     </section>
 
-    <!-- Disclaimer -->
+    <!--
+      DISCLAIMER
+      - Clarifies independence and non-medical-advice stance
+      - Helps set proper expectations and reduce user confusion
+    -->
     <section class="section" aria-labelledby="disclaimer-title">
       <div class="container">
         <div class="panel">
@@ -216,43 +383,144 @@
     </section>
   </main>
 
-  <footer class="site-footer" aria-labelledby="footer-title">
+  <!--
+    STICKY CTA (mobile-first)
+    - Large conversion lever on small screens where the primary CTA might scroll off-screen
+    - aria-hidden to avoid duplicate announcements; the modal button itself is accessible
+  -->
+  <div class="sticky-cta" aria-hidden="true">
+    <div class="inner">
+      <strong>Ready to lower your cost?</strong>
+      <button class="btn btn-primary" data-open-modal="emailModal">Get Your Savings</button>
+    </div>
+  </div>
+
+  <!--
+    EMAIL MODAL
+    - Accessible dialog with keyboard focus trap
+    - Email validation and honeypot spam field
+    - On submit: posts to Apps Script (silent no-cors), then redirects to repatha-enroll.html with ?email=
+  -->
+  <div id="emailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">Claim Your Savings</div>
+        <button id="closeModal" class="close" aria-label="Close">&times;</button>
+      </div>
+
+      <p id="modalDesc">Enter your email to receive your Repatha savings link and step-by-step guidance.</p>
+
+      <form id="emailForm" method="POST" novalidate>
+        <!-- Visible email field -->
+        <label for="userEmail">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="userEmail"
+          placeholder="you@example.com"
+          required
+          inputmode="email"
+          autocomplete="email"
+          pattern="^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+        />
+
+        <!-- Hidden metadata captured for lead analytics -->
+        <input type="hidden" name="drug" value="Repatha" />
+        <input type="hidden" name="source" value="repatha_modal" />
+        <input type="hidden" name="ua" id="uaField" value="" />
+
+        <!-- Honeypot anti-spam (must match backend's HONEYPOT field name) -->
+        <input
+          type="text"
+          name="website"
+          id="website"
+          class="sr-only"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+
+        <div class="actions">
+          <span class="note-small">We’ll only email your savings steps. You can opt out anytime.</span>
+          <button type="submit" class="btn btn-primary">Send Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======= Global Footer ======= -->
+  <footer class="site-footer" role="contentinfo" aria-labelledby="footer-title">
     <div class="container footer-inner">
       <h2 class="sr-only" id="footer-title">Site information</h2>
       <p>© <span id="year"></span> SaveRx.ai</p>
     </div>
   </footer>
 
+  <!--
+    scripts.js: place for shared site utilities (optional).
+    The inline script below wires page-specific interactions.
+  -->
   <script src="../scripts.js"></script>
+
   <script>
-    // Modal wiring + a11y focus trap
-    const emailModal = document.getElementById('emailModal');
-    const getBtn = document.getElementById('get-savings-btn');
-    const closeBtn = document.getElementById('closeModal');
-    const uaField = document.getElementById('uaField');
-    const emailInput = document.getElementById('userEmail');
-    const emailForm = document.getElementById('emailForm');
+    // ================================
+    // Utility helpers
+    // ================================
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+    // Stamp current year in footer
+    (function stampYear(){
+      const y = $('#year');
+      if (y) y.textContent = new Date().getFullYear();
+    })();
+
+    // ================================
+    // Modal wiring + A11y focus management
+    // ================================
+    const emailModal = $('#emailModal');
+    const getBtn = $('#get-savings-btn');         // Primary hero CTA
+    const closeBtn = $('#closeModal');            // Close (×) button in modal
+    const uaField = $('#uaField');                // Hidden user agent field (for analytics)
+    const emailInput = $('#userEmail');           // Email <input> (gets initial focus)
+    const emailForm = $('#emailForm');            // Modal form
+
+    // Fill user agent string in hidden field
     uaField.value = navigator.userAgent;
 
-    let lastFocusedBeforeOpen = null;
-    let trapHandler = null;
+    // Allow any element with [data-open-modal="emailModal"] to open the dialog
+    $$('[data-open-modal]').forEach(btn => {
+      btn.addEventListener('click', () => openModal());
+    });
 
+    let lastFocusedBeforeOpen = null; // Store element focused before opening dialog
+    let trapHandler = null;           // Listener to keep focus inside modal and ESC to close
+
+    // Return list of focusable elements inside modal
     function getFocusable(modal) {
       return modal.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])');
     }
 
+    // Open dialog: show, move focus to email, start focus trap
     function openModal() {
       lastFocusedBeforeOpen = document.activeElement;
       emailModal.style.display = 'block';
-      // Focus first focusable (email)
       emailInput.focus();
-      // Trap focus
+
+      // Keep keyboard focus within the modal; close on Escape
       trapHandler = (e) => {
         if (e.key === 'Tab') {
           const focusables = Array.from(getFocusable(emailModal));
-          const first = focusables[0], last = focusables[focusables.length - 1];
-          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          if (focusables.length === 0) return;
+
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault(); last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault(); first.focus();
+          }
         } else if (e.key === 'Escape') {
           closeModal();
         }
@@ -260,6 +528,7 @@
       document.addEventListener('keydown', trapHandler);
     }
 
+    // Close dialog: hide, remove trap, return focus to previous element
     function closeModal() {
       emailModal.style.display = 'none';
       document.removeEventListener('keydown', trapHandler);
@@ -267,25 +536,107 @@
       if (lastFocusedBeforeOpen) lastFocusedBeforeOpen.focus();
     }
 
+    // Wire open/close controls
     getBtn?.addEventListener('click', openModal);
     closeBtn?.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => { if (e.target === emailModal) closeModal(); });
 
-    // Submit lead silently, then move to enroll with email prefilled (?email=)
+    // Clicking the shaded backdrop closes the modal
+    window.addEventListener('click', (e) => {
+      if (e.target === emailModal) closeModal();
+    });
+
+    // ================================
+    // Coverage → dynamic guidance
+    // - Shows a tailored instructions block
+    //   based on the chosen coverage radio.
+    // ================================
+    const coverageForm = $('#coverage-form');
+    const guidanceBlocks = {
+      private:    $('#guidance-private'),
+      government: $('#guidance-government'),
+      none:       $('#guidance-none')
+    };
+
+    function showGuidance(value) {
+      // Hide all blocks, then activate the one matching the radio value
+      Object.values(guidanceBlocks).forEach(el => el && el.classList.remove('active'));
+      if (guidanceBlocks[value]) guidanceBlocks[value].classList.add('active');
+    }
+
+    coverageForm?.addEventListener('change', () => {
+      const value = new FormData(coverageForm).get('coverage');
+      showGuidance(value);
+    });
+
+    // ================================
+    // Email form submit
+    // - Validate email (HTML pattern + JS regex)
+    // - Honeypot: if filled, silently drop (likely bot)
+    // - Post to Apps Script (no-cors); redirect to enroll page with ?email=
+    // ================================
     emailForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const fd = new FormData(emailForm);
-      const email = fd.get('email') || '';
+      const email = (fd.get('email') || '').trim();
+      const honeypot = (fd.get('website') || '').trim();
+
+      // Basic regex; HTML pattern attribute also validates at input level
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      // If honeypot has a value, treat as spam and abort (no user feedback)
+      if (honeypot) return;
+
+      // Surface validation error to the browser and user
+      if (!emailValid) {
+        emailInput.setCustomValidity('Please enter a valid email.');
+        emailInput.reportValidity();
+        return;
+      } else {
+        emailInput.setCustomValidity('');
+      }
+
+      // BACKEND ENDPOINT:
+      // Google Apps Script Web App (expects POST; this project uses no-cors write-only).
+      // To change or rotate, update here and in your backend documentation.
       const LEAD_URL = 'https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec';
+
       try {
+        // Fire-and-forget write; with no-cors we cannot read response or status.
         await fetch(LEAD_URL, { method: 'POST', body: fd, mode: 'no-cors' });
+
+        // Close modal immediately for snappy UX
         closeModal();
+
+        // Pass email along to prefill next step (optional)
         const qs = email ? ('?email=' + encodeURIComponent(email)) : '';
+
+        // Route to the enrollment flow (same folder)
         window.location.href = './repatha-enroll.html' + qs;
       } catch (err) {
+        // If network error occurs; provide simple fallback message
         alert('Sorry, something went wrong. Please try again.');
       }
     });
+
+    // ================================
+    // Respect reduced motion preferences
+    // - If you later add animations, consult this class in CSS.
+    // ================================
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('reduce-motion');
+    }
+
+    // ================================
+    // Analytics/Telemetry (optional)
+    // - Place your analytics init AFTER user interactions are wired
+    // - Ensure compliance with privacy policy and local laws
+    // ================================
+    // Example:
+    // if (window.myAnalytics) {
+    //   myAnalytics.init({ consent: 'implicit' });
+    //   myAnalytics.track('page_view', { page: 'repatha' });
+    // }
   </script>
 </body>
 </html>
