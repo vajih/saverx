@@ -574,12 +574,57 @@
     // - Post to Apps Script (no-cors); redirect to enroll page with ?email=
     // ================================
     emailForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      const fd = new FormData(emailForm);
-      const email = (fd.get('email') || '').trim();
-      const honeypot = (fd.get('website') || '').trim();
+    const fd = new FormData(emailForm);
+    const email = (fd.get('email') || '').trim();
+    const honeypot = (fd.get('website') || '').trim();
 
+    // Basic validation
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (honeypot) return;                        // bot: silently drop
+    if (!emailValid) {
+      emailInput.setCustomValidity('Please enter a valid email.');
+      emailInput.reportValidity();
+      return;
+    } else {
+      emailInput.setCustomValidity('');
+    }
+
+    // ———————————————
+    // SEND VIA GET (works with Apps Script doGet)
+    // ———————————————
+    const LEAD_URL = 'https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec';
+
+    // Build query string from the form
+    const params = new URLSearchParams();
+    params.set('email', email);
+    params.set('drug', 'Repatha');
+    params.set('source', 'repatha_modal');
+    params.set('ua', navigator.userAgent);
+    params.set('ts', new Date().toISOString());  // optional: timestamp
+    // keep honeypot name aligned with backend if you log it:
+    if (honeypot) params.set('website', honeypot);
+
+    // Fire-and-forget GET. No need to await; avoid blocking redirect.
+    // 1) Try sendBeacon (won’t be blocked by navigation)
+    if (navigator.sendBeacon) {
+      const beaconUrl = `${LEAD_URL}?${params.toString()}`;
+      navigator.sendBeacon(beaconUrl, '');       // empty body is fine for GET-like beacon
+    } else {
+      // 2) Fallback: image beacon (also non-blocking)
+      const imgPing = new Image();
+      imgPing.src = `${LEAD_URL}?${params.toString()}`;
+    }
+
+    // Close modal and move on immediately
+    closeModal();
+
+    // Prefill next step
+    const qs = email ? ('?email=' + encodeURIComponent(email)) : '';
+    window.location.href = './repatha-enroll.html' + qs;
+  });
+</script>
       // Basic regex; HTML pattern attribute also validates at input level
       const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
