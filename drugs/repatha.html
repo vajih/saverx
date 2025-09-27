@@ -169,12 +169,11 @@
             </div>
           </div>
 
-          <!-- Right: decorative image; mark aria-hidden to avoid screen reader noise -->
-          <div class="hero-visual" aria-hidden="true">
-            <img src="../assets/hero-1200.jpg" alt=""
-                 loading="eager"
-                 onerror="this.closest('.hero-visual').classList.add('fallback')" />
-          </div>
+          <!-- Right: decorative image; default/fallback shows hero-1200.jpg -->
+            <div class="hero-visual" aria-hidden="true">
+              <img id="heroImg" src="../assets/hero-1200.jpg" alt="" loading="eager"
+                  onerror="this.closest('.hero-visual').classList.add('fallback')" />
+            </div>
         </div>
       </div>
     </section>
@@ -638,5 +637,35 @@
     //   myAnalytics.track('page_view', { page: 'repatha' });
     // }
   </script>
+  <script>
+  (function(){
+    // Use the two files you already have in /assets
+    const variants = [
+      { src: '../assets/hero.jpg',      alt: '' }, // Variant A
+      { src: '../assets/hero-1200.jpg', alt: '' }  // Variant B
+    ];
+
+    const img = document.getElementById('heroImg');
+    if (!img) return;
+
+    // Optional QA: force variant with ?hero=1 or ?hero=2
+    const qsHero = new URLSearchParams(location.search).get('hero');
+    let i;
+
+    if (qsHero === '1' || qsHero === '2') {
+      i = parseInt(qsHero, 10) - 1;
+      localStorage.setItem('heroVariant', i);
+    } else if (localStorage.getItem('heroVariant') !== null) {
+      i = parseInt(localStorage.getItem('heroVariant'), 10);
+    } else {
+      i = Math.random() < 0.5 ? 0 : 1;
+      localStorage.setItem('heroVariant', i);
+    }
+
+    img.src = variants[i].src;
+    img.alt = variants[i].alt;
+    document.documentElement.setAttribute('data-hero-variant', String(i+1));
+  })();
+</script>
 </body>
 </html>
