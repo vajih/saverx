@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body class="theme-dark">
-  <!-- Header / Hero -->
   <header class="site-header container">
     <nav class="site-nav">
       <a class="brand" href="/">SaveRx.ai</a>
@@ -23,40 +22,30 @@
       <p class="hero-subtitle">
         Choose your medication. Enter your email. We’ll send you straight to the official manufacturer program—plus follow-up tips so you don’t leave savings on the table.
       </p>
-
-      <!-- Brand benefits -->
       <ul class="benefits row wrap">
         <li class="benefit chip">Official manufacturer links</li>
-        <li class="benefit chip">No gimmicks, no coupons to buy</li>
+        <li class="benefit chip">No gimmicks, no coupon purchases</li>
         <li class="benefit chip">We don’t sell your data</li>
         <li class="benefit chip">Fast, mobile-friendly flow</li>
       </ul>
     </section>
   </header>
 
-  <!-- Trust strip -->
   <section class="trust container">
     <div class="trust-box">
       <h3 class="eyebrow">What we do</h3>
-      <p class="muted">
-        SaveRx.ai simplifies the path to manufacturer savings programs. We point you to the right place, help you prepare what’s needed, and nudge you to finish if you get busy.
-      </p>
+      <p class="muted">We point you to the right program, help you prepare what’s needed, and nudge you to finish if you get busy.</p>
     </div>
     <div class="trust-box">
       <h3 class="eyebrow">What we don’t do</h3>
-      <p class="muted">
-        No pay-to-print “coupons.” No pharmacy switching without your consent. No reselling your information. Ever.
-      </p>
+      <p class="muted">No pay-to-print “coupons.” No pharmacy switching without consent. No reselling your information. Ever.</p>
     </div>
     <div class="trust-box">
       <h3 class="eyebrow">Who it’s for</h3>
-      <p class="muted">
-        Most programs are for patients with <strong>commercial insurance</strong>. Medicare/Medicaid rules differ—we’ll flag that clearly on each program page.
-      </p>
+      <p class="muted">Most programs are for <strong>commercial insurance</strong>. Medicare/Medicaid rules differ—we’ll flag that clearly.</p>
     </div>
   </section>
 
-  <!-- Main Content -->
   <main class="container" id="app">
     <section class="section">
       <h2 class="section-title">Pick your medication</h2>
@@ -78,6 +67,17 @@
     <div class="eyebrow">Bonus</div>
     <section class="grid cards" id="grid-bonus"></section>
 
+    <!-- Enrollment CTA -->
+    <section class="section cta container-soft">
+      <div class="cta-row">
+        <div class="cta-copy">
+          <h3 class="section-title">Want help finishing enrollment?</h3>
+          <p class="muted">Enter your email on the next step—we’ll remind you and track your progress so you don’t miss out.</p>
+        </div>
+        <button class="btn btn-primary" onclick="document.querySelector('.card-btn')?.click()">Get started →</button>
+      </div>
+    </section>
+
     <!-- How it works -->
     <section class="section how-it-works">
       <h2 class="section-title">How it works</h2>
@@ -86,7 +86,7 @@
           <span class="step-num">1</span>
           <div>
             <h3 class="step-title">Choose your drug</h3>
-            <p class="muted">Click the medication you take to open the email prompt.</p>
+            <p class="muted">Click your medication to open the email prompt.</p>
           </div>
         </li>
         <li class="step">
@@ -107,13 +107,12 @@
     </section>
   </main>
 
-  <!-- Footer / reassurance -->
   <footer class="site-footer container">
     <p class="muted">© SaveRx.ai — Patient savings made simple.</p>
-    <p class="xsmall muted">SaveRx.ai is an independent resource that links to manufacturer programs. Eligibility and terms are set by each manufacturer and may change.</p>
+    <p class="xsmall muted">SaveRx.ai links to manufacturer programs. Eligibility and terms are set by each manufacturer and may change.</p>
   </footer>
 
-  <!-- Email Capture Modal -->
+  <!-- Modal -->
   <div class="modal-backdrop" id="backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal" role="document">
       <header class="modal-header">
@@ -132,7 +131,7 @@
             <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
           </div>
 
-          <!-- Hidden context fields -->
+          <!-- Hidden context -->
           <input type="hidden" name="drug" id="drug-hidden" />
           <input type="hidden" name="source" id="source-hidden" value="index-modal" />
           <input type="hidden" name="userAgent" id="ua-hidden" />
@@ -146,12 +145,10 @@
     </div>
   </div>
 
-  <!-- JS (keeps your existing working flow) -->
   <script>
     // === CONFIG ===
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec"; // <-- paste your deployed Apps Script web app URL
+    const SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
 
-    // Map of drugs → official program URL (keep as-is; update as needed)
     const DRUGS = {
       "Ozempic® (semaglutide)": "https://www.ozempic.com/savings-and-resources/save-on-ozempic.html",
       "Wegovy® (semaglutide)": "https://www.wegovy.com/coverage-and-savings/save-on-wegovy.html",
@@ -176,50 +173,23 @@
       "Xolair® (omalizumab)": "https://www.xolaircopay.com/"
     };
 
-    // Section groupings
     const GROUPS = {
-      cm: [
-        "Ozempic® (semaglutide)","Wegovy® (semaglutide)","Rybelsus® (semaglutide)",
-        "Mounjaro® (tirzepatide)","Trulicity® (dulaglutide)","Jardiance® (empagliflozin)",
-        "Farxiga® (dapagliflozin)","Entresto® (sacubitril/valsartan)","Eliquis® (apixaban)",
-        "Xarelto® (rivaroxaban)"
-      ],
-      lipids: [ "Repatha® (evolocumab)" ],
-      immunology: [
-        "Skyrizi® (risankizumab)","Rinvoq® (upadacitinib)","Stelara® (ustekinumab)",
-        "Tremfya® (guselkumab)","Cosentyx® (secukinumab)","Taltz® (ixekizumab)",
-        "Otezla® (apremilast)","Enbrel® (etanercept)"
-      ],
-      resp: [ "Dupixent® (dupilumab)" ],
-      bonus: [ "Xolair® (omalizumab)" ]
+      cm: ["Ozempic® (semaglutide)","Wegovy® (semaglutide)","Rybelsus® (semaglutide)","Mounjaro® (tirzepatide)","Trulicity® (dulaglutide)","Jardiance® (empagliflozin)","Farxiga® (dapagliflozin)","Entresto® (sacubitril/valsartan)","Eliquis® (apixaban)","Xarelto® (rivaroxaban)"],
+      lipids: ["Repatha® (evolocumab)"],
+      immunology: ["Skyrizi® (risankizumab)","Rinvoq® (upadacitinib)","Stelara® (ustekinumab)","Tremfya® (guselkumab)","Cosentyx® (secukinumab)","Taltz® (ixekizumab)","Otezla® (apremilast)","Enbrel® (etanercept)"],
+      resp: ["Dupixent® (dupilumab)"],
+      bonus: ["Xolair® (omalizumab)"]
     };
 
-    // Makers for subtitle line
     const MAKERS = {
-      "Ozempic® (semaglutide)": "Novo Nordisk",
-      "Wegovy® (semaglutide)": "Novo Nordisk",
-      "Rybelsus® (semaglutide)": "Novo Nordisk",
-      "Mounjaro® (tirzepatide)": "Eli Lilly",
-      "Trulicity® (dulaglutide)": "Eli Lilly",
-      "Jardiance® (empagliflozin)": "Boehringer Ingelheim / Lilly",
-      "Farxiga® (dapagliflozin)": "AstraZeneca",
-      "Entresto® (sacubitril/valsartan)": "Novartis",
-      "Eliquis® (apixaban)": "BMS / Pfizer",
-      "Xarelto® (rivaroxaban)": "Janssen / Bayer",
-      "Repatha® (evolocumab)": "Amgen",
-      "Skyrizi® (risankizumab)": "AbbVie",
-      "Rinvoq® (upadacitinib)": "AbbVie",
-      "Stelara® (ustekinumab)": "Janssen (J&J)",
-      "Tremfya® (guselkumab)": "Janssen",
-      "Cosentyx® (secukinumab)": "Novartis",
-      "Taltz® (ixekizumab)": "Eli Lilly",
-      "Otezla® (apremilast)": "Amgen",
-      "Enbrel® (etanercept)": "Amgen",
-      "Dupixent® (dupilumab)": "Sanofi / Regeneron",
-      "Xolair® (omalizumab)": "Genentech / Novartis"
+      "Ozempic® (semaglutide)": "Novo Nordisk", "Wegovy® (semaglutide)": "Novo Nordisk", "Rybelsus® (semaglutide)": "Novo Nordisk",
+      "Mounjaro® (tirzepatide)": "Eli Lilly", "Trulicity® (dulaglutide)": "Eli Lilly", "Jardiance® (empagliflozin)": "Boehringer Ingelheim / Lilly",
+      "Farxiga® (dapagliflozin)": "AstraZeneca", "Entresto® (sacubitril/valsartan)": "Novartis", "Eliquis® (apixaban)": "BMS / Pfizer", "Xarelto® (rivaroxaban)": "Janssen / Bayer",
+      "Repatha® (evolocumab)": "Amgen", "Skyrizi® (risankizumab)": "AbbVie", "Rinvoq® (upadacitinib)": "AbbVie", "Stelara® (ustekinumab)": "Janssen (J&J)",
+      "Tremfya® (guselkumab)": "Janssen", "Cosentyx® (secukinumab)": "Novartis", "Taltz® (ixekizumab)": "Eli Lilly", "Otezla® (apremilast)": "Amgen",
+      "Enbrel® (etanercept)": "Amgen", "Dupixent® (dupilumab)": "Sanofi / Regeneron", "Xolair® (omalizumab)": "Genentech / Novartis"
     };
 
-    // Render card grids (removed "Savings" label; added chevron)
     function renderGroup(ids, containerId) {
       const el = document.getElementById(containerId);
       el.innerHTML = ids.map(name => {
@@ -244,121 +214,55 @@
     renderGroup(GROUPS.resp, "grid-resp");
     renderGroup(GROUPS.bonus, "grid-bonus");
 
-    // Modal wiring (unchanged logic)
-    const backdrop   = document.getElementById("backdrop");
-    const form       = document.getElementById("lead-form");
-    const emailEl    = document.getElementById("email");
-    const drugHidden = document.getElementById("drug-hidden");
-    const sourceHidden = document.getElementById("source-hidden");
-    const uaHidden   = document.getElementById("ua-hidden");
-    const drugNameSpan = document.getElementById("drug-name");
-    const cancelBtn  = document.getElementById("cancel-btn");
-    const submitBtn  = document.getElementById("submit-btn");
+    // Modal logic (unchanged)
+    const backdrop=document.getElementById("backdrop"), form=document.getElementById("lead-form"), emailEl=document.getElementById("email"),
+          drugHidden=document.getElementById("drug-hidden"), sourceHidden=document.getElementById("source-hidden"),
+          uaHidden=document.getElementById("ua-hidden"), drugNameSpan=document.getElementById("drug-name"),
+          cancelBtn=document.getElementById("cancel-btn"), submitBtn=document.getElementById("submit-btn");
+    let targetUrl="#";
 
-    let targetUrl = "#";
+    document.addEventListener("click",(e)=>{ const btn=e.target.closest(".card-btn"); if(!btn) return;
+      const drug=decodeURIComponent(btn.dataset.drug); targetUrl=decodeURIComponent(btn.dataset.url); openModal(drug); });
 
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".card-btn");
-      if (!btn) return;
-      const drug = decodeURIComponent(btn.dataset.drug);
-      targetUrl = decodeURIComponent(btn.dataset.url);
-      openModal(drug);
-    });
-
-    function openModal(drug) {
-      drugHidden.value = drug;
-      drugNameSpan.textContent = drug;
-      uaHidden.value = navigator.userAgent;
-      emailEl.value = localStorage.getItem("saverx_email") || "";
-      backdrop.setAttribute("aria-hidden", "false");
-      setTimeout(() => emailEl.focus(), 50);
-      trapFocus(backdrop);
-    }
-
-    function closeModal() {
-      backdrop.setAttribute("aria-hidden", "true");
-      releaseFocus();
-    }
-
+    function openModal(drug){ drugHidden.value=drug; drugNameSpan.textContent=drug; uaHidden.value=navigator.userAgent;
+      emailEl.value=localStorage.getItem("saverx_email")||""; backdrop.setAttribute("aria-hidden","false");
+      setTimeout(()=>emailEl.focus(),50); trapFocus(backdrop); }
+    function closeModal(){ backdrop.setAttribute("aria-hidden","true"); releaseFocus(); }
     cancelBtn.addEventListener("click", closeModal);
-    backdrop.addEventListener("click", (e) => {
-      if (e.target === backdrop) closeModal();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && backdrop.getAttribute("aria-hidden") === "false") closeModal();
-    });
+    backdrop.addEventListener("click",(e)=>{ if(e.target===backdrop) closeModal(); });
+    document.addEventListener("keydown",(e)=>{ if(e.key==="Escape" && backdrop.getAttribute("aria-hidden")==="false") closeModal(); });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
-
-      const website = (formData.get("website") || "").trim(); // honeypot
-      const email = (formData.get("email") || "").trim();
-      if (!email) return;
-
+      const fd = new FormData(form);
+      const website=(fd.get("website")||"").trim();
+      const email=(fd.get("email")||"").trim(); if(!email) return;
       localStorage.setItem("saverx_email", email);
 
-      const payload = new URLSearchParams();
-      payload.set("email", email);
-      payload.set("drug", formData.get("drug"));
-      payload.set("source", formData.get("source")); // "index-modal"
-      payload.set("userAgent", formData.get("userAgent"));
-      if (website) payload.set("website", website); // honeypot
+      const body = new URLSearchParams();
+      body.set("email", email); body.set("drug", fd.get("drug")); body.set("source", fd.get("source")); body.set("userAgent", fd.get("userAgent"));
+      if (website) body.set("website", website);
 
-      let sent = false;
-      try {
-        if (SCRIPT_URL && navigator.sendBeacon) {
-          const blob = new Blob([payload.toString()], { type: "application/x-www-form-urlencoded;charset=UTF-8" });
-          sent = navigator.sendBeacon(SCRIPT_URL, blob);
-        }
-      } catch (_) {}
+      let sent=false;
+      try{ if(SCRIPT_URL && navigator.sendBeacon){ const blob=new Blob([body.toString()],{type:"application/x-www-form-urlencoded;charset=UTF-8"}); sent=navigator.sendBeacon(SCRIPT_URL, blob);} }catch{}
+      if(!sent && SCRIPT_URL){ try{ await fetch(SCRIPT_URL,{ method:"POST", headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" }, body: body.toString(), mode:"no-cors", keepalive:true }); }catch{} }
 
-      if (!sent && SCRIPT_URL) {
-        try {
-          await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-            body: payload.toString(),
-            mode: "no-cors",
-            keepalive: true
-          });
-        } catch (_) {}
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Taking you to the program…";
-      const url = addUTM(targetUrl, { utm_source:"saverx", utm_medium:"outbound", utm_campaign:"program", utm_content: formData.get("drug") });
+      submitBtn.disabled=true; submitBtn.textContent="Taking you to the program…";
+      const url = addUTM(targetUrl,{utm_source:"saverx",utm_medium:"outbound",utm_campaign:"program",utm_content: fd.get("drug")});
       window.location.assign(url);
     });
 
-    function addUTM(url, params) {
-      try {
-        const u = new URL(url);
-        Object.entries(params).forEach(([k,v]) => u.searchParams.set(k, v));
-        return u.toString();
-      } catch { return url; }
-    }
+    function addUTM(url, params){ try{ const u=new URL(url); Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v)); return u.toString(); }catch{ return url; } }
 
     // Focus trap
     let lastFocused;
-    function trapFocus(container) {
-      lastFocused = document.activeElement;
-      const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-      const first = focusable[0];
-      const last  = focusable[focusable.length - 1];
-      container.addEventListener('keydown', trap);
-      function trap(e) {
-        if (e.key !== 'Tab') return;
-        if (e.shiftKey) {
-          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-        } else {
-          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
-        }
-      }
-    }
-    function releaseFocus() {
-      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
-    }
+    function trapFocus(container){ lastFocused=document.activeElement;
+      const f=[...container.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled && el.getAttribute("aria-hidden")!=="true");
+      if(!f.length) return; const first=f[0], last=f[f.length-1];
+      container.addEventListener("keydown", trap); function trap(e){ if(e.key!=="Tab") return;
+        if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+        else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } } } }
+    function releaseFocus(){ if(lastFocused && typeof lastFocused.focus==="function") lastFocused.focus(); }
   </script>
 </body>
 </html>
