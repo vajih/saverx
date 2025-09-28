@@ -2,98 +2,129 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>SaveRx.ai — Find Copay & Savings Programs</title>
+  <title>SaveRx.ai — Lower Your Out-of-Pocket on Leading Medications</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Find copay cards and savings programs for top medications. Enter your email to get guided help." />
+  <meta name="description" content="Official manufacturer links, clear guidance, and simple reminders. Choose your medication and we’ll take you to the right program—fast." />
   <link rel="icon" href="/favicon.ico" />
-  <style>
-    :root { --bg:#0e1014; --card:#151923; --text:#e9edf3; --muted:#9aa3b2; --accent:#66d6a6; --btn:#1e2430; --btnHover:#253044; }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"; }
-    header { padding:28px 16px 8px; text-align:center; }
-    header h1 { margin:0 0 6px; font-size: clamp(1.4rem, 2.5vw, 2rem); }
-    header p { margin:0; color:var(--muted); }
-    .container { max-width:1100px; margin:24px auto 64px; padding: 0 16px; }
-    .grid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
-    .card-btn {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 16px; border-radius:14px; background:var(--btn); color:var(--text);
-      border:1px solid #222a37; cursor:pointer; text-align:left; transition: transform .04s ease, background .15s ease, border-color .15s ease;
-    }
-    .card-btn:hover, .card-btn:focus { background:var(--btnHover); border-color:#2f3a4f; outline: none; transform: translateY(-1px); }
-    .drug { font-weight:600; }
-    .maker { color:var(--muted); font-size:.9rem; }
-    .badge { background: #203f31; color:#b8f5d6; padding:2px 8px; border-radius:999px; font-size:.75rem; margin-left:8px; }
-    footer { text-align:center; color:var(--muted); padding:24px; }
-
-    /* Modal */
-    .backdrop {
-      position:fixed; inset:0; background:rgba(0,0,0,.6);
-      display:none; align-items:center; justify-content:center; z-index:999;
-    }
-    .backdrop[aria-hidden="false"] { display:flex; }
-    .modal {
-      width:min(520px, 92vw); background:var(--card); border:1px solid #2a3242; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-    .modal header { padding:20px 20px 0; text-align:left; }
-    .modal h2 { margin:0 0 6px; font-size:1.25rem; }
-    .modal p { margin:0 0 12px; color:var(--muted); }
-    .modal .content { padding:8px 20px 20px; }
-    .row { display:flex; gap:10px; align-items:center; }
-    label { display:block; margin:10px 0 6px; font-size:.95rem; }
-    input[type="email"] {
-      width:100%; padding:14px 12px; background:#0d1118; border:1px solid #283246; border-radius:12px; color:var(--text);
-    }
-    .actions { display:flex; gap:10px; margin-top:14px; }
-    .btn {
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:12px 14px; border-radius:12px; border:1px solid #2a3346; cursor:pointer; background:var(--btn);
-      color:var(--text); transition: background .15s ease, border-color .15s ease;
-    }
-    .btn:hover { background:var(--btnHover); border-color:#33415b; }
-    .btn.primary { background: linear-gradient(180deg, #26e0a0, #19b781 60%, #169c6e); border-color:#169c6e; color:#07140f; font-weight:700; }
-    .btn.link { background:transparent; border-color:transparent; color:var(--muted); }
-    .eyebrow { color:#a2abc0; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; margin:24px 0 8px; }
-    .sr-only { position:absolute!important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
-  </style>
+  <link rel="stylesheet" href="/styles.css" />
 </head>
-<body>
-  <header>
-    <h1>Lower your out-of-pocket on leading medications</h1>
-    <p>Pick your medication → enter email → we’ll take you to the official savings program and follow up with help.</p>
+<body class="theme-dark">
+  <!-- Header / Hero -->
+  <header class="site-header container">
+    <nav class="site-nav">
+      <a class="brand" href="/">SaveRx.ai</a>
+      <div class="nav-fill"></div>
+      <a class="nav-link" href="/about.html">About</a>
+      <a class="nav-link" href="/privacy.html">Privacy</a>
+    </nav>
+
+    <section class="hero hero-tight">
+      <h1 class="hero-title">Pay less for the medicines you rely on</h1>
+      <p class="hero-subtitle">
+        Choose your medication. Enter your email. We’ll send you straight to the official manufacturer program—plus follow-up tips so you don’t leave savings on the table.
+      </p>
+
+      <!-- Brand benefits -->
+      <ul class="benefits row wrap">
+        <li class="benefit chip">Official manufacturer links</li>
+        <li class="benefit chip">No gimmicks, no coupons to buy</li>
+        <li class="benefit chip">We don’t sell your data</li>
+        <li class="benefit chip">Fast, mobile-friendly flow</li>
+      </ul>
+    </section>
   </header>
 
+  <!-- Trust strip -->
+  <section class="trust container">
+    <div class="trust-box">
+      <h3 class="eyebrow">What we do</h3>
+      <p class="muted">
+        SaveRx.ai simplifies the path to manufacturer savings programs. We point you to the right place, help you prepare what’s needed, and nudge you to finish if you get busy.
+      </p>
+    </div>
+    <div class="trust-box">
+      <h3 class="eyebrow">What we don’t do</h3>
+      <p class="muted">
+        No pay-to-print “coupons.” No pharmacy switching without your consent. No reselling your information. Ever.
+      </p>
+    </div>
+    <div class="trust-box">
+      <h3 class="eyebrow">Who it’s for</h3>
+      <p class="muted">
+        Most programs are for patients with <strong>commercial insurance</strong>. Medicare/Medicaid rules differ—we’ll flag that clearly on each program page.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
   <main class="container" id="app">
-    <div class="eyebrow">Diabetes / Cardiometabolic & Cardio</div>
-    <section class="grid" id="grid-cm"></section>
+    <section class="section">
+      <h2 class="section-title">Pick your medication</h2>
+      <p class="section-subtitle muted">We’ll open a quick email prompt and then take you to the official program page.</p>
+    </section>
+
+    <div class="eyebrow">Diabetes / Cardiometabolic &amp; Cardio</div>
+    <section class="grid cards" id="grid-cm"></section>
 
     <div class="eyebrow">Lipids</div>
-    <section class="grid" id="grid-lipids"></section>
+    <section class="grid cards" id="grid-lipids"></section>
 
     <div class="eyebrow">Immunology / Derm / Rheum</div>
-    <section class="grid" id="grid-immunology"></section>
+    <section class="grid cards" id="grid-immunology"></section>
 
     <div class="eyebrow">Respiratory / Allergy</div>
-    <section class="grid" id="grid-resp"></section>
+    <section class="grid cards" id="grid-resp"></section>
 
     <div class="eyebrow">Bonus</div>
-    <section class="grid" id="grid-bonus"></section>
+    <section class="grid cards" id="grid-bonus"></section>
+
+    <!-- How it works -->
+    <section class="section how-it-works">
+      <h2 class="section-title">How it works</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num">1</span>
+          <div>
+            <h3 class="step-title">Choose your drug</h3>
+            <p class="muted">Click the medication you take to open the email prompt.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">2</span>
+          <div>
+            <h3 class="step-title">Enter your email</h3>
+            <p class="muted">We’ll send reminders and a quick checklist so you finish enrollment.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num">3</span>
+          <div>
+            <h3 class="step-title">Go to the official program</h3>
+            <p class="muted">We take you directly to the manufacturer’s page for your medication.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
   </main>
 
-  <footer>© SaveRx.ai — Patient savings made simple.</footer>
+  <!-- Footer / reassurance -->
+  <footer class="site-footer container">
+    <p class="muted">© SaveRx.ai — Patient savings made simple.</p>
+    <p class="xsmall muted">SaveRx.ai is an independent resource that links to manufacturer programs. Eligibility and terms are set by each manufacturer and may change.</p>
+  </footer>
 
-  <!-- Modal -->
-  <div class="backdrop" id="backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Email Capture Modal -->
+  <div class="modal-backdrop" id="backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal" role="document">
-      <header>
-        <h2 id="modal-title">Get your savings link</h2>
-        <p id="modal-sub">Enter your email and we’ll take you to the official program for <span id="drug-name">this medicine</span>.</p>
+      <header class="modal-header">
+        <h2 id="modal-title" class="modal-title">Get your program link</h2>
+        <p id="modal-sub" class="modal-sub">Enter your email and we’ll take you to <span id="drug-name">this medicine</span>’s official page.</p>
       </header>
-      <div class="content">
-        <form id="lead-form">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" inputmode="email" placeholder="you@email.com" required autocomplete="email" aria-describedby="email-hint" />
-          <div id="email-hint" class="sr-only">We’ll send guidance and reminders. You can unsubscribe anytime.</div>
+      <div class="modal-body">
+        <form id="lead-form" class="form form-stacked" autocomplete="on" novalidate>
+          <label for="email" class="form-label">Email</label>
+          <input id="email" name="email" type="email" class="input" inputmode="email" placeholder="you@email.com" required autocomplete="email" />
+          <div class="hint xsmall muted">We’ll email guidance and reminders only for this request. Unsubscribe anytime.</div>
 
           <!-- Honeypot -->
           <div class="sr-only" aria-hidden="true">
@@ -106,21 +137,22 @@
           <input type="hidden" name="source" id="source-hidden" value="index-modal" />
           <input type="hidden" name="userAgent" id="ua-hidden" />
 
-          <div class="actions">
-            <button type="submit" class="btn primary" id="submit-btn">Continue to program →</button>
-            <button type="button" class="btn link" id="cancel-btn">Cancel</button>
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-primary" id="submit-btn">Continue →</button>
+            <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
+  <!-- JS (keeps your existing working flow) -->
   <script>
     // === CONFIG ===
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiKlgBny4hdV1IAQWv-NPAYCRH2-1ao0Jh6OxRs7GnQVTo9x6toy9GB85w9nORYQQmww/exec"; // <-- paste your deployed Apps Script web app URL
-    // Map of drugs → official program URL (you can refine these exact URLs later)
+
+    // Map of drugs → official program URL (keep as-is; update as needed)
     const DRUGS = {
-      // Cardiometabolic
       "Ozempic® (semaglutide)": "https://www.ozempic.com/savings-and-resources/save-on-ozempic.html",
       "Wegovy® (semaglutide)": "https://www.wegovy.com/coverage-and-savings/save-on-wegovy.html",
       "Rybelsus® (semaglutide)": "https://www.rybelsus.com/savings-and-support.html",
@@ -131,9 +163,7 @@
       "Entresto® (sacubitril/valsartan)": "https://www.entresto.com/savings-support",
       "Eliquis® (apixaban)": "https://www.eliquis.bmscustomerconnect.com/savings",
       "Xarelto® (rivaroxaban)": "https://www.xarelto-us.com/cost-support",
-      // Lipids
       "Repatha® (evolocumab)": "https://www.repatha.com/repatha-cost",
-      // Immunology / Derm / Rheum
       "Skyrizi® (risankizumab)": "https://www.skyrizi.com/support-and-savings",
       "Rinvoq® (upadacitinib)": "https://www.rinvoq.com/savings",
       "Stelara® (ustekinumab)": "https://www.stelara.com/cost-support",
@@ -142,11 +172,8 @@
       "Taltz® (ixekizumab)": "https://taltz.lilly.com/savings-support",
       "Otezla® (apremilast)": "https://www.otezla.com/cost-and-support",
       "Enbrel® (etanercept)": "https://www.enbrel.com/support-and-savings",
-      // Respiratory / Allergy
       "Dupixent® (dupilumab)": "https://www.dupixent.com/copay-card",
-      // Bonus
       "Xolair® (omalizumab)": "https://www.xolaircopay.com/"
-      // If you expand later: Aimovig, Ajovy, Nurtec ODT, etc.
     };
 
     // Section groupings
@@ -167,7 +194,7 @@
       bonus: [ "Xolair® (omalizumab)" ]
     };
 
-    // Pretty maker strings (optional, for UI)
+    // Makers for subtitle line
     const MAKERS = {
       "Ozempic® (semaglutide)": "Novo Nordisk",
       "Wegovy® (semaglutide)": "Novo Nordisk",
@@ -192,18 +219,21 @@
       "Xolair® (omalizumab)": "Genentech / Novartis"
     };
 
-    // --- Render buttons ---
+    // Render card grids (removed "Savings" label; added chevron)
     function renderGroup(ids, containerId) {
       const el = document.getElementById(containerId);
       el.innerHTML = ids.map(name => {
         const m = MAKERS[name] || "";
         return `
-          <button class="card-btn" data-drug="${encodeURIComponent(name)}" data-url="${encodeURIComponent(DRUGS[name]||'#')}" aria-label="Open savings for ${name}">
-            <span>
-              <div class="drug">${name}</div>
-              <div class="maker">${m}</div>
+          <button class="card card-action card-btn drug-card"
+                  data-drug="${encodeURIComponent(name)}"
+                  data-url="${encodeURIComponent(DRUGS[name]||'#')}"
+                  aria-label="Select ${name}">
+            <span class="card-body">
+              <span class="card-title">${name}</span>
+              <span class="card-subtitle">${m}</span>
             </span>
-            <span class="badge">Savings</span>
+            <span class="chev" aria-hidden="true">→</span>
           </button>
         `;
       }).join("");
@@ -214,16 +244,16 @@
     renderGroup(GROUPS.resp, "grid-resp");
     renderGroup(GROUPS.bonus, "grid-bonus");
 
-    // --- Modal logic ---
-    const backdrop = document.getElementById("backdrop");
-    const form = document.getElementById("lead-form");
-    const emailEl = document.getElementById("email");
+    // Modal wiring (unchanged logic)
+    const backdrop   = document.getElementById("backdrop");
+    const form       = document.getElementById("lead-form");
+    const emailEl    = document.getElementById("email");
     const drugHidden = document.getElementById("drug-hidden");
     const sourceHidden = document.getElementById("source-hidden");
-    const uaHidden = document.getElementById("ua-hidden");
+    const uaHidden   = document.getElementById("ua-hidden");
     const drugNameSpan = document.getElementById("drug-name");
-    const cancelBtn = document.getElementById("cancel-btn");
-    const submitBtn = document.getElementById("submit-btn");
+    const cancelBtn  = document.getElementById("cancel-btn");
+    const submitBtn  = document.getElementById("submit-btn");
 
     let targetUrl = "#";
 
@@ -258,20 +288,16 @@
       if (e.key === "Escape" && backdrop.getAttribute("aria-hidden") === "false") closeModal();
     });
 
-    // --- Submit logic: send to Apps Script then redirect ---
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
 
-      // Basic spam check: if honeypot filled, skip network call and still redirect
-      const website = (formData.get("website") || "").trim();
+      const website = (formData.get("website") || "").trim(); // honeypot
       const email = (formData.get("email") || "").trim();
       if (!email) return;
 
-      // Persist email locally for convenience
       localStorage.setItem("saverx_email", email);
 
-      // Compose URL-encoded payload
       const payload = new URLSearchParams();
       payload.set("email", email);
       payload.set("drug", formData.get("drug"));
@@ -279,7 +305,6 @@
       payload.set("userAgent", formData.get("userAgent"));
       if (website) payload.set("website", website); // honeypot
 
-      // Try sendBeacon first (non-blocking, reliable on unload)
       let sent = false;
       try {
         if (SCRIPT_URL && navigator.sendBeacon) {
@@ -288,7 +313,6 @@
         }
       } catch (_) {}
 
-      // Fallback to fetch (no-cors to avoid CORS issues with Apps Script)
       if (!sent && SCRIPT_URL) {
         try {
           await fetch(SCRIPT_URL, {
@@ -298,14 +322,12 @@
             mode: "no-cors",
             keepalive: true
           });
-        } catch (_) { /* ignore */ }
+        } catch (_) {}
       }
 
-      // Redirect immediately to manufacturer program
       submitBtn.disabled = true;
-      submitBtn.textContent = "Taking you to the savings program…";
-      // Add a UTM tag so you see traffic attribution on external analytics
-      const url = addUTM(targetUrl, { utm_source:"saverx", utm_medium:"outbound", utm_campaign: "copay", utm_content: formData.get("drug") });
+      submitBtn.textContent = "Taking you to the program…";
+      const url = addUTM(targetUrl, { utm_source:"saverx", utm_medium:"outbound", utm_campaign:"program", utm_content: formData.get("drug") });
       window.location.assign(url);
     });
 
@@ -317,24 +339,20 @@
       } catch { return url; }
     }
 
-    // --- Focus trap for modal a11y ---
+    // Focus trap
     let lastFocused;
     function trapFocus(container) {
       lastFocused = document.activeElement;
       const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       const first = focusable[0];
-      const last = focusable[focusable.length - 1];
+      const last  = focusable[focusable.length - 1];
       container.addEventListener('keydown', trap);
       function trap(e) {
         if (e.key !== 'Tab') return;
         if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault(); last.focus();
-          }
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
         } else {
-          if (document.activeElement === last) {
-            e.preventDefault(); first.focus();
-          }
+          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
         }
       }
     }
