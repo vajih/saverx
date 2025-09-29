@@ -1,0 +1,14 @@
+<svg width="1200" height="750" viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Repatha autoinjector illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ffffff" offset="0"></stop>
+      <stop stop-color="#f3f7ff" offset="1"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"></rect>
+  <!-- simple abstract pen -->
+  <rect x="140" y="260" rx="38" ry="38" width="360" height="220" fill="#0F4C81"></rect>
+  <rect x="520" y="280" rx="28" ry="28" width="260" height="180" fill="#EF7D57"></rect>
+  <text x="170" y="320" font-family="Inter, Arial" font-size="32" fill="#fff">Repatha®</text>
+  <text x="170" y="356" font-family="Inter, Arial" font-size="20" fill="#fff">evolocumab</text>
+</svg>
