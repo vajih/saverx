@@ -49,9 +49,35 @@
           “Using the copay card, I’ve paid far less for my Repatha® prescription. It’s been a huge relief.” — <strong>John R.</strong>
         </div>
       </div>
-      <div>
-        <img src="../../assets/img/repatha-hero.png" alt="Repatha autoinjector illustration" loading="lazy" />
-      </div>
+      <!-- inside <section class="hero"> ... replace the right-side <div> with: -->
+    <div class="hero-media">
+    <img src="../../assets/img/repatha-hero.svg"
+        alt="Repatha autoinjector lifestyle hero" loading="lazy" />
+
+    <!-- OVERLAY CARD -->
+    <aside class="cost-overlay" aria-label="Example prescription costs">
+        <div class="overlay-card">
+        <div class="overlay-head">Prescription Cost</div>
+
+        <div class="overlay-row">
+            <span class="overlay-label">Without copay card</span>
+            <span class="overlay-value">$625</span>
+        </div>
+
+        <div class="overlay-row">
+            <span class="overlay-label">With copay card</span>
+            <span class="overlay-value">As low as $5*</span>
+        </div>
+
+        <hr class="overlay-divider" />
+
+        <div class="overlay-foot">
+            <span class="overlay-foot-label">Potential Annual Savings</span>
+            <span class="overlay-foot-value">Up to <strong>$7,440</strong></span>
+        </div>
+        </div>
+    </aside>
+    </div>
     </section>
 
     <section id="benefits" class="benefits" aria-label="Benefits">
