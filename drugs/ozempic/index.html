@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+    SaveRx.AI — Ozempic® Savings Landing Page
+    Path: /drugs/ozempic/index.html
+    Uses shared assets in /assets/
+  -->
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SaveRx.AI — Ozempic® Savings</title>
+  <meta name="description" content="Lower your diabetes medication costs with Ozempic®. See if you qualify for copay savings.">
+
+  <link rel="icon" href="/assets/favicon.png" sizes="32x32" type="image/png">
+  <link rel="shortcut icon" href="/assets/favicon.png" type="image/png">
+
+  <link rel="stylesheet" href="../../assets/styles.css" />
+
+  <!-- Per-page config -->
+  <script>
+    window.PAGE_CONFIG = {
+      drug: "Ozempic",
+      manufacturerUrl: "https://www.ozempic.com/savings-and-resources/cost-support.html",
+      scriptUrl: "https://script.google.com/macros/s/AKfycbxiowuiS7bkI_-QeaOSLq6P-rin3IXwG0MmuLG0N1Q-wgSWoH7AEwUOWbZ5Vl-K9vEU9Q/exec"
+    };
+  </script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="header container" role="banner">
+    <a class="brand" href="#top">
+      <img src="../../assets/logo.svg" alt="SaveRx.AI logo" width="148" height="32" />
+      <div class="tagline">AI-Powered Prescription Savings</div>
+    </a>
+    <nav class="nav" aria-label="Site">
+      <a href="#benefits">Benefits</a>
+      <a href="#savings">Savings</a>
+      <a href="#get-started">Get Started</a>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container" id="top">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">Ozempic®</h1>
+        <h2 style="margin:0 0 12px 0;font-weight:600;color:#0b2a4e">
+          Lower blood sugar and support weight goals
+        </h2>
+
+        <p>
+          Ozempic® (semaglutide) is an injectable prescription medicine for adults with type 2 diabetes. 
+          It lowers blood sugar levels and, in many patients, can support weight management. 
+          Eligible patients may pay as little as $25 for a 1-month, 2-month, or 3-month prescription with a copay card.
+        </p>
+
+        <div class="cta-row">
+          <button class="btn" data-open-modal>Check savings</button>
+          <span class="badge">
+            <img src="../../assets/icons/check.svg" alt="" />
+            Official Novo Nordisk copay link
+          </span>
+        </div>
+
+        <div class="testimonial" style="max-width:620px">
+          “Ozempic helped me manage my diabetes without breaking the bank thanks to the copay card.” — <strong>Maria L.</strong>
+        </div>
+      </div>
+
+      <!-- Hero image + overlay -->
+      <div class="hero-media">
+        <img src="../../assets/img/ozempic-hero.png" alt="Ozempic lifestyle hero" loading="lazy" />
+
+        <aside class="cost-overlay" aria-label="Example prescription costs">
+          <div class="overlay-card">
+            <div class="overlay-head">Prescription Cost</div>
+
+            <div class="overlay-row">
+              <span class="overlay-label">Without copay card</span>
+              <span class="overlay-value">$850</span>
+            </div>
+
+            <div class="overlay-row">
+              <span class="overlay-label">With copay card</span>
+              <span class="overlay-value">As low as $25*</span>
+            </div>
+
+            <hr class="overlay-divider" />
+
+            <div class="overlay-foot">
+              <span class="overlay-foot-label">Potential Annual Savings</span>
+              <span class="overlay-foot-value">Up to <strong>$9,900</strong></span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section id="benefits" class="benefits" aria-label="Benefits">
+      <article class="benefit">
+        <img src="../../assets/icons/ldl.svg" alt="" />
+        <div>
+          <h3>Blood sugar control</h3>
+          <p>Clinically proven to lower A1C when used with diet and exercise.</p>
+        </div>
+      </article>
+      <article class="benefit">
+        <img src="../../assets/icons/heart.svg" alt="" />
+        <div>
+          <h3>Cardiovascular benefits</h3>
+          <p>Shown to reduce the risk of major cardiovascular events in adults with type 2 diabetes and heart disease.</p>
+        </div>
+      </article>
+      <article class="benefit">
+        <img src="../../assets/icons/inject.svg" alt="" />
+        <div>
+          <h3>Weekly injection</h3>
+          <p>Convenient once-weekly dosing with a self-injection pen.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- SAVINGS TABLE
+    <section id="savings" style="margin-top:26px">
+      <div class="table" role="region" aria-label="Example savings">
+        <table>
+          <thead>
+            <tr>
+              <th>Prescription cost</th>
+              <th>Without copay card</th>
+              <th>With copay card</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Typical monthly prescription</td>
+              <td>$850</td>
+              <td>$25*</td>
+            </tr>
+            <tr>
+              <td>Savings per prescription</td>
+              <td colspan="2"><strong>$825</strong></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Potential annual savings</td>
+              <td colspan="2">$9,900</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="small" style="margin-top:8px">
+        *Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.
+      </p>
+    </section> -->
+
+    <!-- FOOTER FORM -->
+    <section id="get-started" class="form-callout" aria-label="Get started">
+      <h3 style="margin:0">Start saving on Ozempic®</h3>
+      <form id="footerForm" class="cta-row" aria-label="Email signup">
+        <label class="sr-only" for="footerEmail">Email address</label>
+        <input id="footerEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required />
+        <button id="footerSubmit" class="btn" type="submit">Submit</button>
+      </form>
+    </section>
+
+    <p class="footer small">
+      This page is for educational purposes. We link you to the official manufacturer program for Ozempic®. 
+      Ozempic® is a registered trademark of Novo Nordisk.
+    </p>
+  </main>
+
+  <!-- MODAL -->
+  <dialog id="emailModal" class="modal" aria-label="Email capture modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong>Get your Ozempic® savings link</strong>
+        <button class="btn secondary" data-close-modal aria-label="Close">Close</button>
+      </div>
+      <form id="modalForm">
+        <div class="modal-body">
+          <p>Enter your email to receive the official copay program link and tips to get the most from your prescription.</p>
+          <input id="modalEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required style="width:100%" />
+        </div>
+        <div class="modal-actions">
+          <button id="modalSubmit" class="btn" type="submit">Get savings</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Shared script -->
+  <script src="../../assets/scripts.js"></script>
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+</body>
+</html>
