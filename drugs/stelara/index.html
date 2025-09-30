@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+    SaveRx.AI — STELARA® Savings Landing Page
+    Path: /drugs/stelara/index.html
+    Uses shared assets from /assets (styles.css, scripts.js, icons, images)
+  -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SaveRx.AI — STELARA® Savings</title>
+  <meta name="description" content="Lower your out-of-pocket on STELARA®. See if you qualify for manufacturer copay savings.">
+
+  <!-- Favicon (root-relative is most reliable) -->
+  <link rel="icon" href="/assets/favicon.png" sizes="32x32" type="image/png">
+  <link rel="shortcut icon" href="/assets/favicon.png" type="image/png">
+
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="../../assets/styles.css" />
+
+  <!-- Per-page config for shared scripts.js -->
+  <script>
+    window.PAGE_CONFIG = {
+      drug: "Stelara",
+      // Janssen CarePath – STELARA® cost support
+      manufacturerUrl: "https://www.janssencarepath.com/patient/stelara/cost-support",
+      // Your working Apps Script URL (writes to Sheet1 of SaveRx Leads)
+      scriptUrl: "https://script.google.com/macros/s/AKfycbxiowuiS7bkI_-QeaOSLq6P-rin3IXwG0MmuLG0N1Q-wgSWoH7AEwUOWbZ5Vl-K9vEU9Q/exec"
+    };
+  </script>
+</head>
+
+<body>
+  <!-- Header / Nav -->
+  <header class="header container" role="banner">
+    <a class="brand" href="#top">
+      <img src="../../assets/logo.svg" alt="SaveRx.AI logo" width="148" height="32" />
+      <div class="tagline">AI-Powered Prescription Savings</div>
+    </a>
+    <nav class="nav" aria-label="Site">
+      <a href="#benefits">Benefits</a>
+      <a href="#savings">Savings</a>
+      <a href="#get-started">Get Started</a>
+    </nav>
+  </header>
+
+  <main class="container" id="top">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">STELARA®</h1>
+        <h2 style="margin:0 0 12px 0;font-weight:600;color:#0b2a4e">
+          Proven biologic for immune-mediated conditions
+        </h2>
+        <p>
+          STELARA® (ustekinumab) is a prescription biologic that targets IL-12 and IL-23.
+          It’s used for adults with moderate to severe plaque psoriasis, active psoriatic arthritis,
+          Crohn’s disease, and ulcerative colitis. If eligible, a manufacturer copay program can
+          significantly reduce your out-of-pocket cost.
+        </p>
+
+        <div class="cta-row">
+          <button class="btn" data-open-modal>Check savings</button>
+          <span class="badge">
+            <img src="../../assets/icons/check.svg" alt="" /> Official manufacturer link
+          </span>
+        </div>
+
+        <div class="testimonial" style="max-width:620px">
+          “With the copay support, I finally felt relief—both for my symptoms and my budget.”
+          — <strong>Danielle P.</strong>
+        </div>
+      </div>
+
+      <!-- Right side: hero image + overlay -->
+      <div class="hero-media">
+        <!-- Provide this asset: SAVERX/assets/img/stelara-hero.png -->
+        <img src="../../assets/img/stelara-hero.png" alt="STELARA lifestyle hero" loading="lazy" />
+
+        <!-- Cost overlay card -->
+        <aside class="cost-overlay" aria-label="Example prescription costs">
+          <div class="overlay-card">
+            <div class="overlay-head">Prescription Cost</div>
+
+            <div class="overlay-row">
+              <span class="overlay-label">Without copay card</span>
+              <span class="overlay-value">$7,500</span>
+            </div>
+
+            <div class="overlay-row">
+              <span class="overlay-label">With copay card</span>
+              <span class="overlay-value">As low as $5*</span>
+            </div>
+
+            <hr class="overlay-divider" />
+
+            <div class="overlay-foot">
+              <span class="overlay-foot-label">Potential Annual Savings</span>
+              <span class="overlay-foot-value">Up to <strong>$89,940</strong></span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section id="benefits" class="benefits" aria-label="Benefits">
+      <article class="benefit">
+        <img src="../../assets/icons/heart.svg" alt="" />
+        <div>
+          <h3>Targets IL-12/23</h3>
+          <p>Selectively targets interleukins involved in inflammation for long-term control.</p>
+        </div>
+      </article>
+      <article class="benefit">
+        <img src="../../assets/icons/inject.svg" alt="" />
+        <div>
+          <h3>Infrequent dosing</h3>
+          <p>After initial dosing, maintenance is typically every 8–12 weeks (condition-dependent).</p>
+        </div>
+      </article>
+      <article class="benefit">
+        <img src="../../assets/icons/ldl.svg" alt="" />
+        <div>
+          <h3>Self-injection (maintenance)</h3>
+          <p>Maintenance often given as a prefilled syringe after your provider’s guidance.</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- SAVINGS TABLE -->
+    <section id="savings" style="margin-top:26px">
+      <div class="table" role="region" aria-label="Example savings">
+        <table>
+          <thead>
+            <tr>
+              <th>Prescription cost</th>
+              <th>Without copay card</th>
+              <th>With copay card</th>
+            </tr>
+          </thead>
+        <tbody>
+          <tr>
+            <td>Typical prescription (per fill)</td>
+            <td>$7,500</td>
+            <td>$5*</td>
+          </tr>
+          <tr>
+            <td>Savings per prescription</td>
+            <td colspan="2"><strong>$7,495</strong></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Potential annual savings</td>
+            <td colspan="2">$89,940</td>
+          </tr>
+        </tfoot>
+        </table>
+      </div>
+      <p class="small" style="margin-top:8px">
+        *Eligibility and terms apply. Final costs depend on your insurance coverage and the manufacturer program.
+      </p>
+    </section>
+
+    <!-- SECONDARY CTA / FOOTER FORM -->
+    <section id="get-started" class="form-callout" aria-label="Get started">
+      <h3 style="margin:0">Start saving on STELARA®</h3>
+      <form id="footerForm" class="cta-row" aria-label="Email signup">
+        <label class="sr-only" for="footerEmail">Email address</label>
+        <input id="footerEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required />
+        <button id="footerSubmit" class="btn" type="submit">Submit</button>
+      </form>
+    </section>
+
+    <p class="footer small">
+      This page is for educational purposes. We link you to the official manufacturer program for STELARA®.
+      STELARA® is a registered trademark of Janssen Biotech, Inc.
+    </p>
+  </main>
+
+  <!-- Email-capture modal (primary CTA) -->
+  <dialog id="emailModal" class="modal" aria-label="Email capture modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong>Get your STELARA® savings link</strong>
+        <button class="btn secondary" data-close-modal aria-label="Close">Close</button>
+      </div>
+      <form id="modalForm">
+        <div class="modal-body">
+          <p>Enter your email to receive the official copay program link and tips to get the most from your prescription.</p>
+          <input id="modalEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required style="width:100%" />
+        </div>
+        <div class="modal-actions">
+          <button id="modalSubmit" class="btn" type="submit">Get savings</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Shared site script (modal + lead posting + redirect) -->
+  <script src="../../assets/scripts.js"></script>
+
+  <!-- Utility: visually-hidden -->
+  <style>
+    .sr-only{
+      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0
+    }
+  </style>
+</body>
+</html>

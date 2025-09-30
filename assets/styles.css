@@ -175,3 +175,35 @@ body{
     width: 100%;
   }
 }
+
+/* Ensure no element forces horizontal scroll */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Images never exceed viewport */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Overlay card: shrink on small screens */
+@media (max-width: 480px) {
+  .overlay-card {
+    width: 100%;          /* take full width of screen */
+    max-width: 100%;      /* prevent overflow */
+    box-sizing: border-box;
+  }
+}
+
+/* Savings table: allow wrapping/scroll if needed */
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;     /* shrink columns as needed */
+}
+.table th, .table td {
+  word-wrap: break-word;
+  white-space: normal;    /* allow wrapping */
+}
