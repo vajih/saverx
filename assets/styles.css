@@ -207,3 +207,41 @@ img {
   word-wrap: break-word;
   white-space: normal;    /* allow wrapping */
 }
+
+/* ===== SaveRx: High-conversion drug card ===== */
+.deal-card { position:relative; overflow:hidden; }
+.deal-card .hdr { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.deal-card .title { margin:0; font-size:18px; font-weight:800; letter-spacing:-.01em; }
+.deal-card .sub { color:#6b7680; font-size:13px; margin-bottom:12px; }
+
+.badge-verified {
+  display:inline-flex; align-items:center; gap:6px;
+  background:#e8fff4; color:#065f46; border:1px solid #bbf7d0;
+  padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700;
+}
+.badge-verified svg { width:14px; height:14px; }
+
+.deal {
+  display:grid; grid-template-columns: 1fr 1fr; gap:14px;
+  background:#f8fbff; border:1px solid #e6efff; border-radius:12px; padding:12px;
+  margin-bottom:12px;
+}
+.deal .label { color:#6b7680; font-size:12px; }
+.deal .cash { color:#6b7680; }
+.deal .cash .price { text-decoration:line-through; font-weight:700; color:#7a8793; }
+.deal .with .price { font-size:28px; font-weight:900; letter-spacing:-.02em; }
+.deal .with .save { font-weight:800; color:#0b8f4a; font-size:13px; }
+
+.deal-cta { display:flex; flex-direction:column; gap:8px; }
+.deal-cta .btn-lg {
+  width:100%; background:#1f2f60; color:#fff; border:0; border-radius:12px;
+  padding:14px 16px; font-weight:800; text-align:center; cursor:pointer;
+  box-shadow:0 8px 24px rgba(17,29,68,.18);
+}
+.deal-cta .btn-lg:hover { filter:brightness(0.98); }
+.deal-cta .assure { display:flex; align-items:center; gap:8px; color:#60708a; font-size:12px; }
+.deal-cta .assure svg { width:14px; height:14px; color:#0b8f4a; }
+
+@media (max-width: 520px){
+  .deal { grid-template-columns: 1fr; }
+}
