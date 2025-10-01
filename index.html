@@ -8,6 +8,7 @@
   <title>SaveRx.ai — Stop paying too much for prescriptions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Compare prices and save up to 80% on popular prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara. Official manufacturer savings links and simple guidance." />
+  <meta name="robots" content="index, follow">
 
   <!-- Open Graph -->
   <meta property="og:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
@@ -74,7 +75,7 @@
     </form>
   </section>
 
-  <!-- Featured Cards (rendered from /data/featured-drugs.json) -->
+  <!-- Featured Cards (rendered live from Google Sheet via Apps Script) -->
   <section class="container" style="padding:28px 0;">
     <div id="featured-cards" class="cards" role="list" aria-live="polite">
       <!-- JS injects cards here -->
@@ -119,10 +120,11 @@
 
   <!-- Kick off dynamic render -->
   <script>
-    // requires: /data/featured-drugs.json and window.renderFeaturedDrugs in scripts.js
-    if (window.renderFeaturedDrugs) {
-      window.renderFeaturedDrugs('/data/featured-drugs.json');
-    }
+  if (window.renderFeaturedDrugs) {
+    window.renderFeaturedDrugs(
+      'https://script.google.com/macros/s/AKfycbz77MdfpFBubX-CFd1bQYLcBGzL1QsuyMwRYRdFVKJU78iHNMLlPmE49UQSw5vFoPhzmw/exec?mode=featured'
+    );
+  }
   </script>
 
   <!-- Optional search schema -->
