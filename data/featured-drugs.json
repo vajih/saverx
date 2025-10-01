@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Ozempic",
+    "generic": "Semaglutide",
+    "manufacturer": "Novo Nordisk",
+    "cash_price": 499.00,
+    "as_low_as": 25.00,
+    "url": "https://www.novocare.com/diabetes/products/ozempic/savings-offer.html#savings",
+    "priority": 2
+  },
+  {
+    "name": "Wegovy",
+    "generic": "Semaglutide",
+    "manufacturer": "Novo Nordisk",
+    "cash_price": 499.00,
+    "as_low_as": 0.00,
+    "url": "https://bsp.novocare.com/wegovy/s/registration?condition=obesity&product=wegovy&enrolltype=savingsonly&src=100002016&_gl=1*81p409*_gcl_au*NjQ5ODAzOTIxLjE3NTkyNDE4Njk.*_ga*MTgwMDQ0MDQwOS4xNzU5MjQxODcw*_ga_F40L5513K4*czE3NTkyNDE4NjkkbzEkZzAkdDE3NTkyNDE4NzMkajU2JGwwJGgw",
+    "priority": 3
+  },
+  {
+    "name": "Repatha",
+    "generic": "Evolocumab",
+    "manufacturer": "Amgen",
+    "cash_price": 693.50,
+    "as_low_as": 15.00,
+    "url": "https://www.repatha.com/enrollment",
+    "priority": 1
+  },
+  {
+    "name": "Mounjaro",
+    "generic": "Tirzepatide",
+    "manufacturer": "Lilly",
+    "cash_price": 995.00,
+    "as_low_as": 25.00,
+    "url": "https://enrollment.mounjaro.lilly.com/enroll/welcomePage",
+    "priority": 4
+  },
+  {
+    "name": "Stelara",
+    "generic": "Ustekinumab",
+    "manufacturer": "Johnson & Johnson",
+    "cash_price": 30000.00,
+    "as_low_as": 5.00,
+    "url": "https://www.account1.jnjwithme.com/user/register?flow=guided&product=Stelara",
+    "priority": 5
+  }
+]
