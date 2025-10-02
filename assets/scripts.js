@@ -311,3 +311,123 @@ if (footerForm) {
   // expose
   window.renderFeaturedDrugs = renderFeaturedDrugs;
 })();
+/* =========================================================
+   SaveRx — Homepage Featured Cards Renderer (FINAL)
+   - cardHTML: high-conversion card layout
+   - renderFeaturedDrugs(url): accepts JSON URL or Apps Script URL
+   - renderFeaturedDrugsFromArray(items): direct array helper
+   ========================================================= */
+(function(){
+  // -------- Utilities --------
+  const $grid = () => document.getElementById('featured-cards');
+  const $loading = () => document.getElementById('cards-loading');
+
+  const money = (n) => {
+    const f = Number(n);
+    return Number.isFinite(f)
+      ? `$${f.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '$—';
+  };
+
+  // -------- Card template (approved design) --------
+  function cardHTML(d) {
+    const manufacturer = d.manufacturer ? ` · ${d.manufacturer}` : '';
+    const generic = d.generic || '';
+
+    const cash = Number(d.cash_price);
+    const copay = Number(d.as_low_as);
+    const hasBoth = Number.isFinite(cash) && Number.isFinite(copay) && cash > 0;
+
+    const pct = hasBoth ? Math.max(0, Math.min(100, Math.round((1 - (copay / cash)) * 100))) : null;
+    const saveLine = pct != null ? `Save ${pct}%` : ``;
+
+    const withSavings = Number.isFinite(copay)
+      ? `<div class="price">${money(copay)}</div>`
+      : `<div class="price">$—</div>`;
+
+    const cashBlock = Number.isFinite(cash)
+      ? `<div class="price"><s>${money(cash)}</s></div>`
+      : `<div class="price">$—</div>`;
+
+    return `
+    <article class="drug-card deal-card" role="listitem" aria-label="${d.name} savings card">
+      <div class="hdr">
+        <h3 class="title">${d.name}</h3>
+        <span class="badge-verified" title="Official program link">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 12l2 2 4-4" stroke="#065f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="12" cy="12" r="9" stroke="#065f46" stroke-width="2"></circle>
+          </svg>
+          Official link
+        </span>
+      </div>
+
+      <div class="sub">${generic}${manufacturer}</div>
+
+      <div class="deal" aria-label="Price comparison">
+        <div class="cash" aria-label="Typical cash price">
+          <div class="label">Typical cash price</div>
+          ${cashBlock}
+        </div>
+
+        <div class="with" aria-label="Price with savings">
+          <div class="label">With savings</div>
+          ${withSavings}
+          ${pct != null ? `<div class="save">${saveLine}</div>` : ``}
+        </div>
+      </div>
+
+      <div class="deal-cta">
+        <a class="btn-lg" href="${d.url}" target="_blank" rel="noopener"
+           aria-label="Get savings card for ${d.name}">
+           Get Your Savings Card
+        </a>
+        <div class="assure">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 12l2 2 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+          </svg>
+          Fast, official manufacturer link
+        </div>
+      </div>
+    </article>`;
+  }
+
+  // -------- Core renderers --------
+  async function renderFeaturedDrugs(urlOrJson) {
+    const grid = $grid();
+    if (!grid) return; // not on homepage
+
+    try {
+      // Accept a URL string OR a pre-parsed object/array
+      let data = urlOrJson;
+      if (typeof urlOrJson === 'string') {
+        const res = await fetch(urlOrJson, { cache: 'no-cache' });
+        data = await res.json();
+      }
+
+      // Support: array OR { items: [...] }
+      const items = Array.isArray(data) ? data : (data && data.items) ? data.items : [];
+
+      // Sort by priority then name
+      items.sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999) || String(a.name).localeCompare(String(b.name)));
+
+      // Render
+      grid.innerHTML = items.map(cardHTML).join('');
+    } catch (err) {
+      console.error('Featured load failed', err);
+      grid.innerHTML = `<div class="muted">We couldn't load savings right now. Please refresh.</div>`;
+    } finally {
+      const loader = $loading();
+      if (loader) loader.style.display = 'none';
+    }
+  }
+
+  function renderFeaturedDrugsFromArray(items) {
+    return renderFeaturedDrugs(Array.isArray(items) ? items : []);
+  }
+
+  // expose on window
+  window.renderFeaturedDrugs = renderFeaturedDrugs;
+  window.renderFeaturedDrugsFromArray = renderFeaturedDrugsFromArray;
+})();

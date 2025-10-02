@@ -245,3 +245,19 @@ img {
 @media (max-width: 520px){
   .deal { grid-template-columns: 1fr; }
 }
+
+.deal .cash .price s {
+  position: relative;
+  text-decoration: none; /* remove default browser strikethrough */
+  color: #222; /* keep price text dark */
+}
+
+.deal .cash .price s::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #dc2626; /* red strike line */
+}
