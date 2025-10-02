@@ -1,145 +1,156 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- ==========================================
+  <!-- =========================================================
        SaveRx.ai — Homepage
-       ========================================== -->
+       Notes:
+       - Uses a tiny helper (at the end of <body>) to append a
+         cache-busting version to CSS/JS (no manual bumps).
+       - All links are RELATIVE to work on GitHub Pages:
+         https://vajih.github.io/saverx/index.html
+       ========================================================= -->
+
   <meta charset="utf-8" />
   <title>SaveRx.ai — Stop paying too much for prescriptions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Compare prices and save up to 80% on popular prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara. Official manufacturer savings links and simple guidance." />
-  <meta name="robots" content="index, follow">
+  <meta name="description"
+        content="Compare prices and save up to 80% on popular prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara. Official manufacturer savings links and simple guidance." />
+  <meta name="robots" content="index, follow" />
 
-  <!-- Open Graph -->
+  <!-- Open Graph / Social -->
   <meta property="og:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
   <meta property="og:description" content="Find official savings and copay programs for top medications." />
-  <meta property="og:image" content="/assets/img/hero-1200.jpg" />
+  <meta property="og:image" content="https://vajih.github.io/saverx/assets/img/hero-1200.jpg" />
   <meta property="og:type" content="website" />
-  <link rel="canonical" href="https://saverx.ai/" />
+  <meta property="og:url" content="https://vajih.github.io/saverx/index.html" />
+  <link rel="canonical" href="https://vajih.github.io/saverx/index.html" />
 
-  <!-- Favicon & Styles -->
+  <!-- Favicon -->
   <link rel="icon" href="assets/img/favicon.png" />
-  <link rel="stylesheet" href="assets/styles.css" />
 
-  <!-- Small helpers to match the mock (safe to move into styles.css later) -->
-  <style>
-    .brand{font-weight:800;font-size:22px;letter-spacing:-.02em;color:rgb(17, 65, 137)}
-    .site-nav{display:flex;align-items:center;gap:18px}
-    .site-nav .nav-fill{flex:1}
-    .hero-title{font-size:clamp(28px,5vw,44px);line-height:1.15;letter-spacing:-.02em;margin:0}
-    .hero-subtitle{color:#5e6a73;margin:.5rem 0 0}
-    .search-wrap{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px}
-    .search-wrap input{flex:1;max-width:720px;height:56px;border-radius:999px;padding:0 18px;border:1px solid rgba(0,0,0,.12)}
-    .search-wrap button{height:56px;border-radius:999px;padding:0 22px}
-    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
-    @media (max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media (max-width:520px){.cards{grid-template-columns:1fr}}
-    .drug-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.04)}
-    .drug-card h3{margin:0 0 4px;font-size:18px}
-    .drug-meta{color:#6b7680;font-size:14px;margin-bottom:12px}
-    .price-row{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 12px}
-    .price-large{font-size:28px;font-weight:800;letter-spacing:-.02em}
-    .price-note{font-size:12px;color:#6b7680;text-align:right}
-    .btn-primary{background:#1f2f60;color:#fff;border:none;padding:12px 16px;border-radius:10px;display:inline-block;text-align:center}
-    .newsletter{background:#f6f4ff;border-top:1px solid rgba(0,0,0,.06);padding:32px 0}
-    .newsletter form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-    .newsletter input{height:48px;border-radius:10px;padding:0 14px;border:1px solid rgba(0,0,0,.12);min-width:280px}
-    .muted{color:#6b7680}
-    .container{max-width:1100px;margin:0 auto;padding:0 16px}
-    .text-center{text-align:center}
-  </style>
+  <!-- CSS is set dynamically by the tiny helper (cache-busted) -->
+  <link id="cssLink" rel="stylesheet" href="">
 </head>
-<body class="theme-light">
 
-  <!-- Header -->
-  <header class="site-header container" style="padding:16px 0;">
+<body class="theme-light">
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <header class="site-header container">
     <nav class="site-nav" aria-label="Primary">
-      <a class="brand" href="/">SaveRx.ai</a>
-      <p class="muted" href="/"> Let our AI help lower your cost.</p>
-      <div class="nav-fill"></div>
       <a class="brand" href="index.html">SaveRx.ai</a>
+      <p class="muted site-tagline">Let our AI help lower your cost.</p>
+      <div class="nav-fill"></div>
       <a class="nav-link" href="about.html">About</a>
       <a class="nav-link" href="contact.html">Contact</a>
-      <form class="search-form" action="#" method="get" role="search">
     </nav>
   </header>
 
-  <!-- Hero -->
-  <section class="hero container text-center" style="padding:24px 0 10px;">
+  <!-- =======================
+       Hero + Search
+       ======================= -->
+  <section class="hero container text-center">
     <h1 class="hero-title">Stop paying too much for prescriptions</h1>
     <p class="hero-subtitle">Compare prices and save up to 90%.</p>
 
-    <!-- Search -->
-    <form class="search-form" action="/search.html" method="get" role="search">
+    <!-- Accessible search: label is visually hidden but readable by screen readers -->
+    <form class="search-form" action="search.html" method="get" role="search">
       <div class="search-wrap">
-        <input type="text" name="q" placeholder="Search for a medication" aria-label="Search for a medication" required />
+        <label for="search-input" class="visually-hidden">Search for a medication</label>
+        <input id="search-input" type="text" name="q" placeholder="Search for a medication" required />
         <button type="submit" class="btn btn-primary">Start saving</button>
       </div>
     </form>
   </section>
 
-  <!-- Featured Cards (rendered live from Google Sheet via Apps Script) -->
-  <section class="container" style="padding:28px 0;">
+  <!-- =======================
+       Featured drug cards
+       Rendered live from Google Sheet via Apps Script
+       ======================= -->
+  <section class="container section-pad">
     <div id="featured-cards" class="cards" role="list" aria-live="polite">
       <!-- JS injects cards here -->
     </div>
 
-    <div id="cards-loading" class="text-center" style="margin-top:12px;color:#6b7680;">
+    <div id="cards-loading" class="text-center muted small">
       Loading savings…
     </div>
 
-    <!-- Pagination stub to match your mock -->
-    <div class="text-center" style="margin-top:18px;color:#6b7680;">
+    <!-- (Optional) Simple pagination stub for now -->
+    <div class="text-center muted small">
       <span aria-hidden="true">‹</span>
       <span style="margin:0 8px;">1 of 2</span>
       <span aria-hidden="true">›</span>
     </div>
   </section>
 
-  <!-- Newsletter -->
-  <section class="newsletter text-center">
-    <div class="container">
-      <h2 style="margin:0 0 6px;">Good news for your inbox</h2>
-      <p style="margin:0 0 16px;" class="muted">Sign up for our newsletter for tips and discounts.</p>
-      <form action="/subscribe" method="post">
-        <input type="email" name="email" placeholder="Email address" aria-label="Email address" required />
-        <button type="submit" class="btn btn-primary" style="height:48px;border-radius:10px;">Subscribe</button>
+  <!-- =======================
+       Newsletter CTA
+       ======================= -->
+  <section class="newsletter">
+    <div class="container text-center">
+      <h2>Good news for your inbox</h2>
+      <p class="muted">Sign up for our newsletter for tips and discounts.</p>
+
+      <!-- If you don’t have an endpoint yet, keep action="#" -->
+      <form action="#" method="post" class="newsletter-form">
+        <label for="newsletter-email" class="visually-hidden">Email address</label>
+        <input id="newsletter-email" type="email" name="email" placeholder="Email address" required />
+        <button type="submit" class="btn btn-primary">Subscribe</button>
       </form>
 
-      <div style="margin-top:22px;">
-        <h3 style="margin:0 0 6px;">Contact Us</h3>
-        <p style="margin:0;"><a href="mailto:questions@saverx.ai">questions@saverx.ai</a></p>
+      <div class="contact-block">
+        <h3>Contact Us</h3>
+        <p><a href="mailto:questions@saverx.ai">questions@saverx.ai</a></p>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="container" style="padding:24px 0 32px;" aria-label="Footer">
+  <!-- =======================
+       Footer
+       ======================= -->
+  <footer class="container footer" aria-label="Footer">
     <p class="muted">&copy; <script>document.write(new Date().getFullYear());</script> SaveRx.ai</p>
   </footer>
 
-  <!-- Global scripts -->
-  <script src="assets/scripts.js"></script>
-
-  <!-- Kick off dynamic render -->
+  <!-- =========================================================
+       Tiny helper:
+       - Sets CSS/JS URLs with a date version to bust cache
+       - Loads scripts.js THEN calls renderFeaturedDrugs()
+       ========================================================= -->
   <script>
-  if (window.renderFeaturedDrugs) {
-    window.renderFeaturedDrugs(
-      'https://script.google.com/macros/s/AKfycbz77MdfpFBubX-CFd1bQYLcBGzL1QsuyMwRYRdFVKJU78iHNMLlPmE49UQSw5vFoPhzmw/exec?mode=featured'
-    );
-  }
+    (function () {
+      // Version string (YYYY-MM-DD). Use Date.now() for per-load busting.
+      var v = new Date().toISOString().slice(0, 10);
+
+      // 1) Load CSS with cache-buster
+      document.getElementById('cssLink').href = 'assets/styles.css?v=' + v;
+
+      // 2) Load JS with cache-buster, then initialize cards
+      var s = document.createElement('script');
+      s.src = 'assets/scripts.js?v=' + v;
+      s.onload = function () {
+        if (window.renderFeaturedDrugs) {
+          window.renderFeaturedDrugs(
+            // Apps Script endpoint serving JSON from the "Featured" sheet
+            'https://script.google.com/macros/s/AKfycbz77MdfpFBubX-CFd1bQYLcBGzL1QsuyMwRYRdFVKJU78iHNMLlPmE49UQSw5vFoPhzmw/exec?mode=featured'
+          );
+        }
+      };
+      document.body.appendChild(s);
+    })();
   </script>
 
-  <!-- Optional search schema -->
+  <!-- Structured data (SearchAction) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "SaveRx.ai",
-    "url": "https://saverx.ai/",
+    "url": "https://vajih.github.io/saverx/index.html",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://saverx.ai/search.html?q={query}",
+      "target": "https://vajih.github.io/saverx/search.html?q={query}",
       "query-input": "required name=query"
     }
   }

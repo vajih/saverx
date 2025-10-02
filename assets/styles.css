@@ -1,263 +1,167 @@
+/* =========================================================
+   SaveRx.ai — Global Styles
+   Notes:
+   - Lightweight, shared styles used by index.html
+   - Drug card visuals emphasize savings & strong CTA
+   ========================================================= */
+
+/* ---------- Theme tokens ---------- */
 :root{
-  --bg:#f6f8fb;
-  --card:#ffffff;
-  --ink:#0b2a4e;
-  --muted:#5b708b;
-  --brand:#1d4ed8;
-  --brand-2:#2563eb;
-  --accent:#ef7d57;
-  --success:#10b981;
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --ink: #0b2a4e;
+  --muted: #5b708b;
+  --brand: #1d4ed8;
+  --brand-2: #1f2f60;           /* primary button */
+  --accent: #ef7d57;
+  --success: #10b981;
+  --danger: #dc2626;            /* red strike */
   --ring: 0 0 0 4px rgba(37,99,235,0.18);
+  --shadow: 0 10px 30px rgba(10,36,80,0.06);
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-}
-
-.container{max-width:1100px;margin:0 auto;padding:6px}
-.header{display:flex;align-items:center;gap:16px;justify-content:space-between;margin-bottom:16px}
-.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
-.brand strong{font-weight:800;letter-spacing:0.2px}
-.tagline{color:var(--muted);font-size:14px}
-.nav a{color:var(--muted);text-decoration:none;margin-left:18px}
-.nav a:hover{color:var(--ink)}
-
-.hero{
-  background:linear-gradient(180deg,#fff,#f3f7ff);
-  border-radius:20px;
-  padding:28px;
-  display:grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap:24px;
-  align-items:center;
-  box-shadow:0 10px 30px rgba(10,36,80,0.06);
-}
-.hero h1{font-size:46px;margin:0 0 8px 0}
-.hero p{margin:0 0 16px 0;color:var(--muted);font-size:18px;line-height:1.5}
-.hero img{width:100%;height:auto;border-radius:16px}
-
-.cta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.btn{
-  appearance:none;border:0;background:var(--brand-2);color:#fff;
-  padding:14px 22px;border-radius:12px;font-weight:700;letter-spacing:.2px;
-  cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.25);
-}
-.btn:hover{filter:brightness(0.98)}
-.btn:focus{outline:none;box-shadow:var(--ring)}
-.btn.secondary{background:#0b2a4e}
-
-.table{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5ecfb}
-.table table{width:100%;border-collapse:collapse}
-.table th,.table td{padding:16px;border-bottom:1px solid #eef2fb;text-align:left}
-.table th{color:var(--muted);font-weight:600}
-.table tfoot td{font-weight:800}
-
-.benefits{display:grid;grid-template-columns: repeat(3,1fr);gap:16px;margin-top:24px}
-.benefit{background:#fff;border-radius:14px;padding:16px;border:1px solid #e5ecfb;display:flex;gap:10px;align-items:flex-start}
-.benefit img{width:28px;height:28px}
-.benefit h3{margin:0 0 6px 0;font-size:16px}
-.benefit p{margin:0;color:var(--muted);font-size:14px}
-
-.testimonial{
-  margin-top:20px;background:#f0f7ff;border:1px solid #e1edff;padding:14px 16px;border-radius:12px;color:#0a2a4e;
-  font-style:italic;
-}
-
-.form-callout{
-  margin-top:26px;background:#fff;border:1px solid #e5ecfb;border-radius:16px;padding:18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap
-}
-.input{
-  width:320px;max-width:100%;padding:14px 12px;border-radius:10px;border:1px solid #ccd9f5;font-size:16px;
-}
-.input:focus{outline:none;box-shadow:var(--ring);border-color:#a7bef6}
-
-.footer{margin:28px auto 12px;color:var(--muted);font-size:13px;text-align:center}
-
-.modal{position:fixed;inset:0;background:rgba(6,25,54,.5);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
-.modal[open]{display:flex}
-.modal-card{width:min(560px,95vw);background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(6,25,54,.25);overflow:hidden}
-.modal-head{padding:16px 18px;background:#0b2a4e;color:#fff;display:flex;align-items:center;justify-content:space-between}
-.modal-body{padding:18px}
-.modal-actions{padding:16px 18px;display:flex;gap:12px;justify-content:flex-end}
-
-.badge{display:inline-flex;gap:6px;align-items:center;background:#e8fff4;color:#065f46;border:1px solid #bbf7d0;border-radius:999px;padding:6px 10px;font-size:13px;font-weight:600}
-.small{font-size:12px;color:var(--muted)}
-
-@media (max-width: 880px){ .hero{grid-template-columns:1fr} }
-
-/* --- Hero image wrapper & overlay --- */
-.hero-media {
-  position: relative;
-  width: 100%;
-  height: auto;
-}
-.hero-media img {
-  width: 100%;
-  height: auto;
-  border-radius: 16px;
-  display: block;
-}
-
-.cost-overlay {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  z-index: 2;
-  pointer-events: none; /* only the card content should handle pointer events */
-}
-
-.overlay-card {
-  pointer-events: auto;
-  width: 320px;
-  max-width: calc(100vw - 48px);
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(6,25,54,0.18);
-  border: 1px solid #e8eefb;
-  overflow: hidden;
-  font-size: 14px;
-  color: var(--ink);
-}
-
-.overlay-head {
-  font-weight: 700;
-  text-align: center;
-  padding: 10px 14px;
-  background: #ffffff;
-  border-bottom: 1px solid #eef2fb;
-}
-
-.overlay-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 14px;
-}
-.overlay-row + .overlay-row {
-  background: #f8fbff;
-  border-top: 1px solid #eef2fb;
-}
-.overlay-label { color: var(--muted); }
-.overlay-value { font-weight: 700; }
-
-.overlay-divider {
-  border: none;
-  height: 1px;
-  background: #e9effa;
+/* ---------- Reset-ish ---------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; max-width: 100%; overflow-x: hidden; }
+body {
   margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
 }
 
-.overlay-foot {
+/* ---------- Helpers ---------- */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.section-pad { padding: 28px 0; }
+.text-center { text-align: center; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ---------- Header / Nav ---------- */
+.site-header { padding: 16px 0; }
+.site-nav { display: flex; align-items: center; gap: 18px; }
+.site-nav .nav-fill { flex: 1; }
+.brand { font-weight: 800; font-size: 22px; letter-spacing: -0.02em; color: rgb(17,65,137); text-decoration: none; }
+.site-tagline { margin: 0; }
+.nav-link { color: var(--muted); text-decoration: none; }
+.nav-link:hover { color: var(--ink); }
+
+/* ---------- Hero ---------- */
+.hero { padding: 24px 0 10px; }
+.hero-title { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; letter-spacing: -0.02em; margin: 0; }
+.hero-subtitle { color: #5e6a73; margin: .5rem 0 0; }
+
+/* ---------- Search ---------- */
+.search-wrap {
+  display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 18px;
+}
+.search-wrap input {
+  flex: 1; max-width: 720px; height: 56px; border-radius: 999px; padding: 0 18px;
+  border: 1px solid rgba(0,0,0,.12); font-size: 16px;
+}
+.search-wrap button {
+  height: 56px; border-radius: 999px; padding: 0 22px;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  appearance: none; border: 0; cursor: pointer; font-weight: 700; letter-spacing: .2px;
+  border-radius: 12px; padding: 14px 22px; box-shadow: 0 6px 20px rgba(37,99,235,.25);
+}
+.btn-primary { background: var(--brand-2); color: #fff; }
+.btn-primary:hover { filter: brightness(0.98); }
+.btn-primary:focus { outline: none; box-shadow: var(--ring); }
+
+/* ---------- Cards Grid ---------- */
+.cards {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 14px 14px 14px;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 18px;
 }
-.overlay-foot-label { font-weight: 700; }
-.overlay-foot-value { color: #0b2a4e; font-size: 16px; }
+@media (max-width: 980px){ .cards { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 520px){ .cards { grid-template-columns: 1fr; } }
 
-/* Mobile: move overlay below image with natural spacing */
-@media (max-width: 880px) {
-  .cost-overlay {
-    position: static;
-    margin-top: 12px;
-  }
-  .overlay-card {
-    width: 100%;
-  }
+/* ---------- Base card ---------- */
+.drug-card {
+  background: var(--card);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.04);
 }
 
-/* Ensure no element forces horizontal scroll */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
+/* =========================================================
+   High-conversion card layout (deal-card)
+   - Emphasizes savings with large “With savings” price
+   - Strikethrough typical cash price (red line)
+   - Strong full-width CTA
+   ========================================================= */
+.deal-card { position: relative; overflow: hidden; }
+.deal-card .hdr { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.deal-card .title { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+.deal-card .sub { color: #6b7680; font-size: 13px; margin-bottom: 12px; }
 
-/* Images never exceed viewport */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Overlay card: shrink on small screens */
-@media (max-width: 480px) {
-  .overlay-card {
-    width: 100%;          /* take full width of screen */
-    max-width: 100%;      /* prevent overflow */
-    box-sizing: border-box;
-  }
-}
-
-/* Savings table: allow wrapping/scroll if needed */
-.table table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;     /* shrink columns as needed */
-}
-.table th, .table td {
-  word-wrap: break-word;
-  white-space: normal;    /* allow wrapping */
-}
-
-/* ===== SaveRx: High-conversion drug card ===== */
-.deal-card { position:relative; overflow:hidden; }
-.deal-card .hdr { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
-.deal-card .title { margin:0; font-size:18px; font-weight:800; letter-spacing:-.01em; }
-.deal-card .sub { color:#6b7680; font-size:13px; margin-bottom:12px; }
-
+/* “Official link” pill */
 .badge-verified {
-  display:inline-flex; align-items:center; gap:6px;
-  background:#e8fff4; color:#065f46; border:1px solid #bbf7d0;
-  padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #e8fff4; color: #065f46; border: 1px solid #bbf7d0;
+  padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
 }
-.badge-verified svg { width:14px; height:14px; }
+.badge-verified svg { width: 14px; height: 14px; }
 
+/* Price comparison panel */
 .deal {
-  display:grid; grid-template-columns: 1fr 1fr; gap:14px;
-  background:#f8fbff; border:1px solid #e6efff; border-radius:12px; padding:12px;
-  margin-bottom:12px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  background: #f8fbff; border: 1px solid #e6efff; border-radius: 12px; padding: 12px;
+  margin-bottom: 12px;
 }
-.deal .label { color:#6b7680; font-size:12px; }
-.deal .cash { color:#6b7680; }
-.deal .cash .price { text-decoration:line-through; font-weight:700; color:#7a8793; }
-.deal .with .price { font-size:28px; font-weight:900; letter-spacing:-.02em; }
-.deal .with .save { font-weight:800; color:#0b8f4a; font-size:13px; }
+.deal .label { color: #6b7680; font-size: 12px; }
 
-.deal-cta { display:flex; flex-direction:column; gap:8px; }
+/* Left: Typical cash price (dark text, RED strike line) */
+.deal .cash .price {
+  font-weight: 700; color: #222; position: relative; display: inline-block;
+}
+.deal .cash .price s { text-decoration: none; color: inherit; position: relative; }
+.deal .cash .price s::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  height: 2px; background: var(--danger); /* red line */
+  /* uncomment for a little flair: transform: rotate(-4deg); */
+}
+
+/* Right: With savings (big!) + Save % */
+.deal .with .price { font-size: 28px; font-weight: 900; letter-spacing: -.02em; }
+.deal .with .save { font-weight: 800; color: #0b8f4a; font-size: 13px; }
+
+/* CTA block */
+.deal-cta { display: flex; flex-direction: column; gap: 8px; }
 .deal-cta .btn-lg {
-  width:100%; background:#1f2f60; color:#fff; border:0; border-radius:12px;
-  padding:14px 16px; font-weight:800; text-align:center; cursor:pointer;
-  box-shadow:0 8px 24px rgba(17,29,68,.18);
+  width: 100%; background: var(--brand-2); color: #fff; border: 0; border-radius: 12px;
+  padding: 14px 16px; font-weight: 800; text-align: center; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(17,29,68,.18);
 }
-.deal-cta .btn-lg:hover { filter:brightness(0.98); }
-.deal-cta .assure { display:flex; align-items:center; gap:8px; color:#60708a; font-size:12px; }
-.deal-cta .assure svg { width:14px; height:14px; color:#0b8f4a; }
+.deal-cta .btn-lg:hover { filter: brightness(0.98); }
+.deal-cta .assure { display: flex; align-items: center; gap: 8px; color: #60708a; font-size: 12px; }
+.deal-cta .assure svg { width: 14px; height: 14px; color: #0b8f4a; }
 
+/* Stack deal columns on small screens */
 @media (max-width: 520px){
   .deal { grid-template-columns: 1fr; }
 }
 
-.deal .cash .price s {
-  position: relative;
-  text-decoration: none; /* remove default browser strikethrough */
-  color: #222; /* keep price text dark */
+/* ---------- Newsletter ---------- */
+.newsletter {
+  background: #f6f4ff;
+  border-top: 1px solid rgba(0,0,0,.06);
+  padding: 32px 0;
+}
+.newsletter h2 { margin: 0 0 6px; }
+.newsletter .newsletter-form {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 8px;
+}
+.newsletter input {
+  height: 48px; border-radius: 10px; padding: 0 14px; border: 1px solid rgba(0,0,0,.12); min-width: 280px;
 }
 
-.deal .cash .price s::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: #dc2626; /* red strike line */
-}
+/* ---------- Footer ---------- */
+.footer { padding: 24px 0 32px; }
