@@ -165,3 +165,74 @@ body {
 
 /* ---------- Footer ---------- */
 .footer { padding: 24px 0 32px; }
+
+
+/* ===========================
+   Mobile-first optimization
+   =========================== */
+
+/* Small tablets and below */
+@media (max-width: 768px) {
+  /* Header */
+  .site-header { padding: 12px 0; }
+  .site-nav { gap: 12px; }
+  .site-tagline { display: none; }               /* free up space */
+  .nav-link { font-size: 15px; }
+
+  /* Hero */
+  .hero { padding: 18px 0 8px; }
+  .hero-title { font-size: clamp(24px, 6.2vw, 34px); }
+  .hero-subtitle { font-size: 15px; }
+
+  /* Search row */
+  .search-wrap { margin-top: 12px; gap: 8px; }
+  .search-wrap input {
+    height: 48px; max-width: 100%; font-size: 16px;
+  }
+  .search-wrap button {
+    height: 48px; padding: 0 18px; font-size: 15px; border-radius: 12px;
+  }
+
+  /* Cards grid: go to 2 columns on small tablets */
+  .cards { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+  .drug-card { padding: 14px; border-radius: 14px; }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+  /* Header: keep it compact */
+  .site-nav { gap: 10px; }
+  .brand { font-size: 20px; }
+  .nav-link { font-size: 14px; }
+
+  /* Hero */
+  .hero { padding: 16px 0 6px; }
+  .hero-title { font-size: clamp(22px, 7vw, 30px); }
+  .hero-subtitle { font-size: 14px; }
+
+  /* Search: full width, stacked if necessary */
+  .search-wrap { flex-wrap: nowrap; }
+  .search-wrap input { flex: 1; height: 46px; }
+  .search-wrap button { height: 46px; padding: 0 16px; }
+
+  /* Cards grid: single column */
+  .cards { grid-template-columns: 1fr; gap: 12px; }
+
+  /* Card internals */
+  .deal { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
+  .deal .with .price { font-size: 24px; }
+  .deal .cash .price s::after { height: 2px; } /* keep the red strike visible */
+
+  /* CTA: large and tappable */
+  .deal-cta .btn-lg {
+    padding: 14px 16px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+  .deal-cta .assure { font-size: 12px; }
+}
+
+/* Prevent brand wrapping and crowding on narrow headers */
+@media (max-width: 360px) {
+  .nav-link { display: none; }  /* hide About/Contact on very small screens */
+}
