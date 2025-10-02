@@ -74,11 +74,48 @@
        Featured drug cards
        Rendered live from Google Sheet via Apps Script
        ======================= -->
+
   <section class="container section-pad">
     <h2 class="section-title">Featured</h2>
 
     <div id="featured-cards" class="cards" role="list" aria-live="polite">
       <!-- JS injects cards here -->
+
+      <section class="cards-wrap" aria-busy="true" aria-labelledby="savings-heading">
+  <h2 id="savings-heading" class="visually-hidden">Latest Savings</h2>
+
+  <!-- Loading status for screen readers -->
+  <div class="sr-only" aria-live="polite" id="loading-status">Loading the latest savings…</div>
+
+  <!-- Loader banner -->
+  <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
+    <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
+    <strong>Finding current prices & programs…</strong>
+    <small>Checking coupons, copay cards, and manufacturer offers</small>
+  </div>
+
+  <!-- Skeleton cards (shown while data loads) -->
+  <div class="card skeleton">
+    <div class="sk-line sk-title"></div>
+    <div class="sk-line"></div>
+    <div class="sk-pill"></div>
+  </div>
+  <div class="card skeleton">
+    <div class="sk-line sk-title"></div>
+    <div class="sk-line"></div>
+    <div class="sk-pill"></div>
+  </div>
+  <div class="card skeleton">
+    <div class="sk-line sk-title"></div>
+    <div class="sk-line"></div>
+    <div class="sk-pill"></div>
+  </div>
+
+  <!-- Your real cards will be injected here -->
+  <div id="cards-root"></div>
+</section>
+
+
     </div>
 
     <div id="cards-loading" class="text-center muted small" aria-live="polite">
