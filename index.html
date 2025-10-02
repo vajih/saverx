@@ -216,6 +216,82 @@
   }
   </script>
 
+<script>
+(function () {
+  // Find the newsletter form on the page
+  const form = document.querySelector('.newsletter-form');
+  if (!form) return;
+
+  const emailInput = form.querySelector('input[type="email"]');
+  const submitBtn  = form.querySelector('button[type="submit"]');
+
+  // Helper to show a small status line under the form
+  function showMessage(msg) {
+    let hint = form.querySelector('.form-hint');
+    if (!hint) {
+      hint = document.createElement('p');
+      hint.className = 'form-hint';
+      form.appendChild(hint);
+    }
+    hint.textContent = msg;
+  }
+
+  // x-www-form-urlencoded serializer
+  const toForm = (data) =>
+    Object.entries(data)
+      .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+      .join('&');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = (emailInput.value || '').trim();
+    if (!email) {
+      showMessage('Please enter a valid email.');
+      emailInput.focus();
+      return;
+    }
+
+    // UI: lock the form while sending
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving…';
+
+    try {
+      // IMPORTANT: use your deployed /exec URL that you set earlier
+      const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
+      const body = toForm({
+        email,
+        drug: '',                      // optional
+        source: 'newsletter_home',     // <-- identify this lead source
+        userAgent: navigator.userAgent || ''
+      });
+
+      // Use no-cors so we don’t care about the redirect HTML response
+      await fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        mode: 'no-cors',
+        body
+      });
+
+      // Success UX
+      form.reset();
+      showMessage('Thanks! You’re subscribed.');
+      submitBtn.textContent = 'Subscribed';
+    } catch (err) {
+      console.error(err);
+      showMessage('Sorry—couldn’t save right now. Please try again.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+      return;
+    }
+  });
+})();
+</script>
+
+
+
   <!-- Small UX enhancements -->
   <script>
   // add shadow to header after first pixels scrolled
