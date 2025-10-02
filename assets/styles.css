@@ -236,3 +236,103 @@ body {
 @media (max-width: 360px) {
   .nav-link { display: none; }  /* hide About/Contact on very small screens */
 }
+
+/* --- Sticky Header --- */
+.site-header {
+  position: sticky;           /* stays at top during scroll */
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  padding: max(8px, env(safe-area-inset-top)) 16px 10px;
+  border-bottom: 1px solid #EEF0F3;
+  transition: box-shadow 180ms ease, backdrop-filter 180ms ease;
+}
+
+/* Subtle shadow when page scrolls a bit */
+.site-header.is-scrolled {
+  box-shadow: 0 4px 12px rgba(16,24,40,0.06);
+  backdrop-filter: saturate(120%) blur(4px);
+}
+
+/* Top row */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Brand — prevent double brand text elsewhere */
+.brand {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: #0B2440; /* your navy */
+  text-decoration: none;
+}
+
+/* Desktop nav (hidden on mobile) */
+.site-nav {
+  margin-left: auto;
+  display: none;
+  gap: 18px;
+}
+.site-nav a { color: #243A57; text-decoration: none; font-weight: 500; }
+
+/* Mobile menu button */
+.menu-btn {
+  margin-left: auto;
+  font: inherit;
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  line-height: 1;
+  border-radius: 8px;
+}
+
+/* Search row */
+.header-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 10px;
+}
+.header-search input[type="search"] {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid #E4E7EC;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #F7F9FC;
+}
+.header-search .primary {
+  height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #14284B;
+}
+
+/* Mobile drawer */
+.mobile-drawer[hidden] { display: none; }
+.mobile-drawer {
+  position: fixed;
+  inset: 0 0 0 40%;
+  background: #fff;
+  box-shadow: -8px 0 20px rgba(0,0,0,0.08);
+  padding: 20px;
+  z-index: 1200;
+}
+.mobile-drawer nav {
+  display: grid; gap: 14px;
+}
+.mobile-drawer a { color: #14284B; text-decoration: none; }
+
+/* Responsive: show desktop nav ≥768px and hide menu button */
+@media (min-width: 768px) {
+  .menu-btn { display: none; }
+  .site-nav { display: flex; }
+  .header-search { grid-template-columns: 1fr 160px; gap: 12px; }
+}

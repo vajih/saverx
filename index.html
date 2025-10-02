@@ -36,15 +36,37 @@
   <!-- =======================
        Header / Primary Nav
        ======================= -->
-  <header class="site-header container">
-  <nav class="site-nav" aria-label="Primary">
-    <a class="brand" href="index.html">SaveRx.ai</a>
-    <p class="muted site-tagline">Let our AI help lower your cost.</p>
-    <div class="nav-fill"></div>
-    <a class="nav-link" href="about.html">About</a>
-    <a class="nav-link" href="contact.html">Contact</a>
-  </nav>
+  <header class="site-header" role="banner">
+    <div class="header-row">
+      <a class="brand" href="/" aria-label="SaveRx.ai home">SaveRx.ai</a>
+
+      <!-- Mobile menu icon (optional) -->
+      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
+        ☰
+      </button>
+
+      <!-- Desktop nav (hidden on mobile) -->
+      <nav class="site-nav" aria-label="Primary">
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+
+    <!-- Search/CTA row (always visible; trimmed for mobile) -->
+    <form class="header-search" role="search" aria-label="Find a medication" action="/search">
+      <input name="q" type="search" inputmode="search" placeholder="Search for a medication" aria-label="Search for a medication" />
+      <button type="submit" class="primary">Start saving</button>
+    </form>
   </header>
+
+  <!-- Optional mobile drawer -->
+  <aside id="mobile-drawer" class="mobile-drawer" hidden>
+    <nav aria-label="Mobile">
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </aside>
+
 
 
   <!-- =======================

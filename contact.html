@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Contact SaveRx.ai — Get Help or Partner With Us</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Questions, corrections, or partnership ideas? Contact SaveRx.ai. We respond quickly." />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="canonical" href="https://www.saverx.ai/contact.html" />
+  <meta property="og:title" content="Contact SaveRx.ai" />
+  <meta property="og:description" content="Reach out for support, partnerships with PBMs, pharmacies, or manufacturers, or media inquiries." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.saverx.ai/contact.html" />
+  <meta property="og:image" content="/og/og-default.jpg" />
+  <meta name="theme-color" content="#0b0e11" />
+  <link rel="stylesheet" href="/styles.css" />
+
+  <script>
+    // Replace the scriptUrl with your live Apps Script endpoint
+    window.PAGE_CONFIG = {
+      scriptUrl: "https://script.google.com/macros/s/REPLACE_WITH_YOUR_APPS_SCRIPT_ID/exec",
+      source: "contact"
+    };
+  </script>
+  <script defer src="/scripts.js"></script>
+</head>
+<body class="theme-dark">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header container">
+    <nav class="site-nav">
+      <a class="brand" href="/">SaveRx.ai</a>
+      <div class="nav-fill"></div>
+      <a class="nav-link" href="/index.html">Home</a>
+      <a class="nav-link" href="/about.html">About</a>
+      <a class="nav-link active" aria-current="page" href="/contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <!-- Hero -->
+    <section class="card stack-lg">
+      <h1 class="h1">How can we help?</h1>
+      <p class="lead maxw-60">
+        Questions about a specific medication, a link that needs an update, or a partnership opportunity?
+        Send a message—we usually reply within one business day.
+      </p>
+      <div class="row gap-sm wrap">
+        <a class="btn btn-primary" href="#form">Send a message</a>
+        <a class="btn" href="mailto:help@saverx.ai">help@saverx.ai</a>
+      </div>
+    </section>
+
+    <!-- Partnerships CTA -->
+    <section id="partner" class="card prose stack-md">
+      <h2>Partnerships with PBMs, pharmacies, and pharmaceutical companies</h2>
+      <p>
+        We collaborate with PBMs, retail/independent pharmacies, and manufacturers to
+        improve affordability and reduce confusion at checkout. Let’s co-design compliant,
+        patient-friendly flows that increase program utilization and satisfaction.
+      </p>
+      <ul>
+        <li><strong>PBMs:</strong> education and routing that reduce abandon rates and support formulary strategy.</li>
+        <li><strong>Pharmacies:</strong> clear use of BIN/PCN/Group details and at-counter guidance to speed transactions.</li>
+        <li><strong>Manufacturers:</strong> accurate program representation, enrollment uplift, and actionable feedback loops.</li>
+      </ul>
+      <div class="row gap-sm wrap">
+        <a class="btn btn-primary" href="#form">Start a partnership conversation</a>
+        <a class="btn" href="mailto:partners@saverx.ai">partners@saverx.ai</a>
+      </div>
+    </section>
+
+    <!-- Two-column: form + details -->
+    <section class="grid-two stack-xl">
+      <div class="card">
+        <h2 id="form">Send a message</h2>
+        <form id="contactForm" class="stack-md" novalidate>
+          <input type="hidden" name="source" value="contact" />
+          <div class="visually-hidden" aria-hidden="true">
+            <label for="website">Do not fill this out</label>
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required />
+          </div>
+
+          <div class="field">
+            <label for="topic">Topic</label>
+            <select id="topic" name="topic" required>
+              <option value="" selected disabled>Choose one…</option>
+              <option>Patient help: savings/enrollment</option>
+              <option>Clinician/office: guidance</option>
+              <option>Partnership or media</option>
+              <option>Broken link / correction</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="message">How can we help?</label>
+            <textarea id="message" name="message" rows="6" required placeholder="Include medication name, insurer type, and details."></textarea>
+          </div>
+
+          <label for="consent" class="checkbox field">
+            <input id="consent" name="consent" type="checkbox" required />
+            <span>I agree to the <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
+          <p id="formStatus" role="status" aria-live="polite" class="status" hidden></p>
+        </form>
+      </div>
+
+      <div class="card prose">
+        <h2>Other ways to reach us</h2>
+        <ul class="contact-list">
+          <li><strong>Email:</strong> <a href="mailto:help@saverx.ai">help@saverx.ai</a></li>
+          <li><strong>Partnerships:</strong> <a href="mailto:partners@saverx.ai">partners@saverx.ai</a></li>
+          <li><strong>Hours:</strong> Mon–Fri, 9am–6pm CT</li>
+        </ul>
+
+        <h3>Response times</h3>
+        <p>We aim to reply within one business day. Urgent patient issues are prioritized.</p>
+
+        <h3>Compliance</h3>
+        <p>We cannot provide medical advice or intervene with your insurer. We point you to official options and how to use them.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer container">
+    <div class="footer-grid">
+      <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
+      <div>
+        <a href="/about.html">About</a> ·
+        <a href="/contact.html">Contact</a> ·
+        <a href="/privacy.html">Privacy</a>
+      </div>
+      <div>© <span id="y"></span> SaveRx.ai</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Lightweight handler that uses your shared scripts.js helpers if present
+    (function () {
+      const form = document.getElementById('contactForm');
+      const status = document.getElementById('formStatus');
+      const btn = document.getElementById('submitBtn');
+
+      function setStatus(msg, ok = true) {
+        status.hidden = false;
+        status.textContent = msg;
+        status.className = ok ? "status ok" : "status error";
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Honeypot
+        if (form.website && form.website.value.trim() !== "") {
+          setStatus("Submission blocked (spam detected).", false);
+          return;
+        }
+
+        if (!form.reportValidity()) return;
+
+        btn.disabled = true;
+        setStatus("Sending…", true);
+
+        try {
+          const data = Object.fromEntries(new FormData(form).entries());
+          data.UserAgent = navigator.userAgent;
+          data.Referrer = document.referrer || "direct";
+          data.Form = "contact";
+
+          const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
+          if (!scriptUrl) throw new Error("Missing Apps Script endpoint.");
+
+          const body = typeof toForm === "function"
+            ? toForm(data)
+            : new URLSearchParams(data).toString();
+
+          const res = await fetch(scriptUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body
+          });
+
+          const txt = await res.text();
+          if (!res.ok) throw new Error(txt || "Network error");
+
+          setStatus("Thanks! We’ve received your message and will reply shortly.");
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          setStatus("Sorry—something went wrong. Please email help@saverx.ai.", false);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+
+  <!-- Contact schema -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"ContactPage","mainEntity":{"@type":"Organization","name":"SaveRx.ai","url":"https://www.saverx.ai","contactPoint":[{"@type":"ContactPoint","contactType":"customer support","email":"help@saverx.ai","availableLanguage":["English"],"areaServed":"US"}]}}
+  </script>
+</body>
+</html>
