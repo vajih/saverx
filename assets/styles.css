@@ -439,27 +439,3 @@ html, body { overflow-x: hidden; }
 .status{margin-top:10px;font-size:0.95rem}
 .hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
 
-/* --- Fix: form buttons sizing --- */
-
-/* Newsletter form: keep button natural size */
-.newsletter .newsletter-form button {
-  width: auto;
-  min-width: 120px;       /* keeps a consistent small block */
-  padding: 12px 18px;
-  box-shadow: none;       /* matches earlier compact design */
-}
-
-/* Request form: make Notify me compact too */
-.request-form button {
-  width: auto;
-  min-width: 120px;
-  padding: 12px 18px;
-  box-shadow: none;
-}
-
-@media (max-width: 400px) {
-  .newsletter .newsletter-form button,
-  .request-form button {
-    width: 100%;
-  }
-}
