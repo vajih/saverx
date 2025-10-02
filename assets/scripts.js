@@ -159,10 +159,7 @@
       </div>
 
       <div class="deal-cta">
-        <a class="btn-lg" href="${d.url}" target="_blank" rel="noopener"
-           aria-label="Get savings card for ${d.name}">
-           Get Your Savings Card
-        </a>
+        <a class="btn-lg get-card" href="${d.url}" data-drug="${d.name}" data-url="${d.url}" aria-label="Get savings card for ${d.name}"> Get Your Savings Card</a>
         <div class="assure">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M9 12l2 2 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -207,4 +204,99 @@
 
   // Expose for index.html
   window.renderFeaturedDrugs = renderFeaturedDrugs;
+})();
+
+/* -------------------------------------------------------
+   Homepage: shared email modal for Featured CTAs
+   - Opens on click of any .get-card (delegated)
+   - Posts to Apps Script using PAGE_CONFIG.scriptUrl
+   - Redirects to the clicked card's official URL
+   ------------------------------------------------------- */
+(function homepageEmailModal(){
+  const modal   = document.getElementById('email-modal');
+  const form    = document.getElementById('modal-lead-form');
+  const emailEl = document.getElementById('modal-email');
+  const drugEl  = document.getElementById('modal-drug');
+  const uaEl    = document.getElementById('modal-ua');
+  const refEl   = document.getElementById('modal-ref');
+  const status  = document.getElementById('modal-status');
+  const submit  = document.getElementById('modal-submit');
+
+  if (!modal || !form) return; // not on homepage
+
+  const SCRIPT_URL = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
+  let redirectUrl = '/';
+
+  function openModal(drugName, url){
+    drugEl.value = drugName || '';
+    redirectUrl  = url || '/';
+    uaEl.value   = navigator.userAgent || '';
+    refEl.value  = document.referrer || '';
+    modal.setAttribute('aria-hidden','false');
+    setTimeout(()=>emailEl?.focus(), 10);
+  }
+  function closeModal(){
+    modal.setAttribute('aria-hidden','true');
+    status.textContent = '';
+    submit.disabled = false;
+    form.reset();
+  }
+
+  // Open modal on ANY Featured CTA (cards are injected dynamically)
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a.get-card');
+    if (!a) return;
+    // allow new-tab behavior if user intends it
+    if (e.metaKey || e.ctrlKey || e.button === 1) return;
+
+    e.preventDefault();
+    openModal(a.getAttribute('data-drug') || '',
+              a.getAttribute('data-url')  || a.getAttribute('href') || '/');
+  });
+
+  // Close & Skip
+  modal.addEventListener('click', (e) => {
+    if (e.target.matches('[data-close], .modal-backdrop')) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+  });
+
+  // Submit → post → redirect (never blocks for long)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = '';
+    submit.disabled = true;
+
+    const email = (emailEl.value || '').trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)){
+      status.textContent = 'Please enter a valid email.';
+      submit.disabled = false;
+      emailEl.focus();
+      return;
+    }
+
+    const body = new URLSearchParams(new FormData(form)).toString();
+
+    // Optional: remember email locally
+    try { localStorage.setItem('saverx_email', email); } catch {}
+
+    const controller = new AbortController();
+    const t = setTimeout(()=>controller.abort(), 4000);
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        mode: 'no-cors', // matches your other forms
+        body,
+        signal: controller.signal
+      });
+    } catch(_) {
+      /* non-fatal; still redirect */
+    } finally {
+      clearTimeout(t);
+      window.location.assign(redirectUrl);
+    }
+  });
 })();

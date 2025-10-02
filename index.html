@@ -224,10 +224,16 @@
               <div class="card-body">
                 <h3 class="drug-title">${name}${generic}</h3>
                 <p class="drug-subtitle">${mfr}${asLow ? ' • ' + asLow : ''}</p>
-                <a class="btn" href="${url}">Get Savings</a>
+                <a
+                  class="btn btn-primary get-card"
+                  href="${url}"                 /* progressive enhancement: still works if JS fails */
+                  data-drug="${name}"
+                  data-url="${url}"
+                >Get Savings</a>
               </div>
             </article>
           `;
+
         }).join('');
       } catch (err) {
         if (loadingEl) loadingEl.textContent = 'Could not load savings.';
@@ -441,6 +447,40 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<!-- SaveRx: Email capture modal (shared by all Featured cards) -->
+<div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel" role="document">
+    <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
+
+    <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
+    <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
+
+    <form id="modal-lead-form" novalidate>
+      <!-- Honeypot (spam trap) -->
+      <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
+
+      <label class="field">
+        <span>Email</span>
+        <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
+      </label>
+
+      <!-- These are filled by JS when user clicks a card -->
+      <input type="hidden" name="drug" id="modal-drug" />
+      <input type="hidden" name="source" value="SaveRx Home Modal" />
+      <input type="hidden" name="useragent" id="modal-ua" />
+      <input type="hidden" name="referrer" id="modal-ref" />
+
+      <div class="modal-actions">
+        <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
+
+      </div>
+
+      <div id="modal-status" class="status" role="status" aria-live="polite"></div>
+      <p class="microcopy">By continuing, you agree to our <a href="terms.html">Terms</a> & <a href="privacy.html">Privacy</a>.</p>
+    </form>
+  </div>
+</div>
 
 
 
