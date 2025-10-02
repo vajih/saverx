@@ -217,15 +217,18 @@
   </script>
 
 <script>
-(function () {
-  // Find the newsletter form on the page
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('.newsletter-form');
-  if (!form) return;
+  if (!form) { console.warn('[newsletter] form not found'); return; }
 
   const emailInput = form.querySelector('input[type="email"]');
   const submitBtn  = form.querySelector('button[type="submit"]');
 
-  // Helper to show a small status line under the form
+  // Belt & suspenders: ensure the form itself never navigates
+  form.setAttribute('action', '');
+  form.setAttribute('method', 'get');  // GET on a static page is safe if JS fails
+
+  // status line
   function showMessage(msg) {
     let hint = form.querySelector('.form-hint');
     if (!hint) {
@@ -236,46 +239,41 @@
     hint.textContent = msg;
   }
 
-  // x-www-form-urlencoded serializer
+  // serializer
   const toForm = (data) =>
     Object.entries(data)
       .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
       .join('&');
 
-  form.addEventListener('submit', async (e) => {
+  console.log('[newsletter] handler attached');
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    e.stopPropagation();
 
     const email = (emailInput.value || '').trim();
-    if (!email) {
-      showMessage('Please enter a valid email.');
-      emailInput.focus();
-      return;
-    }
+    if (!email) { showMessage('Please enter a valid email.'); emailInput.focus(); return false; }
 
-    // UI: lock the form while sending
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving…';
 
     try {
-      // IMPORTANT: use your deployed /exec URL that you set earlier
       const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
       const body = toForm({
         email,
-        drug: '',                      // optional
-        source: 'newsletter_home',     // <-- identify this lead source
-        userAgent: navigator.userAgent || ''
+        drug: '',
+        source: 'newsletter_home',
+        // match your backend param name: useragent (lowercase)
+        useragent: navigator.userAgent || ''
       });
 
-      // Use no-cors so we don’t care about the redirect HTML response
       await fetch(scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        mode: 'no-cors',
-        body
-      });
+        mode: 'no-cors'
+      , body });
 
-      // Success UX
       form.reset();
       showMessage('Thanks! You’re subscribed.');
       submitBtn.textContent = 'Subscribed';
@@ -284,11 +282,13 @@
       showMessage('Sorry—couldn’t save right now. Please try again.');
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-      return;
     }
-  });
-})();
+
+    return false; // extra guard against navigation
+  }, { passive: false });
+});
 </script>
+
 
 
 
