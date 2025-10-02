@@ -97,6 +97,27 @@
     </noscript>
   </section>
 
+<!-- ==== Request Medication section =======-->
+
+<!-- Request a medication (MVP lead capture) -->
+<section id="request-med" class="container section-pad">
+  <h2 class="section-title">Don’t see your medication?</h2>
+  <p class="muted">Tell us what you need and we’ll email you when we add it.</p>
+
+  <form id="request-form" class="request-form" action="" method="get" novalidate>
+    <label class="visually-hidden" for="request-drug">Medication name</label>
+    <input type="text" id="request-drug" name="drug" placeholder="Medication name (e.g., Mounjaro)" required aria-label="Medication name">
+
+    <label class="visually-hidden" for="request-email">Email address</label>
+    <input type="email" id="request-email" name="email" placeholder="you@example.com" required aria-label="Email address">
+
+    <button type="submit" class="btn btn-primary">Notify me</button>
+    <p id="request-hint" class="form-hint"></p>
+  </form>
+</section>
+
+
+
   <!-- =======================
        Newsletter CTA
        ======================= -->
@@ -322,5 +343,67 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   })();
   </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('request-form');
+  if (!form) { console.warn('[request-med] form not found'); return; }
+
+  const drugInput  = document.getElementById('request-drug');
+  const emailInput = document.getElementById('request-email');
+  const hint       = document.getElementById('request-hint');
+  const submitBtn  = form.querySelector('button[type="submit"]');
+
+  function show(msg) { if (hint) hint.textContent = msg; }
+
+  // x-www-form-urlencoded
+  const toForm = (data) =>
+    Object.entries(data).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+
+  console.log('[request-med] handler attached');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault(); e.stopPropagation();
+
+    const drug  = (drugInput.value  || '').trim();
+    const email = (emailInput.value || '').trim();
+
+    if (!drug)  { show('Please enter a medication name.'); drugInput.focus();  return false; }
+    if (!email) { show('Please enter a valid email.');     emailInput.focus(); return false; }
+
+    const original = submitBtn.textContent;
+    submitBtn.disabled = true; submitBtn.textContent = 'Saving…'; show('');
+
+    try {
+      const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
+      const body = toForm({
+        email,
+        drug,
+        source: 'request_med',
+        useragent: navigator.userAgent || ''
+      });
+
+      await fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        mode: 'no-cors',
+        body
+      });
+
+      form.reset();
+      show('Got it! We’ll email you when this medication is available.');
+      submitBtn.textContent = 'Request saved';
+    } catch (err) {
+      console.error(err);
+      show('Sorry—couldn’t save right now. Please try again.');
+      submitBtn.disabled = false; submitBtn.textContent = original;
+    }
+
+    return false;
+  }, { passive: false });
+});
+</script>
+
+
 </body>
 </html>
