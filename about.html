@@ -5,30 +5,23 @@
   <title>About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="SaveRx.ai guides patients and caregivers to official manufacturer savings programs—fast. Clear steps, no gimmicks." />
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="canonical" href="https://www.saverx.ai/about.html" />
-  <meta property="og:title" content="About SaveRx.ai" />
-  <meta property="og:description" content="We point you to official manufacturer savings and walk you through enrollment." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.saverx.ai/about.html" />
-  <meta property="og:image" content="/og/og-default.jpg" />
-  <meta name="theme-color" content="#0b0e11" />
-  <link rel="stylesheet" href="/styles.css" />
-  <script>
-    window.PAGE_CONFIG = { source: "about" };
-  </script>
-  <script defer src="/scripts.js"></script>
+  <link rel="icon" href="assets/img/favicon.png" />
+  <!-- IMPORTANT: use relative path; change to ../styles.css if this file is in a subfolder -->
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script>window.PAGE_CONFIG = { source: "about" };</script>
+  <!-- If you rely on shared helpers in scripts.js, load it with a relative path too -->
+  <script defer src="assets/scripts.js"></script>
 </head>
 <body class="theme-dark">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header container">
     <nav class="site-nav">
-      <a class="brand" href="/">SaveRx.ai</a>
+      <a class="brand" href="./">SaveRx.ai</a>
       <div class="nav-fill"></div>
-      <a class="nav-link" href="/index.html">Home</a>
-      <a class="nav-link active" aria-current="page" href="/about.html">About</a>
-      <a class="nav-link" href="/contact.html">Contact</a>
+      <a class="nav-link" href="./index.html">Home</a>
+      <a class="nav-link active" aria-current="page" href="./about.html">About</a>
+      <a class="nav-link" href="./contact.html">Contact</a>
     </nav>
   </header>
 
@@ -41,8 +34,8 @@
         We show the exact steps to enroll and what to expect at the pharmacy.
       </p>
       <div class="row gap-sm wrap-center">
-        <a class="btn btn-primary" href="/contact.html#partner">Partner with us</a>
-        <a class="btn" href="/index.html#drugs">See medications</a>
+        <a class="btn btn-primary" href="./contact.html#partner">Partner with us</a>
+        <a class="btn" href="./index.html#drugs">See medications</a>
       </div>
     </section>
 
@@ -96,12 +89,12 @@
         <strong>pharmaceutical manufacturer</strong>, we’d love to collaborate.
       </p>
       <ul>
-        <li><strong>PBMs:</strong> education flows, program routing, and eligibility clarity that reduce friction and confusion.</li>
-        <li><strong>Pharmacies:</strong> checkout guidance, bin/pcn/group usage tips, and patient-friendly instructions.</li>
-        <li><strong>Manufacturers:</strong> accurate program representation, enrollment uplift, and feedback on real-world barriers.</li>
+        <li><strong>PBMs:</strong> education flows, program routing, and eligibility clarity that reduce friction.</li>
+        <li><strong>Pharmacies:</strong> checkout guidance, BIN/PCN/Group usage tips, patient-friendly instructions.</li>
+        <li><strong>Manufacturers:</strong> accurate program representation, enrollment uplift, real-world feedback.</li>
       </ul>
       <div class="row gap-sm wrap">
-        <a class="btn btn-primary" href="/contact.html?topic=Partnership%20or%20media#form">Discuss a partnership</a>
+        <a class="btn btn-primary" href="./contact.html?topic=Partnership%20or%20media#form">Discuss a partnership</a>
         <a class="btn" href="mailto:partners@saverx.ai">partners@saverx.ai</a>
       </div>
     </section>
@@ -117,19 +110,14 @@
     <div class="footer-grid">
       <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
       <div>
-        <a href="/about.html">About</a> ·
-        <a href="/contact.html">Contact</a> ·
-        <a href="/privacy.html">Privacy</a>
+        <a href="./about.html">About</a> ·
+        <a href="./contact.html">Contact</a> ·
+        <a href="./privacy.html">Privacy</a>
       </div>
       <div>© <span id="y"></span> SaveRx.ai</div>
     </div>
   </footer>
 
   <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
-
-  <!-- Minimal schema -->
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"SaveRx.ai","url":"https://www.saverx.ai","logo":"/og/og-default.jpg"}
-  </script>
 </body>
 </html>

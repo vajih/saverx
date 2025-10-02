@@ -5,35 +5,29 @@
   <title>Contact SaveRx.ai — Get Help or Partner With Us</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Questions, corrections, or partnership ideas? Contact SaveRx.ai. We respond quickly." />
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="canonical" href="https://www.saverx.ai/contact.html" />
-  <meta property="og:title" content="Contact SaveRx.ai" />
-  <meta property="og:description" content="Reach out for support, partnerships with PBMs, pharmacies, or manufacturers, or media inquiries." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.saverx.ai/contact.html" />
-  <meta property="og:image" content="/og/og-default.jpg" />
-  <meta name="theme-color" content="#0b0e11" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="assets/img/favicon.png" />
+  <!-- IMPORTANT: relative paths so styles load locally and in production -->
+  <link rel="stylesheet" href="assets/styles.css" />
 
   <script>
-    // Replace the scriptUrl with your live Apps Script endpoint
+    // Swap to your live Apps Script endpoint before deploying
     window.PAGE_CONFIG = {
       scriptUrl: "https://script.google.com/macros/s/REPLACE_WITH_YOUR_APPS_SCRIPT_ID/exec",
       source: "contact"
     };
   </script>
-  <script defer src="/scripts.js"></script>
+  <script defer src="assets/scripts.js"></script>
 </head>
 <body class="theme-dark">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header container">
     <nav class="site-nav">
-      <a class="brand" href="/">SaveRx.ai</a>
+      <a class="brand" href="./">SaveRx.ai</a>
       <div class="nav-fill"></div>
-      <a class="nav-link" href="/index.html">Home</a>
-      <a class="nav-link" href="/about.html">About</a>
-      <a class="nav-link active" aria-current="page" href="/contact.html">Contact</a>
+      <a class="nav-link" href="./index.html">Home</a>
+      <a class="nav-link" href="./about.html">About</a>
+      <a class="nav-link active" aria-current="page" href="./contact.html">Contact</a>
     </nav>
   </header>
 
@@ -110,7 +104,7 @@
 
           <label for="consent" class="checkbox field">
             <input id="consent" name="consent" type="checkbox" required />
-            <span>I agree to the <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+            <span>I agree to the <a href="./privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
           </label>
 
           <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
@@ -139,9 +133,9 @@
     <div class="footer-grid">
       <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
       <div>
-        <a href="/about.html">About</a> ·
-        <a href="/contact.html">Contact</a> ·
-        <a href="/privacy.html">Privacy</a>
+        <a href="./about.html">About</a> ·
+        <a href="./contact.html">Contact</a> ·
+        <a href="./privacy.html">Privacy</a>
       </div>
       <div>© <span id="y"></span> SaveRx.ai</div>
     </div>
@@ -150,7 +144,6 @@
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
 
-    // Lightweight handler that uses your shared scripts.js helpers if present
     (function () {
       const form = document.getElementById('contactForm');
       const status = document.getElementById('formStatus');
@@ -170,7 +163,6 @@
           setStatus("Submission blocked (spam detected).", false);
           return;
         }
-
         if (!form.reportValidity()) return;
 
         btn.disabled = true;
@@ -185,7 +177,7 @@
           const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
           if (!scriptUrl) throw new Error("Missing Apps Script endpoint.");
 
-          const body = typeof toForm === "function"
+          const body = (typeof toForm === "function")
             ? toForm(data)
             : new URLSearchParams(data).toString();
 
@@ -208,11 +200,6 @@
         }
       });
     })();
-  </script>
-
-  <!-- Contact schema -->
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"ContactPage","mainEntity":{"@type":"Organization","name":"SaveRx.ai","url":"https://www.saverx.ai","contactPoint":[{"@type":"ContactPoint","contactType":"customer support","email":"help@saverx.ai","availableLanguage":["English"],"areaServed":"US"}]}}
   </script>
 </body>
 </html>

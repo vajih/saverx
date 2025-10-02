@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <!-- =========================================================
-       SaveRx.ai — Homepage
+       SaveRx.ai — Homepage (MVP, no on-page search)
        Notes:
        - Uses a tiny helper (at the end of <body>) to append a
          cache-busting version to CSS/JS (no manual bumps).
@@ -14,7 +14,7 @@
   <title>SaveRx.ai — Stop paying too much for prescriptions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description"
-        content="Compare prices and save up to 80% on popular prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara. Official manufacturer savings links and simple guidance." />
+        content="Compare prices and save on popular prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara. Official manufacturer savings links and simple guidance." />
   <meta name="robots" content="index, follow" />
 
   <!-- Open Graph / Social -->
@@ -38,7 +38,7 @@
        ======================= -->
   <header class="site-header" role="banner">
     <div class="header-row">
-      <a class="brand" href="/" aria-label="SaveRx.ai home">SaveRx.ai</a>
+      <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
 
       <!-- Mobile menu icon (optional) -->
       <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
@@ -47,43 +47,27 @@
 
       <!-- Desktop nav (hidden on mobile) -->
       <nav class="site-nav" aria-label="Primary">
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
       </nav>
     </div>
-
-    <!-- Search/CTA row (always visible; trimmed for mobile) -->
-    <form class="header-search" role="search" aria-label="Find a medication" action="/search">
-      <input name="q" type="search" inputmode="search" placeholder="Search for a medication" aria-label="Search for a medication" />
-      <button type="submit" class="primary">Start saving</button>
-    </form>
   </header>
 
   <!-- Optional mobile drawer -->
   <aside id="mobile-drawer" class="mobile-drawer" hidden>
     <nav aria-label="Mobile">
-      <a href="/about.html">About</a>
-      <a href="/contact.html">Contact</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </aside>
 
-
-
   <!-- =======================
-       Hero + Search
+       Hero
        ======================= -->
   <section class="hero container text-center">
     <h1 class="hero-title">Stop paying too much for prescriptions</h1>
-    <p class="hero-subtitle">Compare prices and save up to 90%.</p>
-
-    <!-- Accessible search: label is visually hidden but readable by screen readers -->
-    <form class="search-form" action="search.html" method="get" role="search">
-      <div class="search-wrap">
-        <label for="search-input" class="visually-hidden">Search for a medication</label>
-        <input id="search-input" type="text" name="q" placeholder="Search for a medication" required />
-        <button type="submit" class="btn btn-primary">Start saving</button>
-      </div>
-    </form>
+    <p class="hero-subtitle">Find official manufacturer savings and lower your out-of-pocket.</p>
+    <!-- (Search removed for MVP) -->
   </section>
 
   <!-- =======================
@@ -91,20 +75,26 @@
        Rendered live from Google Sheet via Apps Script
        ======================= -->
   <section class="container section-pad">
+    <h2 class="section-title">Featured</h2>
+
     <div id="featured-cards" class="cards" role="list" aria-live="polite">
       <!-- JS injects cards here -->
     </div>
 
-    <div id="cards-loading" class="text-center muted small">
+    <div id="cards-loading" class="text-center muted small" aria-live="polite">
       Loading savings…
     </div>
 
     <!-- (Optional) Simple pagination stub for now -->
-    <div class="text-center muted small">
-      <span aria-hidden="true">‹</span>
+    <div class="text-center muted small" aria-hidden="true">
+      <span>‹</span>
       <span style="margin:0 8px;">1 of 2</span>
-      <span aria-hidden="true">›</span>
+      <span>›</span>
     </div>
+
+    <noscript>
+      <p class="muted small">JavaScript is required to load the latest Featured savings.</p>
+    </noscript>
   </section>
 
   <!-- =======================
@@ -113,9 +103,9 @@
   <section class="newsletter">
     <div class="container text-center">
       <h2>Good news for your inbox</h2>
-      <p class="muted">Sign up for our newsletter for tips and discounts.</p>
+      <p class="muted">Sign up for tips and new medication savings as we add them.</p>
 
-      <!-- If you don’t have an endpoint yet, keep action="#" -->
+      <!-- Keep # for now; wire to Apps Script later if you want -->
       <form action="#" method="post" class="newsletter-form">
         <label for="newsletter-email" class="visually-hidden">Email address</label>
         <input id="newsletter-email" type="email" name="email" placeholder="Email address" required />
@@ -136,6 +126,58 @@
     <p class="muted">&copy; <script>document.write(new Date().getFullYear());</script> SaveRx.ai</p>
   </footer>
 
+  <!-- Provide the Apps Script URL (single source of truth) -->
+  <script>
+    window.PAGE_CONFIG = {
+      // Your deployed Web App URL (ends with /exec)
+      scriptUrl: "https://script.google.com/macros/s/AKfycbzJUp5EXbJ7_BS8OV4Bm--khDRZU4WmP4R7wH3vbNupz9oimHcQvXAXOWgypeGN-au3Cg/exec"
+    };
+  </script>
+
+  <!-- Tiny fallback: if assets/scripts.js doesn't define renderFeaturedDrugs(),
+       this will render from ?mode=featured so MVP still works. -->
+  <script>
+    window.renderFeaturedDrugs = window.renderFeaturedDrugs || (async function defaultRenderFeaturedDrugs(feedUrl){
+      const container = document.getElementById('featured-cards');
+      const loadingEl = document.getElementById('cards-loading');
+      try {
+        const res = await fetch(feedUrl);
+        const json = await res.json();
+        const items = (json && json.items) || [];
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (!container) return;
+
+        if (!items.length) {
+          container.innerHTML = '<p class="muted small">No Featured medications configured yet.</p>';
+          return;
+        }
+
+        const escape = s => (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        container.innerHTML = items.map(item => {
+          const name = escape(item.name);
+          const generic = item.generic ? ` (${escape(item.generic)})` : '';
+          const mfr = escape(item.manufacturer || '');
+          const url = item.url || '#';
+          const asLow = (item.as_low_as != null && !isNaN(Number(item.as_low_as)))
+            ? `As low as $${Number(item.as_low_as).toLocaleString()}`
+            : '';
+          return `
+            <article class="card drug-card" role="listitem">
+              <div class="card-body">
+                <h3 class="drug-title">${name}${generic}</h3>
+                <p class="drug-subtitle">${mfr}${asLow ? ' • ' + asLow : ''}</p>
+                <a class="btn" href="${url}">Get Savings</a>
+              </div>
+            </article>
+          `;
+        }).join('');
+      } catch (err) {
+        if (loadingEl) loadingEl.textContent = 'Could not load savings.';
+        console.error('Featured load error:', err);
+      }
+    });
+  </script>
+
   <!-- =========================================================
        Tiny helper:
        - Sets CSS/JS URLs with a date version to bust cache
@@ -155,8 +197,8 @@
       s.onload = function () {
         if (window.renderFeaturedDrugs) {
           window.renderFeaturedDrugs(
-            // Apps Script endpoint serving JSON from the "Featured" sheet
-            'https://script.google.com/macros/s/AKfycbz77MdfpFBubX-CFd1bQYLcBGzL1QsuyMwRYRdFVKJU78iHNMLlPmE49UQSw5vFoPhzmw/exec?mode=featured'
+            // Use your Featured JSON feed
+            (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl ? window.PAGE_CONFIG.scriptUrl : '') + '?mode=featured'
           );
         }
       };
@@ -164,21 +206,17 @@
     })();
   </script>
 
-  <!-- Structured data (SearchAction) -->
+  <!-- Structured data (Website only; search action removed for MVP) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "SaveRx.ai",
-    "url": "https://vajih.github.io/saverx/index.html",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://vajih.github.io/saverx/search.html?q={query}",
-      "query-input": "required name=query"
-    }
+    "url": "https://vajih.github.io/saverx/index.html"
   }
   </script>
 
+  <!-- Small UX enhancements -->
   <script>
   // add shadow to header after first pixels scrolled
   (function () {
@@ -207,7 +245,6 @@
       });
     }
   })();
-</script>
-
+  </script>
 </body>
 </html>
