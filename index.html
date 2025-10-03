@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <!-- =========================================================
-       SaveRx.ai — Homepage (MVP, no on-page search)
+       SaveRx.ai — Homepage (MVP)
        Notes:
        - Uses a tiny helper (at the end of <body>) to append a
          cache-busting version to CSS/JS (no manual bumps).
@@ -24,12 +24,14 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://vajih.github.io/saverx/index.html" />
   <link rel="canonical" href="https://vajih.github.io/saverx/index.html" />
+  <link rel="preconnect" href="https://script.google.com">
+
 
   <!-- Favicon -->
   <link rel="icon" href="assets/img/favicon.png" />
 
-  <!-- CSS is set dynamically by the tiny helper (cache-busted) -->
-  <link id="cssLink" rel="stylesheet" href="">
+  <!-- CSS (cache-busted by helper below) -->
+  <link rel="stylesheet" href="assets/styles.css?v=2025-10-03">
 </head>
 
 <body class="theme-light">
@@ -40,7 +42,7 @@
     <div class="header-row">
       <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
 
-      <!-- Mobile menu icon (optional) -->
+      <!-- Mobile menu icon -->
       <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
         ☰
       </button>
@@ -71,58 +73,47 @@
   </section>
 
   <!-- =======================
-       Featured drug cards
+       Featured (Loader + Skeletons + Cards)
        Rendered live from Google Sheet via Apps Script
        ======================= -->
+  <section id="featured" class="container section-pad loading" aria-busy="true" aria-labelledby="savings-heading">
+    <h2 id="savings-heading" class="section-title">Featured</h2>
 
-  <section class="container section-pad">
-    <h2 class="section-title">Featured</h2>
-
-    <div id="featured-cards" class="cards" role="list" aria-live="polite">
-      <!-- JS injects cards here -->
-
-      <section class="cards-wrap" aria-busy="true" aria-labelledby="savings-heading">
-  <h2 id="savings-heading" class="visually-hidden">Latest Savings</h2>
-
-  <!-- Loading status for screen readers -->
-  <div class="sr-only" aria-live="polite" id="loading-status">Loading the latest savings…</div>
-
-  <!-- Loader banner -->
-  <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
-    <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
-    <strong>Finding current prices & programs…</strong>
-    <small>Checking coupons, copay cards, and manufacturer offers</small>
-  </div>
-
-  <!-- Skeleton cards (shown while data loads) -->
-  <div class="card skeleton">
-    <div class="sk-line sk-title"></div>
-    <div class="sk-line"></div>
-    <div class="sk-pill"></div>
-  </div>
-  <div class="card skeleton">
-    <div class="sk-line sk-title"></div>
-    <div class="sk-line"></div>
-    <div class="sk-pill"></div>
-  </div>
-  <div class="card skeleton">
-    <div class="sk-line sk-title"></div>
-    <div class="sk-line"></div>
-    <div class="sk-pill"></div>
-  </div>
-
-  <!-- Your real cards will be injected here -->
-  <div id="cards-root"></div>
-</section>
-
-
+    <!-- AI scanning loader banner -->
+    <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
+      <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
+      <strong>Finding current prices & programs…</strong>
+      <small>Checking coupons, copay cards, and manufacturer offers</small>
     </div>
 
+    <!-- Skeleton placeholders (visible while data loads) -->
+    <div class="cards" id="skeleton-cards">
+      <article class="card skeleton" aria-hidden="true">
+        <div class="sk-line sk-title"></div>
+        <div class="sk-line"></div>
+        <div class="sk-pill"></div>
+      </article>
+      <article class="card skeleton" aria-hidden="true">
+        <div class="sk-line sk-title"></div>
+        <div class="sk-line"></div>
+        <div class="sk-pill"></div>
+      </article>
+      <article class="card skeleton" aria-hidden="true">
+        <div class="sk-line sk-title"></div>
+        <div class="sk-line"></div>
+        <div class="sk-pill"></div>
+      </article>
+    </div>
+
+    <!-- Real cards injected here -->
+    <div id="featured-cards" class="cards" role="list" aria-live="polite"></div>
+
+    <!-- Fallback text loader -->
     <div id="cards-loading" class="text-center muted small" aria-live="polite">
       Loading savings…
     </div>
 
-    <!-- (Optional) Simple pagination stub for now -->
+    <!-- (Optional) Simple pagination stub -->
     <div class="text-center muted small" aria-hidden="true">
       <span>‹</span>
       <span style="margin:0 8px;">1 of 2</span>
@@ -134,26 +125,24 @@
     </noscript>
   </section>
 
-<!-- ==== Request Medication section =======-->
+  <!-- =======================
+       Request a medication (MVP lead capture)
+       ======================= -->
+  <section id="request-med" class="container section-pad">
+    <h2 class="section-title">Don’t see your medication?</h2>
+    <p class="muted">Tell us what you need and we’ll email you when we add it.</p>
 
-<!-- Request a medication (MVP lead capture) -->
-<section id="request-med" class="container section-pad">
-  <h2 class="section-title">Don’t see your medication?</h2>
-  <p class="muted">Tell us what you need and we’ll email you when we add it.</p>
+    <form id="request-form" class="request-form" action="" method="get" novalidate>
+      <label class="visually-hidden" for="request-drug">Medication name</label>
+      <input type="text" id="request-drug" name="drug" placeholder="Medication name (e.g., Mounjaro)" required aria-label="Medication name">
 
-  <form id="request-form" class="request-form" action="" method="get" novalidate>
-    <label class="visually-hidden" for="request-drug">Medication name</label>
-    <input type="text" id="request-drug" name="drug" placeholder="Medication name (e.g., Mounjaro)" required aria-label="Medication name">
+      <label class="visually-hidden" for="request-email">Email address</label>
+      <input type="email" id="request-email" name="email" placeholder="you@example.com" required aria-label="Email address">
 
-    <label class="visually-hidden" for="request-email">Email address</label>
-    <input type="email" id="request-email" name="email" placeholder="you@example.com" required aria-label="Email address">
-
-    <button type="submit" class="btn btn-primary">Notify me</button>
-    <p id="request-hint" class="form-hint"></p>
-  </form>
-</section>
-
-
+      <button type="submit" class="btn btn-primary">Notify me</button>
+      <p id="request-hint" class="form-hint"></p>
+    </form>
+  </section>
 
   <!-- =======================
        Newsletter CTA
@@ -163,7 +152,6 @@
       <h2>Good news for your inbox</h2>
       <p class="muted">Sign up for tips and new medication savings as we add them.</p>
 
-      <!-- Keep # for now; wire to Apps Script later if you want -->
       <form action="#" method="post" class="newsletter-form">
         <label for="newsletter-email" class="visually-hidden">Email address</label>
         <input id="newsletter-email" type="email" name="email" placeholder="Email address" required />
@@ -184,7 +172,7 @@
     <p class="muted">&copy; <script>document.write(new Date().getFullYear());</script> SaveRx.ai</p>
   </footer>
 
-  <!-- Provide the Apps Script URL (single source of truth) -->
+  <!-- Config for Apps Script -->
   <script>
     window.PAGE_CONFIG = {
       // Your deployed Web App URL (ends with /exec)
@@ -192,19 +180,25 @@
     };
   </script>
 
-  <!-- Tiny fallback: if assets/scripts.js doesn't define renderFeaturedDrugs(),
-       this will render from ?mode=featured so MVP still works. -->
+  <!-- Fallback: if assets/scripts.js didn't define renderFeaturedDrugs(),
+       this fetches from ?mode=featured -->
   <script>
     window.renderFeaturedDrugs = window.renderFeaturedDrugs || (async function defaultRenderFeaturedDrugs(feedUrl){
       const container = document.getElementById('featured-cards');
       const loadingEl = document.getElementById('cards-loading');
       try {
-        const res = await fetch(feedUrl);
+        const res = await fetch(feedUrl, { cache: 'no-cache' });
         const json = await res.json();
         const items = (json && json.items) || [];
         if (loadingEl) loadingEl.style.display = 'none';
-        if (!container) return;
 
+        // Remove loader + skeletons, flip aria-busy
+        document.getElementById('skeleton-cards')?.remove();
+        document.getElementById('ai-loader')?.remove();
+        const wrapper = document.getElementById('featured');
+        if (wrapper) { wrapper.classList.remove('loading'); wrapper.classList.add('loaded'); wrapper.setAttribute('aria-busy','false'); }
+
+        if (!container) return;
         if (!items.length) {
           container.innerHTML = '<p class="muted small">No Featured medications configured yet.</p>';
           return;
@@ -226,14 +220,13 @@
                 <p class="drug-subtitle">${mfr}${asLow ? ' • ' + asLow : ''}</p>
                 <a
                   class="btn btn-primary get-card"
-                  href="${url}"                 /* progressive enhancement: still works if JS fails */
+                  href="${url}"
                   data-drug="${name}"
                   data-url="${url}"
                 >Get Savings</a>
               </div>
             </article>
           `;
-
         }).join('');
       } catch (err) {
         if (loadingEl) loadingEl.textContent = 'Could not load savings.';
@@ -242,34 +235,7 @@
     });
   </script>
 
-  <!-- =========================================================
-       Tiny helper:
-       - Sets CSS/JS URLs with a date version to bust cache
-       - Loads scripts.js THEN calls renderFeaturedDrugs()
-       ========================================================= -->
-  <script>
-    (function () {
-      // Version string (YYYY-MM-DD). Use Date.now() for per-load busting.
-      var v = new Date().toISOString().slice(0, 10);
-
-      // 1) Load CSS with cache-buster
-      document.getElementById('cssLink').href = 'assets/styles.css?v=' + v;
-
-      // 2) Load JS with cache-buster, then initialize cards
-      var s = document.createElement('script');
-      s.src = 'assets/scripts.js?v=' + v;
-      s.onload = function () {
-        if (window.renderFeaturedDrugs) {
-          window.renderFeaturedDrugs(
-            // Use your Featured JSON feed
-            (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl ? window.PAGE_CONFIG.scriptUrl : '') + '?mode=featured'
-          );
-        }
-      };
-      document.body.appendChild(s);
-    })();
-  </script>
-
+  
   <!-- Structured data (Website only; search action removed for MVP) -->
   <script type="application/ld+json">
   {
@@ -280,92 +246,15 @@
   }
   </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.querySelector('.newsletter-form');
-  if (!form) { console.warn('[newsletter] form not found'); return; }
 
-  const emailInput = form.querySelector('input[type="email"]');
-  const submitBtn  = form.querySelector('button[type="submit"]');
-
-  // Belt & suspenders: ensure the form itself never navigates
-  form.setAttribute('action', '');
-  form.setAttribute('method', 'get');  // GET on a static page is safe if JS fails
-
-  // status line
-  function showMessage(msg) {
-    let hint = form.querySelector('.form-hint');
-    if (!hint) {
-      hint = document.createElement('p');
-      hint.className = 'form-hint';
-      form.appendChild(hint);
-    }
-    hint.textContent = msg;
-  }
-
-  // serializer
-  const toForm = (data) =>
-    Object.entries(data)
-      .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-      .join('&');
-
-  console.log('[newsletter] handler attached');
-
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const email = (emailInput.value || '').trim();
-    if (!email) { showMessage('Please enter a valid email.'); emailInput.focus(); return false; }
-
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving…';
-
-    try {
-      const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
-      const body = toForm({
-        email,
-        drug: '',
-        source: 'newsletter_home',
-        // match your backend param name: useragent (lowercase)
-        useragent: navigator.userAgent || ''
-      });
-
-      await fetch(scriptUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        mode: 'no-cors'
-      , body });
-
-      form.reset();
-      showMessage('Thanks! You’re subscribed.');
-      submitBtn.textContent = 'Subscribed';
-    } catch (err) {
-      console.error(err);
-      showMessage('Sorry—couldn’t save right now. Please try again.');
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
-    }
-
-    return false; // extra guard against navigation
-  }, { passive: false });
-});
-</script>
-
-
-
-
-  <!-- Small UX enhancements -->
+  <!-- Header shadow + mobile drawer -->
   <script>
-  // add shadow to header after first pixels scrolled
   (function () {
     const header = document.querySelector('.site-header');
     const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 2);
-    onScroll(); // initialize
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // mobile drawer (optional)
     const btn = document.querySelector('.menu-btn');
     const drawer = document.getElementById('mobile-drawer');
     if (btn && drawer) {
@@ -373,9 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const isOpen = !drawer.hasAttribute('hidden');
         drawer.toggleAttribute('hidden');
         btn.setAttribute('aria-expanded', String(!isOpen));
-        document.body.style.overflow = isOpen ? '' : 'hidden'; // prevent background scroll
+        document.body.style.overflow = isOpen ? '' : 'hidden';
       });
-      // close drawer on ESC
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !drawer.hasAttribute('hidden')) {
           drawer.setAttribute('hidden','');
@@ -387,102 +275,105 @@ document.addEventListener('DOMContentLoaded', function () {
   })();
   </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('request-form');
-  if (!form) { console.warn('[request-med] form not found'); return; }
+  <!-- Request-a-med handler -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('request-form');
+    if (!form) { console.warn('[request-med] form not found'); return; }
 
-  const drugInput  = document.getElementById('request-drug');
-  const emailInput = document.getElementById('request-email');
-  const hint       = document.getElementById('request-hint');
-  const submitBtn  = form.querySelector('button[type="submit"]');
+    const drugInput  = document.getElementById('request-drug');
+    const emailInput = document.getElementById('request-email');
+    const hint       = document.getElementById('request-hint');
+    const submitBtn  = form.querySelector('button[type="submit"]');
 
-  function show(msg) { if (hint) hint.textContent = msg; }
+    function show(msg) { if (hint) hint.textContent = msg; }
 
-  // x-www-form-urlencoded
-  const toForm = (data) =>
-    Object.entries(data).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+    const toForm = (data) =>
+      Object.entries(data).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
 
-  console.log('[request-med] handler attached');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault(); e.stopPropagation();
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault(); e.stopPropagation();
+      const drug  = (drugInput.value  || '').trim();
+      const email = (emailInput.value || '').trim();
 
-    const drug  = (drugInput.value  || '').trim();
-    const email = (emailInput.value || '').trim();
+      if (!drug)  { show('Please enter a medication name.'); drugInput.focus();  return false; }
+      if (!email) { show('Please enter a valid email.');     emailInput.focus(); return false; }
 
-    if (!drug)  { show('Please enter a medication name.'); drugInput.focus();  return false; }
-    if (!email) { show('Please enter a valid email.');     emailInput.focus(); return false; }
+      const original = submitBtn.textContent;
+      submitBtn.disabled = true; submitBtn.textContent = 'Saving…'; show('');
 
-    const original = submitBtn.textContent;
-    submitBtn.disabled = true; submitBtn.textContent = 'Saving…'; show('');
+      try {
+        const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
+        const body = toForm({
+          email,
+          drug,
+          source: 'request_med',
+          useragent: navigator.userAgent || ''
+        });
 
-    try {
-      const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
-      const body = toForm({
-        email,
-        drug,
-        source: 'request_med',
-        useragent: navigator.userAgent || ''
-      });
+        await fetch(scriptUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          mode: 'no-cors',
+          body
+        });
 
-      await fetch(scriptUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        mode: 'no-cors',
-        body
-      });
+        form.reset();
+        show('Got it! We’ll email you when this medication is available.');
+        submitBtn.textContent = 'Request saved';
+      } catch (err) {
+        console.error(err);
+        show('Sorry—couldn’t save right now. Please try again.');
+        submitBtn.disabled = false; submitBtn.textContent = original;
+      }
 
-      form.reset();
-      show('Got it! We’ll email you when this medication is available.');
-      submitBtn.textContent = 'Request saved';
-    } catch (err) {
-      console.error(err);
-      show('Sorry—couldn’t save right now. Please try again.');
-      submitBtn.disabled = false; submitBtn.textContent = original;
-    }
+      return false;
+    }, { passive: false });
+  });
+  </script>
 
-    return false;
-  }, { passive: false });
-});
-</script>
+  <!-- SaveRx: Email capture modal (shared by Featured cards) -->
+  <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
 
-<!-- SaveRx: Email capture modal (shared by all Featured cards) -->
-<div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
-  <div class="modal-backdrop" data-close></div>
-  <div class="modal-panel" role="document">
-    <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
+      <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
+      <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
 
-    <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
-    <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
+      <form id="modal-lead-form" novalidate>
+        <!-- Honeypot (spam trap) -->
+        <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
 
-    <form id="modal-lead-form" novalidate>
-      <!-- Honeypot (spam trap) -->
-      <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
+        <label class="field">
+          <span>Email</span>
+          <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
+        </label>
 
-      <label class="field">
-        <span>Email</span>
-        <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
-      </label>
+        <!-- Filled by JS when user clicks a card -->
+        <input type="hidden" name="drug" id="modal-drug" />
+        <input type="hidden" name="source" value="SaveRx Home Modal" />
+        <input type="hidden" name="useragent" id="modal-ua" />
+        <input type="hidden" name="referrer" id="modal-ref" />
 
-      <!-- These are filled by JS when user clicks a card -->
-      <input type="hidden" name="drug" id="modal-drug" />
-      <input type="hidden" name="source" value="SaveRx Home Modal" />
-      <input type="hidden" name="useragent" id="modal-ua" />
-      <input type="hidden" name="referrer" id="modal-ref" />
+        <div class="modal-actions">
+          <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
+        </div>
 
-      <div class="modal-actions">
-        <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
-
-      </div>
-
-      <div id="modal-status" class="status" role="status" aria-live="polite"></div>
-      <p class="microcopy">By continuing, you agree to our <a href="terms.html">Terms</a> & <a href="privacy.html">Privacy</a>.</p>
-    </form>
+        <div id="modal-status" class="status" role="status" aria-live="polite"></div>
+        <p class="microcopy">By continuing, you agree to our <a href="terms.html">Terms</a> & <a href="privacy.html">Privacy</a>.</p>
+      </form>
+    </div>
   </div>
-</div>
-
-
-
+  <script defer src="assets/scripts.js?v=2025-10-03"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.renderFeaturedDrugs && window.PAGE_CONFIG?.scriptUrl) {
+      window.renderFeaturedDrugs(window.PAGE_CONFIG.scriptUrl + '?mode=featured');
+    }
+  });
+</script>
+<p>Hi</p>
 </body>
 </html>
