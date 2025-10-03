@@ -355,61 +355,68 @@
     }, { passive: false });
   })();
 
-  // -----------------------------
-  // Request-a-med handler
-  // -----------------------------
-  (function requestMedHandler() {
-    const form = $("#request-form");
-    if (!form) return;
+ // -----------------------------
+// Request-a-med handler (guarded)
+// -----------------------------
+(function requestMedHandler() {
+  const form = document.querySelector("#request-form");
+  if (!form) return;
 
-    const drugInput  = $("#request-drug");
-    const emailInput = $("#request-email");
-    const hint       = $("#request-hint");
-    const submitBtn  = form.querySelector('button[type="submit"]');
+  // Prevent double-binding
+  if (form.dataset.bound === "request") return;
+  form.dataset.bound = "request";
 
-    const show = (msg) => { if (hint) hint.textContent = msg; };
+  const drugInput  = document.querySelector("#request-drug");
+  const emailInput = document.querySelector("#request-email");
+  const hint       = document.querySelector("#request-hint");
+  const submitBtn  = form.querySelector('button[type="submit"]');
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const show = (msg) => { if (hint) hint.textContent = msg; };
 
-      const drug  = (drugInput?.value  || "").trim();
-      const email = (emailInput?.value || "").trim();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-      if (!drug)  { show("Please enter a medication name."); drugInput?.focus(); return; }
-      if (!email) { show("Please enter a valid email.");     emailInput?.focus(); return; }
+    // Prevent double-submit (re-entrancy)
+    if (form.dataset.submitting === "1") return;
+    form.dataset.submitting = "1";
 
-      const original = submitBtn?.textContent || "Notify me";
-      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
-      show("");
+    const drug  = (drugInput?.value  || "").trim();
+    const email = (emailInput?.value || "").trim();
 
-      try {
-        if (SCRIPT_URL) {
-          const body = toForm({
-            email,
-            drug,
-            source: "request_med",
-            useragent: navigator.userAgent || ""
-          });
+    if (!drug)  { show("Please enter a medication name."); drugInput?.focus();  form.dataset.submitting = ""; return; }
+    if (!email) { show("Please enter a valid email.");     emailInput?.focus(); form.dataset.submitting = ""; return; }
 
-          await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            mode: "no-cors",
-            body
-          });
-        }
+    const original = submitBtn?.textContent || "Notify me";
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
+    show("");
 
-        form.reset();
-        show("Got it! We’ll email you when this medication is available.");
-        if (submitBtn) submitBtn.textContent = "Request saved";
-      } catch (err) {
-        console.error(err);
-        show("Sorry—couldn’t save right now. Please try again.");
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = original; }
+    try {
+      if (SCRIPT_URL) {
+        const body = new URLSearchParams({
+          email, drug, source: "request_med", useragent: navigator.userAgent || ""
+        }).toString();
+
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          mode: "no-cors",
+          body
+        }).catch(()=>{ /* swallow network/no-cors */ });
       }
-    }, { passive: false });
-  })();
+
+      form.reset();
+      show("Got it! We’ll email you when this medication is available.");
+      if (submitBtn) submitBtn.textContent = "Request saved";
+    } catch (err) {
+      console.error(err);
+      show("Sorry—couldn’t save right now. Please try again.");
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = original; }
+    } finally {
+      form.dataset.submitting = "";
+    }
+  }, { passive: false });
+})();
 
   // -----------------------------
   // (Optional) Preload: if you want to fire renderFeaturedDrugs

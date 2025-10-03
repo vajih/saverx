@@ -247,92 +247,7 @@
   </script>
 
 
-  <!-- Header shadow + mobile drawer -->
-  <script>
-  (function () {
-    const header = document.querySelector('.site-header');
-    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 2);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    const btn = document.querySelector('.menu-btn');
-    const drawer = document.getElementById('mobile-drawer');
-    if (btn && drawer) {
-      btn.addEventListener('click', () => {
-        const isOpen = !drawer.hasAttribute('hidden');
-        drawer.toggleAttribute('hidden');
-        btn.setAttribute('aria-expanded', String(!isOpen));
-        document.body.style.overflow = isOpen ? '' : 'hidden';
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !drawer.hasAttribute('hidden')) {
-          drawer.setAttribute('hidden','');
-          btn.setAttribute('aria-expanded','false');
-          document.body.style.overflow = '';
-        }
-      });
-    }
-  })();
-  </script>
-
-  <!-- Request-a-med handler -->
-  <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('request-form');
-    if (!form) { console.warn('[request-med] form not found'); return; }
-
-    const drugInput  = document.getElementById('request-drug');
-    const emailInput = document.getElementById('request-email');
-    const hint       = document.getElementById('request-hint');
-    const submitBtn  = form.querySelector('button[type="submit"]');
-
-    function show(msg) { if (hint) hint.textContent = msg; }
-
-    const toForm = (data) =>
-      Object.entries(data).map(([k,v]) => encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
-
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault(); e.stopPropagation();
-
-      const drug  = (drugInput.value  || '').trim();
-      const email = (emailInput.value || '').trim();
-
-      if (!drug)  { show('Please enter a medication name.'); drugInput.focus();  return false; }
-      if (!email) { show('Please enter a valid email.');     emailInput.focus(); return false; }
-
-      const original = submitBtn.textContent;
-      submitBtn.disabled = true; submitBtn.textContent = 'Saving…'; show('');
-
-      try {
-        const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || '';
-        const body = toForm({
-          email,
-          drug,
-          source: 'request_med',
-          useragent: navigator.userAgent || ''
-        });
-
-        await fetch(scriptUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          mode: 'no-cors',
-          body
-        });
-
-        form.reset();
-        show('Got it! We’ll email you when this medication is available.');
-        submitBtn.textContent = 'Request saved';
-      } catch (err) {
-        console.error(err);
-        show('Sorry—couldn’t save right now. Please try again.');
-        submitBtn.disabled = false; submitBtn.textContent = original;
-      }
-
-      return false;
-    }, { passive: false });
-  });
-  </script>
-
+  
   <!-- SaveRx: Email capture modal (shared by Featured cards) -->
   <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
     <div class="modal-backdrop" data-close></div>
@@ -374,6 +289,6 @@
     }
   });
 </script>
-<p>Hi</p>
+
 </body>
 </html>
