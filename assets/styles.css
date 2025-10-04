@@ -500,7 +500,7 @@ html, body { overflow-x: hidden; }
 
 /* Optional: animated trailing dots for the tiny text loader */
 #cards-loading::after {
-  content: " .";
+  content: ".";
   animation: dots 1s steps(5, end) infinite;
 }
 @keyframes dots {
