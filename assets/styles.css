@@ -164,7 +164,37 @@ body {
 }
 
 /* ---------- Footer ---------- */
-.footer { padding: 24px 0 32px; }
+.footer {
+  background-color: var(--bg);
+  border-top: 1px solid #d8dee9;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.footer-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.footer-brand {
+  color: var(--ink);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-disclaimer {
+  line-height: 1.0;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.footer-legal {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
 
 
 /* ===========================
