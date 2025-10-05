@@ -86,30 +86,35 @@
   <!-- =======================
        Header / Primary Nav
        ======================= -->
-  <header class="site-header" role="banner">
-    <div class="header-row">
-      <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
+<header class="site-header" role="banner">
+  <div class="header-row">
+    <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
 
-      <!-- Mobile menu icon -->
-      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
-        ☰
-      </button>
+    <!-- Mobile menu icon -->
+    <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
+      ☰
+    </button>
 
-      <!-- Desktop nav (hidden on mobile) -->
-      <nav class="site-nav" aria-label="Primary">
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-    </div>
-  </header>
+    <!-- Desktop nav -->
+    <nav class="site-nav" aria-label="Primary">
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- Optional mobile drawer -->
-  <aside id="mobile-drawer" class="mobile-drawer" hidden>
-    <nav aria-label="Mobile">
+<!-- Mobile drawer -->
+<aside id="mobile-drawer" class="mobile-drawer" hidden>
+  <div class="drawer-backdrop" data-close></div>
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
+    <nav class="drawer-nav">
+      <a href="index.html">Home</a>
       <a href="about.html">About</a>
       <a href="contact.html">Contact</a>
     </nav>
-  </aside>
+  </div>
+</aside>
 
   <!-- =======================
        Hero
