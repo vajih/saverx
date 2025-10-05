@@ -280,8 +280,10 @@
         // non-fatal; still redirect
       } finally {
         clearTimeout(t);
-        window.location.assign(redirectUrl);
-      }
+        if (status) status.textContent = "Opening the official savings site...";
+        // Small delay so they see the status
+        window.open(redirectUrl, "_blank", "noopener,noreferrer");
+        }
     });
   }
 
