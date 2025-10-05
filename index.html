@@ -174,44 +174,54 @@
   </section>
 
   <!-- =======================
-       Request a medication (MVP lead capture)
+       Request a medication (MVP lead capture) and Newsletter CTA
        ======================= -->
-  <section id="request-med" class="container section-pad">
-    <h2 class="section-title">Don’t see your medication?</h2>
-    <p class="muted">Tell us what you need and we’ll email you when we add it.</p>
+  <section class="cta-band" aria-labelledby="ctaTitle">
+  <div class="cta-wrap">
+    <!-- Left: Medication alert -->
+    <div class="cta-card">
+      <h2 id="ctaTitle" class="cta-title">Don’t see your medication?</h2>
+      <p class="cta-sub">Tell us the drug and your email — we’ll alert you when we add it.</p>
 
-    <form id="request-form" class="request-form" action="" method="get" >
-      <label class="visually-hidden" for="request-drug">Medication name</label>
-      <input type="text" id="request-drug" name="drug" placeholder="Medication name (e.g., Mounjaro)" required aria-label="Medication name">
-
-      <label class="visually-hidden" for="request-email">Email address</label>
-      <input type="email" id="request-email" name="email" placeholder="you@example.com" required aria-label="Email address">
-
-      <button type="submit" class="btn btn-primary">Notify me</button>
-      <p id="request-hint" class="form-hint"></p>
-    </form>
-  </section>
-
-  <!-- =======================
-       Newsletter CTA
-       ======================= -->
-  <section class="newsletter">
-    <div class="container text-center">
-      <h2>Good news for your inbox</h2>
-      <p class="muted">Sign up for tips and new medication savings as we add them.</p>
-
-      <form action="#" method="post" class="newsletter-form">
-        <label for="newsletter-email" class="visually-hidden">Email address</label>
-        <input id="newsletter-email" type="email" name="email" placeholder="Email address" required />
-        <button type="submit" class="btn btn-primary">Subscribe</button>
+      <form class="form" id="med-alert-form" >
+        <div class="form-row">
+          <label class="sr-only" for="drugName">Medication name</label>
+          <input id="drugName" name="drug" class="input" type="text" placeholder="Medication name (e.g., Repatha)" required autocomplete="off">
+        </div>
+        <div class="form-row">
+          <label class="sr-only" for="alertEmail">Email address</label>
+          <input id="alertEmail" name="email" class="input" type="email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <button class="btn" type="submit">Notify me</button>
+        <p class="form-hint">We’ll email only when this medication goes live.</p>
+        <p class="form-msg" id="alertMsg" role="status" aria-live="polite"></p>
       </form>
-
-      <div class="contact-block">
-        <h3>Contact Us</h3>
-        <p><a href="mailto:questions@saverx.ai">questions@saverx.ai</a></p>
-      </div>
     </div>
-  </section>
+
+    <!-- Right: Newsletter -->
+    <div class="cta-card">
+      <h3 class="cta-title">Good news for your inbox</h3>
+      <p class="cta-sub">Savings tips and new programs as we add them.</p>
+
+      <form class="form" id="newsletter-form" >
+        <div class="form-row">
+          <label class="sr-only" for="newsEmail">Email address</label>
+          <input id="newsEmail" name="email" class="input" type="email" placeholder="Email address" required autocomplete="email">
+        </div>
+        <button class="btn" type="submit">Subscribe</button>
+        <p class="form-hint">1–2 emails/month. Unsubscribe anytime.</p>
+        <p class="form-msg" id="newsMsg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="cta-contact">
+    <p><strong>Contact us</strong><br>
+      <a href="mailto:questions@saverx.ai">questions@saverx.ai</a>
+    </p>
+  </div>
+</section>
+
 
   <!-- =======================
        Footer
@@ -320,7 +330,7 @@
       <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
       <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
 
-      <form id="modal-lead-form" novalidate>
+      <form id="modal-lead-form" >
         
         <!-- Honeypot (spam trap) -->
         <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
