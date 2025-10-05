@@ -431,3 +431,9 @@
   // -----------------------------
 
 })();
+
+const target = new URL(officialUrl); // e.g., https://www.repatha.com/savings
+target.searchParams.set('utm_source','saverx.ai');
+target.searchParams.set('utm_medium','referral');
+target.searchParams.set('utm_campaign','manufacturer_savings');
+location.href = target.toString();

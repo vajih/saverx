@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SaveRx.ai sitemap generated 2025-10-05 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://saverx.ai/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+
+  <!-- Core pages -->
+  <url>
+    <loc>https://saverx.ai/about/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/contact/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/privacy/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/terms/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+
+  <!-- Drug landing pages (adjust slugs if yours differ) -->
+  <url>
+    <loc>https://saverx.ai/drugs/repatha/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/ozempic/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/wegovy/</loc>
+    <lastmod>2025-10-05</drugs/lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/mounjaro/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/stelara/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/trulicity/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/Otezla/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+  <url>
+    <loc>https://saverx.ai/drugs/Entresto/</loc>
+    <lastmod>2025-10-05</lastmod>
+  </url>
+</urlset>
