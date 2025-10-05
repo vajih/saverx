@@ -32,7 +32,7 @@ body {
 
 /* ---------- Helpers ---------- */
 .container { max-width: 1100px; margin: 0 auto; padding: 0 10px; }
-.section-pad { padding: 4px 0; }
+.section-pad { padding: 1rem 1rem; }
 .text-center { text-align: center; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
@@ -545,7 +545,7 @@ html, body { overflow-x: hidden; }
   background:#f2f5fb;
   border-top:1px solid #e5e7eb;
   border-bottom:1px solid #e5e7eb;
-  padding:2rem 1rem;
+  padding:1rem 1rem;
 }
 .cta-wrap{
   max-width:1000px;
