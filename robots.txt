@@ -1,3 +1,7 @@
+User-agent: GPTBot
+User-agent: Bingbot
 User-agent: *
 Allow: /
 Sitemap: https://saverx.ai/sitemap.xml
+User-agent: GPTBot
+User-agent: Bingbot
