@@ -4,6 +4,7 @@
    - Email modal lead capture for Featured CTAs (new-tab flow)
    - Newsletter + Request-a-med handlers
    - Sticky header & mobile drawer
+   - A11y: scroll-lock, focus restore, focus trap
    ========================================================= */
 
 (function () {
@@ -87,11 +88,6 @@
   // -----------------------------
   // Featured cards rendering
   // Exposed as window.renderFeaturedDrugs(urlOrObject)
-  // Supports:
-  //  - URL returning { items: [...] }
-  //  - URL returning [...]
-  //  - Array/object passed directly
-  // Fields: name, generic, manufacturer, cash_price, as_low_as, url, priority, active
   // -----------------------------
   function cardHTML(d) {
     const name = escapeHTML(d.name);
@@ -220,6 +216,51 @@
 
       let redirectUrl = "/";
 
+      // ---------- Focus trap helpers ----------
+      const FOCUSABLE_SEL = [
+        'a[href]', 'area[href]',
+        'input:not([disabled]):not([type="hidden"])',
+        'select:not([disabled])',
+        'textarea:not([disabled])',
+        'button:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])',
+        '[contenteditable="true"]'
+      ].join(',');
+
+      const getFocusable = (container) =>
+        Array.from(container.querySelectorAll(FOCUSABLE_SEL))
+          // Visible & focusable
+          .filter(el => el.offsetParent !== null || el.getClientRects().length);
+
+      function trapFocus(e) {
+        if (e.key !== "Tab") return;
+        const nodes = getFocusable(modal);
+        if (!nodes.length) return;
+
+        const first = nodes[0];
+        const last  = nodes[nodes.length - 1];
+
+        // If focus somehow lands outside, pull it back in
+        if (!modal.contains(document.activeElement)) {
+          first.focus();
+          e.preventDefault();
+          return;
+        }
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+      // ----------------------------------------
+
       function openModal(drugName, url, triggerEl) {
         if (drugEl) drugEl.value = drugName || "";
         redirectUrl = url || "/";
@@ -230,6 +271,11 @@
 
         modal.setAttribute("aria-hidden", "false");
         lockScroll();
+
+        // Start trapping focus
+        modal.addEventListener("keydown", trapFocus);
+
+        // Initial focus
         setTimeout(() => emailEl?.focus(), 10);
       }
 
@@ -239,6 +285,10 @@
         if (submit) submit.disabled = false;
         form.reset();
         unlockScroll();
+
+        // Stop trapping focus
+        modal.removeEventListener("keydown", trapFocus);
+
         // Return focus to the caller for a11y
         if (lastTrigger && typeof lastTrigger.focus === "function") {
           lastTrigger.focus();
@@ -286,7 +336,6 @@
         try { localStorage.setItem("saverx_email", email); } catch {}
 
         // OPEN A TAB IMMEDIATELY to avoid popup blockers.
-        // Keep a handle so we can navigate it later.
         let pendingWin = null;
         try {
           pendingWin = window.open("about:blank", "_blank");
