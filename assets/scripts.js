@@ -1,8 +1,8 @@
 /* =========================================================
-   SaveRx.ai — Global Scripts (Homepage)
+   SaveRx.ai — Global Scripts
    - Featured cards loader (AI banner + skeletons)
    - Email modal lead capture for Featured CTAs
-   - Newsletter + Request-a-med handlers
+   - Newsletter + Request-a-med handlers (IDs match index.html)
    - Sticky header & mobile drawer
    ========================================================= */
 
@@ -12,12 +12,14 @@
   // -----------------------------
   // Config
   // -----------------------------
+  // NOTE: Set in HTML BEFORE this file:
+  // <script>window.PAGE_CONFIG={scriptUrl:"https://script.google.com/.../exec"}</script>
   const SCRIPT_URL = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
 
   // -----------------------------
   // Small utilities
   // -----------------------------
-  const $ = (sel, root = document) => root.querySelector(sel);
+  const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   const escapeHTML = (s) =>
@@ -74,8 +76,7 @@
   //  - URL returning { items: [...] }
   //  - URL returning [...]
   //  - Array/object passed directly
-  // Fields per item:
-  //  name, generic, manufacturer, cash_price, as_low_as, url, priority, active
+  // Fields: name, generic, manufacturer, cash_price, as_low_as, url, priority, active
   // -----------------------------
   function cardHTML(d) {
     const name = escapeHTML(d.name);
@@ -143,9 +144,9 @@
   }
 
   async function renderFeaturedDrugs(urlOrJson) {
-    const wrapper = $("#featured");                 // section wrapper
-    const grid = $("#featured-cards");              // injected cards go here
-    const textLoader = $("#cards-loading");         // small text loader
+    const wrapper = $("#featured");
+    const grid = $("#featured-cards");
+    const textLoader = $("#cards-loading");
     if (!grid || !wrapper) return;
 
     try {
@@ -171,7 +172,6 @@
       console.error("Featured load failed", err);
       grid.innerHTML = `<div class="muted">We couldn't load savings right now. Please refresh.</div>`;
     } finally {
-      // Remove skeletons/AI loader, hide text loader, flip aria-busy
       $("#skeleton-cards")?.remove();
       $("#ai-loader")?.remove();
       if (textLoader) textLoader.style.display = "none";
@@ -181,150 +181,145 @@
     }
   }
 
-  // Expose for the tiny helper in index.html
+  // Expose for the helper in index.html
   window.renderFeaturedDrugs = renderFeaturedDrugs;
 
- // -----------------------------
-// Email capture modal for Featured CTAs
-// (opens on click of any .get-card; posts then redirects)
-// -----------------------------
-(function featuredEmailModal() {
-  function init() {
-    const modal   = document.querySelector("#email-modal");
-    const form    = document.querySelector("#modal-lead-form");
-    const emailEl = document.querySelector("#modal-email");
-    const drugEl  = document.querySelector("#modal-drug");
-    const uaEl    = document.querySelector("#modal-ua");
-    const refEl   = document.querySelector("#modal-ref");
-    const status  = document.querySelector("#modal-status");
-    const submit  = document.querySelector("#modal-submit");
+  // -----------------------------
+  // Email capture modal for Featured CTAs
+  // (opens on click of any .get-card; posts then redirects)
+  // -----------------------------
+  (function featuredEmailModal() {
+    function init() {
+      const modal   = $("#email-modal");
+      const form    = $("#modal-lead-form");
+      const emailEl = $("#modal-email");
+      const drugEl  = $("#modal-drug");
+      const uaEl    = $("#modal-ua");
+      const refEl   = $("#modal-ref");
+      const status  = $("#modal-status");
+      const submit  = $("#modal-submit");
 
-    // If modal isn't in the DOM yet, try again once the DOM is ready
-    if (!modal || !form) return;
+      if (!modal || !form) return;
 
-    let redirectUrl = "/";
+      let redirectUrl = "/";
 
-    function openModal(drugName, url) {
-      if (drugEl) drugEl.value = drugName || "";
-      redirectUrl = url || "/";
-      if (uaEl)  uaEl.value  = navigator.userAgent || "";
-      if (refEl) refEl.value = document.referrer || "";
-      modal.setAttribute("aria-hidden", "false");
-      setTimeout(() => emailEl?.focus(), 10);
-    }
-
-    function closeModal() {
-      modal.setAttribute("aria-hidden", "true");
-      if (status) status.textContent = "";
-      if (submit) submit.disabled = false;
-      form.reset();
-    }
-
-    // Open on any Featured CTA click (delegated)
-    document.addEventListener("click", (e) => {
-      const a = e.target.closest("a.get-card");
-      if (!a) return;
-
-      // allow new-tab behavior
-      if (e.metaKey || e.ctrlKey || e.button === 1) return;
-
-      e.preventDefault();
-      openModal(
-        a.getAttribute("data-drug") || "",
-        a.getAttribute("data-url") || a.getAttribute("href") || "/"
-      );
-    });
-
-    // Close interactions
-    modal.addEventListener("click", (e) => {
-      if (e.target.matches("[data-close], .modal-backdrop")) closeModal();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
-    });
-
-    // Submit → post → redirect
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (status) status.textContent = "";
-      if (submit) submit.disabled = true;
-
-      const email = (emailEl?.value || "").trim();
-      if (!/^\S+@\S+\.\S+$/.test(email)) {
-        if (status) status.textContent = "Please enter a valid email.";
-        if (submit) submit.disabled = false;
-        emailEl?.focus();
-        return;
+      function openModal(drugName, url) {
+        if (drugEl) drugEl.value = drugName || "";
+        redirectUrl = url || "/";
+        if (uaEl)  uaEl.value  = navigator.userAgent || "";
+        if (refEl) refEl.value = document.referrer || "";
+        modal.setAttribute("aria-hidden", "false");
+        setTimeout(() => emailEl?.focus(), 10);
       }
 
-      // cache email locally (optional)
-      try { localStorage.setItem("saverx_email", email); } catch {}
+      function closeModal() {
+        modal.setAttribute("aria-hidden", "true");
+        if (status) status.textContent = "";
+        if (submit) submit.disabled = false;
+        form.reset();
+      }
 
-      const body = new URLSearchParams(new FormData(form)).toString();
+      // Open on any Featured CTA click (delegated)
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest("a.get-card");
+        if (!a) return;
+        if (e.metaKey || e.ctrlKey || e.button === 1) return; // allow new tab
+        e.preventDefault();
+        openModal(
+          a.getAttribute("data-drug") || "",
+          a.getAttribute("data-url") || a.getAttribute("href") || "/"
+        );
+      });
 
-      // Fail-fast timeout so we don't block redirect
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 4000);
+      // Close interactions
+      modal.addEventListener("click", (e) => {
+        if (e.target.matches("[data-close], .modal-backdrop")) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
+      });
 
-      try {
-        if (SCRIPT_URL) {
-          await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            mode: "no-cors",
-            body,
-            signal: controller.signal
-          });
+      // Submit → post → redirect
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (status) status.textContent = "";
+        if (submit) submit.disabled = true;
+
+        const email = (emailEl?.value || "").trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          if (status) status.textContent = "Please enter a valid email.";
+          if (submit) submit.disabled = false;
+          emailEl?.focus();
+          return;
         }
-      } catch (_) {
-        // non-fatal; still redirect
-      } finally {
-        clearTimeout(t);
-        if (status) status.textContent = "Opening the official savings site...";
-        // Small delay so they see the status
-        window.open(redirectUrl, "_blank", "noopener,noreferrer");
-        }
-    });
-  }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    // DOM already ready — initialize now
-    init();
-  }
-})();
+        try { localStorage.setItem("saverx_email", email); } catch {}
+
+        const body = new URLSearchParams(new FormData(form)).toString();
+
+        // Fail-fast timeout so we don't block redirect
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), 4000);
+
+        try {
+          if (SCRIPT_URL) {
+            await fetch(SCRIPT_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              mode: "no-cors",
+              body,
+              signal: controller.signal
+            });
+          }
+        } catch (_) {
+          // non-fatal; still redirect
+        } finally {
+          clearTimeout(t);
+          if (status) status.textContent = "Opening the official savings site…";
+
+          // Add UTM tagging to the outbound manufacturer URL
+          try {
+            const u = new URL(redirectUrl, location.href);
+            u.searchParams.set("utm_source", "saverx.ai");
+            u.searchParams.set("utm_medium", "referral");
+            u.searchParams.set("utm_campaign", "manufacturer_savings");
+            window.open(u.toString(), "_blank", "noopener,noreferrer");
+          } catch {
+            window.open(redirectUrl, "_blank", "noopener,noreferrer");
+          }
+        }
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
 
   // -----------------------------
-  // Newsletter form handler
+  // Newsletter form handler (IDs: #newsletter-form, #newsEmail, #newsMsg)
   // -----------------------------
   (function newsletterHandler() {
-    const form = $(".newsletter-form");
+    const form = $("#newsletter-form");
     if (!form) return;
 
-    const emailInput = form.querySelector('input[type="email"]');
+    const emailInput = $("#newsEmail");
     const submitBtn  = form.querySelector('button[type="submit"]');
+    const msgEl      = $("#newsMsg");
 
-    // Ensure static-page safe defaults
+    // Keep forms static-friendly but we'll POST via fetch:
     form.setAttribute("action", "");
-    form.setAttribute("method", "get");
+    form.setAttribute("method", "post");
 
-    function showMessage(msg) {
-      let hint = form.querySelector(".form-hint");
-      if (!hint) {
-        hint = document.createElement("p");
-        hint.className = "form-hint";
-        form.appendChild(hint);
-      }
-      hint.textContent = msg;
-    }
+    const showMessage = (msg) => { if (msgEl) msgEl.textContent = msg; };
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      e.stopPropagation();
 
       const email = (emailInput?.value || "").trim();
-      if (!email) { showMessage("Please enter a valid email."); emailInput?.focus(); return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage("Please enter a valid email."); emailInput?.focus(); return; }
 
       const originalText = submitBtn?.textContent || "Subscribe";
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
@@ -335,7 +330,7 @@
             email,
             drug: "",
             source: "newsletter_home",
-            useragent: navigator.userAgent || ""
+            ua: navigator.userAgent || ""
           });
 
           await fetch(SCRIPT_URL, {
@@ -357,83 +352,72 @@
     }, { passive: false });
   })();
 
- // -----------------------------
-// Request-a-med handler (guarded)
-// -----------------------------
-(function requestMedHandler() {
-  const form = document.querySelector("#request-form");
-  if (!form) return;
+  // -----------------------------
+  // Request-a-med handler (IDs: #med-alert-form, #drugName, #alertEmail, #alertMsg)
+  // -----------------------------
+  (function requestMedHandler() {
+    const form = $("#med-alert-form");
+    if (!form) return;
+    if (form.dataset.bound === "request") return;
+    form.dataset.bound = "request";
 
-  // Prevent double-binding
-  if (form.dataset.bound === "request") return;
-  form.dataset.bound = "request";
+    const drugInput  = $("#drugName");
+    const emailInput = $("#alertEmail");
+    const hint       = $("#alertMsg");
+    const submitBtn  = form.querySelector('button[type="submit"]');
 
-  const drugInput  = document.querySelector("#request-drug");
-  const emailInput = document.querySelector("#request-email");
-  const hint       = document.querySelector("#request-hint");
-  const submitBtn  = form.querySelector('button[type="submit"]');
+    const show = (msg) => { if (hint) hint.textContent = msg; };
 
-  const show = (msg) => { if (hint) hint.textContent = msg; };
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+      if (form.dataset.submitting === "1") return;
+      form.dataset.submitting = "1";
 
-    // Prevent double-submit (re-entrancy)
-    if (form.dataset.submitting === "1") return;
-    form.dataset.submitting = "1";
+      const drug  = (drugInput?.value  || "").trim();
+      const email = (emailInput?.value || "").trim();
 
-    const drug  = (drugInput?.value  || "").trim();
-    const email = (emailInput?.value || "").trim();
+      if (!drug)  { show("Please enter a medication name."); drugInput?.focus();  form.dataset.submitting = ""; return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { show("Please enter a valid email."); emailInput?.focus(); form.dataset.submitting = ""; return; }
 
-    if (!drug)  { show("Please enter a medication name."); drugInput?.focus();  form.dataset.submitting = ""; return; }
-    if (!email) { show("Please enter a valid email.");     emailInput?.focus(); form.dataset.submitting = ""; return; }
+      const original = submitBtn?.textContent || "Notify me";
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
+      show("");
 
-    const original = submitBtn?.textContent || "Notify me";
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
-    show("");
+      try {
+        if (SCRIPT_URL) {
+          const body = new URLSearchParams({
+            email, drug, source: "request_med", ua: navigator.userAgent || ""
+          }).toString();
 
-    try {
-      if (SCRIPT_URL) {
-        const body = new URLSearchParams({
-          email, drug, source: "request_med", useragent: navigator.userAgent || ""
-        }).toString();
+          await fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            mode: "no-cors",
+            body
+          }).catch(()=>{});
+        }
 
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          mode: "no-cors",
-          body
-        }).catch(()=>{ /* swallow network/no-cors */ });
+        form.reset();
+        show("Got it! We’ll email you when this medication is available.");
+        if (submitBtn) submitBtn.textContent = "Request saved";
+      } catch (err) {
+        console.error(err);
+        show("Sorry—couldn’t save right now. Please try again.");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = original; }
+      } finally {
+        form.dataset.submitting = "";
       }
-
-      form.reset();
-      show("Got it! We’ll email you when this medication is available.");
-      if (submitBtn) submitBtn.textContent = "Request saved";
-    } catch (err) {
-      console.error(err);
-      show("Sorry—couldn’t save right now. Please try again.");
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = original; }
-    } finally {
-      form.dataset.submitting = "";
-    }
-  }, { passive: false });
-})();
+    }, { passive: false });
+  })();
 
   // -----------------------------
-  // (Optional) Preload: if you want to fire renderFeaturedDrugs
-  // here instead of from index.html’s tiny helper, uncomment:
-  //
+  // (Optional) Preload Featured here (you already trigger from HTML)
+  // -----------------------------
   // document.addEventListener("DOMContentLoaded", () => {
   //   const url = SCRIPT_URL ? `${SCRIPT_URL}?mode=featured` : "";
   //   if (url) renderFeaturedDrugs(url);
   // });
-  // -----------------------------
 
-})();
-
-const target = new URL(officialUrl); // e.g., https://www.repatha.com/savings
-target.searchParams.set('utm_source','saverx.ai');
-target.searchParams.set('utm_medium','referral');
-target.searchParams.set('utm_campaign','manufacturer_savings');
-location.href = target.toString();
+})(); // end IIFE
