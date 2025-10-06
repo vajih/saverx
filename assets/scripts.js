@@ -1,8 +1,8 @@
 /* =========================================================
    SaveRx.ai — Global Scripts
    - Featured cards loader (AI banner + skeletons)
-   - Email modal lead capture for Featured CTAs
-   - Newsletter + Request-a-med handlers (IDs match index.html)
+   - Email modal lead capture for Featured CTAs (new-tab flow)
+   - Newsletter + Request-a-med handlers
    - Sticky header & mobile drawer
    ========================================================= */
 
@@ -39,6 +39,12 @@
       : "$—";
   };
 
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+  // Scroll lock helpers (for modals/drawers)
+  const lockScroll = () => { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; };
+  const unlockScroll = () => { document.documentElement.style.overflow = ""; document.body.style.overflow = ""; };
+
   // -----------------------------
   // Sticky header shadow + mobile drawer
   // -----------------------------
@@ -53,18 +59,27 @@
     const btn = $(".menu-btn");
     const drawer = $("#mobile-drawer");
     if (btn && drawer) {
+      const closeDrawer = () => {
+        if (!drawer.hasAttribute("hidden")) {
+          drawer.setAttribute("hidden", "");
+          btn.setAttribute("aria-expanded", "false");
+          unlockScroll();
+        }
+      };
+
       btn.addEventListener("click", () => {
         const isOpen = !drawer.hasAttribute("hidden");
         drawer.toggleAttribute("hidden");
         btn.setAttribute("aria-expanded", String(!isOpen));
-        document.body.style.overflow = isOpen ? "" : "hidden";
+        if (isOpen) unlockScroll(); else lockScroll();
       });
+
+      drawer.addEventListener("click", (e) => {
+        if (e.target.matches("[data-close], .drawer-backdrop, .drawer-nav a")) closeDrawer();
+      });
+
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && !drawer.hasAttribute("hidden")) {
-          drawer.setAttribute("hidden", "");
-          btn.setAttribute("aria-expanded", "false");
-          document.body.style.overflow = "";
-        }
+        if (e.key === "Escape") closeDrawer();
       });
     }
   })();
@@ -186,9 +201,11 @@
 
   // -----------------------------
   // Email capture modal for Featured CTAs
-  // (opens on click of any .get-card; posts then redirects)
+  // (opens on click of any .get-card; posts then opens new tab)
   // -----------------------------
   (function featuredEmailModal() {
+    let lastTrigger = null; // For focus restoration
+
     function init() {
       const modal   = $("#email-modal");
       const form    = $("#modal-lead-form");
@@ -203,12 +220,16 @@
 
       let redirectUrl = "/";
 
-      function openModal(drugName, url) {
+      function openModal(drugName, url, triggerEl) {
         if (drugEl) drugEl.value = drugName || "";
         redirectUrl = url || "/";
         if (uaEl)  uaEl.value  = navigator.userAgent || "";
         if (refEl) refEl.value = document.referrer || "";
+
+        lastTrigger = triggerEl || document.activeElement || null;
+
         modal.setAttribute("aria-hidden", "false");
+        lockScroll();
         setTimeout(() => emailEl?.focus(), 10);
       }
 
@@ -217,17 +238,26 @@
         if (status) status.textContent = "";
         if (submit) submit.disabled = false;
         form.reset();
+        unlockScroll();
+        // Return focus to the caller for a11y
+        if (lastTrigger && typeof lastTrigger.focus === "function") {
+          lastTrigger.focus();
+        }
       }
 
       // Open on any Featured CTA click (delegated)
       document.addEventListener("click", (e) => {
         const a = e.target.closest("a.get-card");
         if (!a) return;
-        if (e.metaKey || e.ctrlKey || e.button === 1) return; // allow new tab
+
+        // Allow user-initiated new-tab behavior (Cmd/Ctrl/Middle)
+        if (e.metaKey || e.ctrlKey || e.button === 1) return;
+
         e.preventDefault();
         openModal(
           a.getAttribute("data-drug") || "",
-          a.getAttribute("data-url") || a.getAttribute("href") || "/"
+          a.getAttribute("data-url") || a.getAttribute("href") || "/",
+          a
         );
       });
 
@@ -239,7 +269,7 @@
         if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
       });
 
-      // Submit → post → redirect
+      // Submit → post → delay → close → navigate new tab
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (status) status.textContent = "";
@@ -255,9 +285,18 @@
 
         try { localStorage.setItem("saverx_email", email); } catch {}
 
+        // OPEN A TAB IMMEDIATELY to avoid popup blockers.
+        // Keep a handle so we can navigate it later.
+        let pendingWin = null;
+        try {
+          pendingWin = window.open("about:blank", "_blank");
+        } catch (_) {
+          // If blocked, we will fall back to window.open later.
+        }
+
         const body = new URLSearchParams(new FormData(form)).toString();
 
-        // Fail-fast timeout so we don't block redirect
+        // Fail-fast timeout so we don't block UX
         const controller = new AbortController();
         const t = setTimeout(() => controller.abort(), 4000);
 
@@ -272,23 +311,36 @@
             });
           }
         } catch (_) {
-          // non-fatal; still redirect
+          // non-fatal; still continue to redirect
         } finally {
           clearTimeout(t);
+
+          // Inform the user briefly
           if (status) status.textContent = "Opening the official savings site…";
+          await sleep(1200);
 
           // Add UTM tagging to the outbound manufacturer URL
+          let outbound = redirectUrl || "/";
           try {
             const u = new URL(redirectUrl, location.href);
             u.searchParams.set("utm_source", "saverx.ai");
             u.searchParams.set("utm_medium", "referral");
             u.searchParams.set("utm_campaign", "manufacturer_savings");
-            window.open(u.toString(), "_blank", "noopener,noreferrer");
-          } catch {
-            window.open(redirectUrl, "_blank", "noopener,noreferrer");
+            outbound = u.toString();
+          } catch { /* keep fallback */ }
+
+          // Close the modal (and restore focus/scroll)
+          closeModal();
+
+          // Navigate the previously opened tab, or fall back if blocked
+          if (pendingWin && !pendingWin.closed) {
+            try { pendingWin.location = outbound; }
+            catch { window.open(outbound, "_blank", "noopener,noreferrer"); }
+          } else {
+            window.open(outbound, "_blank", "noopener,noreferrer");
           }
         }
-      });
+      }, { passive: false });
     }
 
     if (document.readyState === "loading") {
