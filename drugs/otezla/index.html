@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Drug Savings | SaveRx.ai</title>
+  <title> Drug Savings | SaveRx.ai</title>
 
 <!-- Open Graph (neutral; will be updated by JS) -->
 <meta property="og:title" content="Drug Savings | SaveRx.ai" />
@@ -16,7 +16,7 @@
 <link rel="canonical" href="" />
 
   <!-- SEO basics -->
-  <meta name="description" content="SaveRx.ai helps you find official manufacturer savings and lower your out-of-pocket." />
+  <meta name="description" content="SaveRx.ai find official manufacturer savings and lower your out-of-pocket." />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
@@ -94,64 +94,6 @@
       .rx-overlay { position: static; max-width: 100%; padding: 0 0 4px; }
       .rx-hero-media img { max-height: none; }
     }
-
-    /* --- Step 6: Layout polish to match mock --- */
-
-/* Give the page a comfortable max width and side padding */
-.container {
-  max-width: 1120px;
-  margin-inline: auto;
-  padding-inline: 16px;
-}
-
-/* Lede + hero rhythm */
-.section-pad { padding-top: 10px; }
-.rx-lede { margin-bottom: 10px; }
-.rx-title { font-size: clamp(32px, 5vw, 44px); line-height: 1.1; margin: 0 0 6px; }
-.rx-sub { color: var(--muted); margin: 0; }
-
-/* Hero: make image feel consistent and the card float with breathing room */
-.rx-hero { margin-top: 12px; }
-.rx-hero-media img {
-  object-fit: cover;
-  object-position: center;
-  aspect-ratio: 16 / 9;          /* keeps a cinematic feel on desktop */
-  max-height: none;              /* let aspect-ratio drive height */
-  border-radius: 14px;
-}
-.rx-overlay {
-  right: 20px;
-  bottom: 20px;
-  max-width: clamp(260px, 32vw, 360px);
-}
-.rx-hero .rx-card {
-  padding: 16px 16px 12px;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-}
-.rx-hero .rx-head { font-size: 15px; letter-spacing: .2px; }
-.rx-row { padding: 9px 0; gap: 12px; }  /* a touch roomier */
-
-/* Body: 2-col balance + a bit more gap to breathe */
-.rx-body {
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-  gap: 22px;
-}
-.rx-bullets { margin: 10px 0 8px; }
-.rx-table { margin-top: 6px; }
-
-/* Buttons: full-width on small screens for cleaner alignment */
-.btn-block-sm { width: 100%; }
-
-/* Mobile refinements */
-@media (max-width: 900px){
-  .section-pad { padding-top: 8px; }
-  .rx-hero { margin-top: 8px; }
-  .rx-overlay { position: static; max-width: 100%; margin-top: 8px; }
-  .rx-hero-media img { aspect-ratio: auto; } /* avoid tall image on phones */
-  .rx-body { grid-template-columns: 1fr; gap: 14px; }
-}
-
   </style>
 
   <script>
@@ -204,7 +146,7 @@
         <!-- These will be replaced from Sheets if present -->
         <picture>
           <source media="(max-width: 640px)" srcset="/assets/img/repatha-hero-vertical.png" data-src="hero_portrait">
-          <img src="/assets/img/repatha-hero.png" alt="" data-src="hero_landscape" loading="eager">
+          <img src="/assets/img/repatha-hero.png" alt="Repatha® savings" data-src="hero_landscape" loading="eager">
         </picture>
       </div>
 
@@ -278,7 +220,7 @@
   <section class="cta-band" aria-labelledby="ctaTitle">
     <div class="cta-wrap">
       <div class="cta-card">
-        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand"></span></h2>
+        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand">Repatha®</span></h2>
         <p class="cta-sub">Enter your email and we’ll take you to the official savings page.</p>
         <form class="form" id="footerForm">
           <div class="form-row">
@@ -336,7 +278,7 @@
       const API = window.SAVERX_API;
       // Infer slug from URL path (/drugs/<slug>/)
       const pathBits = location.pathname.replace(/\/+$/,'').split("/");
-      const slug = pathBits[pathBits.indexOf("drugs")+1] || "";
+      const slug = pathBits[pathBits.indexOf("drugs")+1] || "repatha";
 
       const $  = (sel, root=document)=> root.querySelector(sel);
       const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
@@ -466,9 +408,38 @@
 
           bindData(model);
           updateHeadTags(model, slug);
-            // Set hero ALT text dynamically
-            const heroImg = document.querySelector('.rx-hero img');
-            if (heroImg && model.brand) heroImg.alt = `${model.brand} savings`;
+
+            // Build manufacturer URL with UTM parameters, robust to blank/relative values
+        function buildManufacturerUrl(slug){
+        const base = String(window.__manufacturerUrl || "");
+        // default if sheet didn’t provide a URL
+        let href = "/";
+        try {
+            const u = base.match(/^https?:/i) ? new URL(base) : new URL(base || "/", location.origin);
+            u.searchParams.set("utm_source", "saverx.ai");
+            u.searchParams.set("utm_medium", "referral");
+            u.searchParams.set("utm_campaign", `manufacturer_savings_${slug || "unknown"}`);
+            href = u.toString();
+        } catch { href = base || "/"; }
+        return href;
+        }
+
+        // If we opened a blank tab earlier (user gesture), navigate it after async finishes
+        function navigateOpenedTab(tab, href){
+            if (tab && !tab.closed) {
+                try {
+                // set location on the opened tab
+                tab.location = href;
+                tab.focus?.();
+                return;
+                } catch {}
+        }
+  // Fallback: if the tab couldn't be controlled (blocked), open in same tab
+  window.location.href = href;
+}
+
+
+
 
 
 
@@ -485,11 +456,6 @@
 
           // Set hidden input for forms
           $("#modal-drug").value = model.brand;
-          const uaEl = document.getElementById('modal-ua');
-            if (uaEl) uaEl.value = navigator.userAgent || '';
-            const refEl = document.getElementById('modal-ref');
-            if (refEl) refEl.value = document.referrer || '';
-
 
         } catch(err){
           console.error("Load failed", err);

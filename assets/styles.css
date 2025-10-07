@@ -606,3 +606,27 @@ html, body { overflow-x: hidden; }
 
 /* accessibility helper */
 .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* for the individual dru page layout  index.htl pages*/
+.rx-lede { margin-bottom: 10px; }
+.rx-title { font-size: clamp(32px, 5vw, 44px); line-height: 1.1; margin: 0 0 6px; }
+.rx-sub { color: var(--muted); margin: 0; }
+
+/* --- Step 3: hero/card rhythm like mock --- */
+.section-pad { padding-top: 10px; }
+
+.rx-hero { margin-top: 12px; }
+.rx-hero .rx-card { padding: 16px 16px 12px; border-radius: 16px; }
+
+.rx-hero .rx-head { font-size: 15px; letter-spacing: .2px; }
+.rx-row { padding: 9px 0; gap: 12px; }
+
+.rx-bullets { margin: 10px 0 8px; }   /* slight breathing room above/below bullets */
+.rx-table { margin-top: 6px; }        /* a little air before the table */
+
+@media (max-width: 900px){
+  .section-pad { padding-top: 8px; }
+  .rx-hero { margin-top: 8px; }
+  .rx-hero .rx-card { margin-top: 8px; }
+}
+
