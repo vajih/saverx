@@ -1,212 +1,612 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!--
-    SaveRx.AI — STELARA® Savings Landing Page
-    Path: /drugs/stelara/index.html
-    Uses shared assets from /assets (styles.css, scripts.js, icons, images)
-  -->
   <meta charset="utf-8" />
+  <title>Drug Savings | SaveRx.ai</title>
+
+<!-- Open Graph (neutral; will be updated by JS) -->
+<meta property="og:title" content="Drug Savings | SaveRx.ai" />
+<meta property="og:description" content="Official savings link, potential copay, and simple guidance." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SaveRx.ai" />
+<meta property="og:url" content="" />
+<meta property="og:image" content="/assets/img/hero-1200.jpg" />
+
+<!-- Optional canonical (we’ll set href via JS) -->
+<link rel="canonical" href="" />
+
+  <!-- SEO basics -->
+  <meta name="description" content="SaveRx.ai helps you find official manufacturer savings and lower your out-of-pocket." />
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SaveRx.AI — STELARA® Savings</title>
-  <meta name="description" content="Lower your out-of-pocket on STELARA®. See if you qualify for manufacturer copay savings.">
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#1d4ed8" />
 
-  <!-- Favicon (root-relative is most reliable) -->
-  <link rel="icon" href="/assets/favicon.png" sizes="32x32" type="image/png">
-  <link rel="shortcut icon" href="/assets/favicon.png" type="image/png">
+  <!-- Favicon / Touch icon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
 
-  <!-- Shared styles -->
-  <link rel="stylesheet" href="../../assets/styles.css" />
+  <!-- Styles (shared) -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
 
-  <!-- Per-page config for shared scripts.js -->
+  <style>
+    /* Page-local minimal styling (namespaced with .rx-) */
+    .rx-hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #e6eaf2;
+    }
+    .rx-hero-media img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      max-height: 540px; /* keeps hero from feeling too tall on desktop */
+    }
+    .rx-overlay {
+      position: absolute;
+      right: 16px; bottom: 16px; left: auto;
+      max-width: 360px;
+    }
+    .rx-card {
+      background: #ffffff;
+      border: 1px solid #e6eaf2;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px 14px 12px;
+    }
+    .rx-card .rx-head { font-weight: 800; margin: 0 0 8px; font-size: 16px; }
+    .rx-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 8px 0; border-top: 1px dashed #d9dfeb; }
+    .rx-row:first-of-type { border-top: 0; }
+    .rx-k { color: var(--muted); font-size: 13px; }
+    .rx-v { font-weight: 800; letter-spacing: .2px; }
+    .rx-v s { text-decoration: none; position: relative; }
+    .rx-v s::after { content:""; position:absolute; inset: 50% 0 auto 0; height:2px; background: var(--danger); }
+    .rx-cta { margin-top: 10px; }
+    .rx-cta .btn { width: 100%; }
+
+    .rx-body { display: grid; gap: 16px; grid-template-columns: 1.2fr .8fr; align-items: start; }
+    .rx-left .rx-title { margin: 12px 0 6px; font-size: clamp(24px, 4.5vw, 34px); line-height: 1.15; }
+    .rx-left .rx-sub  { color: var(--muted); margin: 0 0 10px; }
+    .rx-bullets { margin: 0; padding-left: 18px; }
+    .rx-bullets li { margin: 6px 0; }
+
+    .rx-testimonial {
+      background:#f8fafc; border:1px solid #e6eaf2; border-radius:14px; padding:12px;
+      font-style: italic; color:#0b2a4e;
+    }
+    .rx-author { margin-top: 6px; color:#60708a; font-style: normal; }
+
+    .rx-table {
+      width:100%; border-collapse: collapse; background: #fff;
+      border:1px solid #e6eaf2; border-radius:14px; overflow:hidden;
+    }
+    .rx-table th, .rx-table td { padding:12px; border-bottom:1px solid #eef2f7; text-align:left; }
+    .rx-table th { background:#f6f8fb; font-size:14px; color:#334155; }
+    .rx-table tfoot td { background:#fbfcfe; font-weight:800; }
+
+    .rx-disclaimer { color:#6b7280; font-size:12px; margin-top:6px; }
+
+    @media (max-width: 900px){
+      .rx-body { grid-template-columns: 1fr; gap: 14px; }
+      .rx-overlay { position: static; max-width: 100%; padding: 0 0 4px; }
+      .rx-hero-media img { max-height: none; }
+    }
+
+    /* --- Step 6: Layout polish to match mock --- */
+
+/* Give the page a comfortable max width and side padding */
+.container {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+/* Lede + hero rhythm */
+.section-pad { padding-top: 10px; }
+.rx-lede { margin-bottom: 10px; }
+.rx-title { font-size: clamp(32px, 5vw, 44px); line-height: 1.1; margin: 0 0 6px; }
+.rx-sub { color: var(--muted); margin: 0; }
+
+/* Hero: make image feel consistent and the card float with breathing room */
+.rx-hero { margin-top: 12px; }
+.rx-hero-media img {
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 16 / 9;          /* keeps a cinematic feel on desktop */
+  max-height: none;              /* let aspect-ratio drive height */
+  border-radius: 14px;
+}
+.rx-overlay {
+  right: 20px;
+  bottom: 20px;
+  max-width: clamp(260px, 32vw, 360px);
+}
+.rx-hero .rx-card {
+  padding: 16px 16px 12px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.rx-hero .rx-head { font-size: 15px; letter-spacing: .2px; }
+.rx-row { padding: 9px 0; gap: 12px; }  /* a touch roomier */
+
+/* Body: 2-col balance + a bit more gap to breathe */
+.rx-body {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  gap: 22px;
+}
+.rx-bullets { margin: 10px 0 8px; }
+.rx-table { margin-top: 6px; }
+
+/* Buttons: full-width on small screens for cleaner alignment */
+.btn-block-sm { width: 100%; }
+
+/* Mobile refinements */
+@media (max-width: 900px){
+  .section-pad { padding-top: 8px; }
+  .rx-hero { margin-top: 8px; }
+  .rx-overlay { position: static; max-width: 100%; margin-top: 8px; }
+  .rx-hero-media img { aspect-ratio: auto; } /* avoid tall image on phones */
+  .rx-body { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* --- hero crop fix override --- */
+.rx-hero-media img{
+  aspect-ratio: auto;      /* cancel the 16:9 */
+  height: auto;            /* let the image decide height */
+  max-height: 540px;       /* keep it from getting too tall */
+  object-position: center 20%; /* show more of the upper area; tweak if needed */
+}
+
+
+
+  </style>
+
   <script>
-    window.PAGE_CONFIG = {
-      drug: "Stelara",
-      // Janssen CarePath – STELARA® cost support
-      manufacturerUrl: "https://www.janssencarepath.com/patient/stelara/cost-support",
-      // Your working Apps Script URL (writes to Sheet1 of SaveRx Leads)
-      scriptUrl: "https://script.google.com/macros/s/AKfycbxiowuiS7bkI_-QeaOSLq6P-rin3IXwG0MmuLG0N1Q-wgSWoH7AEwUOWbZ5Vl-K9vEU9Q/exec"
-    };
+    // Set your live Apps Script URL here
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
   </script>
 </head>
 
-<body>
-  <!-- Header / Nav -->
-  <header class="header container" role="banner">
-    <a class="brand" href="#top">
-      <img src="../../assets/logo.svg" alt="SaveRx.AI logo" width="148" height="32" />
-      <div class="tagline">AI-Powered Prescription Savings</div>
-    </a>
-    <nav class="nav" aria-label="Site">
-      <a href="#benefits">Benefits</a>
-      <a href="#savings">Savings</a>
-      <a href="#get-started">Get Started</a>
-    </nav>
+<body class="theme-light">
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-row container">
+      <a class="brand" href="/" aria-label="SaveRx.ai home">SaveRx.ai</a>
+      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">☰</button>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="nav-link" href="/about.html">About</a>
+        <a class="nav-link" href="/contact.html">Contact</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="container" id="top">
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-title">
-      <div>
-        <h1 id="hero-title">STELARA®</h1>
-        <h2 style="margin:0 0 12px 0;font-weight:600;color:#0b2a4e">
-          Proven biologic for immune-mediated conditions
-        </h2>
-        <p>
-          STELARA® (ustekinumab) is a prescription biologic that targets IL-12 and IL-23.
-          It’s used for adults with moderate to severe plaque psoriasis, active psoriatic arthritis,
-          Crohn’s disease, and ulcerative colitis. If eligible, a manufacturer copay program can
-          significantly reduce your out-of-pocket cost.
+  <!-- Mobile drawer -->
+  <aside id="mobile-drawer" class="mobile-drawer" hidden>
+    <div class="drawer-backdrop" data-close></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
+      <nav class="drawer-nav">
+        <a href="/">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main container -->
+  <main class="container section-pad">
+
+    <section class="rx-lede">
+        <h1 class="rx-title"><span data-bind="brand"></span></h1>
+        <p class="rx-sub">
+            <b>(<span data-bind="generic"></span>) •  <span data-bind="manufacturer"></span></b><br>
+            Lower your out-of-pocket cost on <span data-bind="brand"></span>.
+            Eligible patients may qualify for a manufacturer copay program.
         </p>
+    </section>
 
-        <div class="cta-row">
-          <button class="btn" data-open-modal>Check savings</button>
-          <span class="badge">
-            <img src="../../assets/icons/check.svg" alt="" /> Official manufacturer link
-          </span>
-        </div>
-
-        <div class="testimonial" style="max-width:620px">
-          “With the copay support, I finally felt relief—both for my symptoms and my budget.”
-          — <strong>Danielle P.</strong>
-        </div>
+    <!-- Hero: image + overlay price card -->
+    <section class="rx-hero">
+      <div class="rx-hero-media">
+        <!-- These will be replaced from Sheets if present -->
+        <picture>
+          <source media="(max-width: 640px)" srcset="/assets/img/repatha-hero-vertical.png" data-src="hero_portrait">
+          <img src="/assets/img/repatha-hero.png" alt="" data-src="hero_landscape" loading="eager">
+        </picture>
       </div>
 
-      <!-- Right side: hero image + overlay -->
-      <div class="hero-media">
-        <!-- Provide this asset: SAVERX/assets/img/stelara-hero.png -->
-        <img src="../../assets/img/stelara-hero.png" alt="STELARA lifestyle hero" loading="lazy" />
-
-        <!-- Cost overlay card -->
-        <aside class="cost-overlay" aria-label="Example prescription costs">
-          <div class="overlay-card">
-            <div class="overlay-head">Prescription Cost</div>
-
-            <div class="overlay-row">
-              <span class="overlay-label">Without copay card</span>
-              <span class="overlay-value">$7,500</span>
-            </div>
-
-            <div class="overlay-row">
-              <span class="overlay-label">With copay card</span>
-              <span class="overlay-value">As low as $5*</span>
-            </div>
-
-            <hr class="overlay-divider" />
-
-            <div class="overlay-foot">
-              <span class="overlay-foot-label">Potential Annual Savings</span>
-              <span class="overlay-foot-value">Up to <strong>$89,940</strong></span>
-            </div>
+      <div class="rx-overlay">
+        <div class="rx-card">
+          <p class="rx-head">Prescription Cost</p>
+          <div class="rx-row">
+            <div class="rx-k">Without copay card</div>
+            <div class="rx-v"><s data-bind="cash_price_formatted">$—</s></div>
           </div>
-        </aside>
+          <div class="rx-row">
+            <div class="rx-k">With copay card</div>
+            <div class="rx-v" data-bind="copay_price_formatted">$—</div>
+          </div>
+          <div class="rx-row">
+            <div class="rx-k">Savings per prescription</div>
+            <div class="rx-v" data-bind="per_fill_savings">$—</div>
+          </div>
+          <div class="rx-row">
+            <div class="rx-k">Potential annual savings</div>
+            <div class="rx-v" data-bind="annual_savings_formatted">$—</div>
+          </div>
+          <div class="rx-cta">
+            <button class="btn btn-primary js-check-savings" type="button">Check savings</button>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- BENEFITS -->
-    <section id="benefits" class="benefits" aria-label="Benefits">
-      <article class="benefit">
-        <img src="../../assets/icons/heart.svg" alt="" />
-        <div>
-          <h3>Targets IL-12/23</h3>
-          <p>Selectively targets interleukins involved in inflammation for long-term control.</p>
-        </div>
-      </article>
-      <article class="benefit">
-        <img src="../../assets/icons/inject.svg" alt="" />
-        <div>
-          <h3>Infrequent dosing</h3>
-          <p>After initial dosing, maintenance is typically every 8–12 weeks (condition-dependent).</p>
-        </div>
-      </article>
-      <article class="benefit">
-        <img src="../../assets/icons/ldl.svg" alt="" />
-        <div>
-          <h3>Self-injection (maintenance)</h3>
-          <p>Maintenance often given as a prefilled syringe after your provider’s guidance.</p>
-        </div>
-      </article>
-    </section>
+    <!-- Body: titles, bullets, testimonial, table, disclaimer -->
+    <section class="rx-body" style="margin-top:16px;">
+      <div class="rx-left">
+        <h2 class="rx-title"><span data-bind="brand"></span> Savings</h2>
+        <p class="rx-sub"> <b><span data-bind="generic"></span> by <span data-bind="manufacturer"></span></b></p>
 
-    <!-- SAVINGS TABLE -->
-    <section id="savings" style="margin-top:26px">
-      <div class="table" role="region" aria-label="Example savings">
-        <table>
+        <ul class="rx-bullets" id="rx-bullets">
+          <!-- Bullets inserted here -->
+        </ul>
+
+        <div class="rx-testimonial">
+          “<span data-bind="testimonial">With the copay support, I finally paid far less for my prescription.</span>”
+          <div class="rx-author">— <span data-bind="testimonial_author">John R.</span></div>
+        </div>
+
+        <p class="rx-disclaimer" data-bind="disclaimer">*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.</p>
+      </div>
+
+      <div class="rx-right">
+        <table class="rx-table" aria-label="Savings comparison">
           <thead>
-            <tr>
-              <th>Prescription cost</th>
-              <th>Without copay card</th>
-              <th>With copay card</th>
-            </tr>
+            <tr><th>Scenario</th><th>Estimated cost</th></tr>
           </thead>
-        <tbody>
-          <tr>
-            <td>Typical prescription (per fill)</td>
-            <td>$7,500</td>
-            <td>$5*</td>
-          </tr>
-          <tr>
-            <td>Savings per prescription</td>
-            <td colspan="2"><strong>$7,495</strong></td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>Potential annual savings</td>
-            <td colspan="2">$89,940</td>
-          </tr>
-        </tfoot>
+          <tbody>
+            <tr><td>Typical cash price</td><td><s data-bind="cash_price_formatted">$—</s></td></tr>
+            <tr><td>With copay card</td><td data-bind="copay_price_formatted">$—</td></tr>
+            <tr><td><span data-bind="period_label">Typical monthly prescription</span> savings</td><td data-bind="per_fill_savings">$—</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td>Potential annual savings</td><td data-bind="annual_savings_formatted">$—</td></tr>
+          </tfoot>
         </table>
+
+        <div style="margin-top:10px;">
+          <button class="btn btn-primary btn-block-sm js-check-savings" type="button">Get your savings card</button>
+        </div>
       </div>
-      <p class="small" style="margin-top:8px">
-        *Eligibility and terms apply. Final costs depend on your insurance coverage and the manufacturer program.
-      </p>
     </section>
-
-    <!-- SECONDARY CTA / FOOTER FORM -->
-    <section id="get-started" class="form-callout" aria-label="Get started">
-      <h3 style="margin:0">Start saving on STELARA®</h3>
-      <form id="footerForm" class="cta-row" aria-label="Email signup">
-        <label class="sr-only" for="footerEmail">Email address</label>
-        <input id="footerEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required />
-        <button id="footerSubmit" class="btn" type="submit">Submit</button>
-      </form>
-    </section>
-
-    <p class="footer small">
-      This page is for educational purposes. We link you to the official manufacturer program for STELARA®.
-      STELARA® is a registered trademark of Janssen Biotech, Inc.
-    </p>
   </main>
 
-  <!-- Email-capture modal (primary CTA) -->
-  <dialog id="emailModal" class="modal" aria-label="Email capture modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <strong>Get your STELARA® savings link</strong>
-        <button class="btn secondary" data-close-modal aria-label="Close">Close</button>
+  <!-- Footer email capture -->
+  <section class="cta-band" aria-labelledby="ctaTitle">
+    <div class="cta-wrap">
+      <div class="cta-card">
+        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand"></span></h2>
+        <p class="cta-sub">Enter your email and we’ll take you to the official savings page.</p>
+        <form class="form" id="footerForm">
+          <div class="form-row">
+            <label class="sr-only" for="footerEmail">Email address</label>
+            <input id="footerEmail" name="email" class="input" type="email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <button id="footerSubmit" class="btn" type="submit">Continue</button>
+          <p class="form-msg" id="footerMsg" role="status" aria-live="polite"></p>
+        </form>
       </div>
-      <form id="modalForm">
-        <div class="modal-body">
-          <p>Enter your email to receive the official copay program link and tips to get the most from your prescription.</p>
-          <input id="modalEmail" class="input" name="email" type="email" placeholder="Email address" autocomplete="email" required style="width:100%" />
-        </div>
+      <div class="cta-card">
+        <h3 class="cta-title">Questions?</h3>
+        <p class="cta-sub">We’ll send you directly to the manufacturer’s official program.</p>
+        <p><a href="mailto:questions@saverx.ai">questions@saverx.ai</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal (same pattern as homepage) -->
+  <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
+
+      <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
+      <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
+
+      <form id="modal-lead-form">
+        <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
+        <label class="field">
+          <span>Email</span>
+          <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
+        </label>
+        <input type="hidden" name="drug" id="modal-drug" />
+        <input type="hidden" name="source" value="Drug Page Modal" />
+        <input type="hidden" name="useragent" id="modal-ua" />
+        <input type="hidden" name="referrer" id="modal-ref" />
         <div class="modal-actions">
-          <button id="modalSubmit" class="btn" type="submit">Get savings</button>
+          <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
         </div>
+        <div id="modal-status" class="status" role="status" aria-live="polite"></div>
+        <p class="microcopy">By continuing, you agree to our <a href="/terms.html">Terms</a> & <a href="/privacy.html">Privacy</a>.</p>
       </form>
     </div>
-  </dialog>
+  </div>
 
-  <!-- Shared site script (modal + lead posting + redirect) -->
-  <script src="../../assets/scripts.js"></script>
+  <!-- Shared site JS -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
 
-  <!-- Utility: visually-hidden -->
-  <style>
-    .sr-only{
-      position:absolute;width:1px;height:1px;padding:0;margin:-1px;
-      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0
+  <!-- Page script: fetch drug JSON, bind UI, wire forms -->
+  <script>
+    (function(){
+      "use strict";
+
+      const API = window.SAVERX_API;
+      // Infer slug from URL path (/drugs/<slug>/)
+      const pathBits = location.pathname.replace(/\/+$/,'').split("/");
+      const slug = pathBits[pathBits.indexOf("drugs")+1] || "";
+
+      const $  = (sel, root=document)=> root.querySelector(sel);
+      const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
+      const money = n => {
+        const f = Number(n);
+        return Number.isFinite(f) ? `$${f.toLocaleString()}` : "$—";
+      };
+
+      // Bind helper: set textContent for [data-bind], src/srcset for [data-src]
+      function bindData(model){
+        // text bindings
+        $$("[data-bind]").forEach(el=>{
+          const key = el.getAttribute("data-bind");
+          if (key in model && model[key] != null) el.textContent = String(model[key]);
+        });
+        // src bindings
+        $$("[data-src]").forEach(el=>{
+          const key = el.getAttribute("data-src");
+          if (!(key in model)) return;
+          const val = String(model[key] || "");
+          if (el.tagName === "SOURCE") {
+            el.srcset = val || el.srcset;
+          } else if (el.tagName === "IMG") {
+            el.src = val || el.src;
+          }
+        });
+      }
+
+    function updateHeadTags(model, slug){
+    const brand = model.brand || "Drug";
+    // Title
+    document.title = `${brand} Savings | SaveRx.ai`;
+
+    // URL (current page)
+    const url = location.href.replace(/\/+$/, "/");
+
+    // Canonical
+    const linkCanon = document.querySelector('link[rel="canonical"]');
+    if (linkCanon) linkCanon.setAttribute("href", url);
+
+    // Open Graph
+    const set = (sel, val) => {
+        const el = document.querySelector(sel);
+        if (el && val) el.setAttribute("content", val);
+    };
+    set('meta[property="og:title"]', `${brand} Savings | SaveRx.ai`);
+    set('meta[property="og:description"]', "Official savings link, potential copay, and simple guidance.");
+    set('meta[property="og:url"]', url);
+      // Meta description: prefer brand/generic if available
+    const descEl = document.querySelector('meta[name="description"]');
+    if (descEl) {
+        const brand = model.brand || "your medication";
+        const gen = model.generic ? ` (${model.generic})` : "";
+        const desc = `Find official ${brand}${gen} copay support and lower your out-of-pocket. SaveRx.ai links you to the manufacturer’s program.`;
+        descEl.setAttribute("content", desc);
     }
-  </style>
+
+
+    // Image: prefer the landscape hero from Sheets if present
+    const ogImage = (model.hero_landscape && model.hero_landscape.startsWith("http"))
+        ? model.hero_landscape
+        : (model.hero_landscape || "/assets/img/hero-1200.jpg");
+    set('meta[property="og:image"]', ogImage);
+    }
+
+
+      // Open/close modal
+      function openModal(){ $("#email-modal")?.setAttribute("aria-hidden","false"); $("#modal-email")?.focus(); }
+      function closeModal(){ $("#email-modal")?.setAttribute("aria-hidden","true"); }
+
+      // Click → open modal
+      document.addEventListener("click", (e)=>{
+        if (e.target.closest(".js-check-savings")) openModal();
+        if (e.target.matches("[data-close], .modal-backdrop")) closeModal();
+      });
+      document.addEventListener("keydown", (e)=>{ if (e.key==="Escape") closeModal(); });
+
+      // Fetch drug data
+      async function load(){
+  try{
+    const u = `${API}?mode=drug&slug=${encodeURIComponent(slug)}`;
+    const res = await fetch(u, { cache: "no-cache" });
+    const json = await res.json();
+    const d = (json && json.item) ? json.item : {};
+    if (!d || !d.brand){
+      console.warn("No data for slug:", slug, json);
+    }
+
+    // Derived fields
+    const cash = Number(d.cash_price);
+    const copay = Number(d.copay_price);
+    const perFill = (Number.isFinite(cash) && Number.isFinite(copay)) ? Math.max(cash - copay, 0) : null;
+
+    // Fills/year: prefer sheet value; otherwise infer from period label; default 12
+    const fy = Number(d.fills_per_year);
+    const fillsPerYear = (Number.isFinite(fy) && fy > 0)
+      ? fy
+      : (/week/i.test(String(d.period_label || "")) ? 52 : 12);
+
+    // Annual savings: prefer sheet if > 0, else derive from perFill × fills/year
+    const annFromSheet = Number(d.annual_savings);
+    const annualSavings = (Number.isFinite(annFromSheet) && annFromSheet > 0)
+      ? annFromSheet
+      : (Number.isFinite(perFill) ? perFill * fillsPerYear : null);
+
+    const model = {
+      brand: d.brand || "",
+      generic: d.generic || "",
+      manufacturer: d.manufacturer || "",
+      hero_landscape: d.hero_landscape || "/assets/img/repatha-hero.png",
+      hero_portrait:  d.hero_portrait  || "/assets/img/repatha-hero-vertical.png",
+      period_label: d.period_label || "Typical monthly prescription",
+      disclaimer: d.disclaimer || "*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.",
+      cash_price_formatted: money(cash),
+      copay_price_formatted: money(copay),
+      per_fill_savings: money(perFill),
+      annual_savings_formatted: money(annualSavings),
+      testimonial: d.testimonial || "Using the copay card, I’ve paid far less for my prescription.",
+      testimonial_author: d.testimonial_author || "Patient"
+    };
+
+    // Bind + head
+    bindData(model);
+    updateHeadTags(model, slug);
+
+    // Dynamic hero alt
+    const heroImg = document.querySelector('.rx-hero img');
+    if (heroImg && model.brand) heroImg.alt = `${model.brand} savings`;
+
+    // Populate hidden analytics fields (modal)
+    const uaEl  = document.getElementById('modal-ua');
+    if (uaEl) uaEl.value = navigator.userAgent || "";
+    const refEl = document.getElementById('modal-ref');
+    if (refEl) refEl.value = document.referrer || "";
+
+    // Bullets
+    const bulletsWrap = $("#rx-bullets");
+    const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
+    if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
+
+    // Redirect fields
+    window.__manufacturerUrl = d.manufacturerUrl || "/";
+    window.__drugName = model.brand || slug;
+
+    // Set hidden input for forms
+    const modalDrug = $("#modal-drug");
+    if (modalDrug) modalDrug.value = model.brand || slug;
+
+  } catch(err){
+    console.error("Load failed", err);
+  }
+}
+
+
+      // Redirect helper
+      // Build the manufacturer URL safely and add UTM tags
+        function goToManufacturer(slug){
+        const base = String(window.__manufacturerUrl || "");
+        try {
+            const u = base.match(/^https?:/i) ? new URL(base) : new URL(base || "/", location.origin);
+            u.searchParams.set("utm_source","saverx.ai");
+            u.searchParams.set("utm_medium","referral");
+            u.searchParams.set("utm_campaign", `manufacturer_savings_${slug || "unknown"}`);
+            return u.toString();
+        } catch {
+            return base || "/"; // graceful fallback
+        }
+        }
+
+
+      // Modal form
+      $("#modal-lead-form")?.addEventListener("submit", (e)=>{
+        e.preventDefault();
+        const email = ($("#modal-email")?.value || "").trim();
+        const status = $("#modal-status");
+        if (!/^\S+@\S+\.\S+$/.test(email)){
+            if (status) status.textContent = "Please enter a valid email.";
+            return;
+        }
+
+        // Build target and open it *immediately* (user gesture)
+        const href = goToManufacturer(slug);
+        window.open(href, "_blank");   // no features arg; avoids the blank-tab issue
+        closeModal();
+        if (status) status.textContent = "Opening the official savings site…";
+
+        // Fire-and-forget lead capture (no await)
+        try {
+            const body = new URLSearchParams({
+            email,
+            drug: window.__drugName || slug,
+            source: "Drug Page Modal",
+            useragent: navigator.userAgent || "",
+            referrer: document.referrer || ""
+            }).toString();
+
+            if (navigator.sendBeacon) {
+            const blob = new Blob([body], { type: "application/x-www-form-urlencoded" });
+            navigator.sendBeacon(API, blob);
+            } else {
+            fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                mode: "no-cors",
+                body,
+                keepalive: true
+            });
+            }
+        } catch {}
+        });
+
+
+
+      // Footer form //////////
+      $("#footerForm")?.addEventListener("submit", (e)=>{
+        e.preventDefault();
+        const email = ($("#footerEmail")?.value || "").trim();
+        const msg = $("#footerMsg");
+
+        // Simple email check
+        if (!/^\S+@\S+\.\S+$/.test(email)){
+            if (msg) msg.textContent = "Please enter a valid email.";
+            return;
+        }
+
+        // Open target immediately (user gesture) so it won't be blocked
+        const href = goToManufacturer(slug); // uses the helper we added earlier
+        window.open(href, "_blank");
+        if (msg) msg.textContent = "Opening the official savings site…";
+        $("#footerSubmit")?.setAttribute("disabled","true");
+
+        // Fire-and-forget lead capture (no await)
+        try {
+            const body = new URLSearchParams({
+            email,
+            drug: window.__drugName || slug,
+            source: "Drug Page Footer",
+            useragent: navigator.userAgent || "",
+            referrer: document.referrer || ""
+            }).toString();
+
+            if (navigator.sendBeacon) {
+            const blob = new Blob([body], { type: "application/x-www-form-urlencoded" });
+            navigator.sendBeacon(API, blob);
+            } else {
+            fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                mode: "no-cors",
+                body,
+                keepalive: true
+            });
+            }
+        } catch {}
+        });
+
+
+      // Kick off
+      load();
+    })();
+  </script>
 </body>
 </html>
