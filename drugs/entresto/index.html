@@ -152,6 +152,16 @@
   .rx-body { grid-template-columns: 1fr; gap: 14px; }
 }
 
+/* --- hero crop fix override --- */
+.rx-hero-media img{
+  aspect-ratio: auto;      /* cancel the 16:9 */
+  height: auto;            /* let the image decide height */
+  max-height: 540px;       /* keep it from getting too tall */
+  object-position: center 20%; /* show more of the upper area; tweak if needed */
+}
+
+
+
   </style>
 
   <script>
@@ -403,10 +413,6 @@
     }
 
 
-
-
-
-
       // Open/close modal
       function openModal(){ $("#email-modal")?.setAttribute("aria-hidden","false"); $("#modal-email")?.focus(); }
       function closeModal(){ $("#email-modal")?.setAttribute("aria-hidden","true"); }
@@ -420,99 +426,80 @@
 
       // Fetch drug data
       async function load(){
-        try{
-          const u = `${API}?mode=drug&slug=${encodeURIComponent(slug)}`;
-          const res = await fetch(u, { cache: "no-cache" });
-          const json = await res.json();
-          const d = json && json.item ? json.item : {};
-          if (!d || !d.brand){
-            console.warn("No data for slug:", slug, json);
-          }
+  try{
+    const u = `${API}?mode=drug&slug=${encodeURIComponent(slug)}`;
+    const res = await fetch(u, { cache: "no-cache" });
+    const json = await res.json();
+    const d = (json && json.item) ? json.item : {};
+    if (!d || !d.brand){
+      console.warn("No data for slug:", slug, json);
+    }
 
-          // Derived fields
-          const cash = Number(d.cash_price);
-          const copay = Number(d.copay_price);
-          const perFill = (Number.isFinite(cash) && Number.isFinite(copay)) ? Math.max(cash - copay, 0) : null;
+    // Derived fields
+    const cash = Number(d.cash_price);
+    const copay = Number(d.copay_price);
+    const perFill = (Number.isFinite(cash) && Number.isFinite(copay)) ? Math.max(cash - copay, 0) : null;
 
-          // Fills/year: prefer sheet value; otherwise infer from period label; default 12
-        const fy = Number(d.fills_per_year);
-        const fillsPerYear = Number.isFinite(fy) && fy > 0
-        ? fy
-        : (/week/i.test(String(d.period_label || "")) ? 52 : 12);
+    // Fills/year: prefer sheet value; otherwise infer from period label; default 12
+    const fy = Number(d.fills_per_year);
+    const fillsPerYear = (Number.isFinite(fy) && fy > 0)
+      ? fy
+      : (/week/i.test(String(d.period_label || "")) ? 52 : 12);
 
-        // Annual savings: prefer sheet if > 0, else derive from perFill × fills/year
-        const annFromSheet = Number(d.annual_savings);
-        const annualSavings = (Number.isFinite(annFromSheet) && annFromSheet > 0)
-        ? annFromSheet
-        : (Number.isFinite(perFill) ? perFill * fillsPerYear : null);
+    // Annual savings: prefer sheet if > 0, else derive from perFill × fills/year
+    const annFromSheet = Number(d.annual_savings);
+    const annualSavings = (Number.isFinite(annFromSheet) && annFromSheet > 0)
+      ? annFromSheet
+      : (Number.isFinite(perFill) ? perFill * fillsPerYear : null);
 
+    const model = {
+      brand: d.brand || "",
+      generic: d.generic || "",
+      manufacturer: d.manufacturer || "",
+      hero_landscape: d.hero_landscape || "/assets/img/repatha-hero.png",
+      hero_portrait:  d.hero_portrait  || "/assets/img/repatha-hero-vertical.png",
+      period_label: d.period_label || "Typical monthly prescription",
+      disclaimer: d.disclaimer || "*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.",
+      cash_price_formatted: money(cash),
+      copay_price_formatted: money(copay),
+      per_fill_savings: money(perFill),
+      annual_savings_formatted: money(annualSavings),
+      testimonial: d.testimonial || "Using the copay card, I’ve paid far less for my prescription.",
+      testimonial_author: d.testimonial_author || "Patient"
+    };
 
+    // Bind + head
+    bindData(model);
+    updateHeadTags(model, slug);
 
-          const model = {
-            brand: d.brand || "Repatha®",
-            generic: d.generic || "evolocumab",
-            manufacturer: d.manufacturer || "Amgen",
-            hero_landscape: d.hero_landscape || "/assets/img/repatha-hero.png",
-            hero_portrait:  d.hero_portrait  || "/assets/img/repatha-hero-vertical.png",
-            period_label: d.period_label || "Typical monthly prescription",
-            disclaimer: d.disclaimer || "*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.",
-            cash_price_formatted: money(cash),
-            copay_price_formatted: money(copay),
-            per_fill_savings: money(perFill),
-            annual_savings_formatted: money(annualSavings),
-            testimonial: d.testimonial || "Using the copay card, I’ve paid far less for my prescription.",
-            testimonial_author: d.testimonial_author || "Patient"
-          };
+    // Dynamic hero alt
+    const heroImg = document.querySelector('.rx-hero img');
+    if (heroImg && model.brand) heroImg.alt = `${model.brand} savings`;
 
-          bindData(model);
-          updateHeadTags(model, slug);
-            // Set hero ALT text dynamically
-            const heroImg = document.querySelector('.rx-hero img');
-            if (heroImg && model.brand) heroImg.alt = `${model.brand} savings`;
+    // Populate hidden analytics fields (modal)
+    const uaEl  = document.getElementById('modal-ua');
+    if (uaEl) uaEl.value = navigator.userAgent || "";
+    const refEl = document.getElementById('modal-ref');
+    if (refEl) refEl.value = document.referrer || "";
 
+    // Bullets
+    const bulletsWrap = $("#rx-bullets");
+    const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
+    if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
 
+    // Redirect fields
+    window.__manufacturerUrl = d.manufacturerUrl || "/";
+    window.__drugName = model.brand || slug;
 
-          // Bullets
-          const bulletsWrap = $("#rx-bullets");
-          const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
-          if (bulletsWrap && bullets.length){
-            bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
-          }
+    // Set hidden input for forms
+    const modalDrug = $("#modal-drug");
+    if (modalDrug) modalDrug.value = model.brand || slug;
 
-          // Save official URL for redirects
-          window.__manufacturerUrl = d.manufacturerUrl || "/";
-          window.__drugName = model.brand;
+  } catch(err){
+    console.error("Load failed", err);
+  }
+}
 
-          // Set hidden input for forms
-          $("#modal-drug").value = model.brand;
-          const uaEl = document.getElementById('modal-ua');
-            if (uaEl) uaEl.value = navigator.userAgent || '';
-            const refEl = document.getElementById('modal-ref');
-            if (refEl) refEl.value = document.referrer || '';
-
-
-        } catch(err){
-          console.error("Load failed", err);
-        }
-      }
-
-      // Post helper
-      async function postLead(email, source){
-        try{
-          const body = new URLSearchParams({
-            email,
-            drug: window.__drugName || slug,
-            source,
-            useragent: navigator.userAgent || "",
-          }).toString();
-          await fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            mode: "no-cors",
-            body
-          });
-        } catch(_){}
-      }
 
       // Redirect helper
       // Build the manufacturer URL safely and add UTM tags
@@ -553,6 +540,7 @@
             drug: window.__drugName || slug,
             source: "Drug Page Modal",
             useragent: navigator.userAgent || "",
+            referrer: document.referrer || ""
             }).toString();
 
             if (navigator.sendBeacon) {
@@ -597,6 +585,7 @@
             drug: window.__drugName || slug,
             source: "Drug Page Footer",
             useragent: navigator.userAgent || "",
+            referrer: document.referrer || ""
             }).toString();
 
             if (navigator.sendBeacon) {
