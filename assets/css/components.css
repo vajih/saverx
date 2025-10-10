@@ -38,7 +38,12 @@
 @media (max-width:900px){ .design-v2 .hero-grid{ grid-template-columns:1fr } }
 
 /* Cards */
-.design-v2 .cards{ display:grid; gap:var(--s-6); grid-template-columns:repeat(3, minmax(0,1fr)) }
+.design-v2 .cards{
+  display: grid;
+  gap: var(--s-6);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
 @media (max-width:1000px){ .design-v2 .cards{ grid-template-columns:repeat(2,1fr) } }
 @media (max-width:640px){ .design-v2 .cards{ grid-template-columns:1fr } }
 .design-v2 .card{ border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.03); transition:transform .08s ease, box-shadow .15s ease, border-color .15s ease }
