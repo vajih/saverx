@@ -79,3 +79,55 @@
 @media (max-width:560px){ .design-v2 .footer .grid{ grid-template-columns:1fr } }
 .design-v2 .footer .logo img{ filter:brightness(0) invert(1) }
 .design-v2 .footer small{ color:#94a3b8 }
+
+/* =========================================================
+   SaveRx.ai — Step 3: Featured Section (your IDs)
+   ========================================================= */
+
+.design-v2 #skeleton-cards,
+.design-v2 #featured-cards{
+  display: grid;
+  gap: var(--s-6);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.design-v2 .card.skeleton{
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-6);
+  background: #fff;
+}
+.design-v2 .sk-line{
+  height: 12px;
+  border-radius: 8px;
+  background: var(--brand-50);
+  margin-bottom: var(--s-3);
+}
+.design-v2 .sk-title{ height: 16px }
+.design-v2 .sk-pill{
+  height: 28px; width: 40%;
+  border-radius: 999px;
+  background: var(--brand-100);
+}
+
+.design-v2 #featured.section-pad{ padding-block: var(--section-y) }
+.design-v2 #featured .section-title{ margin: 0 0 var(--s-6) }
+
+.design-v2 #ai-loader{
+  display: grid; gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-6);
+  background: var(--bg-soft);
+  margin-bottom: var(--s-6);
+}
+.design-v2 #ai-loader .ai-dot{
+  display: inline-block;
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--brand-400); margin-right: 4px;
+}
+
+.design-v2 #cards-loading{
+  text-align: center;
+  margin-top: var(--s-6);
+}
