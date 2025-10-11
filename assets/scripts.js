@@ -13,9 +13,8 @@
   // -----------------------------
   // Config
   // -----------------------------
-  // NOTE: Set in HTML BEFORE this file:
-  // <script>window.PAGE_CONFIG={scriptUrl:"https://script.google.com/.../exec"}</script>
   const SCRIPT_URL = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
+  const IS_V2 = document.body?.classList?.contains("design-v2");
 
   // -----------------------------
   // Small utilities
@@ -50,7 +49,7 @@
   // Sticky header shadow + mobile drawer
   // -----------------------------
   (function headerAndDrawer() {
-    const header = $(".site-header");
+    const header = $(".site-header") || $(".header"); // v1 or v2
     if (header) {
       const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 2);
       onScroll();
@@ -214,6 +213,10 @@
 
       if (!modal || !form) return;
 
+      // Avoid double-binding
+      if (form.dataset.bound === "email-modal") return;
+      form.dataset.bound = "email-modal";
+
       let redirectUrl = "/";
 
       // ---------- Focus trap helpers ----------
@@ -229,34 +232,19 @@
 
       const getFocusable = (container) =>
         Array.from(container.querySelectorAll(FOCUSABLE_SEL))
-          // Visible & focusable
           .filter(el => el.offsetParent !== null || el.getClientRects().length);
 
       function trapFocus(e) {
         if (e.key !== "Tab") return;
         const nodes = getFocusable(modal);
         if (!nodes.length) return;
-
         const first = nodes[0];
         const last  = nodes[nodes.length - 1];
-
-        // If focus somehow lands outside, pull it back in
-        if (!modal.contains(document.activeElement)) {
-          first.focus();
-          e.preventDefault();
-          return;
-        }
-
+        if (!modal.contains(document.activeElement)) { first.focus(); e.preventDefault(); return; }
         if (e.shiftKey) {
-          if (document.activeElement === first) {
-            last.focus();
-            e.preventDefault();
-          }
+          if (document.activeElement === first) { last.focus(); e.preventDefault(); }
         } else {
-          if (document.activeElement === last) {
-            first.focus();
-            e.preventDefault();
-          }
+          if (document.activeElement === last) { first.focus(); e.preventDefault(); }
         }
       }
       // ----------------------------------------
@@ -269,6 +257,8 @@
 
         lastTrigger = triggerEl || document.activeElement || null;
 
+        // v2 display
+        modal.classList.add("open");                 // <-- NEW for v2 CSS
         modal.setAttribute("aria-hidden", "false");
         lockScroll();
 
@@ -280,16 +270,15 @@
       }
 
       function closeModal() {
+        modal.classList.remove("open");              // <-- NEW for v2 CSS
         modal.setAttribute("aria-hidden", "true");
         if (status) status.textContent = "";
         if (submit) submit.disabled = false;
         form.reset();
         unlockScroll();
 
-        // Stop trapping focus
         modal.removeEventListener("keydown", trapFocus);
 
-        // Return focus to the caller for a11y
         if (lastTrigger && typeof lastTrigger.focus === "function") {
           lastTrigger.focus();
         }
@@ -322,6 +311,10 @@
       // Submit → post → delay → close → navigate new tab
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        if (form.dataset.submitting === "1") return;   // prevent double submit
+        form.dataset.submitting = "1";
+
         if (status) status.textContent = "";
         if (submit) submit.disabled = true;
 
@@ -329,6 +322,7 @@
         if (!/^\S+@\S+\.\S+$/.test(email)) {
           if (status) status.textContent = "Please enter a valid email.";
           if (submit) submit.disabled = false;
+          form.dataset.submitting = "";
           emailEl?.focus();
           return;
         }
@@ -337,11 +331,7 @@
 
         // OPEN A TAB IMMEDIATELY to avoid popup blockers.
         let pendingWin = null;
-        try {
-          pendingWin = window.open("about:blank", "_blank");
-        } catch (_) {
-          // If blocked, we will fall back to window.open later.
-        }
+        try { pendingWin = window.open("about:blank", "_blank"); } catch (_) {}
 
         const body = new URLSearchParams(new FormData(form)).toString();
 
@@ -364,7 +354,6 @@
         } finally {
           clearTimeout(t);
 
-          // Inform the user briefly
           if (status) status.textContent = "Opening the official savings site…";
           await sleep(1200);
 
@@ -388,6 +377,8 @@
           } else {
             window.open(outbound, "_blank", "noopener,noreferrer");
           }
+
+          form.dataset.submitting = "";
         }
       }, { passive: false });
     }
@@ -410,7 +401,6 @@
     const submitBtn  = form.querySelector('button[type="submit"]');
     const msgEl      = $("#newsMsg");
 
-    // Keep forms static-friendly but we'll POST via fetch:
     form.setAttribute("action", "");
     form.setAttribute("method", "post");
 

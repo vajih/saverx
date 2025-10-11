@@ -49,5 +49,6 @@
   --s-20:80px;
   --s-24:96px;
   --s-28:112px;
-  --section-y: clamp(48px, 10vw, 100px);
+  --section-y: clamp(18px, 4vw, 48px);
+
 }

@@ -60,11 +60,11 @@
   -->
 
   <!-- CSS (cache-busted) -->
-  <link rel="stylesheet" href="assets/styles.css?v=2025-10-03">
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03">
 
     <!-- Token and Component Links -->
-  <link rel="stylesheet" href="assets/css/tokens.css">
-  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
 
   <!-- JSON-LD: Organization + Website (keep concise and valid) -->
   <script type="application/ld+json">
@@ -93,24 +93,26 @@
 </head>
 
 
-<body class="design-v2">
+<body class="theme-light">
   <!-- =======================
        Header / Primary Nav
        ======================= -->
-<header class="header">
-  <div class="container inner">
-    <a href="/" class="logo" aria-label="SaveRx.ai">
-      <img src="assets/img/logo.svg" alt="SaveRx.ai" height="28">
-    </a>
-    <nav class="nav">
-      <a href="/" aria-current="page">Home</a>
-      <a href="/drugs/">Drugs</a>
-      <a href="/about.html">About</a>
-      <a href="/contact.html">Contact</a>
+<header class="site-header" role="banner">
+  <div class="header-row">
+    <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
+
+    <!-- Mobile menu icon -->
+    <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
+      ☰
+    </button>
+
+    <!-- Desktop nav -->
+    <nav class="site-nav" aria-label="Primary">
+      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="contact.html">Contact</a>
     </nav>
   </div>
 </header>
-
 
 <!-- Mobile drawer -->
 <aside id="mobile-drawer" class="mobile-drawer" hidden>
@@ -128,25 +130,11 @@
   <!-- =======================
        Hero
        ======================= -->
-  <section class="hero section">
-  <div class="container hero-grid">
-    <div>
-      <span class="badge eyebrow">Lower your out-of-pocket</span>
-      <h1>Find official <span style="color:var(--brand-700)">manufacturer savings</span> for your prescriptions</h1>
-      <p>SaveRx.ai connects you directly to copay cards, coupons, and patient assistance for drugs like Repatha, Ozempic, Wegovy, Mounjaro, and more.</p>
-      <div>
-        <a href="#featured" class="btn btn-primary">Find savings</a>
-        <a href="about.html" class="btn btn-outline">How it works</a>
-      </div>
-    </div>
-
-    <figure class="hero-media">
-      <!-- Use any large existing image for now -->
-      <img src="assets/img/hero-1200.jpg" alt="Patients saving on prescription costs">
-    </figure>
-  </div>
-</section>
-
+  <section class="hero container text-center">
+    <h1 class="hero-title">Stop overpaying for your prescriptions.</h1>
+    <p class="hero-subtitle">Find official manufacturer savings and lower your out-of-pocket.</p>
+    <!-- (Search removed for MVP) -->
+  </section>
 
   <!-- =======================
        Featured (Loader + Skeletons + Cards)
@@ -391,13 +379,6 @@
     }
   });
 </script>
-<div class="mobile-cta">
-  <div class="inner container">
-    <strong>Ready to save?</strong>
-    <a class="btn btn-primary" href="#featured">Find savings</a>
-  </div>
-</div>
-
 
 </body>
 </html>

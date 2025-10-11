@@ -77,7 +77,7 @@
 .design-v2 .footer .grid{ display:grid; gap:var(--s-10); grid-template-columns:2fr 1fr 1fr 2fr }
 @media (max-width:900px){ .design-v2 .footer .grid{ grid-template-columns:1fr 1fr } }
 @media (max-width:560px){ .design-v2 .footer .grid{ grid-template-columns:1fr } }
-.design-v2 .footer .logo img{ filter:brightness(0) invert(1) }
+.design-v2 .footer .logo img{ filter:none }
 .design-v2 .footer small{ color:#94a3b8 }
 
 /* =========================================================
@@ -130,4 +130,49 @@
 .design-v2 #cards-loading{
   text-align: center;
   margin-top: var(--s-6);
+}
+
+/* Footer disclaimer strip */
+.design-v2 .footer-disclaimer{
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: var(--s-10);
+  padding: var(--s-6) 0;
+  color: #a8b3c6;          /* subtle slate-ish */
+}
+.design-v2 .footer-disclaimer small{
+  display:block;
+  line-height: 1.6;
+}
+
+/* Center footer logo + text */
+.design-v2 .footer .logo,
+.design-v2 .footer .logo img,
+.design-v2 .footer .logo + p {
+  display: block;
+  margin-inline: auto;
+  text-align: center;
+}
+
+/* v2 modal support for your markup */
+.design-v2 .modal{
+  position:fixed; inset:0; z-index:70; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(15,23,42,.45); padding:var(--s-6);
+}
+.design-v2 .modal.open{ display:flex }
+.design-v2 .modal-panel{
+  position:relative;
+  width:min(560px,100%);
+  background:#fff;
+  border-radius:16px;
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  padding:var(--s-8);
+}
+.design-v2 .modal-backdrop{ position:absolute; inset:0; }
+.design-v2 .modal-close{
+  position:absolute; top:12px; right:12px;
+  background:#fff; border:1px solid var(--border);
+  border-radius:999px; width:36px; height:36px;
+  display:grid; place-items:center; cursor:pointer;
 }
