@@ -253,13 +253,21 @@
       </div>
       <div>
         <h4 style="margin-top:0;color:#fff">Newsletter</h4>
-        <form id="footer-news" novalidate>
-          <input type="email" name="email" placeholder="you@email.com" required
-                 style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
+        <!-- Footer newsletter: note data-newsletter + .form-msg -->
+        <form data-newsletter novalidate>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
           <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
         </form>
         <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
       </div>
+
     </div>
 
     <!-- Disclaimer strip -->

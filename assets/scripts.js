@@ -391,16 +391,34 @@
   })();
 
   // -----------------------------
-  // Newsletter form handler (IDs: #newsletter-form, #newsEmail, #newsMsg)
-  // -----------------------------
-  (function newsletterHandler() {
-    const form = $("#newsletter-form");
-    if (!form) return;
+// Newsletter form handler(s)
+// Supports BOTH:
+//  - CTA form: #newsletter-form + #newsEmail + #newsMsg
+//  - Any footer/extra forms: <form data-newsletter> with .form-msg inside
+// -----------------------------
+(function newsletterHandler() {
+  const SCRIPT_URL = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
 
-    const emailInput = $("#newsEmail");
-    const submitBtn  = form.querySelector('button[type="submit"]');
-    const msgEl      = $("#newsMsg");
+  // Collect all newsletter forms: the original CTA ID plus any [data-newsletter]
+  const forms = [];
+  const ctaForm = document.getElementById("newsletter-form");
+  if (ctaForm) forms.push(ctaForm);
+  document.querySelectorAll("form[data-newsletter]").forEach(f => forms.push(f));
 
+  if (!forms.length) return;
+
+  forms.forEach((form) => {
+    if (form.dataset.bound === "newsletter") return;
+    form.dataset.bound = "newsletter";
+
+    // Per-form lookups: prefer CTA IDs, else fall back to local elements
+    const emailInput =
+      form.querySelector("#newsEmail") || form.querySelector("input[type='email']");
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const msgEl =
+      document.getElementById("newsMsg") || form.querySelector(".form-msg");
+
+    // Keep forms static-friendly; we'll POST via fetch
     form.setAttribute("action", "");
     form.setAttribute("method", "post");
 
@@ -410,19 +428,25 @@
       e.preventDefault();
 
       const email = (emailInput?.value || "").trim();
-      if (!/^\S+@\S+\.\S+$/.test(email)) { showMessage("Please enter a valid email."); emailInput?.focus(); return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        showMessage("Please enter a valid email.");
+        emailInput?.focus();
+        return;
+      }
 
       const originalText = submitBtn?.textContent || "Subscribe";
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Saving…"; }
+      showMessage("");
 
       try {
         if (SCRIPT_URL) {
-          const body = toForm({
+          const body = new URLSearchParams({
             email,
             drug: "",
-            source: "newsletter_home",
+            // Differentiate sources: CTA vs Footer
+            source: form.id === "newsletter-form" ? "newsletter_home" : "newsletter_footer",
             ua: navigator.userAgent || ""
-          });
+          }).toString();
 
           await fetch(SCRIPT_URL, {
             method: "POST",
@@ -441,7 +465,9 @@
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
       }
     }, { passive: false });
-  })();
+  });
+})();
+
 
   // -----------------------------
   // Request-a-med handler (IDs: #med-alert-form, #drugName, #alertEmail, #alertMsg)
