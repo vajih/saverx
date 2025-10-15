@@ -69,6 +69,40 @@
     /* Guard: modal visibility (safe no-op if your CSS already covers it) */
     .modal[aria-hidden="true"]{ display:none; }
     .modal[aria-hidden="false"]{ display:block; }
+
+/* ===== Mobile nav (hamburger) ===== */
+.nav-toggle{display:none;}
+.nav-toggle .bar{
+  display:block;width:20px;height:2px;background:currentColor;margin:3px 0;
+  transition:transform .2s ease, opacity .2s ease;
+}
+
+@media (max-width: 960px){
+  .header .container{position:relative;}
+  .nav-toggle{
+    display:inline-grid;place-items:center;width:44px;height:44px;cursor:pointer;
+    background:transparent;border:1px solid var(--border-weak, #e6eaf2);border-radius:10px;
+  }
+  .header .nav{
+    position:absolute;top:calc(100% + 8px);right:0;
+    background:var(--surface, #fff);
+    border:1px solid var(--border-weak, #e6eaf2);border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    padding:12px;width:min(84vw,320px);
+    display:none;flex-direction:column;gap:8px;
+  }
+  .header .nav.open{display:flex;}
+  /* Animate icon to X when open */
+  body.nav-open .nav-toggle .bar:nth-child(1){transform:translateY(5px) rotate(45deg)}
+  body.nav-open .nav-toggle .bar:nth-child(2){opacity:0}
+  body.nav-open .nav-toggle .bar:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+}
+
+@media (min-width: 961px){
+  .header .nav{display:flex;}
+}
+
+
   </style>
 
   <!-- JSON-LD: Organization -->
@@ -108,12 +142,20 @@
       <a href="/" class="logo" aria-label="SaveRx.ai">
         <img src="assets/img/logo.svg" alt="SaveRx.ai" height="28">
       </a>
-      <nav class="nav">
+
+      <!-- NEW: Hamburger button -->
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+
+      <!-- UPDATED: give the nav an id -->
+      <nav id="primary-nav" class="nav">
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
       </nav>
     </div>
   </header>
+
 
   <!-- Mobile drawer (kept for future use) -->
   <aside id="mobile-drawer" class="mobile-drawer" hidden>
@@ -385,7 +427,7 @@
       <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
 
       <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
-      <p class="modal-sub">Enter your email and we’ll take you to the official savings page.</p>
+      <p class="modal-sub">Enter your email and we’ll take you to the official savings page for <span id="modalDrugLabel">this medication</span>.</p>
 
       <form id="modal-lead-form">
         <!-- Honeypot (spam trap) -->
@@ -500,5 +542,24 @@
       <a class="btn btn-primary" href="#featured">Find savings</a>
     </div>
   </div>
+  <script>
+  (function(){
+    const btn = document.querySelector('.nav-toggle');
+    const nav = document.getElementById('primary-nav');
+    if(!btn || !nav) return;
+    function setOpen(isOpen){
+      nav.classList.toggle('open', isOpen);
+      document.body.classList.toggle('nav-open', isOpen);
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+    btn.addEventListener('click', ()=> setOpen(!nav.classList.contains('open')));
+    document.addEventListener('click', (e)=>{
+      if(!nav.classList.contains('open')) return;
+      if(!nav.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+    });
+    window.addEventListener('resize', ()=>{ if(window.innerWidth >= 961) setOpen(false); });
+  })();
+</script>
+
 </body>
 </html>
