@@ -53,6 +53,24 @@
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/components.css">
 
+  <!-- Page-local styles for homepage search (mirrors /drugs) -->
+  <style>
+    .home-search { margin-top: 10px; }
+    .home-search .search-bar {
+      display:grid; gap:10px; grid-template-columns: 1fr auto; align-items:start;
+      margin-top: 12px; background:#fff; border:1px solid #e6eaf2; border-radius:14px; padding:10px;
+    }
+    .home-search input[type="search"]{ width:100%; padding:12px 14px; border:1px solid #dbe3f1; border-radius:10px; font-size:16px; }
+    .home-search .search-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:13px; color:#334155; }
+    .chip .count{ font-weight:800; }
+    .no-results{ display:none; margin-top:14px; padding:14px; border:1px dashed #e6eaf2; border-radius:12px; color:#64748b; }
+    .no-results[aria-hidden="false"]{ display:block; }
+    /* Guard: modal visibility (safe no-op if your CSS already covers it) */
+    .modal[aria-hidden="true"]{ display:none; }
+    .modal[aria-hidden="false"]{ display:block; }
+  </style>
+
   <!-- JSON-LD: Organization -->
   <script type="application/ld+json">
   {
@@ -91,8 +109,6 @@
         <img src="assets/img/logo.svg" alt="SaveRx.ai" height="28">
       </a>
       <nav class="nav">
-        <a href="/" aria-current="page">Home</a>
-        <a href="/drugs/">Drugs</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
       </nav>
@@ -105,7 +121,6 @@
     <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
       <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
       <nav class="drawer-nav">
-        <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
       </nav>
@@ -139,6 +154,18 @@
        ======================= -->
   <section id="featured" class="container section-pad loading" aria-busy="true" aria-labelledby="savings-heading">
     <h2 id="savings-heading" class="section-title">Featured</h2>
+
+    <!-- In-place search (borrowed from /drugs, tuned for homepage) -->
+    <div class="home-search" role="search" aria-label="Search featured medications">
+      <div class="search-bar">
+        <input id="home-q" type="search" placeholder="Search by brand, generic, or manufacturer…" autocomplete="off" aria-label="Search drugs">
+        <div class="search-meta">
+          <span class="chip">Showing <span id="home-resultCount" class="count">0</span></span>
+          <button id="home-clearBtn" class="btn btn-outline" type="button" aria-label="Clear search" hidden>Clear</button>
+        </div>
+      </div>
+      <div id="home-no-results" class="no-results" aria-hidden="true">No matches. Try a shorter name or <a href="/drugs/">browse all drugs</a>.</div>
+    </div>
 
     <!-- AI scanning loader banner -->
     <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
@@ -321,26 +348,25 @@
           return;
         }
 
-        const escape = s => (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        const escape = s => (s||'').replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
         container.innerHTML = items.map(item => {
-          const name = escape(item.name);
-          const generic = item.generic ? ` (${escape(item.generic)})` : '';
+          const brand = escape(item.name || '');
+          const generic = escape(item.generic || '');
           const mfr = escape(item.manufacturer || '');
           const url = item.url || '#';
           const asLow = (item.as_low_as != null && !isNaN(Number(item.as_low_as)))
             ? `As low as $${Number(item.as_low_as).toLocaleString()}`
             : '';
           return `
-            <article class="card drug-card" role="listitem">
+            <article class="card drug-card" role="listitem"
+                     data-brand="${brand}" data-generic="${generic}" data-manufacturer="${mfr}">
               <div class="card-body">
-                <h3 class="drug-title">${name}${generic}</h3>
+                <h3 class="drug-title">${brand}${generic ? ' ('+generic+')' : ''}</h3>
                 <p class="drug-subtitle">${mfr}${asLow ? ' • ' + asLow : ''}</p>
-                <a
-                  class="btn btn-primary get-card"
-                  href="${url}"
-                  data-drug="${name}"
-                  data-url="${url}"
-                >Get Savings</a>
+                <a class="btn btn-primary get-card"
+                   href="${url}"
+                   data-drug="${brand}"
+                   data-url="${url}">Get Savings</a>
               </div>
             </article>
           `;
@@ -396,6 +422,75 @@
         window.renderFeaturedDrugs(window.PAGE_CONFIG.scriptUrl + '?mode=featured');
       }
     });
+  </script>
+
+  <!-- Homepage search wiring (filters whatever cards are rendered into #featured-cards) -->
+  <script>
+    (function(){
+      "use strict";
+      const $  = (s, r=document)=> r.querySelector(s);
+      const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
+      // Normalize + strip accents without requiring Unicode property escapes
+      const strip = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const norm  = s => strip(s).toLowerCase();
+
+      const qEl = $('#home-q');
+      const clearBtn = $('#home-clearBtn');
+      const countEl = $('#home-resultCount');
+      const grid = $('#featured-cards');
+      const empty = $('#home-no-results');
+
+      if(!qEl || !grid) return;
+
+      let INDEX = [];
+
+      function buildIndex(){
+        INDEX = $$('.drug-card', grid).map(el=>{
+          const brand = el.dataset.brand || $('.drug-title', el)?.textContent || '';
+          const generic = el.dataset.generic || '';
+          const mfr = el.dataset.manufacturer || $('.drug-subtitle', el)?.textContent || '';
+          const hay = norm([brand, generic, mfr, el.textContent].join(' '));
+          el.dataset.search = hay;
+          return el;
+        });
+        updateCount();
+      }
+
+      function updateCount(){
+        const visible = INDEX.filter(el=>!el.hidden).length;
+        if(countEl) countEl.textContent = String(visible);
+      }
+
+      function applyFilter(term){
+        const t = norm(term).trim();
+        clearBtn && (clearBtn.hidden = !t);
+        if(INDEX.length === 0) buildIndex();
+        let shown = 0;
+        INDEX.forEach(el=>{
+          const hay = el.dataset.search || '';
+          const match = t ? t.split(/\s+/).every(w=>hay.includes(w)) : true;
+          el.hidden = !match;
+          if(match) shown++;
+        });
+        if(countEl) countEl.textContent = String(shown);
+        if(empty) empty.setAttribute('aria-hidden', String(shown>0));
+      }
+
+      // Observe async card injection (works with your external renderer)
+      const obs = new MutationObserver(()=>{ buildIndex(); applyFilter(qEl.value); });
+      obs.observe(grid, { childList: true });
+
+      // Events
+      qEl.addEventListener('input', ()=> applyFilter(qEl.value));
+      clearBtn?.addEventListener('click', ()=>{ qEl.value=''; applyFilter(''); qEl.focus(); });
+
+      // Hydrate from ?q=
+      try{ const u = new URL(window.location.href); const q = u.searchParams.get('q'); if(q){ qEl.value = q; } }catch{}
+
+      // First pass (in case cards already present)
+      buildIndex();
+      applyFilter(qEl.value);
+    })();
   </script>
 
   <!-- Mobile floating CTA -->
