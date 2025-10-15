@@ -1,262 +1,389 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- =========================================================
-       SaveRx.ai — Homepage (MVP)
-       SEO + Social optimized head
-       ========================================================= -->
   <meta charset="utf-8" />
-  <title>SaveRx.ai — Lower your out-of-pocket on prescriptions (Repatha, Ozempic, Wegovy, Mounjaro, Stelara)</title>
+  <title>Privacy Policy | SaveRx.ai</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Privacy Policy | SaveRx.ai" />
+  <meta property="og:description" content="How SaveRx.ai collects, uses, and protects your information—and how to make privacy requests." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SaveRx.ai" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="/assets/img/hero-1200.jpg" />
+
+  <!-- Canonical (set via JS) -->
+  <link rel="canonical" href="" />
+
+  <!-- SEO -->
+  <meta name="description" content="Read SaveRx.ai’s Privacy Policy. Learn what we collect, why, and how to request access or deletion of your data." />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description"
-        content="SaveRx.ai links you to official manufacturer copay cards, coupons, and patient assistance so you stop overpaying for prescriptions like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara." />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="theme-color" content="#1d4ed8" />
 
-  <!-- Canonical (point to primary domain; prevents GitHub Pages duplication) -->
-  <link rel="canonical" href="https://saverx.ai/" />
-
-  <!-- Internationalization (set what you actually support) -->
-  <link rel="alternate" href="https://saverx.ai/" hreflang="en-us" />
-  <link rel="alternate" href="https://saverx.ai/" hreflang="x-default" />
-
-  <!-- Open Graph / Facebook / LinkedIn -->
-  <meta property="og:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
-  <meta property="og:description" content="Find official savings and copay programs for top medications." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://saverx.ai/" />
-  <meta property="og:site_name" content="SaveRx.ai" />
-  <meta property="og:image" content="https://saverx.ai/assets/img/hero-1200.jpg" />
-  <meta property="og:image:secure_url" content="https://saverx.ai/assets/img/hero-1200.jpg" />
-  <meta property="og:image:alt" content="Save on prescriptions with official manufacturer programs" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
-  <meta name="twitter:description" content="Find official savings and copay programs for top medications." />
-  <meta name="twitter:image" content="https://saverx.ai/assets/img/hero-1200.jpg" />
-
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
-  
-  <!-- Apple Touch Icons (iOS home screen icons) -->
-   <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
 
+  <!-- Shared styles (kept same order as index.html for 1:1 look) -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
 
-  <!-- Preconnects / Performance -->
-  <link rel="preconnect" href="https://script.google.com" crossorigin>
-  <!-- If you add webfonts later:
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  -->
+  <!-- Inline tweak so the consent checkbox sits next to the text -->
+  <style>
+    #privacyForm .checkbox.field{
+      display:inline-flex; align-items:center; gap:10px; text-align:left;
+    }
+    #privacyForm .checkbox.field input[type="checkbox"]{
+      width:18px; height:18px; margin:0; flex:0 0 auto;
+    }
+    #privacyForm .checkbox.field span{ display:inline; }
+  </style>
 
-  <!-- CSS (cache-busted) -->
-  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03">
+  <script>
+    // Canonical + og:url -> current page
+    (function () {
+      try {
+        const href = location.href.split('#')[0];
+        const c = document.querySelector('link[rel="canonical"]');
+        const og = document.querySelector('meta[property="og:url"]');
+        if (c) c.setAttribute('href', href);
+        if (og) og.setAttribute('content', href);
+      } catch {}
+    })();
 
-  <!-- JSON-LD: Organization + Website (keep concise and valid) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "SaveRx.ai",
-    "url": "https://saverx.ai/",
-    "logo": "https://saverx.ai/assets/img/logo-512.png",
-    "contactPoint": [{
-      "@type": "ContactPoint",
-      "email": "questions@saverx.ai",
-      "contactType": "customer support",
-      "areaServed": "US"
-    }]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "SaveRx.ai",
-    "url": "https://saverx.ai/"
-  }
+    // APIs used by the footer newsletter and the privacy request form
+    window.SAVERX_API  = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
+    window.CONTACT_API = "https://script.google.com/macros/s/AKfycbzJUp5EXbJ7_BS8OV4Bm--khDRZU4WmP4R7wH3vbNupz9oimHcQvXAXOWgypeGN-au3Cg/exec";
   </script>
 </head>
 
+<body class="design-v2 theme-light" data-page="privacy">
+  <!-- ===== Header (identical markup to index.html) ===== -->
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
+      </a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/">Drugs</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-<body class="theme-light">
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-<header class="site-header" role="banner">
-  <div class="header-row">
-    <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
+  <!-- Mobile drawer (same as index.html) -->
+  <aside id="mobile-drawer" class="mobile-drawer" hidden>
+    <div class="drawer-backdrop" data-close></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
+      <nav class="drawer-nav">
+        <a href="/">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </aside>
 
-    <!-- Mobile menu icon -->
-    <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
-      ☰
-    </button>
-
-    <!-- Desktop nav -->
-    <nav class="site-nav" aria-label="Primary">
-      <a class="nav-link" href="index.html">Home</a>  
-      <a class="nav-link" href="about.html">About</a>
-      <a class="nav-link" href="contact.html">Contact</a>
-    </nav>
-  </div>
-</header>
-
-<!-- Mobile drawer -->
-<aside id="mobile-drawer" class="mobile-drawer" hidden>
-  <div class="drawer-backdrop" data-close></div>
-  <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-    <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-    <nav class="drawer-nav">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </div>
-</aside>
-
-  <main id="content" class="container" role="main">
-    <section class="page-hero">
-      <h1>Privacy Policy</h1>
-      <p id="last-updated" class="subtle">Effective Date: <span data-eff></span> • Last Updated: <span data-upd></span></p>
+  <!-- ===== Main ===== -->
+  <main class="container">
+    <!-- Title -->
+    <section class="card stack-lg">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1 class="h1">Your privacy, in plain English</h1>
+      <p class="lead maxw-60">
+        We collect only what we need to help you find official manufacturer savings and to respond when you contact us.
+        We don’t sell your personal data.
+      </p>
+      <p class="muted">Last updated: October 15, 2025</p>
     </section>
 
-    <section class="card policy" aria-labelledby="intro">
-      <p id="intro">
-        At <strong>SaveRx.ai</strong> (“SaveRx,” “we,” “our,” or “us”), your privacy matters. This Privacy Policy explains how we collect, use,
-        share, and protect information when you visit our site or interact with our services (the “Services”). By using SaveRx.ai
-        or submitting your information, you consent to this Privacy Policy.
-      </p>
-
-      <h2 id="info-we-collect" class="anchor">1. Information We Collect</h2>
-      <p><strong>a) Information You Provide:</strong> email address (e.g., newsletter or “Notify Me”), name, and any messages you send us.</p>
-      <p><strong>b) Automatically Collected:</strong> cookies, pixels, device/browser data (IP, OS, referrer, timestamps), pages viewed, and engagement.</p>
-      <p><strong>c) From Third Parties:</strong> partners, analytics, and service providers that help us operate and improve the Services.</p>
-
-      <h2 id="how-we-use" class="anchor">2. How We Use Information</h2>
+    <!-- Overview -->
+    <section class="card prose stack-md">
+      <h2>Summary</h2>
       <ul>
-        <li>Provide, maintain, and improve the Services and your experience.</li>
-        <li>Respond to inquiries and fulfill requests.</li>
-        <li>Send newsletters, offers, savings opportunities, updates, and educational content.</li>
-        <li>Measure performance and optimize marketing and site functionality.</li>
-        <li>Comply with legal obligations and enforce terms.</li>
+        <li>We link you to <strong>official manufacturer programs</strong> and provide educational guidance.</li>
+        <li>We collect minimal data (e.g., email if you ask us to send a link or subscribe).</li>
+        <li>We do <strong>not</strong> sell your personal data.</li>
+        <li>You can request access or deletion at any time (see <a href="#requests">Your privacy choices</a>).</li>
       </ul>
+    </section>
 
-      <h2 id="email-consent" class="anchor">3. Email Communications & Consent</h2>
-      <p>
-        By submitting your email address on SaveRx.ai (including newsletter subscriptions, “Notify Me,” or contact forms),
-        <strong>you expressly agree</strong> to receive communications from <strong>SaveRx.ai</strong> as well as from our
-        <strong>affiliates, partners, clients, and customers</strong>. These communications may include promotional offers,
-        savings programs, product updates, and informational content relevant to prescription savings and healthcare.
-      </p>
-      <p>
-        You can opt out of marketing emails at any time via the “Unsubscribe” link. We may still send non-marketing messages
-        (e.g., service notices, responses to requests).
-      </p>
-
-      <h2 id="sharing" class="anchor">4. How We Share Information</h2>
+    <!-- What we collect -->
+    <section class="card prose stack-md">
+      <h2>Information we collect</h2>
       <ul>
-        <li><strong>Service Providers:</strong> email platforms, analytics, hosting, and storage providers under confidentiality agreements.</li>
-        <li><strong>Partners & Affiliates:</strong> select partners and clients aligned with our mission to reduce prescription costs.</li>
-        <li><strong>Third Parties (Marketing/Communications):</strong> organizations offering health-related savings or content.</li>
-        <li><strong>Legal/Protection:</strong> when required by law or to protect rights, property, or safety.</li>
+        <li><strong>Contact details</strong> you provide (e.g., email, name) when you use our forms.</li>
+        <li><strong>Context</strong> you provide in a message (e.g., drug name, insurer type).</li>
+        <li><strong>Technical</strong> basics: IP address, device/browser information, and referrer (used for security, analytics, and abuse prevention).</li>
+        <li><strong>Usage</strong> data: pages or links you interact with on SaveRx.ai (to improve our site).</li>
       </ul>
+      <p>We do not collect health records. Do not share protected health information (PHI) beyond what is necessary to ask your question.</p>
+    </section>
 
-      <h2 id="cookies" class="anchor">5. Cookies & Tracking</h2>
-      <p>
-        We use cookies and similar technologies to remember preferences, analyze traffic, and measure campaign performance.
-        You can control cookies in your browser; some features may not work if disabled.
-      </p>
+    <!-- How we use it -->
+    <section class="card prose stack-md">
+      <h2>How we use your information</h2>
+      <ul>
+        <li>To send you the official manufacturer link or respond to your message.</li>
+        <li>To operate, secure, and improve SaveRx.ai.</li>
+        <li>To prevent spam/abuse and maintain service integrity.</li>
+        <li>With your opt-in, to send updates such as a newsletter (you can unsubscribe anytime).</li>
+      </ul>
+    </section>
 
-      <h2 id="retention" class="anchor">6. Data Retention</h2>
-      <p>
-        We retain your information as needed for the purposes described or as required by law. To request deletion, see
-        <a href="#contact">Contact Us</a>.
-      </p>
+    <!-- Sharing -->
+    <section class="card prose stack-md">
+      <h2>How we share information</h2>
+      <p>We don’t sell your data. We may share limited information with:</p>
+      <ul>
+        <li><strong>Service providers</strong> (e.g., hosting, email delivery, analytics) under contract to process data on our behalf.</li>
+        <li><strong>Legal</strong> reasons (e.g., comply with law, protect rights, prevent fraud).</li>
+      </ul>
+    </section>
 
-      <h2 id="security" class="anchor">7. Data Security</h2>
-      <p>
-        We employ reasonable technical and organizational measures to protect your information. No system is 100% secure.
-      </p>
+    <!-- Cookies -->
+    <section class="card prose stack-md">
+      <h2>Cookies & analytics</h2>
+      <p>We use lightweight analytics and essential cookies to keep the site reliable, measure usage, and detect abuse.
+         You can control cookies via your browser settings. We avoid intrusive tracking.</p>
+    </section>
 
-      <h2 id="rights" class="anchor">8. Your Rights</h2>
-      <p>
-        Depending on your location, you may request access, correction, deletion, or restriction, and you may withdraw consent
-        to marketing emails. Contact us to exercise these rights.
-      </p>
+    <!-- Retention & Security -->
+    <section class="card prose stack-md">
+      <h2>Data retention & security</h2>
+      <p>We keep personal data only as long as needed for the purpose we collected it, unless a longer retention period is required by law.
+         We use technical and organizational measures to protect your data; no method is 100% secure.</p>
+    </section>
 
-      <h2 id="children" class="anchor">9. Children’s Privacy</h2>
-      <p>
-        SaveRx.ai is not directed to individuals under 18. If we become aware that we have collected data from a minor,
-        we will delete it.
-      </p>
+    <!-- Your privacy choices -->
+    <section id="requests" class="card prose stack-md">
+      <h2>Your privacy choices</h2>
+      <ul>
+        <li><strong>Access/Deletion:</strong> Request a copy or deletion of your personal data.</li>
+        <li><strong>Opt-out:</strong> Unsubscribe from emails via the link in any message.</li>
+        <li><strong>Corrections:</strong> Ask us to fix inaccurate information.</li>
+        <li><strong>Do Not Sell/Share:</strong> We don’t sell your data; you can still submit a request below.</li>
+      </ul>
+      <p>Use the form below or email <a href="mailto:privacy@saverx.ai">privacy@saverx.ai</a>.</p>
+    </section>
 
-      <h2 id="contact" class="anchor">10. Contact Us</h2>
-      <p>
-        <strong>SaveRx.ai</strong><br />
-        Email: <a href="mailto:privacy@saverx.ai">privacy@saverx.ai</a><br />
-        Website: <a href="./index.html">SaveRx.ai</a>
-      </p>
+    <!-- Privacy Request Form (with inline checkbox alignment) -->
+    <section class="card stack-md">
+      <h2>Submit a privacy request</h2>
+      <form id="privacyForm" class="stack-md" novalidate>
+        <input type="hidden" name="source" value="Privacy Request" />
+        <!-- Honeypot -->
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="website">Do not fill this out</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
 
-      <h2 id="changes" class="anchor">11. Changes to this Policy</h2>
-      <p>
-        We may update this Privacy Policy to reflect operational, legal, or regulatory changes. We will post updates here
-        with a revised “Effective Date.” Your continued use of SaveRx.ai after updates constitutes acceptance.
-      </p>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required />
+        </div>
 
-      <h2 id="agreement" class="anchor">12. Your Agreement</h2>
-      <p>
-        By accessing SaveRx.ai or submitting your email, you acknowledge and agree to this Privacy Policy, including receiving
-        communications from SaveRx.ai and its affiliates, partners, clients, and customers.
-      </p>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required />
+        </div>
 
-      <a class="backlink" href="./index.html" aria-label="Back to Home">← Back to Home</a>
+        <div class="field">
+          <label for="type">Request type</label>
+          <select id="type" name="type" required>
+            <option value="" selected disabled>Choose one…</option>
+            <option>Access my data</option>
+            <option>Delete my data</option>
+            <option>Do not sell/share my personal information</option>
+            <option>Correct my information</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="message">Details (optional)</label>
+          <textarea id="message" name="message" rows="5" placeholder="Add context to help us locate your records (e.g., which form you submitted)."></textarea>
+        </div>
+
+        <label for="consent" class="checkbox field">
+          <span><input id="consent" name="consent" type="checkbox" required /> I certify that I am the individual named above or an authorized agent, and I agree to the <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">Send request</button>
+        <p id="formStatus" role="status" aria-live="polite" class="status" hidden></p>
+      </form>
+      <p class="microcopy">We will verify your request and respond as required by applicable law.</p>
+    </section>
+
+    <!-- Children -->
+    <section class="card prose stack-md">
+      <h2>Children’s privacy</h2>
+      <p>SaveRx.ai is not directed to children under 13. If you believe a child provided personal data, contact us and we’ll remove it.</p>
+    </section>
+
+    <!-- Changes -->
+    <section class="card prose stack-md">
+      <h2>Changes to this policy</h2>
+      <p>We may update this Privacy Policy. We’ll change the “Last updated” date above and, when appropriate, provide additional notice.</p>
+    </section>
+
+    <!-- Contact -->
+    <section class="card prose stack-md">
+      <h2>Contact us</h2>
+      <p>Email: <a href="mailto:privacy@saverx.ai">privacy@saverx.ai</a></p>
+      <p>General support: <a href="mailto:help@saverx.ai">help@saverx.ai</a></p>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="site" role="contentinfo">
-    <div class="wrap">
-      <div class="legal">
-        © <span id="yr"></span> SaveRx.ai. All rights reserved.
-        · <a href="./privacy.html">Privacy</a>
-        · <a href="./terms.html">Terms</a>
-        · <a href="./contact.html">Contact</a>
+  <!-- ===== Footer (identical to index.html) ===== -->
+  <footer class="footer">
+    <div class="container grid">
+      <div>
+        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
+        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
+          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
+        </p>
       </div>
-      <div class="legal">
-        This site links to manufacturer savings programs and third-party resources. Not medical advice.
+      <div>
+        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/">Drugs</a></div>
+        <div><a href="/about.html">About</a></div>
+        <div><a href="/contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Legal</h4>
+        <div><a href="/privacy.html" aria-current="page">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
+        <form data-newsletter novalidate>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+        <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
+      </div>
+    </div>
+
+    <div class="footer-disclaimer">
+      <div class="container">
+        <small>
+          SaveRx.ai is an independent educational platform that provides information about official manufacturer savings programs.
+          We do not sell, distribute, or process prescriptions. All trademarks are property of their respective owners.
+          Actual savings and eligibility vary by program.
+        </small>
       </div>
     </div>
   </footer>
 
-  <!-- Tiny helpers: set dates + optional cache-busting fallback -->
-  <script>
-    (function(){
-      const now = new Date();
-      const fmt = now.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
-      const eff = document.querySelector('[data-eff]');
-      const upd = document.querySelector('[data-upd]');
-      if (eff) eff.textContent = fmt;
-      if (upd) upd.textContent = fmt;
-      const yr = document.getElementById('yr');
-      if (yr) yr.textContent = now.getFullYear();
+  <!-- Shared site JS (same file/version as index) -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
 
-      // Fallback cache-buster: if your site-wide helper isn't present,
-      // add ?v=timestamp to any [data-versioned] links once.
-      document.querySelectorAll('link[data-versioned], script[data-versioned]').forEach(el => {
-        const attr = el.tagName === 'LINK' ? 'href' : 'src';
-        const url = new URL(el.getAttribute(attr), window.location.href);
-        if (!url.searchParams.has('v')) {
-          url.searchParams.set('v', String(now.getTime()));
-          el.setAttribute(attr, url.pathname + '?' + url.searchParams.toString());
+  <!-- Page scripts: privacy request form + newsletter wiring -->
+  <script>
+    // Privacy request form -> Apps Script endpoint
+    (function () {
+      const form = document.getElementById('privacyForm');
+      const status = document.getElementById('formStatus');
+      const btn = document.getElementById('submitBtn');
+
+      function setStatus(msg, ok = true) {
+        status.hidden = false;
+        status.textContent = msg;
+        status.className = ok ? "status ok" : "status error";
+      }
+
+      form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Honeypot
+        if (form.website && form.website.value.trim() !== "") {
+          setStatus("Submission blocked (spam detected).", false);
+          return;
+        }
+        if (!form.reportValidity()) return;
+
+        btn.disabled = true;
+        setStatus("Sending…", true);
+
+        try {
+          const data = Object.fromEntries(new FormData(form).entries());
+          data.useragent = navigator.userAgent || "";
+          data.referrer = document.referrer || "direct";
+
+          const api = window.CONTACT_API || "";
+          if (!api) throw new Error("Missing request endpoint.");
+
+          const body = new URLSearchParams(data).toString();
+
+          const res = await fetch(api, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body
+          });
+
+          const txt = await res.text();
+          if (!res.ok) throw new Error(txt || "Network error");
+
+          setStatus("Thanks! We’ve received your request and will respond shortly.");
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          setStatus("Sorry—something went wrong. Please email privacy@saverx.ai.", false);
+        } finally {
+          btn && (btn.disabled = false);
+        }
+      });
+    })();
+
+    // Footer newsletter (same pattern as index)
+    (function wireNewsletter(){
+      const form = document.querySelector("form[data-newsletter]");
+      if (!form) return;
+      const msg = form.querySelector(".form-msg");
+      form.addEventListener("submit",(e)=>{
+        e.preventDefault();
+        const email = (new FormData(form).get("email")||"").toString().trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)){ msg && (msg.textContent="Please enter a valid email."); return; }
+        msg && (msg.textContent="Thanks! Subscribing…");
+        try{
+          const body = new URLSearchParams({
+            email,
+            drug:"Newsletter",
+            source:"Privacy Footer Newsletter",
+            useragent:navigator.userAgent||"",
+            referrer:document.referrer||""
+          }).toString();
+          const API = window.SAVERX_API;
+          if (API) {
+            if (navigator.sendBeacon){
+              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"});
+              navigator.sendBeacon(API, blob);
+              msg && (msg.textContent="Subscribed.");
+            } else {
+              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
+                .finally(()=>{ msg && (msg.textContent="Subscribed."); });
+            }
+          } else {
+            msg && (msg.textContent="Subscribed.");
+          }
+        }catch{
+          msg && (msg.textContent="Something went wrong. Please try again.");
         }
       });
     })();
   </script>
-
-  <!-- Your shared JS (RELATIVE path + versioned) -->
-  <script src="/scripts.js" defer data-versioned></script>
 </body>
 </html>
