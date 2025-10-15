@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Find Prescription Savings by Drug | SaveRx.ai</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Find Prescription Savings by Drug | SaveRx.ai" />
+  <meta property="og:description" content="Search brand-name medications and go straight to the official manufacturer savings program." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SaveRx.ai" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="/assets/img/hero-1200.jpg" />
+
+  <!-- Canonical (set via JS) -->
+  <link rel="canonical" href="" />
+
+  <!-- SEO -->
+  <meta name="description" content="Compare savings for top brand-name medications. SaveRx.ai links you directly to official manufacturer copay cards and assistance programs." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#1d4ed8" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- Shared styles -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+
+  <style>
+    /* -------- Drugs Index: page-local styles -------- */
+    .container { max-width: 1120px; margin-inline: auto; padding-inline: 16px; }
+    .page-lede { padding: 18px 0 10px; }
+    .page-title { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; margin: 0 0 8px; }
+    .page-sub { color: var(--muted); margin: 0; max-width: 66ch; }
+
+    .search-bar {
+      display: grid; gap: 10px; grid-template-columns: 1fr auto;
+      margin-top: 14px; background: #fff; border:1px solid #e6eaf2; border-radius: 14px; padding: 10px;
+    }
+    .search-bar input[type="search"]{
+      width:100%; padding: 12px 14px; border:1px solid #dbe3f1; border-radius: 10px; font-size: 16px;
+    }
+    .search-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:13px; color:#334155; }
+    .chip .count { font-weight:800; }
+
+    .alpha { display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px; }
+    .alpha button {
+      border:1px solid #e6eaf2; background:#fff; border-radius:8px; padding:6px 10px; font-size:13px; color:#334155;
+    }
+    .alpha button[aria-pressed="true"]{ background:#0b1220; color:#e2e8f0; border-color:#0b1220; }
+
+    .grid {
+      --cols: 3;
+      display:grid; gap:16px; grid-template-columns: repeat(var(--cols), minmax(0,1fr));
+      margin-top: 14px;
+    }
+    @media (max-width: 980px){ .grid{ --cols:2; } }
+    @media (max-width: 640px){ .grid{ --cols:1; } }
+
+    .drug-card {
+      background:#fff; border:1px solid #e6eaf2; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;
+      box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,.04));
+    }
+    .drug-media { position: relative; display:block; }
+    .drug-media img { width:100%; height:auto; display:block; object-fit:cover; aspect-ratio: 16/9; }
+    .media-gradient { position:absolute; inset:auto 0 0 0; height:38%; background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(5,8,15,.75) 90%); }
+    .brand-badge {
+      position:absolute; left:10px; bottom:10px;
+      background: rgba(11,18,32,.92); color:#e2e8f0; border:1px solid rgba(148,163,184,.25);
+      padding:6px 10px; border-radius:10px; font-weight:800; font-size:14px; letter-spacing:.2px;
+      max-width: calc(100% - 20px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+
+    .drug-body { padding:14px; display:grid; gap:8px; }
+    .drug-title { font-size:18px; font-weight:800; margin:0; }
+    .drug-sub { color:#64748b; font-size:14px; margin:0; }
+    .tagline { color:#0b2a4e; font-size:13px; }
+    .drug-cta { display:grid; grid-template-columns: 1fr auto; gap:10px; margin-top: 4px; }
+    .pill { font-size:12px; padding:6px 8px; border-radius:999px; background:#f6f8fb; border:1px solid #e6eaf2; color:#334155; }
+
+    .trust { margin-top: 22px; background:#0b1220; color:#cbd5e1; border-radius: 14px; border:1px solid #1e293b; padding: 14px; }
+    .trust h3 { color:#fff; margin:0 0 8px; }
+    .trust ul { margin:0; padding-left: 18px; }
+    .trust li { margin:6px 0; }
+
+    .faq { margin-top: 22px; }
+    .faq h3 { margin: 0 0 8px; }
+    .faq details { border:1px solid #e6eaf2; border-radius:12px; background:#fff; padding:12px; margin:10px 0; }
+    .faq summary { cursor:pointer; font-weight:700; }
+
+    /* Modal visibility guard */
+    .modal[aria-hidden="true"] { display: none; }
+    .modal[aria-hidden="false"] { display: block; }
+  </style>
+
+  <script>
+    /* Your live Apps Script URL */
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
+  </script>
+</head>
+
+<body class="design-v2 theme-light">
+  <!-- Header -->
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
+      </a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/" aria-current="page">Drugs</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Mobile drawer -->
+  <aside id="mobile-drawer" class="mobile-drawer" hidden>
+    <div class="drawer-backdrop" data-close></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
+      <nav class="drawer-nav">
+        <a href="/">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="container">
+    <section class="page-lede">
+      <h1 class="page-title">Find savings by drug</h1>
+      <p class="page-sub">Search brand-name medications and go straight to the <b>official manufacturer</b> copay card or assistance program. No coupons or middlemen—just the real link.</p>
+
+      <div class="search-bar" role="search">
+        <input id="q" type="search" placeholder="Search by brand, generic, or manufacturer…" autocomplete="off" aria-label="Search drugs">
+        <div class="search-meta">
+          <span class="chip">Showing <span id="resultCount" class="count">0</span></span>
+          <button id="clearBtn" class="btn btn-outline" type="button" aria-label="Clear search" hidden>Clear</button>
+        </div>
+        <div class="alpha" id="alpha"></div>
+      </div>
+    </section>
+
+    <!-- Grid -->
+    <section aria-labelledby="gridTitle">
+      <h2 id="gridTitle" class="sr-only">Featured drugs</h2>
+      <div id="grid" class="grid" aria-live="polite" aria-busy="true"></div>
+    </section>
+
+    <!-- Trust band -->
+    <section class="trust">
+      <h3>Why SaveRx.ai?</h3>
+      <ul>
+        <li><b>Direct-to-manufacturer:</b> We link you to the <em>official</em> savings page—no third-party coupons.</li>
+        <li><b>Fast:</b> Two clicks from search to savings.</li>
+        <li><b>Transparent:</b> We show plain-English cost examples so you can plan your out-of-pocket.</li>
+      </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" aria-labelledby="faqTitle">
+      <h3 id="faqTitle">Common questions</h3>
+
+      <details>
+        <summary>What is a manufacturer copay card?</summary>
+        <p>A copay card is an official savings program from the drug’s manufacturer that can lower your monthly cost if you’re eligible (usually for those with commercial insurance). We send you directly to that program.</p>
+      </details>
+
+      <details>
+        <summary>Do I need to create an account on SaveRx.ai?</summary>
+        <p>No. We don’t run the savings program—manufacturers do. We’ll ask for your email so we can pass you through and share the exact link, then you enroll with the manufacturer.</p>
+      </details>
+
+      <details>
+        <summary>Will this work if I’m uninsured or on Medicare?</summary>
+        <p>Eligibility varies by program. Many copay cards exclude government insurance. Some brands offer separate patient assistance programs—look for that option on the manufacturer’s page.</p>
+      </details>
+    </section>
+  </main>
+
+  <!-- Modal for email capture -->
+  <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
+
+      <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
+      <p class="modal-sub">Enter your email and we’ll take you to the official savings page for <span id="modalDrugLabel">this medication</span>.</p>
+
+      <form id="modal-lead-form">
+        <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
+        <label class="field">
+          <span>Email</span>
+          <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
+        </label>
+        <input type="hidden" name="drug" id="modal-drug" />
+        <input type="hidden" name="source" value="Drugs Index Modal" />
+        <input type="hidden" name="useragent" id="modal-ua" />
+        <input type="hidden" name="referrer" id="modal-ref" />
+        <input type="hidden" name="manufacturerUrl" id="modal-murl" />
+        <div class="modal-actions">
+          <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
+        </div>
+        <div id="modal-status" class="status" role="status" aria-live="polite"></div>
+        <p class="microcopy">By continuing, you agree to our <a href="/terms.html">Terms</a> & <a href="/privacy.html">Privacy</a>.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container grid">
+      <div>
+        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
+        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
+          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
+        </p>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/" aria-current="page">Drugs</a></div>
+        <div><a href="/about.html">About</a></div>
+        <div><a href="/contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Legal</h4>
+        <div><a href="/privacy.html">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
+        <form data-newsletter novalidate>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+        <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
+      </div>
+    </div>
+
+    <div class="footer-disclaimer">
+      <div class="container">
+        <small>
+          SaveRx.ai is an independent educational platform that provides information about official manufacturer savings programs.
+          We do not sell, distribute, or process prescriptions. All trademarks are property of their respective owners.
+          Actual savings and eligibility vary by program.
+        </small>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shared site JS -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+
+  <!-- Page script -->
+  <script>
+    (function(){
+      "use strict";
+
+      const API = window.SAVERX_API;
+      const $  = (sel, root=document)=> root.querySelector(sel);
+      const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
+      const norm = s => String(s||"").toLowerCase();
+      const money = n => {
+        const f = Number(n);
+        return Number.isFinite(f) ? `$${f.toLocaleString()}` : "";
+      };
+
+      // Canonical + OG URL
+      const url = new URL(location.href);
+      const canon = $('link[rel="canonical"]'); if (canon) canon.href = url.origin + "/drugs/";
+      const ogUrl = document.querySelector('meta[property="og:url"]'); if (ogUrl) ogUrl.setAttribute("content", canon.href);
+
+      // Alpha bar A–Z
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+      const alphaWrap = $("#alpha");
+      letters.forEach(ch=>{
+        const b = document.createElement("button");
+        b.type = "button"; b.textContent = ch; b.setAttribute("aria-pressed","false");
+        b.addEventListener("click", ()=>{
+          const pressed = b.getAttribute("aria-pressed")==="true";
+          $$("#alpha button").forEach(x=>x.setAttribute("aria-pressed","false"));
+          if (!pressed) b.setAttribute("aria-pressed","true");
+          state.alpha = pressed ? "" : ch;
+          render();
+        });
+        alphaWrap.appendChild(b);
+      });
+
+      const state = { items: [], filtered: [], alpha: "", q: "" };
+
+      // Modal
+      function openModal(item){
+        const m = $("#email-modal"); if (!m) return;
+        $("#modal-ua") && ($("#modal-ua").value = navigator.userAgent || "");
+        $("#modal-ref") && ($("#modal-ref").value = document.referrer || "");
+        $("#modal-drug") && ($("#modal-drug").value = item.brand || item.slug || "");
+        $("#modalDrugLabel") && ($("#modalDrugLabel").textContent = item.brand || "this medication");
+        $("#modal-murl") && ($("#modal-murl").value = item.manufacturerUrl || "");
+        m.setAttribute("aria-hidden","false");
+        $("#modal-email")?.focus({preventScroll:true});
+      }
+      function closeModal(){ $("#email-modal")?.setAttribute("aria-hidden","true"); }
+      document.addEventListener("click",(e)=>{ if (e.target.matches("[data-close], .modal-backdrop")) closeModal(); });
+      document.addEventListener("keydown",(e)=>{ if (e.key==="Escape") closeModal(); });
+
+      // UTM
+      function withUTM(href, slug){
+        try{ const u=new URL(href); u.searchParams.set("utm_source","saverx.ai"); u.searchParams.set("utm_medium","referral"); u.searchParams.set("utm_campaign",`manufacturer_savings_${slug||"unknown"}`); return u.toString(); }
+        catch{ return href; }
+      }
+
+      // Newsletter
+      (function wireNewsletter(){
+        const form = document.querySelector("form[data-newsletter]"); if (!form) return;
+        const msg = form.querySelector(".form-msg");
+        form.addEventListener("submit",(e)=>{
+          e.preventDefault();
+          const email = (new FormData(form).get("email")||"").toString().trim();
+          if (!/^\S+@\S+\.\S+$/.test(email)){ msg && (msg.textContent="Please enter a valid email."); return; }
+          msg && (msg.textContent="Thanks! Subscribing…");
+          try{
+            const body = new URLSearchParams({ email, drug:"Newsletter", source:"Drugs Index Newsletter", useragent:navigator.userAgent||"", referrer:document.referrer||"" }).toString();
+            if (navigator.sendBeacon){
+              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(API, blob); msg && (msg.textContent="Subscribed.");
+            }else{
+              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}).finally(()=>{ msg && (msg.textContent="Subscribed."); });
+            }
+          }catch{ msg && (msg.textContent="Something went wrong. Please try again."); }
+        });
+      })();
+
+      // Modal submit → open manufacturer URL and POST lead
+      $("#modal-lead-form")?.addEventListener("submit",(e)=>{
+        e.preventDefault();
+        const email = ($("#modal-email")?.value||"").trim();
+        const status = $("#modal-status");
+        if (!/^\S+@\S+\.\S+$/.test(email)){ status && (status.textContent="Please enter a valid email."); return; }
+        const drug = $("#modal-drug")?.value || "";
+        const murl = $("#modal-murl")?.value || "";
+        const href = murl ? withUTM(murl, drug.toLowerCase().replace(/\s+/g,"-")) : `/drugs/${encodeURIComponent(drug.toLowerCase().replace(/\s+/g,"-"))}/`;
+        window.open(href, "_blank"); closeModal(); status && (status.textContent="Opening the official savings site…");
+        try{
+          const body = new URLSearchParams({ email, drug, source:"Drugs Index Modal", useragent:navigator.userAgent||"", referrer:document.referrer||"" }).toString();
+          if (navigator.sendBeacon){ const blob=new Blob([body],{type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(API, blob); }
+          else { fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}); }
+        }catch{}
+      });
+
+      // --- IMAGE HELPERS (brand-on-image + robust hero selection) ---
+      function heroUrl(it){
+        // Prefer explicit card/list hero, then landscape; fallback to generic hero/thumbnail or site default
+        return it.card_hero || it.cardImage || it.hero_list || it.hero_landscape || it.hero || it.image || it.thumb || "/assets/img/hero-1200.jpg";
+      }
+      function heroPortraitUrl(it){
+        return it.card_hero_mobile || it.hero_portrait || it.hero_mobile || heroUrl(it);
+      }
+
+      // Fetch featured list
+      async function load(){
+        $("#grid")?.setAttribute("aria-busy","true");
+        try{
+          const res = await fetch(`${API}?mode=featured`, {cache:"no-cache"});
+          const json = await res.json();
+          const items = Array.isArray(json?.items) ? json.items : [];
+          state.items = normalizeItems(items);
+        }catch{
+          state.items = normalizeItems(fallbackItems);
+        }finally{
+          $("#grid")?.setAttribute("aria-busy","false");
+          render();
+          injectJSONLD(state.items.slice(0,12));
+        }
+      }
+
+      function normalizeItems(items){
+        return items.map(it=>{
+          const brand = it.brand || it.Brand || "";
+          const generic = it.generic || it.Generic || "";
+          const manufacturer = it.manufacturer || it.Manufacturer || "";
+          const slug = (it.slug || it.Slug || brand).toString().trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+          return {
+            brand,
+            generic,
+            manufacturer,
+            slug,
+            // keep all likely image fields so helpers can pick best one
+            hero_landscape: it.hero_landscape,
+            hero_portrait:  it.hero_portrait,
+            hero:           it.hero,
+            image:          it.image,
+            thumb:          it.thumb,
+            card_hero:      it.card_hero,
+            cardImage:      it.cardImage,
+            hero_list:      it.hero_list,
+            hero_mobile:    it.hero_mobile,
+            card_hero_mobile: it.card_hero_mobile,
+            condition: it.condition || it.Indication || "",
+            copay_price: it.copay_price,
+            cash_price: it.cash_price,
+            manufacturerUrl: it.manufacturerUrl || it.ManufacturerUrl || ""
+          };
+        });
+      }
+
+      function cardHTML(d){
+        const priceLine = d.copay_price ? `<span class="pill">As low as <b>${money(d.copay_price)}</b></span>` : "";
+        const cond = d.condition ? `<span class="pill">${d.condition}</span>` : "";
+        const href = `/drugs/${encodeURIComponent(d.slug)}/`;
+        const img = heroUrl(d);
+        const imgMobile = heroPortraitUrl(d);
+        const safeAlt = `${d.brand} savings`;
+        return `
+          <article class="drug-card">
+            <a class="drug-media" href="${href}" aria-label="Open ${d.brand} details">
+              <picture>
+                <source media="(max-width: 640px)" srcset="${imgMobile}">
+                <img src="${img}" alt="${safeAlt}" loading="lazy" decoding="async" width="800" height="450"
+                     onerror="this.onerror=null;this.src='/assets/img/hero-1200.jpg';">
+              </picture>
+              <div class="media-gradient"></div>
+              <div class="brand-badge" title="${d.brand}">${d.brand}</div>
+            </a>
+            <div class="drug-body">
+              <h3 class="drug-title"><a href="${href}">${d.brand}</a></h3>
+              <p class="drug-sub">${d.generic ? `(${d.generic}) • ` : ""}${d.manufacturer || ""}</p>
+              <p class="tagline">Go to the official savings program.</p>
+              <div class="drug-cta">
+                <button class="btn btn-primary js-open-modal" type="button"
+                        data-drug="${encodeURIComponent(d.brand)}"
+                        data-url="${encodeURIComponent(d.manufacturerUrl || "")}"
+                        data-slug="${encodeURIComponent(d.slug)}">Check savings</button>
+                <a class="btn btn-ghost" href="${href}">Details</a>
+              </div>
+              <div class="pill-row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+                ${priceLine}${cond}
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function render(){
+        const q = norm(state.q);
+        let out = state.items.slice();
+
+        if (q){
+          out = out.filter(d=>{
+            const hay = `${d.brand} ${d.generic} ${d.manufacturer} ${d.condition}`.toLowerCase();
+            return hay.includes(q);
+          });
+        }
+        if (state.alpha){
+          out = out.filter(d => (d.brand||"").toUpperCase().startsWith(state.alpha));
+        }
+
+        state.filtered = out;
+        $("#resultCount").textContent = String(out.length);
+
+        const grid = $("#grid");
+        if (!grid) return;
+        grid.innerHTML = out.map(cardHTML).join("") || `<div class="card"><div class="card-body">No matches found.</div></div>`;
+
+        // Bind freshly rendered CTAs
+        $$(".js-open-modal", grid).forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const brand = decodeURIComponent(btn.getAttribute("data-drug")||"");
+            const murl  = decodeURIComponent(btn.getAttribute("data-url")||"");
+            const slug  = decodeURIComponent(btn.getAttribute("data-slug")||"");
+            openModal({ brand, manufacturerUrl: murl, slug });
+          });
+        });
+      }
+
+      // Search interactions
+      const qEl = $("#q");
+      const clearBtn = $("#clearBtn");
+      qEl?.addEventListener("input", ()=>{
+        state.q = qEl.value;
+        clearBtn.hidden = !state.q;
+        render();
+      });
+      clearBtn?.addEventListener("click", ()=>{
+        state.q = ""; qEl.value = ""; clearBtn.hidden = true;
+        $$("#alpha button").forEach(x=>x.setAttribute("aria-pressed","false"));
+        state.alpha = "";
+        render();
+      });
+
+      // Fallback list (if Apps Script is unreachable)
+      const fallbackItems = [
+        { brand:"Repatha", generic:"evolocumab", manufacturer:"Amgen", slug:"repatha", hero_landscape:"/assets/img/repatha-hero.png", hero_portrait:"/assets/img/repatha-hero-vertical.png", condition:"LDL-C", copay_price: 5, manufacturerUrl:"https://www.repatha.com/repatha/copay-card" },
+        { brand:"Ozempic", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"ozempic", hero_landscape:"/assets/img/ozempic-hero.png", hero_portrait:"/assets/img/ozempic-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.ozempic.com/savings-and-coverage.html" },
+        { brand:"Wegovy", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"wegovy", hero_landscape:"/assets/img/wegovy-hero.png", hero_portrait:"/assets/img/wegovy-hero-vertical.png", condition:"Chronic Weight Management", manufacturerUrl:"https://www.wegovy.com/savings-and-support.html" },
+        { brand:"Mounjaro", generic:"tirzepatide", manufacturer:"Eli Lilly", slug:"mounjaro", hero_landscape:"/assets/img/mounjaro-hero.png", hero_portrait:"/assets/img/mounjaro-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.mounjaro.com/savings-resources" },
+        { brand:"Stelara", generic:"ustekinumab", manufacturer:"Janssen", slug:"stelara", hero_landscape:"/assets/img/stelara-hero.png", hero_portrait:"/assets/img/stelara-hero-vertical.png", condition:"Immunology", manufacturerUrl:"https://www.janssencarepath.com/patient/stelara/cost-support" },
+        { brand:"Xolair", generic:"omalizumab", manufacturer:"Genentech/Novartis", slug:"xolair", hero_landscape:"/assets/img/xolair-hero.png", hero_portrait:"/assets/img/xolair-hero-vertical.png", condition:"Allergy/Asthma", manufacturerUrl:"https://www.genentech-access.com/patient/brands/xolair/copay.html" },
+        { brand:"Trulicity", generic:"dulaglutide", manufacturer:"Eli Lilly", slug:"trulicity", hero_landscape:"/assets/img/trulicity-hero.png", hero_portrait:"/assets/img/trulicity-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.trulicity.com/savings-and-resources" },
+        { brand:"Entresto", generic:"sacubitril/valsartan", manufacturer:"Novartis", slug:"entresto", hero_landscape:"/assets/img/entresto-hero.png", hero_portrait:"/assets/img/entresto-hero-vertical.png", condition:"Heart Failure", manufacturerUrl:"https://www.entresto.com/savings" }
+      ];
+
+      // JSON-LD ItemList
+      function injectJSONLD(items){
+        try{
+          const ld = {
+            "@context":"https://schema.org",
+            "@type":"CollectionPage",
+            "name":"Find Prescription Savings by Drug",
+            "hasPart": items.map((d,i)=>({
+              "@type":"ListItem",
+              "position": i+1,
+              "item": {
+                "@type":"Product",
+                "name": d.brand,
+                "brand": d.manufacturer || "Manufacturer",
+                "url": `${location.origin}/drugs/${encodeURIComponent(d.slug)}/`,
+                "description": d.generic ? `(${d.generic})` : "Brand medication",
+              }
+            }))
+          };
+          const s = document.createElement("script");
+          s.type = "application/ld+json";
+          s.textContent = JSON.stringify(ld);
+          document.head.appendChild(s);
+        }catch{}
+      }
+
+      // Kickoff
+      load();
+    })();
+  </script>
+</body>
+</html>
