@@ -102,6 +102,11 @@
   .header .nav{display:flex;}
 }
 
+/* Hide page scroll while an overlay is open = only one scrollbar */
+/* Put this at the very end of your CSS */
+html { overflow: hidden; height: 100%; }   /* hide the outer scrollbar */
+body { overflow-y: auto; height: 100%; }   /* keep a single scrollbar on body */
+
 
   </style>
 
