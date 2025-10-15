@@ -1,169 +1,238 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- =========================================================
+       SaveRx.ai — About (v2, enhanced header/styles)
+       ========================================================= -->
   <meta charset="utf-8" />
-  <title>Contact SaveRx.ai — Get Help or Partner With Us</title>
+  <title>About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Questions, corrections, or partnership ideas? Contact SaveRx.ai. We respond quickly." />
+  <meta name="description" content="SaveRx.ai helps patients and caregivers find and use official manufacturer savings programs—fast. Clear steps, no gimmicks." />
+  <meta name="robots" content="index,follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs" />
+  <meta property="og:description" content="SaveRx.ai helps patients and caregivers find and use official manufacturer savings programs—fast. Clear steps, no gimmicks." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SaveRx.ai" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="assets/img/hero-1200.jpg" />
+
+  <!-- Canonical (set via JS) -->
+  <link rel="canonical" href="" />
+
   <link rel="icon" href="assets/img/favicon.png" />
-  <!-- IMPORTANT: relative paths so styles load locally and in production -->
   <link rel="stylesheet" href="assets/styles.css" />
 
   <script>
-    // Swap to your live Apps Script endpoint before deploying
-    window.PAGE_CONFIG = {
-      scriptUrl: "https://script.google.com/macros/s/AKfycbzJUp5EXbJ7_BS8OV4Bm--khDRZU4WmP4R7wH3vbNupz9oimHcQvXAXOWgypeGN-au3Cg/exec",
-      source: "contact"
-    };
+    // Page config for diagnostics / analytics
+    window.PAGE_CONFIG = { source: "about" };
+
+    // v2: set canonical and og:url from the actual location
+    (function setCanonical() {
+      try {
+        const href = window.location.href.split('#')[0];
+        const link = document.querySelector('link[rel="canonical"]');
+        const og = document.querySelector('meta[property="og:url"]');
+        if (link) link.setAttribute('href', href);
+        if (og) og.setAttribute('content', href);
+      } catch {}
+    })();
   </script>
+
+  <!-- Organization JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Organization",
+    "name":"SaveRx.ai",
+    "url":"https://saverx.ai",
+    "logo":"https://saverx.ai/assets/img/favicon.png",
+    "sameAs":[]
+  }
+  </script>
+
   <script defer src="assets/scripts.js"></script>
 </head>
+
 <body class="theme-light">
   <!-- =======================
-       Header / Primary Nav
+       Header / Primary Nav (v2 sticky + frosted)
        ======================= -->
-<body class="theme-light">
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-<header class="site-header" role="banner">
-  <div class="header-row">
-    <a class="brand" href="index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
+  <header class="site-header header--sticky header--frosted" role="banner">
+    <div class="header-row container">
+      <a class="brand" href="index.html" aria-label="SaveRx.ai home">
+        <span class="brand-mark" aria-hidden="true">💊</span>
+        <span class="brand-text">SaveRx.ai</span>
+      </a>
 
-    <!-- Mobile menu icon -->
-    <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
-      ☰
-    </button>
+      <!-- Mobile menu icon -->
+      <button class="menu-btn btn btn-ghost" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">☰</button>
 
-    <!-- Desktop nav -->
-    <nav class="site-nav" aria-label="Primary">
-      <a class="nav-link" href="index.html">Home</a>
-      <a class="nav-link" href="about.html">About</a>
-      <a class="nav-link" href="contact.html">Contact</a>
-    </nav>
-  </div>
-</header>
+      <!-- Desktop nav -->
+      <nav class="site-nav cluster" aria-label="Primary">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link is-active" href="about.html" aria-current="page">About</a>
+        <a class="nav-link" href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-<!-- Mobile drawer -->
-<aside id="mobile-drawer" class="mobile-drawer" hidden>
-  <div class="drawer-backdrop" data-close></div>
-  <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-    <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-    <nav class="drawer-nav">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </div>
-</aside>
+  <!-- Mobile drawer -->
+  <aside id="mobile-drawer" class="mobile-drawer" hidden>
+    <div class="drawer-backdrop" data-close></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
+      <nav class="drawer-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </aside>
 
-<!-- Mobile drawer -->
-<aside id="mobile-drawer" class="mobile-drawer" hidden>
-  <div class="drawer-backdrop" data-close></div>
-  <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-    <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-    <nav class="drawer-nav">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </div>
-</aside>
-
-  <main id="main" class="container">
-    <!-- Hero -->
-    <section class="card stack-lg">
-      <h1 class="h1">How can we help?</h1>
-      <p class="lead maxw-60">
-        Questions about a specific medication, a link that needs an update, or a partnership opportunity?
-        Send a message—we usually reply within one business day.
+  <main id="main" class="container flow">
+    <!-- Page hero uses new header styles -->
+    <section class="page-hero card pad-xl stack-lg">
+      <p class="eyebrow">About SaveRx.ai</p>
+      <h1 class="display text-balance">Simple, honest ways to lower your Rx costs</h1>
+      <p class="subhead text-muted maxw-60">
+        We help patients, families, and clinicians find official manufacturer savings and assistance programs—
+        then explain how to use them at the pharmacy counter. Clear steps, no gimmicks.
       </p>
-      <div class="row gap-sm wrap">
-        <a class="btn btn-primary" href="#form">Send a message</a>
-        <a class="btn" href="mailto:help@saverx.ai">help@saverx.ai</a>
+      <div class="cluster">
+        <a class="btn btn-primary" href="index.html">Browse medications</a>
+        <a class="btn btn-ghost" href="contact.html">Contact us</a>
       </div>
     </section>
 
-    <!-- Partnerships CTA -->
-    <section id="partner" class="card prose stack-md">
-      <h2>Partnerships with PBMs, pharmacies, and pharmaceutical companies</h2>
-      <p>
-        We collaborate with PBMs, retail/independent pharmacies, and manufacturers to
-        improve affordability and reduce confusion at checkout. Let’s co-design compliant,
-        patient-friendly flows that increase program utilization and satisfaction.
-      </p>
-      <ul>
-        <li><strong>PBMs:</strong> education and routing that reduce abandon rates and support formulary strategy.</li>
-        <li><strong>Pharmacies:</strong> clear use of BIN/PCN/Group details and at-counter guidance to speed transactions.</li>
-        <li><strong>Manufacturers:</strong> accurate program representation, enrollment uplift, and actionable feedback loops.</li>
-      </ul>
-      <div class="row gap-sm wrap">
-        <a class="btn btn-primary" href="#form">Start a partnership conversation</a>
-        <a class="btn" href="mailto:partners@saverx.ai">partners@saverx.ai</a>
+    <!-- Value props (badges + check list) -->
+    <section class="stack-xl">
+      <div class="card-grid card-grid-3">
+        <div class="card pad-lg">
+          <span class="pill">Official sources only</span>
+          <h2 class="h3">Direct manufacturer links</h2>
+          <p class="text-muted">Copay cards, patient assistance, and support lines—linked straight from the source.</p>
+        </div>
+        <div class="card pad-lg">
+          <span class="pill">Plain language</span>
+          <h2 class="h3">Step-by-step guidance</h2>
+          <p class="text-muted">We unpack BIN/PCN/Group, eligibility, and enrollment without the jargon.</p>
+        </div>
+        <div class="card pad-lg">
+          <span class="pill">No junk coupons</span>
+          <h2 class="h3">The shortest safe path</h2>
+          <p class="text-muted">Skip the bait-and-switch. Get where you need to go, fast and safely.</p>
+        </div>
       </div>
     </section>
 
-    <!-- Two-column: form + details -->
+    <hr class="divider divider--muted" />
+
+    <!-- What it is / isn't uses list-check style -->
     <section class="grid-two stack-xl">
-      <div class="card">
-        <h2 id="form">Send a message</h2>
-        <form id="contactForm" class="stack-md" novalidate>
-          <input type="hidden" name="source" value="contact" />
-          <div class="visually-hidden" aria-hidden="true">
-            <label for="website">Do not fill this out</label>
-            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
-          </div>
-
-          <div class="field">
-            <label for="name">Full name</label>
-            <input id="name" name="name" type="text" autocomplete="name" required />
-          </div>
-
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required />
-          </div>
-
-          <div class="field">
-            <label for="topic">Topic</label>
-            <select id="topic" name="topic" required>
-              <option value="" selected disabled>Choose one…</option>
-              <option>Patient help: savings/enrollment</option>
-              <option>Clinician/office: guidance</option>
-              <option>Partnership or media</option>
-              <option>Broken link / correction</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="message">How can we help?</label>
-            <textarea id="message" name="message" rows="6" required placeholder="Include medication name, insurer type, and details."></textarea>
-          </div>
-
-          <label for="consent" class="checkbox field">
-            <input id="consent" name="consent" type="checkbox" required />
-            <span>I agree to the <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
-          </label>
-
-          <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
-          <p id="formStatus" role="status" aria-live="polite" class="status" hidden></p>
-        </form>
-      </div>
-
-      <div class="card prose">
-        <h2>Other ways to reach us</h2>
-        <ul class="contact-list">
-          <li><strong>Email:</strong> <a href="mailto:help@saverx.ai">help@saverx.ai</a></li>
-          <li><strong>Partnerships:</strong> <a href="mailto:partners@saverx.ai">partners@saverx.ai</a></li>
-          <li><strong>Hours:</strong> Mon–Fri, 9am–6pm CT</li>
+      <div class="card pad-lg prose">
+        <p class="eyebrow">What we are</p>
+        <h2 class="h2">A clear guide to official savings</h2>
+        <ul class="list-check">
+          <li>Manufacturer copay, assistance, and support—organized in one place.</li>
+          <li>Instructions that work at the counter the first time.</li>
+          <li>Fast navigation to the right page, not a maze.</li>
         </ul>
+      </div>
+      <div class="card pad-lg prose">
+        <p class="eyebrow">What we aren’t</p>
+        <h2 class="h2">No pharmacy, no insurer, no medical advice</h2>
+        <ul class="list-dash">
+          <li>We don’t dispense medication or make coverage decisions.</li>
+          <li>We provide educational guidance—talk to your clinician for care.</li>
+          <li>No paid placement that biases results.</li>
+        </ul>
+      </div>
+    </section>
 
-        <h3>Response times</h3>
-        <p>We aim to reply within one business day. Urgent patient issues are prioritized.</p>
+    <!-- How it works: stepper component -->
+    <section class="card pad-lg stack-md">
+      <p class="eyebrow">How it works</p>
+      <h2 class="h2">Three steps from search to savings</h2>
+      <ol class="stepper">
+        <li>
+          <h3 class="h4">Search your medication</h3>
+          <p class="text-muted">Find the exact brand name you were prescribed.</p>
+        </li>
+        <li>
+          <h3 class="h4">Open the official program</h3>
+          <p class="text-muted">We take you to the manufacturer’s real enrollment page.</p>
+        </li>
+        <li>
+          <h3 class="h4">Use it at the pharmacy</h3>
+          <p class="text-muted">Follow our checkout tips for smooth processing.</p>
+        </li>
+      </ol>
+      <div class="cluster">
+        <a class="btn btn-primary" href="index.html">Find savings</a>
+        <a class="btn" href="contact.html#form">Ask a question</a>
+      </div>
+    </section>
 
-        <h3>Compliance</h3>
-        <p>We cannot provide medical advice or intervene with your insurer. We point you to official options and how to use them.</p>
+    <!-- Principles + Privacy -->
+    <section class="grid-two stack-xl">
+      <div class="card pad-lg prose">
+        <p class="eyebrow">Principles</p>
+        <h2 class="h2">The SaveRx.ai way</h2>
+        <ul class="list-check">
+          <li><strong>Patient-first</strong>: clear, respectful, and practical help.</li>
+          <li><strong>Accuracy</strong>: official links and up-to-date details.</li>
+          <li><strong>Plain language</strong>: “here’s what to do,” not legalese.</li>
+          <li><strong>Compliance</strong>: programs used as intended, with guardrails.</li>
+          <li><strong>Privacy by default</strong>: minimal data collection; no selling personal data.</li>
+        </ul>
+      </div>
+      <div class="card pad-lg prose">
+        <p class="eyebrow">Data & privacy</p>
+        <h2 class="h2">How we handle your info</h2>
+        <p class="text-muted">
+          We collect only what’s needed to respond when you contact us. We don’t sell your personal data.
+          See our <a href="privacy.html">Privacy Policy</a> for details.
+        </p>
+        <div class="callout">
+          <p><strong>How we sustain SaveRx:</strong> We don’t accept payment for preferred placement. If we add partnerships (e.g., pharmacies or PBMs), we’ll disclose them clearly and keep guidance unbiased.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who we serve -->
+    <section class="card pad-lg prose stack-md">
+      <p class="eyebrow">Who we serve</p>
+      <h2 class="h2">Built for patients, useful to the whole care chain</h2>
+      <ul class="list-dash">
+        <li><strong>Patients & caregivers:</strong> legitimate programs to reduce out-of-pocket costs.</li>
+        <li><strong>Clinics & care teams:</strong> quick links and how-to steps for common brands.</li>
+        <li><strong>Pharmacies & PBMs:</strong> better routing and fewer abandoned fills.</li>
+      </ul>
+    </section>
+
+    <!-- Compliance / Disclaimers -->
+    <section class="card pad-lg prose stack-md">
+      <p class="eyebrow">Compliance</p>
+      <h2 class="h2">Important notes</h2>
+      <p class="text-muted">
+        SaveRx.ai provides educational guidance and links to official programs. We do not provide medical advice and
+        cannot intervene with insurers. Eligibility and terms are determined by the manufacturer and may change.
+        Always consult your clinician and pharmacist.
+      </p>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="card pad-lg stack-md">
+      <div class="cluster">
+        <span class="badge">Get started</span>
+      </div>
+      <h2 class="h2 text-balance">Ready to find official savings for your medication?</h2>
+      <p class="text-muted maxw-60">Browse medications to find official options, or reach out if you need help.</p>
+      <div class="cluster">
+        <a class="btn btn-primary" href="index.html">Browse medications</a>
+        <a class="btn btn-ghost" href="contact.html">Contact us</a>
       </div>
     </section>
   </main>
@@ -171,73 +240,18 @@
   <footer class="site-footer container">
     <div class="footer-grid">
       <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
-      <div>
-        <a href="/about.html">About</a> ·
-        <a href="/contact.html">Contact</a> ·
+      <div class="cluster">
+        <a href="about.html" aria-current="page">About</a>
+        <span class="muted">·</span>
+        <a href="contact.html">Contact</a>
       </div>
       <div>© <span id="y"></span> SaveRx.ai</div>
     </div>
   </footer>
 
   <script>
+    // Year
     document.getElementById('y').textContent = new Date().getFullYear();
-
-    (function () {
-      const form = document.getElementById('contactForm');
-      const status = document.getElementById('formStatus');
-      const btn = document.getElementById('submitBtn');
-
-      function setStatus(msg, ok = true) {
-        status.hidden = false;
-        status.textContent = msg;
-        status.className = ok ? "status ok" : "status error";
-      }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        // Honeypot
-        if (form.website && form.website.value.trim() !== "") {
-          setStatus("Submission blocked (spam detected).", false);
-          return;
-        }
-        if (!form.reportValidity()) return;
-
-        btn.disabled = true;
-        setStatus("Sending…", true);
-
-        try {
-          const data = Object.fromEntries(new FormData(form).entries());
-          data.UserAgent = navigator.userAgent;
-          data.Referrer = document.referrer || "direct";
-          data.Form = "contact";
-
-          const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
-          if (!scriptUrl) throw new Error("Missing Apps Script endpoint.");
-
-          const body = (typeof toForm === "function")
-            ? toForm(data)
-            : new URLSearchParams(data).toString();
-
-          const res = await fetch(scriptUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-            body
-          });
-
-          const txt = await res.text();
-          if (!res.ok) throw new Error(txt || "Network error");
-
-          setStatus("Thanks! We’ve received your message and will reply shortly.");
-          form.reset();
-        } catch (err) {
-          console.error(err);
-          setStatus("Sorry—something went wrong. Please email help@saverx.ai.", false);
-        } finally {
-          btn.disabled = false;
-        }
-      });
-    })();
   </script>
 </body>
 </html>

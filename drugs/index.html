@@ -47,12 +47,7 @@
     .search-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:13px; color:#334155; }
     .chip .count { font-weight:800; }
-
-    .alpha { display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px; }
-    .alpha button {
-      border:1px solid #e6eaf2; background:#fff; border-radius:8px; padding:6px 10px; font-size:13px; color:#334155;
-    }
-    .alpha button[aria-pressed="true"]{ background:#0b1220; color:#e2e8f0; border-color:#0b1220; }
+    #clearBtn { white-space: nowrap; }
 
     .grid {
       --cols: 3;
@@ -68,17 +63,11 @@
     }
     .drug-media { position: relative; display:block; }
     .drug-media img { width:100%; height:auto; display:block; object-fit:cover; aspect-ratio: 16/9; }
-    .media-gradient { position:absolute; inset:auto 0 0 0; height:38%; background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(5,8,15,.75) 90%); }
-    .brand-badge {
-      position:absolute; left:10px; bottom:10px;
-      background: rgba(11,18,32,.92); color:#e2e8f0; border:1px solid rgba(148,163,184,.25);
-      padding:6px 10px; border-radius:10px; font-weight:800; font-size:14px; letter-spacing:.2px;
-      max-width: calc(100% - 20px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
 
     .drug-body { padding:14px; display:grid; gap:8px; }
     .drug-title { font-size:18px; font-weight:800; margin:0; }
     .drug-sub { color:#64748b; font-size:14px; margin:0; }
+    .drug-sub b { color:#0b1220; }
     .tagline { color:#0b2a4e; font-size:13px; }
     .drug-cta { display:grid; grid-template-columns: 1fr auto; gap:10px; margin-top: 4px; }
     .pill { font-size:12px; padding:6px 8px; border-radius:999px; background:#f6f8fb; border:1px solid #e6eaf2; color:#334155; }
@@ -145,13 +134,12 @@
           <span class="chip">Showing <span id="resultCount" class="count">0</span></span>
           <button id="clearBtn" class="btn btn-outline" type="button" aria-label="Clear search" hidden>Clear</button>
         </div>
-        <div class="alpha" id="alpha"></div>
       </div>
     </section>
 
     <!-- Grid -->
     <section aria-labelledby="gridTitle">
-      <h2 id="gridTitle" class="sr-only">Featured drugs</h2>
+      <h2 id="gridTitle" class="sr-only">Drugs</h2>
       <div id="grid" class="grid" aria-live="polite" aria-busy="true"></div>
     </section>
 
@@ -276,33 +264,14 @@
       const $  = (sel, root=document)=> root.querySelector(sel);
       const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
       const norm = s => String(s||"").toLowerCase();
-      const money = n => {
-        const f = Number(n);
-        return Number.isFinite(f) ? `$${f.toLocaleString()}` : "";
-      };
+      const money = n => { const f = Number(n); return Number.isFinite(f) ? `$${f.toLocaleString()}` : ""; };
 
       // Canonical + OG URL
       const url = new URL(location.href);
       const canon = $('link[rel="canonical"]'); if (canon) canon.href = url.origin + "/drugs/";
       const ogUrl = document.querySelector('meta[property="og:url"]'); if (ogUrl) ogUrl.setAttribute("content", canon.href);
 
-      // Alpha bar A–Z
-      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-      const alphaWrap = $("#alpha");
-      letters.forEach(ch=>{
-        const b = document.createElement("button");
-        b.type = "button"; b.textContent = ch; b.setAttribute("aria-pressed","false");
-        b.addEventListener("click", ()=>{
-          const pressed = b.getAttribute("aria-pressed")==="true";
-          $$("#alpha button").forEach(x=>x.setAttribute("aria-pressed","false"));
-          if (!pressed) b.setAttribute("aria-pressed","true");
-          state.alpha = pressed ? "" : ch;
-          render();
-        });
-        alphaWrap.appendChild(b);
-      });
-
-      const state = { items: [], filtered: [], alpha: "", q: "" };
+      const state = { items: [], filtered: [], q: "" };
 
       // Modal
       function openModal(item){
@@ -362,87 +331,59 @@
         }catch{}
       });
 
-      // --- IMAGE HELPERS (brand-on-image + robust hero selection) ---
-      function heroUrl(it){
-        // Prefer explicit card/list hero, then landscape; fallback to generic hero/thumbnail or site default
-        return it.card_hero || it.cardImage || it.hero_list || it.hero_landscape || it.hero || it.image || it.thumb || "/assets/img/hero-1200.jpg";
-      }
-      function heroPortraitUrl(it){
-        return it.card_hero_mobile || it.hero_portrait || it.hero_mobile || heroUrl(it);
-      }
-
-      // Fetch featured list
-      async function load(){
-        $("#grid")?.setAttribute("aria-busy","true");
-        try{
-          const res = await fetch(`${API}?mode=featured`, {cache:"no-cache"});
-          const json = await res.json();
-          const items = Array.isArray(json?.items) ? json.items : [];
-          state.items = normalizeItems(items);
-        }catch{
-          state.items = normalizeItems(fallbackItems);
-        }finally{
-          $("#grid")?.setAttribute("aria-busy","false");
-          render();
-          injectJSONLD(state.items.slice(0,12));
+      // -------- Data mapping (tolerant to header variations) --------
+      const read = (obj, keys) => {
+        for (const k of keys) {
+          const v = obj[k] ?? obj[k.charAt(0).toUpperCase()+k.slice(1)];
+          if (v != null && String(v).trim() !== "") return String(v).trim();
         }
-      }
+        return "";
+      };
 
       function normalizeItems(items){
         return items.map(it=>{
-          const brand = it.brand || it.Brand || "";
-          const generic = it.generic || it.Generic || "";
-          const manufacturer = it.manufacturer || it.Manufacturer || "";
-          const slug = (it.slug || it.Slug || brand).toString().trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+          const brand = read(it, ["brand","drug","name","title"]) || read(it, ["Brand Name"]);
+          const generic = read(it, ["generic","genericname"]);
+          const manufacturer = read(it, ["manufacturer","maker","company"]);
+          let slug = read(it, ["slug"]);
+          if (!slug) slug = (brand || generic || "").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+          const hero_landscape = read(it, ["hero_landscape","hero","image","thumb"]) || "/assets/img/hero-1200.jpg";
+          const manufacturerUrl = read(it, ["manufacturerUrl","savingsurl","url"]);
+
           return {
-            brand,
-            generic,
-            manufacturer,
-            slug,
-            // keep all likely image fields so helpers can pick best one
-            hero_landscape: it.hero_landscape,
-            hero_portrait:  it.hero_portrait,
-            hero:           it.hero,
-            image:          it.image,
-            thumb:          it.thumb,
-            card_hero:      it.card_hero,
-            cardImage:      it.cardImage,
-            hero_list:      it.hero_list,
-            hero_mobile:    it.hero_mobile,
-            card_hero_mobile: it.card_hero_mobile,
-            condition: it.condition || it.Indication || "",
-            copay_price: it.copay_price,
-            cash_price: it.cash_price,
-            manufacturerUrl: it.manufacturerUrl || it.ManufacturerUrl || ""
+            brand, generic, manufacturer, slug,
+            hero_landscape,
+            manufacturerUrl,
+            condition: read(it, ["condition","indication"]),
+            copay_price: read(it, ["copay_price","copay"]),
+            cash_price: read(it, ["cash_price"])
           };
         });
       }
 
+      // -------- Rendering --------
       function cardHTML(d){
         const priceLine = d.copay_price ? `<span class="pill">As low as <b>${money(d.copay_price)}</b></span>` : "";
         const cond = d.condition ? `<span class="pill">${d.condition}</span>` : "";
         const href = `/drugs/${encodeURIComponent(d.slug)}/`;
-        const img = heroUrl(d);
-        const imgMobile = heroPortraitUrl(d);
-        const safeAlt = `${d.brand} savings`;
+        const img = d.hero_landscape || "/assets/img/hero-1200.jpg";
+        const alt = `${d.brand || "Medication"} savings`;
+        const genericPart = d.generic ? ` (${d.generic})` : "";
+        const mfrPart = d.manufacturer ? ` • ${d.manufacturer}` : "";
+
         return `
           <article class="drug-card">
             <a class="drug-media" href="${href}" aria-label="Open ${d.brand} details">
-              <picture>
-                <source media="(max-width: 640px)" srcset="${imgMobile}">
-                <img src="${img}" alt="${safeAlt}" loading="lazy" decoding="async" width="800" height="450"
-                     onerror="this.onerror=null;this.src='/assets/img/hero-1200.jpg';">
-              </picture>
-              <div class="media-gradient"></div>
-              <div class="brand-badge" title="${d.brand}">${d.brand}</div>
+              <img src="${img}" alt="${alt}" loading="lazy" decoding="async" width="800" height="450"
+                   onerror="this.onerror=null;this.src='/assets/img/hero-1200.jpg';">
             </a>
             <div class="drug-body">
-              <h3 class="drug-title"><a href="${href}">${d.brand}</a></h3>
-              <p class="drug-sub">${d.generic ? `(${d.generic}) • ` : ""}${d.manufacturer || ""}</p>
+              <h3 class="drug-title"><a href="${href}">${d.brand || "Brand"}</a></h3>
+              <p class="drug-sub"><b>${d.brand || "Brand"}</b>${genericPart}${mfrPart}</p>
               <p class="tagline">Go to the official savings program.</p>
               <div class="drug-cta">
                 <button class="btn btn-primary js-open-modal" type="button"
-                        data-drug="${encodeURIComponent(d.brand)}"
+                        data-drug="${encodeURIComponent(d.brand || "")}"
                         data-url="${encodeURIComponent(d.manufacturerUrl || "")}"
                         data-slug="${encodeURIComponent(d.slug)}">Check savings</button>
                 <a class="btn btn-ghost" href="${href}">Details</a>
@@ -461,12 +402,9 @@
 
         if (q){
           out = out.filter(d=>{
-            const hay = `${d.brand} ${d.generic} ${d.manufacturer} ${d.condition}`.toLowerCase();
+            const hay = `${d.brand} ${d.generic} ${d.manufacturer}`.toLowerCase();
             return hay.includes(q);
           });
-        }
-        if (state.alpha){
-          out = out.filter(d => (d.brand||"").toUpperCase().startsWith(state.alpha));
         }
 
         state.filtered = out;
@@ -497,21 +435,14 @@
       });
       clearBtn?.addEventListener("click", ()=>{
         state.q = ""; qEl.value = ""; clearBtn.hidden = true;
-        $$("#alpha button").forEach(x=>x.setAttribute("aria-pressed","false"));
-        state.alpha = "";
         render();
       });
 
       // Fallback list (if Apps Script is unreachable)
       const fallbackItems = [
-        { brand:"Repatha", generic:"evolocumab", manufacturer:"Amgen", slug:"repatha", hero_landscape:"/assets/img/repatha-hero.png", hero_portrait:"/assets/img/repatha-hero-vertical.png", condition:"LDL-C", copay_price: 5, manufacturerUrl:"https://www.repatha.com/repatha/copay-card" },
-        { brand:"Ozempic", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"ozempic", hero_landscape:"/assets/img/ozempic-hero.png", hero_portrait:"/assets/img/ozempic-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.ozempic.com/savings-and-coverage.html" },
-        { brand:"Wegovy", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"wegovy", hero_landscape:"/assets/img/wegovy-hero.png", hero_portrait:"/assets/img/wegovy-hero-vertical.png", condition:"Chronic Weight Management", manufacturerUrl:"https://www.wegovy.com/savings-and-support.html" },
-        { brand:"Mounjaro", generic:"tirzepatide", manufacturer:"Eli Lilly", slug:"mounjaro", hero_landscape:"/assets/img/mounjaro-hero.png", hero_portrait:"/assets/img/mounjaro-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.mounjaro.com/savings-resources" },
-        { brand:"Stelara", generic:"ustekinumab", manufacturer:"Janssen", slug:"stelara", hero_landscape:"/assets/img/stelara-hero.png", hero_portrait:"/assets/img/stelara-hero-vertical.png", condition:"Immunology", manufacturerUrl:"https://www.janssencarepath.com/patient/stelara/cost-support" },
-        { brand:"Xolair", generic:"omalizumab", manufacturer:"Genentech/Novartis", slug:"xolair", hero_landscape:"/assets/img/xolair-hero.png", hero_portrait:"/assets/img/xolair-hero-vertical.png", condition:"Allergy/Asthma", manufacturerUrl:"https://www.genentech-access.com/patient/brands/xolair/copay.html" },
-        { brand:"Trulicity", generic:"dulaglutide", manufacturer:"Eli Lilly", slug:"trulicity", hero_landscape:"/assets/img/trulicity-hero.png", hero_portrait:"/assets/img/trulicity-hero-vertical.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.trulicity.com/savings-and-resources" },
-        { brand:"Entresto", generic:"sacubitril/valsartan", manufacturer:"Novartis", slug:"entresto", hero_landscape:"/assets/img/entresto-hero.png", hero_portrait:"/assets/img/entresto-hero-vertical.png", condition:"Heart Failure", manufacturerUrl:"https://www.entresto.com/savings" }
+        { brand:"Repatha", generic:"evolocumab", manufacturer:"Amgen", slug:"repatha", hero_landscape:"/assets/img/repatha-hero.png", condition:"LDL-C", copay_price: 5, manufacturerUrl:"https://www.repatha.com/repatha/copay-card" },
+        { brand:"Ozempic", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"ozempic", hero_landscape:"/assets/img/ozempic-hero.png", condition:"Type 2 Diabetes", manufacturerUrl:"https://www.ozempic.com/savings-and-coverage.html" },
+        { brand:"Wegovy", generic:"semaglutide", manufacturer:"Novo Nordisk", slug:"wegovy", hero_landscape:"/assets/img/wegovy-hero.png", condition:"Chronic Weight Management", manufacturerUrl:"https://www.wegovy.com/savings-and-support.html" }
       ];
 
       // JSON-LD ItemList
@@ -538,6 +469,30 @@
           s.textContent = JSON.stringify(ld);
           document.head.appendChild(s);
         }catch{}
+      }
+
+      // Fetch list from Drugs sheet first; fallback to Featured; then to local fallback
+      async function load(){
+        $("#grid")?.setAttribute("aria-busy","true");
+
+        async function getItems(mode){
+          const res = await fetch(`${API}?mode=${mode}`, {cache:"no-cache"});
+          const json = await res.json();
+          return Array.isArray(json?.items) ? json.items : [];
+        }
+
+        try{
+          let items = [];
+          try { items = await getItems("drugs"); } catch {}
+          if (!items.length) { try { items = await getItems("featured"); } catch {} }
+          state.items = items.length ? normalizeItems(items) : normalizeItems(fallbackItems);
+        }catch{
+          state.items = normalizeItems(fallbackItems);
+        }finally{
+          $("#grid")?.setAttribute("aria-busy","false");
+          render();
+          injectJSONLD(state.items.slice(0,12));
+        }
       }
 
       // Kickoff
