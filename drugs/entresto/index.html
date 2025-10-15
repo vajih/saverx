@@ -153,6 +153,10 @@
       max-height: 540px;
       object-position: center 20%;
     }
+
+    /* Minimal modal visibility guarantees in case external CSS differs */
+    .modal[aria-hidden="true"] { display: none; }
+    .modal[aria-hidden="false"] { display: block; }
   </style>
 
   <script>
@@ -353,7 +357,7 @@
         <div><a href="/terms.html">Terms of Service</a></div>
       </div>
       <div>
-              <h4 style="margin-top:0;color:#fff">Newsletter</h4>
+        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
         <!-- Footer newsletter: note data-newsletter + .form-msg -->
         <form data-newsletter novalidate>
           <input
@@ -385,22 +389,23 @@
   <!-- Shared site JS -->
   <script defer src="/assets/scripts.js?v=2025-10-03"></script>
 
-  <!-- Page script: fetch drug JSON, bind UI, wire forms (unchanged) -->
+  <!-- Page script: fetch drug JSON, bind UI, wire forms -->
   <script>
     (function(){
       "use strict";
 
       const API = window.SAVERX_API;
-      // Infer slug from URL path (/drugs/<slug>/)
-      const pathBits = location.pathname.replace(/\/+$/,'').split("/");
-      const slug = pathBits[pathBits.indexOf("drugs")+1] || "";
-
       const $  = (sel, root=document)=> root.querySelector(sel);
       const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
       const money = n => {
         const f = Number(n);
         return Number.isFinite(f) ? `$${f.toLocaleString()}` : "$—";
       };
+
+      // Robust slug inference
+      const pathBits = location.pathname.replace(/\/+$/,'').split("/");
+      const drugsIdx = pathBits.indexOf("drugs");
+      const slug = (drugsIdx !== -1 ? pathBits[drugsIdx+1] : pathBits.filter(Boolean).pop()) || "";
 
       function bindData(model){
         $$("[data-bind]").forEach(el=>{
@@ -419,7 +424,7 @@
         });
       }
 
-      function updateHeadTags(model, slug){
+      function updateHeadTags(model){
         const brand = model.brand || "Drug";
         document.title = `${brand} Savings | SaveRx.ai`;
 
@@ -449,14 +454,26 @@
         set('meta[property="og:image"]', ogImage);
       }
 
-      function openModal(){ $("#email-modal")?.setAttribute("aria-hidden","false"); $("#modal-email")?.focus(); }
-      function closeModal(){ $("#email-modal")?.setAttribute("aria-hidden","true"); }
+      function openModal(){
+        const m = $("#email-modal");
+        if (!m) return;
+        m.setAttribute("aria-hidden","false");
+        $("#modal-email")?.focus({ preventScroll: true });
+      }
+      function closeModal(){
+        $("#email-modal")?.setAttribute("aria-hidden","true");
+      }
 
-      document.addEventListener("click", (e)=>{
-        if (e.target.closest(".js-check-savings")) openModal();
-        if (e.target.matches("[data-close], .modal-backdrop")) closeModal();
-      });
-      document.addEventListener("keydown", (e)=>{ if (e.key==="Escape") closeModal(); });
+      // DIRECT bindings to ensure reliability regardless of other scripts
+      function wireModalTriggers(){
+        $$(".js-check-savings").forEach(btn=>{
+          btn.addEventListener("click", openModal);
+        });
+        document.addEventListener("click", (e)=>{
+          if (e.target.matches("[data-close], .modal-backdrop")) closeModal();
+        });
+        document.addEventListener("keydown", (e)=>{ if (e.key==="Escape") closeModal(); });
+      }
 
       async function load(){
         try{
@@ -464,9 +481,6 @@
           const res = await fetch(u, { cache: "no-cache" });
           const json = await res.json();
           const d = (json && json.item) ? json.item : {};
-          if (!d || !d.brand){
-            console.warn("No data for slug:", slug, json);
-          }
 
           const cash = Number(d.cash_price);
           const copay = Number(d.copay_price);
@@ -499,26 +513,23 @@
           };
 
           bindData(model);
-          updateHeadTags(model, slug);
+          updateHeadTags(model);
 
           const heroImg = document.querySelector('.rx-hero img');
           if (heroImg && model.brand) heroImg.alt = `${model.brand} savings`;
 
-          const uaEl  = document.getElementById('modal-ua');
-          if (uaEl) uaEl.value = navigator.userAgent || "";
-          const refEl = document.getElementById('modal-ref');
-          if (refEl) refEl.value = document.referrer || "";
+          // Hidden fields for POSTs
+          $("#modal-ua") && ($("#modal-ua").value = navigator.userAgent || "");
+          $("#modal-ref") && ($("#modal-ref").value = document.referrer || "");
 
-          const bulletsWrap = document.getElementById("rx-bullets");
+          const bulletsWrap = $("#rx-bullets");
           const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
           if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
 
           window.__manufacturerUrl = d.manufacturerUrl || "/";
           window.__drugName = model.brand || slug;
-
-          const modalDrug = document.getElementById('modal-drug');
-          if (modalDrug) modalDrug.value = model.brand || slug;
-
+          const modalDrug = $("#modal-drug");
+          if (modalDrug) modalDrug.value = window.__drugName;
         } catch(err){
           console.error("Load failed", err);
         }
@@ -537,19 +548,20 @@
         }
       }
 
-      document.getElementById("modal-lead-form")?.addEventListener("submit", (e)=>{
+      // Modal lead submit
+      $("#modal-lead-form")?.addEventListener("submit", (e)=>{
         e.preventDefault();
-        const email = (document.getElementById("modal-email")?.value || "").trim();
-        const status = document.getElementById("modal-status");
+        const email = ($("#modal-email")?.value || "").trim();
+        const status = $("#modal-status");
         if (!/^\S+@\S+\.\S+$/.test(email)){
-          if (status) status.textContent = "Please enter a valid email.";
+          status && (status.textContent = "Please enter a valid email.");
           return;
         }
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
         closeModal();
-        if (status) status.textContent = "Opening the official savings site…";
+        status && (status.textContent = "Opening the official savings site…");
 
         try {
           const body = new URLSearchParams({
@@ -575,20 +587,21 @@
         } catch {}
       });
 
-      document.getElementById("footerForm")?.addEventListener("submit", (e)=>{
+      // Footer CTA lead submit
+      $("#footerForm")?.addEventListener("submit", (e)=>{
         e.preventDefault();
-        const email = (document.getElementById("footerEmail")?.value || "").trim();
-        const msg = document.getElementById("footerMsg");
+        const email = ($("#footerEmail")?.value || "").trim();
+        const msg = $("#footerMsg");
 
         if (!/^\S+@\S+\.\S+$/.test(email)){
-          if (msg) msg.textContent = "Please enter a valid email.";
+          msg && (msg.textContent = "Please enter a valid email.");
           return;
         }
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
-        if (msg) msg.textContent = "Opening the official savings site…";
-        document.getElementById("footerSubmit")?.setAttribute("disabled","true");
+        msg && (msg.textContent = "Opening the official savings site…");
+        $("#footerSubmit")?.setAttribute("disabled","true");
 
         try {
           const body = new URLSearchParams({
@@ -614,6 +627,51 @@
         } catch {}
       });
 
+      // Newsletter submit (added)
+      (function wireNewsletter(){
+        const form = document.querySelector("form[data-newsletter]");
+        if (!form) return;
+        const msg = form.querySelector(".form-msg");
+        form.addEventListener("submit", (e)=>{
+          e.preventDefault();
+          const email = (new FormData(form).get("email") || "").toString().trim();
+          if (!/^\S+@\S+\.\S+$/.test(email)){
+            msg && (msg.textContent = "Please enter a valid email.");
+            return;
+          }
+          msg && (msg.textContent = "Thanks! Subscribing…");
+
+          try {
+            const body = new URLSearchParams({
+              email,
+              drug: window.__drugName || slug || "Newsletter",
+              source: "Newsletter Footer",
+              useragent: navigator.userAgent || "",
+              referrer: document.referrer || ""
+            }).toString();
+
+            if (navigator.sendBeacon) {
+              const blob = new Blob([body], { type: "application/x-www-form-urlencoded" });
+              navigator.sendBeacon(API, blob);
+              msg && (msg.textContent = "Subscribed.");
+            } else {
+              fetch(API, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                mode: "no-cors",
+                body,
+                keepalive: true
+              }).finally(()=>{
+                msg && (msg.textContent = "Subscribed.");
+              });
+            }
+          } catch {
+            msg && (msg.textContent = "Something went wrong. Please try again.");
+          }
+        });
+      })();
+
+      wireModalTriggers();
       load();
     })();
   </script>
