@@ -1,14 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- =========================================================
-       SaveRx.ai — Contact (v2 parity with drugs/index.html)
-       ========================================================= -->
   <meta charset="utf-8" />
   <title>Contact SaveRx.ai — Get Help or Partner With Us</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Questions, corrections, or partnership ideas? Contact SaveRx.ai. We usually reply within one business day." />
-  <meta name="robots" content="index,follow" />
 
   <!-- Open Graph -->
   <meta property="og:title" content="Contact SaveRx.ai — Get Help or Partner With Us" />
@@ -16,81 +10,78 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SaveRx.ai" />
   <meta property="og:url" content="" />
-  <meta property="og:image" content="assets/img/hero-1200.jpg" />
+  <meta property="og:image" content="/assets/img/hero-1200.jpg" />
 
   <!-- Canonical (set via JS) -->
   <link rel="canonical" href="" />
 
-  <link rel="icon" href="assets/img/favicon.png" />
+  <!-- SEO -->
+  <meta name="description" content="Contact SaveRx.ai for patient questions, link corrections, or partnerships. We point you to official manufacturer savings programs." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#1d4ed8" />
 
-  <!-- v2 CSS load order must match drugs/index.html -->
-  <link rel="stylesheet" href="assets/tokens.css" />
-  <link rel="stylesheet" href="assets/components.css" />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- Shared styles (same order as index.html) -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
 
   <script>
-    // Keep same PAGE_CONFIG pattern used site-wide
-    window.PAGE_CONFIG = {
-      scriptUrl: "https://script.google.com/macros/s/AKfycbzJUp5EXbJ7_BS8OV4Bm--khDRZU4WmP4R7wH3vbNupz9oimHcQvXAXOWgypeGN-au3Cg/exec",
-      source: "contact"
-    };
-
-    // Mirror drugs/index.html canonical behavior
-    (function setCanonical() {
+    // Canonical + og:url => current page (mirrors about/index helpers)
+    (function () {
       try {
-        const href = window.location.href.split('#')[0];
-        const link = document.querySelector('link[rel="canonical"]');
+        const href = location.href.split('#')[0];
+        const c = document.querySelector('link[rel="canonical"]');
         const og = document.querySelector('meta[property="og:url"]');
-        if (link) link.setAttribute('href', href);
+        if (c) c.setAttribute('href', href);
         if (og) og.setAttribute('content', href);
       } catch {}
     })();
-  </script>
 
-  <script defer src="assets/scripts.js"></script>
+    // Contact form endpoint (Apps Script) + shared API for newsletter (matches index)
+    window.CONTACT_API = "https://script.google.com/macros/s/AKfycbzJUp5EXbJ7_BS8OV4Bm--khDRZU4WmP4R7wH3vbNupz9oimHcQvXAXOWgypeGN-au3Cg/exec";
+    window.SAVERX_API  = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
+  </script>
 </head>
 
-<body class="theme-light" data-page="contact">
-  <!-- =======================
-       Header (copied structure from drugs/index.html)
-       ======================= -->
-  <header class="site-header" role="banner">
-    <div class="container header-row">
-      <a class="brand" href="index.html" aria-label="SaveRx.ai home">
-        <!-- If drugs/index.html shows a mark, keep this span; otherwise it’s fine to keep plain text -->
-        <span class="brand-text">SaveRx.ai</span>
+<body class="design-v2 theme-light">
+  <!-- ===== Header (identical to index.html) ===== -->
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
       </a>
-
-      <!-- Mobile menu icon -->
-      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">☰</button>
-
-      <!-- Desktop nav (match link order + classes) -->
-      <nav class="site-nav" aria-label="Primary">
-        <a class="nav-link" href="index.html">Home</a>
-        <a class="nav-link" href="drugs/index.html">Medications</a>
-        <a class="nav-link" href="about.html">About</a>
-        <a class="nav-link is-active" href="contact.html" aria-current="page">Contact</a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/">Drugs</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html" aria-current="page">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Mobile drawer (single instance, same links/order as header) -->
+  <!-- Mobile drawer (same as index.html) -->
   <aside id="mobile-drawer" class="mobile-drawer" hidden>
     <div class="drawer-backdrop" data-close></div>
     <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
       <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
       <nav class="drawer-nav">
-        <a href="index.html">Home</a>
-        <a href="drugs/index.html">Medications</a>
-        <a href="about.html">About</a>
-        <a href="contact.html" aria-current="page">Contact</a>
+        <a href="/">Home</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html" aria-current="page">Contact</a>
       </nav>
     </div>
   </aside>
 
-  <main id="main" class="container">
-    <!-- Hero / Intro -->
+  <!-- ===== Main ===== -->
+  <main class="container">
+    <!-- Hero -->
     <section class="card stack-lg">
+      <p class="eyebrow">Contact SaveRx</p>
       <h1 class="h1">How can we help?</h1>
       <p class="lead maxw-60">
         Need help with a specific medication, spotted a broken link, or want to partner?
@@ -102,7 +93,7 @@
       </div>
     </section>
 
-    <!-- Partnerships CTA -->
+    <!-- Partnerships -->
     <section id="partner" class="card prose stack-md">
       <h2>Partner with us (PBMs, pharmacies, manufacturers)</h2>
       <p>
@@ -127,7 +118,7 @@
       <div class="card">
         <h2 id="form">Send a message</h2>
         <form id="contactForm" class="stack-md" novalidate>
-          <input type="hidden" name="source" value="contact" />
+          <input type="hidden" name="source" value="Contact Page" />
 
           <!-- Honeypot -->
           <div class="visually-hidden" aria-hidden="true">
@@ -142,7 +133,7 @@
 
           <div class="field">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" inputmode="email" placeholder="your@email.com" autocomplete="email" required />
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" required />
           </div>
 
           <div class="field">
@@ -164,7 +155,7 @@
 
           <label for="consent" class="checkbox field">
             <input id="consent" name="consent" type="checkbox" required />
-            <span>I agree to the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+            <span>I agree to the <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
           </label>
 
           <button type="submit" class="btn btn-primary" id="submitBtn">Send message</button>
@@ -193,35 +184,61 @@
     </section>
   </main>
 
-  <!-- =======================
-       Footer (copied structure from drugs/index.html)
-       ======================= -->
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
+  <!-- ===== Footer (identical to index.html) ===== -->
+  <footer class="footer">
+    <div class="container grid">
       <div>
-        <a href="index.html">Home</a> ·
-        <a href="drugs/index.html">Medications</a> ·
-        <a href="about.html">About</a> ·
-        <a href="contact.html" aria-current="page">Contact</a>
+        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
+        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
+          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
+        </p>
       </div>
-      <div>© <span id="y"></span> SaveRx.ai</div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/">Drugs</a></div>
+        <div><a href="/about.html">About</a></div>
+        <div><a href="/contact.html" aria-current="page">Contact</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Legal</h4>
+        <div><a href="/privacy.html">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
+        <form data-newsletter novalidate>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+        <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
+      </div>
+    </div>
+
+    <div class="footer-disclaimer">
+      <div class="container">
+        <small>
+          SaveRx.ai is an independent educational platform that provides information about official manufacturer savings programs.
+          We do not sell, distribute, or process prescriptions. All trademarks are property of their respective owners.
+          Actual savings and eligibility vary by program.
+        </small>
+      </div>
     </div>
   </footer>
 
+  <!-- Shared site JS (same file/version as index) -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+
+  <!-- Page scripts: contact form + footer newsletter -->
   <script>
-    // Year
-    document.getElementById('y').textContent = new Date().getFullYear();
-
-    // Optional: prefill email if saved earlier
-    try {
-      const saved = localStorage.getItem('saverx_email');
-      if (saved) {
-        const emailEl = document.getElementById('email');
-        if (emailEl && !emailEl.value) emailEl.value = saved;
-      }
-    } catch {}
-
+    // Contact form submit → Apps Script
     (function () {
       const form = document.getElementById('contactForm');
       const status = document.getElementById('formStatus');
@@ -233,7 +250,7 @@
         status.className = ok ? "status ok" : "status error";
       }
 
-      form.addEventListener('submit', async (e) => {
+      form?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         // Honeypot
@@ -248,18 +265,15 @@
 
         try {
           const data = Object.fromEntries(new FormData(form).entries());
-          data.UserAgent = navigator.userAgent;
-          data.Referrer = document.referrer || "direct";
-          data.Form = "contact";
+          data.useragent = navigator.userAgent || "";
+          data.referrer = document.referrer || "direct";
 
-          const scriptUrl = (window.PAGE_CONFIG && window.PAGE_CONFIG.scriptUrl) || "";
-          if (!scriptUrl) throw new Error("Missing Apps Script endpoint.");
+          const api = window.CONTACT_API || "";
+          if (!api) throw new Error("Missing contact endpoint.");
 
-          const body = (typeof toForm === "function")
-            ? toForm(data)
-            : new URLSearchParams(data).toString();
+          const body = new URLSearchParams(data).toString();
 
-          const res = await fetch(scriptUrl, {
+          const res = await fetch(api, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
             body
@@ -275,6 +289,43 @@
           setStatus("Sorry—something went wrong. Please email help@saverx.ai.", false);
         } finally {
           btn.disabled = false;
+        }
+      });
+    })();
+
+    // Footer newsletter (same pattern as index)
+    (function wireNewsletter(){
+      const form = document.querySelector("form[data-newsletter]");
+      if (!form) return;
+      const msg = form.querySelector(".form-msg");
+      form.addEventListener("submit",(e)=>{
+        e.preventDefault();
+        const email = (new FormData(form).get("email")||"").toString().trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)){ msg && (msg.textContent="Please enter a valid email."); return; }
+        msg && (msg.textContent="Thanks! Subscribing…");
+        try{
+          const body = new URLSearchParams({
+            email,
+            drug:"Newsletter",
+            source:"Contact Footer Newsletter",
+            useragent:navigator.userAgent||"",
+            referrer:document.referrer||""
+          }).toString();
+          const API = window.SAVERX_API;
+          if (API) {
+            if (navigator.sendBeacon){
+              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"});
+              navigator.sendBeacon(API, blob);
+              msg && (msg.textContent="Subscribed.");
+            } else {
+              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
+                .finally(()=>{ msg && (msg.textContent="Subscribed."); });
+            }
+          } else {
+            msg && (msg.textContent="Subscribed.");
+          }
+        }catch{
+          msg && (msg.textContent="Something went wrong. Please try again.");
         }
       });
     })();

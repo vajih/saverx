@@ -1,230 +1,238 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- =========================================================
-       SaveRx.ai — About (v2)
-       Matches current v2 layout, classes, and JS hooks
-       ========================================================= -->
   <meta charset="utf-8" />
-  <title>About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="SaveRx.ai helps patients and caregivers find and use official manufacturer savings programs—fast. Clear steps, no gimmicks." />
-  <meta name="robots" content="index,follow" />
+  <title>About SaveRx.ai — Transparent, official ways to lower your prescription costs</title>
 
   <!-- Open Graph -->
-  <meta property="og:title" content="About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs" />
-  <meta property="og:description" content="We connect you to official manufacturer savings (copay cards, assistance) and walk you through how to use them at the pharmacy." />
+  <meta property="og:title" content="About SaveRx.ai — Transparent, official ways to lower your prescription costs" />
+  <meta property="og:description" content="We connect you to manufacturer-run savings programs and give you a simple checklist so you can use them at the pharmacy—no gimmicks, no runaround." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SaveRx.ai" />
   <meta property="og:url" content="" />
   <meta property="og:image" content="/assets/img/hero-1200.jpg" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="About SaveRx.ai — Simple, Honest Ways to Lower Your Rx Costs" />
-  <meta name="twitter:description" content="We connect you to official manufacturer savings (copay cards, assistance) and walk you through how to use them at the pharmacy." />
-  <meta name="twitter:image" content="/assets/img/hero-1200.jpg" />
-
-  <!-- Canonical (scripts.js will set this to window.location.href) -->
+  <!-- Canonical (set via JS) -->
   <link rel="canonical" href="" />
 
-  <link rel="icon" href="assets/img/favicon.png" />
-  <!-- IMPORTANT: relative paths so styles load locally and in production -->
-  <link rel="stylesheet" href="assets/tokens.css" />
-  <link rel="stylesheet" href="assets/components.css" />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <!-- SEO -->
+  <meta name="description" content="SaveRx.ai links you directly to official manufacturer copay cards and assistance programs, with clear steps to use them at the pharmacy." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="theme-color" content="#1d4ed8" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- Shared styles (kept in same order as index.html) -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
 
   <script>
-    // v2 page config used by assets/scripts.js for analytics, canonical/og URL, etc.
-    window.PAGE_CONFIG = {
-      source: "about"
-    };
-  </script>
-  <script defer src="assets/scripts.js"></script>
+    // Match index: set canonical + og:url to current location
+    (function () {
+      try {
+        const href = location.href.split('#')[0];
+        const c = document.querySelector('link[rel="canonical"]');
+        const og = document.querySelector('meta[property="og:url"]');
+        if (c) c.setAttribute('href', href);
+        if (og) og.setAttribute('content', href);
+      } catch {}
+    })();
 
-  <!-- Optional: basic Organization schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "SaveRx.ai",
-    "url": "https://saverx.ai/",
-    "logo": "https://saverx.ai/assets/img/favicon.png",
-    "sameAs": []
-  }
+    // Keep the same API var so the footer newsletter works the same as index.html
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
   </script>
 </head>
-<body$1class="$2"$3>
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <header class="site-header" role="banner">
-    <div class="header-row">
-      <a class="brand" href="./index.html" aria-label="SaveRx.ai home">SaveRx.ai</a>
 
-      <!-- Mobile menu icon -->
-      <button class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">☰</button>
-
-      <!-- Desktop nav -->
-      <nav class="site-nav" aria-label="Primary">
-        <a class="nav-link" href="index.html">Home</a>
-        <a class="nav-link" href="about.html" aria-current="page">About</a>
-        <a class="nav-link" href="contact.html">Contact</a>
+<body class="design-v2 theme-light">
+  <!-- ===== Header (identical markup to index.html) ===== -->
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
+      </a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/">Drugs</a>
+        <a href="/about.html" aria-current="page">About</a>
+        <a href="/contact.html">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Mobile drawer -->
+  <!-- Mobile drawer (same as index.html) -->
   <aside id="mobile-drawer" class="mobile-drawer" hidden>
     <div class="drawer-backdrop" data-close></div>
     <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
       <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
       <nav class="drawer-nav">
-        <a href="index.html">Home</a>
-        <a href="about.html" aria-current="page">About</a>
-        <a href="contact.html">Contact</a>
+        <a href="/">Home</a>
+        <a href="/about.html" aria-current="page">About</a>
+        <a href="/contact.html">Contact</a>
       </nav>
     </div>
   </aside>
 
-  <!-- =======================
-       Main
-       ======================= -->
-  <main id="main" class="container">
-    <!-- HERO: v2 card hero with centered layout + dual CTAs -->
-    <section class="card stack-lg align-center text-center">
-      <p class="overline">About SaveRx</p>
+  <!-- ===== Main ===== -->
+  <main class="container">
+    <!-- Hero (same card look & spacing as index) -->
+    <section class="card stack-lg">
+      <p class="eyebrow">About SaveRx</p>
       <h1 class="h1">Transparent, official ways to lower your prescription costs.</h1>
       <p class="lead maxw-60">
-        We connect you to <strong>manufacturer-run savings programs</strong> (copay cards, assistance) and give you a
-        simple checklist so you can use them at the pharmacy—no gimmicks, no runaround.
+        We connect you to <strong>manufacturer-run savings programs</strong> (copay cards, assistance) and give you
+        a simple checklist so you can use them at the pharmacy—no gimmicks, no runaround.
       </p>
-      <div class="row gap-sm wrap-center">
-        <a class="btn btn-primary" href="./index.html#drugs">Browse medications</a>
-        <a class="btn" href="./contact.html#form">Contact us</a>
-      </div>
-    </section>
-
-    <!-- STORY + WHAT WE DO: two-up cards -->
-    <section class="grid-two stack-xl" id="story">
-      <div class="card prose">
-        <h2>Our story</h2>
-        <p>
-          This started with something personal. After being prescribed <strong>Repatha</strong>, the first pharmacy price
-          was a shock. Weeks of calls and forms later, we finally found the official copay program—and the price dropped
-          dramatically. It shouldn’t be that hard.
-        </p>
-        <p>
-          At the counter, we saw people—especially older patients—pay full price simply because they didn’t know where
-          to look. We built SaveRx.ai so anyone can quickly find <em>the real, official</em> savings and understand how to
-          activate them.
-        </p>
-        <p class="note">— Founder, SaveRx.ai</p>
-      </div>
-
-      <div class="card prose" id="what-we-do">
-        <h2>What we do</h2>
-        <ul>
-          <li>Curate up-to-date links to official manufacturer savings (copay cards, support, and assistance).</li>
-          <li>Explain eligibility in plain language and outline the exact steps to enroll.</li>
-          <li>Help patients, caregivers, and clinics save time and reduce costs at checkout.</li>
-        </ul>
-        <h3>What we are (and aren’t)</h3>
-        <p><strong>We are</strong> a free guidance service. <strong>We are not</strong> a pharmacy, PBM, insurer, or prescriber.</p>
-        <p><strong>We don’t sell data.</strong> We collect only what’s needed to assist you, with your consent.</p>
-      </div>
-    </section>
-
-    <!-- PRINCIPLES: three-up cards (optional new v2 section) -->
-    <section class="grid-three stack-xl" id="principles">
-      <article class="card prose">
-        <h3>Simple</h3>
-        <p>Short, plain-English checklists that work at the pharmacy counter.</p>
-      </article>
-      <article class="card prose">
-        <h3>Honest</h3>
-        <p>We point only to <em>official</em> savings programs—no shady coupon mills.</p>
-      </article>
-      <article class="card prose">
-        <h3>Privacy-first</h3>
-        <p>No data sales. Minimal info, only with your consent.</p>
-      </article>
-    </section>
-
-    <!-- HOW IT WORKS: compact, index-style steps -->
-    <section class="card stack-md" id="how">
-      <h2>How it works</h2>
-      <ol class="prose">
-        <li>Select your medication.</li>
-        <li>Open the manufacturer’s official program page.</li>
-        <li>Follow our checklist to enroll and use the card at the pharmacy.</li>
-      </ol>
-      <p class="muted">Eligibility varies by drug, insurance, and location. Always review the official terms.</p>
-    </section>
-
-    <!-- AUDIENCES: mirrors index grid cards -->
-    <section class="grid-two stack-xl" id="audiences">
-      <div class="card prose">
-        <h2>For patients &amp; caregivers</h2>
-        <p>Commercial insurance, no insurance, or unsure—we’ll guide you to the best next step without jargon.</p>
-      </div>
-      <div class="card prose">
-        <h2>For clinicians &amp; office staff</h2>
-        <p>Use our pages during benefits conversations to route patients to correct enrollments—fast.</p>
-      </div>
-    </section>
-
-    <!-- PARTNERSHIPS: clear business-model CTA -->
-    <section id="partner" class="card prose stack-md">
-      <h2>Partnerships: PBMs, pharmacies, and manufacturers</h2>
-      <p>
-        We’re aligning with payers and supply-chain partners to make affordability simple and compliant. If you represent a
-        <strong>PBM</strong>, a <strong>pharmacy chain</strong> (national or regional), or a <strong>pharmaceutical manufacturer</strong>, let’s collaborate.
-      </p>
-      <ul>
-        <li><strong>PBMs:</strong> education flows, routing, and eligibility clarity to reduce friction and abandon rates.</li>
-        <li><strong>Pharmacies:</strong> at-counter guidance, BIN/PCN/Group tips, and patient-friendly instructions.</li>
-        <li><strong>Manufacturers:</strong> accurate program representation, enrollment uplift, and real-world feedback loops.</li>
-      </ul>
       <div class="row gap-sm wrap">
-        <a class="btn btn-primary" href="./contact.html?topic=Partnership%20or%20media#form">Discuss a partnership</a>
-        <a class="btn" href="mailto:partners@saverx.ai">partners@saverx.ai</a>
+        <a class="btn btn-primary" href="/drugs/">Browse medications</a>
+        <a class="btn" href="/contact.html">Contact us</a>
       </div>
     </section>
 
-    <!-- COMPLIANCE -->
-    <section class="card prose" id="compliance">
-      <h2>Compliance note</h2>
+    <!-- Our story -->
+    <section class="card prose stack-md">
+      <h2>Our story</h2>
       <p>
-        SaveRx.ai provides educational information and links to third-party programs; we do not provide medical advice. Always consult your
-        prescriber. Trademarks belong to their respective owners.
+        This started with something personal. After being prescribed <em>Repatha</em>, the first pharmacy price was a shock.
+        Weeks of calls and forms later, we finally found the official copay program—and the price dropped dramatically.
+        It shouldn’t be that hard.
       </p>
+      <p>
+        At the counter, we saw people—especially older patients—pay full price simply because they didn’t know where to look.
+        We built SaveRx.ai so anyone can quickly find the <strong>real, official</strong> savings and understand how to activate them.
+      </p>
+      <p>— Founder, SaveRx.ai</p>
     </section>
 
-    <!-- FINAL CTA -->
-    <section class="card align-center text-center stack-md">
-      <h2 class="h3">Ready to find savings?</h2>
-      <div class="row gap-sm wrap-center">
-        <a class="btn btn-primary" href="./index.html#drugs">Browse medications</a>
-        <a class="btn" href="./contact.html">Contact us</a>
-      </div>
+    <!-- What we do + what we are/aren’t -->
+    <section class="card prose stack-md">
+      <h2>What we do</h2>
+      <ul>
+        <li>Curate up-to-date links to official manufacturer savings (copay cards, support, assistance).</li>
+        <li>Explain eligibility in plain language and outline the exact steps to enroll.</li>
+        <li>Help patients, caregivers, and clinics save time and reduce costs at checkout.</li>
+      </ul>
+
+      <h3>What we are (and aren’t)</h3>
+      <p><strong>We are</strong> a free guidance service. <strong>We are not</strong> a pharmacy, PBM, insurer, or prescriber.</p>
+      <p><strong>We don’t sell data.</strong> We collect only what’s needed to assist you, with your consent.</p>
+    </section>
+
+    <!-- Simple checklist -->
+    <section class="card prose stack-md">
+      <h2>Simple</h2>
+      <p>Clear steps. Official links. Results you can use at the pharmacy counter.</p>
+      <ol class="steps">
+        <li><strong>Search</strong> for your medication.</li>
+        <li><strong>Open</strong> the official manufacturer program.</li>
+        <li><strong>Use</strong> our checkout checklist at the pharmacy.</li>
+      </ol>
+    </section>
+
+    <!-- Compliance -->
+    <section class="card prose stack-md">
+      <h2>Compliance & privacy</h2>
+      <p>
+        SaveRx.ai provides educational guidance and links to official manufacturer programs. We do not provide medical advice
+        and cannot intervene with insurers. Eligibility and terms are determined by the manufacturer and may change.
+        See our <a href="/privacy.html">Privacy Policy</a>.
+      </p>
     </section>
   </main>
 
-  <!-- =======================
-       Footer (v2)
-       ======================= -->
-  <footer class="site-footer container">
-    <div class="footer-grid">
-      <div><strong>SaveRx.ai</strong><br />Simple, honest savings guidance.</div>
+  <!-- ===== Footer (identical to index.html) ===== -->
+  <footer class="footer">
+    <div class="container grid">
       <div>
-        <a href="./about.html">About</a> ·
-        <a href="./contact.html">Contact</a>
+        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
+        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
+          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
+        </p>
       </div>
-      <div>© <span id="y"></span> SaveRx.ai</div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/">Drugs</a></div>
+        <div><a href="/about.html" aria-current="page">About</a></div>
+        <div><a href="/contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Legal</h4>
+        <div><a href="/privacy.html">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
+        <form data-newsletter novalidate>
+          <input
+            type="email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <p class="form-msg" role="status" aria-live="polite"></p>
+        </form>
+        <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
+      </div>
+    </div>
+
+    <div class="footer-disclaimer">
+      <div class="container">
+        <small>
+          SaveRx.ai is an independent educational platform that provides information about official manufacturer savings programs.
+          We do not sell, distribute, or process prescriptions. All trademarks are property of their respective owners.
+          Actual savings and eligibility vary by program.
+        </small>
+      </div>
     </div>
   </footer>
 
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  <!-- Shared site JS (same file/version as index) -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+
+  <!-- Page-only JS: newsletter + canonical helper (mirrors index patterns) -->
+  <script>
+    // Wire up the newsletter form like on index.html
+    (function wireNewsletter(){
+      const form = document.querySelector("form[data-newsletter]");
+      if (!form) return;
+      const msg = form.querySelector(".form-msg");
+      form.addEventListener("submit",(e)=>{
+        e.preventDefault();
+        const email = (new FormData(form).get("email")||"").toString().trim();
+        if (!/^\S+@\S+\.\S+$/.test(email)){ msg && (msg.textContent="Please enter a valid email."); return; }
+        msg && (msg.textContent="Thanks! Subscribing…");
+        try{
+          const body = new URLSearchParams({
+            email,
+            drug: "Newsletter",
+            source: "About Footer Newsletter",
+            useragent: navigator.userAgent||"",
+            referrer: document.referrer||""
+          }).toString();
+          const API = window.SAVERX_API;
+          if (API) {
+            if (navigator.sendBeacon){
+              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"});
+              navigator.sendBeacon(API, blob);
+              msg && (msg.textContent="Subscribed.");
+            } else {
+              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
+                .finally(()=>{ msg && (msg.textContent="Subscribed."); });
+            }
+          } else {
+            msg && (msg.textContent="Subscribed.");
+          }
+        }catch{
+          msg && (msg.textContent="Something went wrong. Please try again.");
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
