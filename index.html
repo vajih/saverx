@@ -108,6 +108,41 @@ html { overflow: hidden; height: 100%; }   /* hide the outer scrollbar */
 body { overflow-y: auto; height: 100%; }   /* keep a single scrollbar on body */
 
 
+/* ==== Home-only spacing (tight) ==== */
+body.design-v2 .hero.section{
+  padding-top: clamp(2px, 1vw, 6px);
+  padding-bottom: clamp(4px, 1vw, 8px);
+}
+body.design-v2 .hero.section h1{
+  margin-bottom: 4px;
+  line-height: 1.10;
+}
+body.design-v2 .hero.section p{        /* “lower your out-of-pocket” line */
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+/* Featured block */
+body.design-v2 #featured.section-pad{
+  padding-top: clamp(8px, 1vw, 16px);
+  padding-bottom: clamp(10px, 1vw, 20px);
+}
+body.design-v2 #featured .section-title{
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+body.design-v2 #featured .home-search{  /* search area inside Featured */
+  margin-top: 8px;
+}
+body.design-v2 #featured .search-bar{   /* shrink inner gap a touch */
+  margin-top: 6px;
+}
+
+/* General: prevent headings from adding extra top gap when a section begins */
+body.design-v2 section > :first-child{ margin-top: 0; }
+
+
+
   </style>
 
   <!-- JSON-LD: Organization -->
