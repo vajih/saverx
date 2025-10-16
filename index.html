@@ -603,5 +603,133 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   })();
 </script>
 
+<!-- Ask SaveRx widget -->
+<div id="saverx-chat" aria-live="polite">
+  <button id="saverx-btn" aria-controls="saverx-panel" aria-expanded="false">
+    Ask SaveRx
+  </button>
+  <div id="saverx-panel" hidden role="dialog" aria-label="Ask SaveRx">
+    <div class="srx-header">
+      <strong>Ask SaveRx</strong>
+      <span class="srx-sub">Informational only — not medical advice</span>
+    </div>
+    <div id="srx-log"></div>
+    <form id="srx-form" autocomplete="off">
+      <input id="srx-input" type="text" placeholder="Ask about savings (e.g., Stelara copay)" required />
+      <button type="submit">Send</button>
+    </form>
+    <div id="srx-chips" aria-label="Quick suggestions">
+      <button type="button" class="srx-chip" data-q="Find official savings for Ozempic">Ozempic savings</button>
+      <button type="button" class="srx-chip" data-q="How do I get a Repatha copay card?">Repatha copay</button>
+      <button type="button" class="srx-chip" data-q="What is a patient assistance program, and who qualifies?">What is PAP?</button>
+</div>
+
+  </div>
+</div>
+
+<!-- Markdown rendering libs -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+
+
+<script>
+const WORKER_URL = "https://saverx-chat-proxy.saverx.workers.dev/chat";
+
+const btn = document.getElementById("saverx-btn");
+const panel = document.getElementById("saverx-panel");
+const form = document.getElementById("srx-form");
+const input = document.getElementById("srx-input");
+const log = document.getElementById("srx-log");
+// Quick suggestion chips: click to fill and send
+document.getElementById("srx-chips")?.addEventListener("click", (e) => {
+  const btn = e.target.closest(".srx-chip");
+  if (!btn) return;
+  const q = btn.getAttribute("data-q") || btn.textContent.trim();
+  input.value = q;
+  // submit immediately
+  form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+});
+
+
+btn.addEventListener("click", () => {
+  const open = panel.hasAttribute("hidden");
+  panel.toggleAttribute("hidden");
+  btn.setAttribute("aria-expanded", String(open));
+  if (open) input.focus();
+});
+
+function append(role, text) {
+  const div = document.createElement("div");
+  div.className = `srx-msg ${role === "user" ? "srx-user" : "srx-assistant"}`;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const content = input.value.trim();
+  if (!content) return;
+  append("user", content);
+  input.value = "";
+
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ messages: [{ role:"user", content }] })
+  });
+
+  if (!res.ok || !res.body) {
+    let bodyText = "";
+    try { bodyText = await res.text(); } catch {}
+    console.error("SaveRx fetch failed", res.status, bodyText);
+    append("assistant", `Sorry, I couldn’t reach the SaveRx assistant (HTTP ${res.status}).`);
+    return;
+  }
+
+  // --- Stream the Responses API events and render text deltas ---
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  const assistantDiv = document.createElement("div");
+  assistantDiv.className = "srx-msg";
+  log.appendChild(assistantDiv);
+
+  let sseBuffer = "";
+  let mdBuffer = ""; // raw markdown text as it streams
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    sseBuffer += decoder.decode(value, { stream: true });
+
+    const lines = sseBuffer.split("\n");
+    sseBuffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+      const json = line.slice(5).trim();
+      if (!json || json === "[DONE]") continue;
+
+      let evt;
+      try { evt = JSON.parse(json); } catch { continue; }
+
+      if (evt.type === "response.output_text.delta" && typeof evt.delta === "string") {
+        mdBuffer += evt.delta;
+
+        // Render markdown → HTML → sanitize
+        const html = DOMPurify.sanitize(marked.parse(mdBuffer));
+        assistantDiv.innerHTML = html;
+        log.scrollTop = log.scrollHeight;
+      } else if (evt.type === "response.error" || evt.type === "error") {
+        console.error("Responses API error:", evt);
+        append("assistant", "Sorry, there was an error generating the response.");
+      }
+    }
+  }
+});
+</script>
+
+
+
 </body>
 </html>

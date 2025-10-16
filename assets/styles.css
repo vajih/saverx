@@ -630,3 +630,9 @@ html, body { overflow-x: hidden; }
   .rx-hero .rx-card { margin-top: 8px; }
 }
 
+/* make AI messages render markdown nicely */
+#srx-log .srx-msg { line-height: 1.5; }
+#srx-log .srx-msg p { margin: 0.4rem 0; }
+#srx-log .srx-msg ul { margin: 0.4rem 0 0.4rem 1.2rem; }
+#srx-log .srx-msg li { margin: 0.2rem 0; }
+#srx-log .srx-msg a { text-decoration: underline; }

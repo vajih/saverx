@@ -6,3 +6,10 @@ __pycache__/
 *.pyo
 
 .DS_Store
+
+saverx-chat-proxy/node_modules/
+saverx-chat-proxy/.wrangler/
+
+node_modules/
+saverx-chat-proxy/node_modules/
+saverx-chat-proxy/.wrangler/
