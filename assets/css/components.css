@@ -200,4 +200,49 @@
 .srx-chip { font-size:12px; padding:6px 10px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; cursor:pointer; }
 .srx-chip:hover { background:#f5f5f5; }
 
+/* Prevent iOS input zoom + make tap targets comfy */
+#srx-input {
+  font-size: 16px;               /* key to avoid iOS zoom */
+  min-height: 44px;              /* Apple HIG tap target */
+}
+#srx-form button { min-height: 44px; }
 
+/* Base (unchanged for desktop) */
+#saverx-chat { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+#saverx-panel { 
+  width: 340px; height: 420px; 
+  display: grid; grid-template-rows: auto 1fr auto; gap: 8px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18); margin-bottom: 10px;
+}
+#saverx-panel[hidden] { display: none; }
+
+/* Add overlay for mobile sheet */
+#srx-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 9998; display: none;
+}
+#srx-overlay.show { display: block; }
+
+/* Mobile layout: turn panel into a bottom sheet */
+@media (max-width: 640px) {
+  #saverx-chat { bottom: env(safe-area-inset-bottom, 16px); right: 16px; left: 16px; }
+  #saverx-btn { width: 120px; } /* optional */
+
+  #saverx-panel {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    /* Use dynamic viewport to avoid the address bar “jump” */
+    height: calc(88dvh - env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 16px 16px 0 0;
+    border: 0;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 30px rgba(0,0,0,.25);
+  }
+
+  /* Let the log area scroll comfortably */
+  #srx-log { overflow: auto; -webkit-overflow-scrolling: touch; }
+}

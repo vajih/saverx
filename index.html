@@ -31,7 +31,7 @@
 
   <!-- Robots + theme -->
   <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#1d4ed8" />
 
   <!-- Canonical -->
@@ -604,6 +604,8 @@ body.design-v2 section > :first-child{ margin-top: 0; }
 </script>
 
 <!-- Ask SaveRx widget -->
+<div id="srx-overlay"></div>
+
 <div id="saverx-chat" aria-live="polite">
   <button id="saverx-btn" aria-controls="saverx-panel" aria-expanded="false">
     Ask SaveRx
@@ -612,12 +614,19 @@ body.design-v2 section > :first-child{ margin-top: 0; }
     <div class="srx-header">
       <strong>Ask SaveRx</strong>
       <span class="srx-sub">Informational only — not medical advice</span>
+      <button id="srx-close" aria-label="Close" 
+        style="border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer">
+        ×
+      </button>
     </div>
     <div id="srx-log"></div>
     <form id="srx-form" autocomplete="off">
       <input id="srx-input" type="text" placeholder="Ask about savings (e.g., Stelara copay)" required />
       <button type="submit">Send</button>
     </form>
+  </div>
+</div>
+
     <div id="srx-chips" aria-label="Quick suggestions">
       <button type="button" class="srx-chip" data-q="Find official savings for Ozempic">Ozempic savings</button>
       <button type="button" class="srx-chip" data-q="How do I get a Repatha copay card?">Repatha copay</button>
@@ -640,23 +649,48 @@ const panel = document.getElementById("saverx-panel");
 const form = document.getElementById("srx-form");
 const input = document.getElementById("srx-input");
 const log = document.getElementById("srx-log");
-// Quick suggestion chips: click to fill and send
-document.getElementById("srx-chips")?.addEventListener("click", (e) => {
-  const btn = e.target.closest(".srx-chip");
-  if (!btn) return;
-  const q = btn.getAttribute("data-q") || btn.textContent.trim();
-  input.value = q;
-  // submit immediately
-  form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-});
+const overlay = document.getElementById("srx-overlay");
+const closeBtn = document.getElementById("srx-close");
+
+
+
+function openPanel() {
+  panel.removeAttribute("hidden");
+  btn.setAttribute("aria-expanded", "true");
+  if (overlay) overlay.classList.add("show");
+  // prevent body from scrolling behind the sheet
+  document.body.style.overflow = "hidden";
+  // focus input
+  input.focus();
+}
+
+function closePanel() {
+  panel.setAttribute("hidden", "");
+  btn.setAttribute("aria-expanded", "false");
+  if (overlay) overlay.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
 
 
 btn.addEventListener("click", () => {
-  const open = panel.hasAttribute("hidden");
-  panel.toggleAttribute("hidden");
-  btn.setAttribute("aria-expanded", String(open));
-  if (open) input.focus();
+  const closed = panel.hasAttribute("hidden");
+  if (closed) openPanel(); else closePanel();
 });
+overlay?.addEventListener("click", closePanel);
+closeBtn?.addEventListener("click", closePanel);
+
+/* 👇 Step 5: Fix iOS keyboard shifting the panel 👇 */
+if (window.visualViewport) {
+  const onVVChange = () => {
+    const vv = window.visualViewport;
+    const kb = window.innerHeight - vv.height - vv.offsetTop;
+    // Move the panel upward if keyboard is open
+    panel.style.transform = kb > 0 ? `translateY(-${kb}px)` : "translateY(0)";
+  };
+  window.visualViewport.addEventListener("resize", onVVChange);
+  window.visualViewport.addEventListener("scroll", onVVChange);
+}
 
 function append(role, text) {
   const div = document.createElement("div");
