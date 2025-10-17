@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "SaveRx.ai Drug Savings",
+  "name_for_model": "saverx",
+  "description_for_human": "Find official manufacturer savings, copay cards, and cash prices for prescriptions.",
+  "description_for_model": "Plugin that finds official drug savings programs, coupons, and cash price estimates for brand-name medications.",
+  "auth": { "type": "none" },
+  "api": {
+    "type": "openapi",
+    "url": "https://saverx.ai/openapi.yaml"
+  },
+  "logo_url": "https://saverx.ai/assets/img/logo.png",
+  "contact_email": "support@saverx.ai",
+  "legal_info_url": "https://saverx.ai/privacy.html"
+}

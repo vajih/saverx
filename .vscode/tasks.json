@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Generate drug pages",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "generate_drug_pages.py",
+        "--slugs-url",
+        "https://script.google.com/macros/s/AKfycbwJHb3aPVafey9x4ADNCFeaOg65VJ8PPwDh3FfojuY7R_UvSI2NBBNI6khMMCvj505RKg/exec?mode=slugs&source=drugs",
+        "--details-url",
+        "https://YOUR-ORIGINAL-APPS-SCRIPT/exec?mode=drug&slug={slug}",
+        "--template",
+        "templates/index.html",
+        "--drugs-dir",
+        "drugs",
+        "--git-commit",
+        "--git-push"
+      ],
+      "options": { "env": { "PYTHONUTF8": "1" } },
+      "problemMatcher": []
+    }
+  ]
+}

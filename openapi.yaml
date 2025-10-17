@@ -1,0 +1,26 @@
+openapi: 3.0.1
+info:
+  title: SaveRx.ai API
+  version: 1.0.0
+paths:
+  /drugs/search:
+    get:
+      summary: Search drug savings info
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Drug details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name: { type: string }
+                  manufacturer: { type: string }
+                  savings_url: { type: string }
+                  description: { type: string }
+                  cash_price: { type: string }
