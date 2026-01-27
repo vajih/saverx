@@ -167,6 +167,35 @@
     .modal[aria-hidden="false"] { display: block; }
   </style>
 
+  <!-- JSON-LD Structured Data for Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "name": "{{NAME}} Savings Card & Copay Assistance",
+    "description": "Find official {{NAME}} savings programs, copay cards, and manufacturer assistance. Lower your prescription costs with verified savings links.",
+    "url": "https://saverx.ai/drugs/{{SLUG}}/",
+    "mainEntity": {
+      "@type": "Drug",
+      "name": "{{NAME}}",
+      "url": "https://saverx.ai/drugs/{{SLUG}}/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SaveRx.ai",
+      "url": "https://saverx.ai",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://saverx.ai/assets/img/logo-512.png"
+      }
+    },
+    "about": {
+      "@type": "MedicalTopic",
+      "name": "Prescription Drug Savings Programs"
+    }
+  }
+  </script>
+
   <script>
     // Set your live Apps Script URL here
     window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
@@ -190,6 +219,7 @@
       <nav class="nav">
         <a href="/">Home</a>
         <a href="/drugs/" aria-current="page">Drugs</a>
+        <a href="/comparisons.html">Comparisons</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
       </nav>
