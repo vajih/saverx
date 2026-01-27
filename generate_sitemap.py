@@ -23,6 +23,24 @@ def main():
         ("/terms.html", "0.3", today),
     ]
 
+    # Find comparison pages (top-level HTML files that aren't core pages)
+    comparison_pages = []
+    for file in Path(".").glob("*.html"):
+        filename = file.name
+        # Skip core pages
+        if filename not in [
+            "index.html",
+            "about.html",
+            "contact.html",
+            "list.html",
+            "privacy.html",
+            "terms.html",
+            "pharmacy.html",
+        ]:
+            comparison_pages.append((f"/{filename}", "0.9", today))
+
+    comparison_pages.sort()  # Alphabetical order
+
     # Find all drug folders
     drugs_dir = Path("drugs")
     drug_folders = sorted(
@@ -54,6 +72,18 @@ def main():
             ]
         )
 
+    # Add comparison pages
+    for path, priority, lastmod in comparison_pages:
+        xml_lines.extend(
+            [
+                "  <url>",
+                f"    <loc>{base_url}{path}</loc>",
+                f"    <lastmod>{lastmod}</lastmod>",
+                f"    <priority>{priority}</priority>",
+                "  </url>",
+            ]
+        )
+
     # Add drug pages
     for slug in drug_folders:
         xml_lines.extend(
@@ -72,8 +102,10 @@ def main():
     sitemap_path = Path("sitemap.xml")
     sitemap_path.write_text("\n".join(xml_lines), encoding="utf-8")
 
-    print(f"✓ Generated sitemap.xml with {len(core_pages) + len(drug_folders)} URLs")
+    total_urls = len(core_pages) + len(comparison_pages) + len(drug_folders)
+    print(f"✓ Generated sitemap.xml with {total_urls} URLs")
     print(f"  - {len(core_pages)} core pages")
+    print(f"  - {len(comparison_pages)} comparison pages")
     print(f"  - {len(drug_folders)} drug pages")
 
 
