@@ -46,6 +46,48 @@
   const unlockScroll = () => { document.documentElement.style.overflow = ""; document.body.style.overflow = ""; };
 
   // -----------------------------
+  // Honeypot spam protection
+  // Adds invisible field to forms; rejects if filled
+  // -----------------------------
+  function addHoneypot(form) {
+    if (form.dataset.honeypot === "added") return;
+    
+    const honeypot = document.createElement("input");
+    honeypot.type = "text";
+    honeypot.name = "website"; // Common spam bot target
+    honeypot.setAttribute("tabindex", "-1");
+    honeypot.setAttribute("autocomplete", "off");
+    honeypot.style.position = "absolute";
+    honeypot.style.left = "-9999px";
+    honeypot.style.width = "1px";
+    honeypot.style.height = "1px";
+    honeypot.setAttribute("aria-hidden", "true");
+    
+    form.appendChild(honeypot);
+    form.dataset.honeypot = "added";
+    form.dataset.honeypotTime = Date.now(); // Track form load time
+  }
+
+  function isSpam(form) {
+    const honeypotField = form.querySelector('input[name="website"]');
+    
+    // Check 1: Honeypot field filled
+    if (honeypotField && honeypotField.value !== "") {
+      console.warn("Spam detected: honeypot filled");
+      return true;
+    }
+    
+    // Check 2: Form submitted too quickly (< 2 seconds)
+    const loadTime = parseInt(form.dataset.honeypotTime || "0");
+    if (loadTime && (Date.now() - loadTime) < 2000) {
+      console.warn("Spam detected: submitted too quickly");
+      return true;
+    }
+    
+    return false;
+  }
+
+  // -----------------------------
   // Sticky header shadow + mobile drawer
   // -----------------------------
   (function headerAndDrawer() {
@@ -217,6 +259,9 @@
       if (form.dataset.bound === "email-modal") return;
       form.dataset.bound = "email-modal";
 
+      // Add honeypot protection
+      addHoneypot(form);
+
       let redirectUrl = "/";
 
       // ---------- Focus trap helpers ----------
@@ -318,6 +363,14 @@
         if (status) status.textContent = "";
         if (submit) submit.disabled = true;
 
+        // Spam check
+        if (isSpam(form)) {
+          if (status) status.textContent = "Please try again.";
+          if (submit) submit.disabled = false;
+          form.dataset.submitting = "";
+          return;
+        }
+
         const email = (emailEl?.value || "").trim();
         if (!/^\S+@\S+\.\S+$/.test(email)) {
           if (status) status.textContent = "Please enter a valid email.";
@@ -411,6 +464,9 @@
     if (form.dataset.bound === "newsletter") return;
     form.dataset.bound = "newsletter";
 
+    // Add honeypot protection
+    addHoneypot(form);
+
     // Per-form lookups: prefer CTA IDs, else fall back to local elements
     const emailInput =
       form.querySelector("#newsEmail") || form.querySelector("input[type='email']");
@@ -426,6 +482,12 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      // Spam check
+      if (isSpam(form)) {
+        showMessage("Please try again.");
+        return;
+      }
 
       const email = (emailInput?.value || "").trim();
       if (!/^\S+@\S+\.\S+$/.test(email)) {
@@ -478,6 +540,9 @@
     if (form.dataset.bound === "request") return;
     form.dataset.bound = "request";
 
+    // Add honeypot protection
+    addHoneypot(form);
+
     const drugInput  = $("#drugName");
     const emailInput = $("#alertEmail");
     const hint       = $("#alertMsg");
@@ -491,6 +556,13 @@
 
       if (form.dataset.submitting === "1") return;
       form.dataset.submitting = "1";
+
+      // Spam check
+      if (isSpam(form)) {
+        show("Please try again.");
+        form.dataset.submitting = "";
+        return;
+      }
 
       const drug  = (drugInput?.value  || "").trim();
       const email = (emailInput?.value || "").trim();
