@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Your {$subscriber.fields.drug} savings are waiting — SaveRx.ai</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:AllowPNG/>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    /* Reset */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f6f8fb; }
+
+    /* Mobile */
+    @media only screen and (max-width: 600px) {
+      .email-container { width: 100% !important; }
+      .fluid { width: 100% !important; max-width: 100% !important; }
+      .stack-column { display: block !important; width: 100% !important; }
+      .padding-sm { padding: 24px 20px !important; }
+      .hero-title { font-size: 24px !important; }
+      .btn-cta { display: block !important; text-align: center !important; }
+    }
+  </style>
+</head>
+
+<body style="margin: 0; padding: 0; background-color: #f6f8fb; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+  <!-- Preheader (hidden preview text) -->
+  <div style="display:none; font-size:1px; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden; mso-hide:all;">
+    We found manufacturer savings programs for {$subscriber.fields.drug} — here's what's available right now.
+  </div>
+
+  <!-- Email wrapper -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f6f8fb;">
+    <tr>
+      <td align="center" style="padding: 20px 10px;">
+
+        <!-- Email container -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(10,36,80,0.08);">
+
+          <!-- ── HEADER ── -->
+          <tr>
+            <td style="background-color: #1d4ed8; padding: 24px 40px;" class="padding-sm">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td>
+                    <a href="https://saverx.ai" style="text-decoration: none;">
+                      <span style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.03em;">SaveRx<span style="color: #93c5fd;">.ai</span></span>
+                    </a>
+                  </td>
+                  <td align="right">
+                    <span style="font-size: 12px; color: #93c5fd; font-weight: 500;">Prescription Savings, Simplified</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ── HERO ── -->
+          <tr>
+            <td style="padding: 40px 40px 24px;" class="padding-sm">
+              <h1 class="hero-title" style="margin: 0 0 12px; font-size: 28px; font-weight: 800; line-height: 1.2; color: #0b2a4e; letter-spacing: -0.02em;">
+                Your {$subscriber.fields.drug} savings<br>are waiting for you.
+              </h1>
+              <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #5b708b;">
+                Hi there — you signed up at SaveRx.ai to find manufacturer savings on <strong style="color: #0b2a4e;">{$subscriber.fields.drug}</strong>. We've been expanding our savings database, and there are programs available right now that could significantly lower your out-of-pocket costs.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ── SAVINGS HIGHLIGHT BOX ── -->
+          <tr>
+            <td style="padding: 0 40px 32px;" class="padding-sm">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 10px; border-left: 4px solid #1d4ed8;">
+                <tr>
+                  <td style="padding: 24px 28px;">
+                    <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.08em;">What's available for {$subscriber.fields.drug}</p>
+                    <ul style="margin: 0; padding: 0 0 0 18px; font-size: 15px; line-height: 1.8; color: #0b2a4e;">
+                      <li><strong>Manufacturer Copay Card</strong> — eligible patients may pay as little as $0–$25/month</li>
+                      <li><strong>Patient Assistance Program</strong> — free medication for qualifying uninsured patients</li>
+                      <li><strong>Enrollment Support</strong> — we walk you through the sign-up process step by step</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ── CTA BUTTON ── -->
+          <tr>
+            <td align="center" style="padding: 0 40px 40px;" class="padding-sm">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="border-radius: 8px; background-color: #ef7d57;">
+                    <a href="https://saverx.ai/drugs/{$subscriber.fields.drug|slugify}/"
+                       style="display: inline-block; padding: 16px 36px; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none; letter-spacing: -0.01em; mso-padding-alt: 0; border-radius: 8px;"
+                       class="btn-cta">
+                      See My {$subscriber.fields.drug} Savings &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 16px 0 0; font-size: 13px; color: #5b708b;">
+                No login required &middot; Takes less than 2 minutes
+              </p>
+            </td>
+          </tr>
+
+          <!-- ── DIVIDER ── -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" />
+            </td>
+          </tr>
+
+          <!-- ── HOW IT WORKS ── -->
+          <tr>
+            <td style="padding: 32px 40px;" class="padding-sm">
+              <p style="margin: 0 0 20px; font-size: 13px; font-weight: 700; color: #0b2a4e; text-transform: uppercase; letter-spacing: 0.08em;">How SaveRx.ai works</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <!-- Step 1 -->
+                  <td width="33%" style="padding-right: 12px; vertical-align: top;" class="stack-column">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="padding-bottom: 8px;">
+                          <div style="width: 36px; height: 36px; border-radius: 50%; background-color: #dbeafe; text-align: center; line-height: 36px; font-size: 16px; font-weight: 800; color: #1d4ed8;">1</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 14px; font-weight: 700; color: #0b2a4e; padding-bottom: 4px;">Search your drug</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 13px; color: #5b708b; line-height: 1.5;">We aggregate official manufacturer programs in one place.</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <!-- Step 2 -->
+                  <td width="33%" style="padding: 0 6px; vertical-align: top;" class="stack-column">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="padding-bottom: 8px;">
+                          <div style="width: 36px; height: 36px; border-radius: 50%; background-color: #fce7dc; text-align: center; line-height: 36px; font-size: 16px; font-weight: 800; color: #ef7d57;">2</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 14px; font-weight: 700; color: #0b2a4e; padding-bottom: 4px;">Check eligibility</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 13px; color: #5b708b; line-height: 1.5;">Most programs are open to commercially insured patients.</td>
+                      </tr>
+                    </table>
+                  </td>
+                  <!-- Step 3 -->
+                  <td width="33%" style="padding-left: 12px; vertical-align: top;" class="stack-column">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="padding-bottom: 8px;">
+                          <div style="width: 36px; height: 36px; border-radius: 50%; background-color: #d1fae5; text-align: center; line-height: 36px; font-size: 16px; font-weight: 800; color: #10b981;">3</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 14px; font-weight: 700; color: #0b2a4e; padding-bottom: 4px;">Start saving</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 13px; color: #5b708b; line-height: 1.5;">Enroll in minutes and bring your card to the pharmacy.</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ── DIVIDER ── -->
+          <tr>
+            <td style="padding: 0 40px;">
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" />
+            </td>
+          </tr>
+
+          <!-- ── TRUST LINE ── -->
+          <tr>
+            <td style="padding: 24px 40px;" class="padding-sm">
+              <p style="margin: 0; font-size: 13px; color: #5b708b; line-height: 1.6; text-align: center;">
+                SaveRx.ai only surfaces <strong style="color: #0b2a4e;">official manufacturer programs</strong> — no third-party pharmacies, no gimmicks. Every program is verified and updated regularly.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ── FOOTER ── -->
+          <tr>
+            <td style="background-color: #f1f5f9; padding: 24px 40px; border-radius: 0 0 12px 12px;" class="padding-sm">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td style="font-size: 12px; color: #94a3b8; line-height: 1.6; text-align: center;">
+                    <p style="margin: 0 0 8px;">
+                      <a href="https://saverx.ai" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">SaveRx.ai</a>
+                      &nbsp;&middot;&nbsp;
+                      <a href="https://saverx.ai/privacy.html" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a>
+                      &nbsp;&middot;&nbsp;
+                      <a href="{$unsubscribe}" style="color: #94a3b8; text-decoration: none;">Unsubscribe</a>
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #b0bec5;">
+                      You're receiving this because you signed up for savings alerts at SaveRx.ai.<br>
+                      SaveRx.ai is not affiliated with any drug manufacturer. Programs subject to eligibility.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Email container -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -104,6 +104,13 @@ function getDrugCategory(drug) {
   return 'general';
 }
 
+// ─── Extract drug name from a referrer URL ──────────────────────────────────
+function extractDrugFromReferrer(referrer) {
+  if (!referrer) return '';
+  const m = referrer.match(/\/drugs\/([^/]+)/);
+  return m ? m[1].replace(/-enroll$/, '').replace(/-/g, ' ').trim() : '';
+}
+
 // ─── CSV parser (no dependencies) ────────────────────────────────────────────
 function parseCSV(content) {
   const lines  = content.split('\n').filter(l => l.trim());
@@ -201,9 +208,10 @@ function sleep(ms) {
     const batch = rows.slice(i, i + BATCH_SIZE);
 
     for (const row of batch) {
-      const email  = (row.email || '').trim();
-      const drug   = (row.drug || '').trim();
-      const source = (row.source || '').trim();
+      const email  = (row.email || '').trim().toLowerCase();
+      // Support both simple format (drug col) and enrollment sheet format (referrer col)
+      const drug   = (row.drug || extractDrugFromReferrer(row.referrer) || '').trim();
+      const source = (row.source || (row.referrer ? 'copay-enrollment' : 'unknown')).trim();
 
       // Validate
       if (!isValidEmail(email)) {
