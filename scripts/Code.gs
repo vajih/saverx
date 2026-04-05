@@ -17,13 +17,12 @@ const SHEET_ID   = '19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE';
 const SHEET_NAME = 'CopayEnrollments';
 const HONEYPOT   = 'website';
 
-// Paste group IDs here from mailerlite-setup.js output
 const MAILERLITE_GROUPS = {
-  glp1:           '',   // MAILERLITE_GROUP_GLP1
-  cardiovascular: '',   // MAILERLITE_GROUP_CARDIO
-  diabetes:       '',   // MAILERLITE_GROUP_DIABETES
-  general:        '',   // MAILERLITE_GROUP_GENERAL
-  all:            '',   // MAILERLITE_GROUP_ALL
+  glp1:           '183927822827390173',
+  cardiovascular: '183927823137768840',
+  diabetes:       '183927823403058777',
+  general:        '183927823647377106',
+  all:            '183927823896938337',
 };
 
 // ─── Drug category mapping ────────────────────────────────────────────────────
@@ -75,7 +74,7 @@ function addToMailerLite(email, drug, source) {
       email:  email,
       fields: {
         drug:          drug   || 'N/A',
-        source:        source || 'unknown',
+        lead_source:   source || 'unknown',
         drug_category: category,
       },
       groups: groupIds,

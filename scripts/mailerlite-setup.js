@@ -118,9 +118,9 @@ async function createGroups() {
 
 // ─── Step 3: Create custom fields ────────────────────────────────────────────
 const FIELDS_TO_CREATE = [
-  { name: 'Drug',          key: 'drug',          type: 'text' },
-  { name: 'Source',        key: 'source',         type: 'text' },
-  { name: 'Drug Category', key: 'drug_category',  type: 'text' },
+  { name: 'Drug',        key: 'drug',         type: 'text' },
+  { name: 'Lead Source', key: 'lead_source',  type: 'text' },
+  { name: 'Drug Category', key: 'drug_category', type: 'text' },
 ];
 
 async function createFields() {

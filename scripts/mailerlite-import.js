@@ -145,7 +145,7 @@ async function addSubscriber(email, drug, source) {
     email,
     fields: {
       drug:          drug || 'N/A',
-      source:        source || 'unknown',
+      lead_source:   source || 'unknown',
       drug_category: category,
     },
     groups: groupIds,
