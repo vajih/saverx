@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaveRx — Government Insurance Alternatives</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f1efe8;
+    --color-background-info: #e6f1fb;
+    --color-background-success: #eaf3de;
+    --color-background-warning: #faeeda;
+    --color-text-primary: #2c2c2a;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #888780;
+    --color-text-info: #185fa5;
+    --color-text-success: #3b6d11;
+    --color-text-warning: #ba7517;
+    --color-border-tertiary: rgba(44,44,42,0.15);
+    --color-border-secondary: rgba(44,44,42,0.3);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1a1a18;
+      --color-background-secondary: #2c2c2a;
+      --color-background-info: #042c53;
+      --color-background-success: #173404;
+      --color-background-warning: #412402;
+      --color-text-primary: #f1efe8;
+      --color-text-secondary: #b4b2a9;
+      --color-text-tertiary: #888780;
+      --color-text-info: #85b7eb;
+      --color-text-success: #97c459;
+      --color-text-warning: #ef9f27;
+      --color-border-tertiary: rgba(241,239,232,0.15);
+      --color-border-secondary: rgba(241,239,232,0.3);
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* Why banner */
+  .why-banner {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    border-left: 3px solid #0B6E5C;
+    border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+  }
+  .why-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 5px;
+  }
+  .why-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 8px 2px;
+  }
+
+  /* Alternatives card */
+  .alt-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+
+  .alt-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .alt-row:last-child {
+    border-bottom: none;
+  }
+  .alt-row:hover {
+    background: var(--color-background-secondary);
+  }
+
+  .alt-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon-svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.75;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .alt-content { flex: 1; }
+
+  .alt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .alt-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .tag-income {
+    background: var(--color-background-warning);
+    color: var(--color-text-warning);
+  }
+  .tag-federal {
+    background: var(--color-background-info);
+    color: var(--color-text-info);
+  }
+  .tag-varies {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+  .tag-any {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .alt-desc {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    margin-bottom: 4px;
+  }
+
+  .alt-link {
+    font-size: 12px;
+    color: var(--color-text-info);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .alt-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Footer note */
+  .footer-note {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    text-align: center;
+    margin-top: 14px;
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Why banner -->
+  <div class="why-banner">
+    <div class="why-title">Why can't I use the savings card?</div>
+    <div class="why-desc">Federal law prohibits manufacturer copay cards with Medicare, Medicaid, or CHIP. This applies to all manufacturers — it is not a policy choice.</div>
+  </div>
+
+  <div class="section-label">You may still have options</div>
+
+  <!-- Alternatives -->
+  <div class="alt-card">
+
+    <!-- PAP -->
+    <div class="alt-row">
+      <div class="alt-icon" style="background: var(--color-background-success);">
+        <svg class="icon-svg" viewBox="0 0 24 24" stroke="#3b6d11">
+          <path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2z"/>
+          <path d="M12 14c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/>
+          <path d="M9 7h6M12 4v6"/>
+        </svg>
+      </div>
+      <div class="alt-content">
+        <div class="alt-header">
+          <div class="alt-title">Amgen patient assistance (PAP)</div>
+          <span class="tag tag-income">Income-based</span>
+        </div>
+        <div class="alt-desc">Free or reduced-cost Repatha® for qualifying patients. Separate from the copay card — fully legal for Medicare patients.</div>
+        <a class="alt-link" href="https://www.amgensupportplus.com" target="_blank" rel="noopener">Check eligibility at Amgen →</a>
+      </div>
+    </div>
+
+    <!-- Medicare Extra Help -->
+    <div class="alt-row">
+      <div class="alt-icon" style="background: var(--color-background-info);">
+        <svg class="icon-svg" viewBox="0 0 24 24" stroke="#185fa5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M9 21V9"/>
+        </svg>
+      </div>
+      <div class="alt-content">
+        <div class="alt-header">
+          <div class="alt-title">Medicare Extra Help</div>
+          <span class="tag tag-federal">Federal program</span>
+        </div>
+        <div class="alt-desc">Reduces Part D premiums, deductibles, and copays for lower-income Medicare enrollees. Many eligible patients have not yet applied.</div>
+        <a class="alt-link" href="https://www.ssa.gov/medicare/part-d-low-income-subsidy" target="_blank" rel="noopener">Apply at SSA.gov →</a>
+      </div>
+    </div>
+
+    <!-- State programs -->
+    <div class="alt-row">
+      <div class="alt-icon" style="background: var(--color-background-warning);">
+        <svg class="icon-svg" viewBox="0 0 24 24" stroke="#ba7517">
+          <path d="M4 6h16M4 10h16M4 14h10M4 18h7"/>
+        </svg>
+      </div>
+      <div class="alt-content">
+        <div class="alt-header">
+          <div class="alt-title">State assistance programs</div>
+          <span class="tag tag-varies">Varies by state</span>
+        </div>
+        <div class="alt-desc">Many states offer additional drug cost help for Medicare beneficiaries. Programs and eligibility vary significantly by location.</div>
+        <a class="alt-link" href="https://www.medicare.gov/plan-compare" target="_blank" rel="noopener">Find your state program →</a>
+      </div>
+    </div>
+
+    <!-- Compare pharmacy prices -->
+    <div class="alt-row">
+      <div class="alt-icon" style="background: var(--color-background-secondary);">
+        <svg class="icon-svg" viewBox="0 0 24 24" stroke="var(--color-text-secondary)">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="alt-content">
+        <div class="alt-header">
+          <div class="alt-title">Compare pharmacy prices</div>
+          <span class="tag tag-any">Any patient</span>
+        </div>
+        <div class="alt-desc">Cash prices vary significantly between pharmacies. Comparing can reduce your cost regardless of insurance type.</div>
+        <a class="alt-link" href="https://www.goodrx.com" target="_blank" rel="noopener">Compare prices →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">
+    SaveRx is not affiliated with any assistance program.<br>
+    Eligibility is determined by each program independently.
+  </div>
+
+</div>
+</body>
+</html>

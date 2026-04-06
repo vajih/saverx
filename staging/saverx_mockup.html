@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaveRx — Find Your Best Medication Price</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal: #0B6E5C;
+  --teal-dark: #084d3f;
+  --teal-light: #e1f5ee;
+  --teal-mid: #1a9478;
+  --mint: #7DE8C8;
+  --off-white: #F7F5F0;
+  --warm-white: #FDFCFA;
+  --text-primary: #1a1a17;
+  --text-secondary: #5a5a54;
+  --text-tertiary: #9a9a92;
+  --border: rgba(26,26,23,0.1);
+  --border-strong: rgba(26,26,23,0.18);
+  --success-bg: #eaf3de;
+  --success-text: #3b6d11;
+  --info-bg: #e6f1fb;
+  --info-text: #185fa5;
+  --warn-bg: #faeeda;
+  --warn-text: #ba7517;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--off-white);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(247,245,240,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 24px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: var(--teal);
+  letter-spacing: -0.5px;
+}
+.nav-logo span { color: var(--text-primary); }
+.nav-links { display: flex; gap: 6px; }
+.nav-link {
+  font-size: 13px; color: var(--text-secondary);
+  padding: 6px 12px; border-radius: 20px;
+  cursor: pointer; transition: all .15s;
+  background: none; border: none; font-family: inherit;
+}
+.nav-link:hover { background: var(--border); color: var(--text-primary); }
+.nav-search-pill {
+  display: none;
+  background: white; border: 0.5px solid var(--border-strong);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: 13px; color: var(--text-tertiary);
+  cursor: pointer; align-items: center; gap: 6px;
+  box-shadow: var(--shadow);
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 24px 64px;
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal-light); color: var(--teal);
+  font-size: 12px; font-weight: 500; padding: 5px 12px;
+  border-radius: 20px; margin-bottom: 24px;
+  letter-spacing: 0.02em;
+}
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; }
+h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 1.1; letter-spacing: -1px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+h1 em { font-style: italic; color: var(--teal); }
+.hero-sub {
+  font-size: 16px; color: var(--text-secondary);
+  line-height: 1.6; margin-bottom: 36px;
+  font-weight: 300;
+}
+.eligibility-note {
+  font-size: 12px; color: var(--text-tertiary);
+  margin-top: 12px;
+}
+
+/* ── SEARCH ── */
+.search-wrap {
+  position: relative; max-width: 520px; margin: 0 auto;
+}
+.search-input {
+  width: 100%;
+  background: white;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50px;
+  padding: 16px 56px 16px 24px;
+  font-size: 16px; font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(11,110,92,0.1), var(--shadow-lg);
+}
+.search-input::placeholder { color: var(--text-tertiary); }
+.search-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  background: var(--teal); color: white; border: none;
+  width: 42px; height: 42px; border-radius: 50%;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s;
+  font-size: 16px;
+}
+.search-btn:hover { background: var(--teal-dark); }
+.search-btn:active { transform: translateY(-50%) scale(0.95); }
+
+/* ── AUTOCOMPLETE ── */
+.autocomplete {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: white; border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius); box-shadow: var(--shadow-lg);
+  overflow: hidden; z-index: 50;
+  display: none;
+}
+.autocomplete.show { display: block; }
+.ac-item {
+  padding: 12px 20px; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background .1s;
+  border-bottom: 0.5px solid var(--border);
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: var(--off-white); }
+.ac-drug { font-size: 14px; font-weight: 500; }
+.ac-generic { font-size: 12px; color: var(--text-tertiary); }
+.ac-badge {
+  font-size: 11px; background: var(--success-bg); color: var(--success-text);
+  padding: 2px 8px; border-radius: 10px; font-weight: 500;
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  display: flex; justify-content: center; gap: 32px;
+  padding: 32px 24px;
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  background: white;
+  flex-wrap: wrap;
+}
+.trust-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.trust-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--teal-light); color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  max-width: 860px; margin: 0 auto;
+  padding: 64px 24px;
+}
+.section-label {
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--teal);
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px; letter-spacing: -0.5px;
+  margin-bottom: 40px; color: var(--text-primary);
+}
+.steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.step {
+  background: white; border: 0.5px solid var(--border);
+  border-radius: var(--radius); padding: 28px 24px;
+  position: relative; box-shadow: var(--shadow);
+}
+.step-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 48px; color: var(--teal-light);
+  line-height: 1; margin-bottom: 12px;
+  letter-spacing: -2px;
+}
+.step h3 { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+.step p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── FEATURED DRUGS ── */
+.featured-section {
+  background: white; border-top: 0.5px solid var(--border);
+  padding: 48px 24px;
+}
+.featured-inner { max-width: 860px; margin: 0 auto; }
+.drug-chips {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
+}
+.drug-chip {
+  background: var(--off-white); border: 0.5px solid var(--border-strong);
+  border-radius: 20px; padding: 8px 16px;
+  font-size: 13px; cursor: pointer;
+  transition: all .15s; color: var(--text-primary);
+  display: flex; align-items: center; gap: 6px;
+}
+.drug-chip:hover {
+  background: var(--teal-light); border-color: var(--teal);
+  color: var(--teal);
+}
+.drug-chip-generic { font-size: 11px; color: var(--text-tertiary); }
+
+/* ── RESULTS PAGE ── */
+.results-page {
+  display: none;
+  max-width: 520px; margin: 0 auto;
+  padding: 24px 16px 48px;
+  animation: fadeIn .2s ease;
+}
+.results-page.show { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.results-search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: white; border: 0.5px solid var(--border-strong);
+  border-radius: 50px; padding: 10px 16px;
+  margin-bottom: 16px; box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.results-search-bar input {
+  border: none; outline: none; font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary); flex: 1; background: none;
+}
+
+/* Drug card header */
+.drug-header-card {
+  background: white; border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius); padding: 20px;
+  margin-bottom: 10px; box-shadow: var(--shadow);
+}
+.drug-name-large {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px; letter-spacing: -0.5px;
+  margin-bottom: 2px;
+}
+.drug-meta { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+.drug-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.drug-badges { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.badge {
+  font-size: 11px; padding: 3px 9px; border-radius: 10px;
+  font-weight: 500; white-space: nowrap;
+}
+.badge-verified { background: var(--success-bg); color: var(--success-text); }
+.badge-mfr {
+  background: var(--off-white); border: 0.5px solid var(--border-strong);
+  color: var(--text-secondary); font-weight: 600; letter-spacing: .04em;
+  font-size: 10px; padding: 3px 8px;
+}
+.badge-unavail { background: #f1efe8; color: var(--text-secondary); }
+
+/* Insurance accordion */
+.ins-tier {
+  background: white; border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 8px; box-shadow: var(--shadow);
+}
+.ins-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 18px; cursor: pointer; user-select: none;
+  transition: background .1s;
+}
+.ins-head:hover { background: var(--off-white); }
+.ins-head-left h3 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.ins-head-left p { font-size: 12px; color: var(--text-tertiary); }
+.ins-head-right { display: flex; align-items: center; gap: 10px; }
+.price-pill {
+  font-size: 13px; font-weight: 500;
+  padding: 4px 10px; border-radius: 10px;
+}
+.price-pill-green { color: var(--teal); background: var(--teal-light); }
+.price-pill-neutral { color: var(--text-primary); background: var(--off-white); border: 0.5px solid var(--border); }
+.chevron-icon {
+  width: 18px; height: 18px; color: var(--text-tertiary);
+  transition: transform .2s; display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.chevron-icon.open { transform: rotate(180deg); }
+
+.ins-body { display: none; padding: 0 18px 18px; }
+.ins-body.open { display: block; animation: slideDown .15s ease; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+.tier-divider { height: 0.5px; background: var(--border); margin-bottom: 16px; }
+
+/* Price hero blocks */
+.price-hero-green {
+  background: var(--teal); color: white;
+  border-radius: var(--radius-sm); padding: 18px;
+  margin-bottom: 12px; text-align: center;
+}
+.price-hero-neutral {
+  background: var(--off-white); border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 18px;
+  margin-bottom: 12px; text-align: center;
+}
+.ph-label { font-size: 11px; opacity: .75; margin-bottom: 4px; letter-spacing: .02em; }
+.ph-label-dark { font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; letter-spacing: .02em; }
+.ph-amount { font-family: 'DM Serif Display', serif; font-size: 40px; line-height: 1; margin-bottom: 2px; }
+.ph-amount-dark { font-family: 'DM Serif Display', serif; font-size: 40px; line-height: 1; margin-bottom: 2px; color: var(--text-primary); }
+.ph-period { font-size: 11px; opacity: .65; margin-bottom: 10px; }
+.ph-period-dark { font-size: 11px; color: var(--text-tertiary); margin-bottom: 10px; }
+.ph-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; padding-top: 8px;
+  border-top: 0.5px solid rgba(255,255,255,.2);
+}
+.ph-row + .ph-row { border-top: none; padding-top: 3px; }
+.ph-row-dark {
+  display: flex; justify-content: space-between;
+  font-size: 12px; padding-top: 8px; color: var(--text-secondary);
+  border-top: 0.5px solid var(--border);
+}
+.ph-row-dark + .ph-row-dark { border-top: none; padding-top: 3px; }
+.ph-savings { color: var(--mint); font-weight: 500; }
+.ph-warn { color: var(--warn-text); }
+
+/* CTA button */
+.cta-main {
+  width: 100%; background: var(--teal); color: white;
+  border: none; border-radius: 50px;
+  padding: 14px 20px; font-size: 14px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background .15s; margin-top: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.cta-main:hover { background: var(--teal-dark); }
+.cta-secondary {
+  width: 100%; background: var(--off-white); color: var(--text-secondary);
+  border: 0.5px solid var(--border-strong); border-radius: 50px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background .15s; margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.cta-secondary:hover { background: var(--border); }
+
+.eli-notes {
+  font-size: 12px; color: var(--text-tertiary);
+  margin-top: 10px; line-height: 1.7;
+  display: flex; flex-wrap: wrap; gap: 4px 12px;
+}
+.eli-note { display: flex; align-items: center; gap: 4px; }
+
+/* Info / warn boxes */
+.info-box {
+  background: var(--info-bg); border-radius: var(--radius-sm);
+  padding: 10px 12px; margin-bottom: 12px;
+  font-size: 12px; color: var(--info-text); line-height: 1.6;
+}
+.warn-box {
+  background: var(--warn-bg); border-radius: var(--radius-sm);
+  padding: 10px 12px; margin-bottom: 12px;
+  font-size: 12px; color: var(--warn-text); line-height: 1.6;
+}
+
+/* Alt options */
+.alt-label { font-size: 11px; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; }
+.alt-opt {
+  display: flex; gap: 10px; padding: 10px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+.alt-opt:last-child { border-bottom: none; }
+.alt-icon {
+  width: 30px; height: 30px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.alt-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.alt-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 3px; }
+.alt-link { font-size: 12px; color: var(--info-text); cursor: pointer; }
+
+/* Email capture */
+.email-capture-card {
+  background: var(--teal); border-radius: var(--radius);
+  padding: 20px; margin-top: 12px; color: white;
+}
+.email-capture-card h4 {
+  font-size: 15px; font-weight: 500; margin-bottom: 4px;
+}
+.email-capture-card p {
+  font-size: 12px; opacity: .8; margin-bottom: 14px; line-height: 1.5;
+}
+.email-row { display: flex; gap: 8px; }
+.email-input {
+  flex: 1; background: rgba(255,255,255,.15);
+  border: 0.5px solid rgba(255,255,255,.3);
+  border-radius: 50px; padding: 10px 16px;
+  font-size: 13px; color: white; outline: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.email-input::placeholder { color: rgba(255,255,255,.55); }
+.email-input:focus { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.6); }
+.email-submit {
+  background: white; color: var(--teal); border: none;
+  border-radius: 50px; padding: 10px 18px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  transition: background .15s;
+}
+.email-submit:hover { background: var(--teal-light); }
+
+/* Footer */
+.results-footer {
+  font-size: 11px; color: var(--text-tertiary);
+  text-align: center; margin-top: 16px; line-height: 1.7;
+}
+
+/* Suggest link */
+.suggest-row {
+  text-align: center; padding: 16px 0 4px;
+  font-size: 13px; color: var(--text-tertiary);
+}
+.suggest-row a { color: var(--info-text); cursor: pointer; text-decoration: none; }
+
+/* Homepage sections */
+.homepage { }
+.homepage.hidden { display: none; }
+
+/* Newsletter section */
+.newsletter-section {
+  background: var(--teal); padding: 64px 24px;
+  text-align: center; color: white;
+}
+.newsletter-section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px; letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.newsletter-section p { font-size: 14px; opacity: .8; margin-bottom: 24px; }
+.newsletter-form {
+  display: flex; gap: 8px; max-width: 400px; margin: 0 auto;
+}
+.nl-input {
+  flex: 1; background: rgba(255,255,255,.15);
+  border: 0.5px solid rgba(255,255,255,.3);
+  border-radius: 50px; padding: 12px 20px;
+  font-size: 14px; color: white; outline: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.nl-input::placeholder { color: rgba(255,255,255,.55); }
+.nl-submit {
+  background: white; color: var(--teal); border: none;
+  border-radius: 50px; padding: 12px 24px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.nl-submit:hover { background: var(--teal-light); }
+
+/* Site footer */
+footer {
+  background: var(--text-primary); color: rgba(255,255,255,.5);
+  padding: 32px 24px; font-size: 12px; text-align: center;
+  line-height: 1.7;
+}
+footer a { color: rgba(255,255,255,.7); text-decoration: none; margin: 0 8px; }
+footer strong { color: rgba(255,255,255,.8); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .steps { grid-template-columns: 1fr; }
+  .trust-bar { gap: 16px; justify-content: flex-start; padding: 24px 16px; }
+  h1 { font-size: 34px; }
+  .nav-links { display: none; }
+  .nav-search-pill { display: flex; }
+  .newsletter-form { flex-direction: column; }
+  .nl-submit { border-radius: 50px; }
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text-secondary);
+  background: none; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  padding: 0; margin-bottom: 16px;
+  transition: color .15s;
+}
+.back-btn:hover { color: var(--teal); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Save<span>Rx</span></div>
+  <div class="nav-links">
+    <button class="nav-link">How it works</button>
+    <button class="nav-link">About</button>
+    <button class="nav-link">FAQ</button>
+  </div>
+  <div class="nav-search-pill" onclick="focusSearch()">🔍 Search medications</div>
+</nav>
+
+<!-- HOMEPAGE -->
+<div class="homepage" id="homepage">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">Manufacturer savings programs</div>
+    <h1>Are you getting the <em>best price</em> on your medication?</h1>
+    <p class="hero-sub">Find manufacturer savings cards for brand-name drugs. Commercially insured patients often pay as little as $0–15/month.</p>
+
+    <div class="search-wrap">
+      <input
+        class="search-input"
+        id="hero-search"
+        type="text"
+        placeholder="Search by brand or generic name…"
+        autocomplete="off"
+        oninput="handleSearch(this.value)"
+        onkeydown="handleKey(event)"
+      />
+      <button class="search-btn" onclick="doSearch()">→</button>
+      <div class="autocomplete" id="autocomplete"></div>
+    </div>
+    <p class="eligibility-note">For commercially insured patients · Not affiliated with any manufacturer</p>
+  </section>
+
+  <!-- Trust bar -->
+  <div class="trust-bar">
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      Verified manufacturer programs
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">🔒</div>
+      No insurance info required
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">↻</div>
+      Regularly updated
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">$</div>
+      Always free to use
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <div class="section-label">How it works</div>
+    <div class="section-title">Three steps to your savings</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Search your medication</h3>
+        <p>Enter a brand or generic name. We'll find it instantly, even if you're not sure of the exact spelling.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Select your insurance type</h3>
+        <p>See pricing tailored to your situation — commercial insurance, Medicare, Medicaid, or no insurance.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Activate your savings card</h3>
+        <p>Click through directly to the manufacturer's official program. No middlemen, no signup required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured drugs -->
+  <section class="featured-section">
+    <div class="featured-inner">
+      <div class="section-label">Commonly searched</div>
+      <div class="section-title" style="font-size:24px; margin-bottom:16px;">Popular medications</div>
+      <div class="drug-chips">
+        <div class="drug-chip" onclick="showResults('ozempic')">
+          <span>Ozempic</span><span class="drug-chip-generic">semaglutide</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('repatha')">
+          <span>Repatha®</span><span class="drug-chip-generic">evolocumab</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('eliquis')">
+          <span>Eliquis</span><span class="drug-chip-generic">apixaban</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('keytruda')">
+          <span>Keytruda</span><span class="drug-chip-generic">pembrolizumab</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('dupixent')">
+          <span>Dupixent</span><span class="drug-chip-generic">dupilumab</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('entresto')">
+          <span>Entresto</span><span class="drug-chip-generic">sacubitril/valsartan</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('trulicity')">
+          <span>Trulicity</span><span class="drug-chip-generic">dulaglutide</span>
+        </div>
+        <div class="drug-chip" onclick="showResults('xarelto')">
+          <span>Xarelto</span><span class="drug-chip-generic">rivaroxaban</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section">
+    <h2>Stay in the loop</h2>
+    <p>Get notified when new savings programs are added or prices change.</p>
+    <div class="newsletter-form">
+      <input class="nl-input" type="email" placeholder="your@email.com">
+      <button class="nl-submit">Notify me</button>
+    </div>
+  </section>
+
+  <footer>
+    <div style="margin-bottom:12px;">
+      <a href="#">About</a>
+      <a href="#">How it works</a>
+      <a href="#">FAQ</a>
+      <a href="#">Suggest a medication</a>
+      <a href="#">Privacy policy</a>
+    </div>
+    <div><strong>SaveRx is not insurance</strong> and is not affiliated with any manufacturer. Prices shown are estimates and may vary by pharmacy and location. Manufacturer savings programs have eligibility requirements — see each program's terms. This site does not constitute medical or insurance advice.</div>
+  </footer>
+
+</div>
+
+<!-- RESULTS PAGE -->
+<div class="results-page" id="results-page">
+  <button class="back-btn" onclick="showHomepage()">← Back to search</button>
+
+  <div class="results-search-bar">
+    <span style="color:var(--text-tertiary); font-size:14px;">🔍</span>
+    <input id="results-search-input" type="text" placeholder="Search medications…"
+      oninput="handleResultsSearch(this.value)"
+      onkeydown="handleKey(event)" autocomplete="off"/>
+    <div class="autocomplete" id="results-autocomplete" style="top:44px; left:0; right:0;"></div>
+  </div>
+
+  <!-- Drug header -->
+  <div class="drug-header-card" id="drug-header">
+    <div class="drug-badges">
+      <span class="badge badge-verified">✓ Verified link</span>
+      <span class="badge badge-mfr" id="mfr-badge">AMGEN</span>
+    </div>
+    <div class="drug-name-large" id="drug-brand">Repatha®</div>
+    <div class="drug-meta" id="drug-meta">Evolocumab · Amgen</div>
+    <div class="drug-desc" id="drug-desc">A PCSK9 inhibitor that dramatically lowers LDL cholesterol and reduces risk of heart attack and stroke.</div>
+  </div>
+
+  <div style="font-size:11px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.07em; margin:14px 2px 8px;">Select your insurance type</div>
+
+  <!-- Tier 1: Private insurance -->
+  <div class="ins-tier">
+    <div class="ins-head" onclick="toggleTier('priv')">
+      <div class="ins-head-left">
+        <h3>Private insurance</h3>
+        <p>Employer or marketplace plan</p>
+      </div>
+      <div class="ins-head-right">
+        <span class="price-pill price-pill-green" id="priv-preview">$0–15/mo</span>
+        <div class="chevron-icon open" id="chev-priv">▼</div>
+      </div>
+    </div>
+    <div class="ins-body open" id="body-priv">
+      <div class="tier-divider"></div>
+      <div class="price-hero-green">
+        <div class="ph-label">Most commercially insured patients pay</div>
+        <div class="ph-amount" id="priv-amount">$0–15</div>
+        <div class="ph-period">per month · 30-day supply</div>
+        <div class="ph-row"><span>Typical cash price</span><span id="priv-cash">~$780/mo</span></div>
+        <div class="ph-row"><span>Savings</span><span class="ph-savings" id="priv-savings">Save up to 98%</span></div>
+      </div>
+      <button class="cta-main" id="priv-cta">Get Amgen Savings Card <span>↗</span></button>
+      <div class="eli-notes">
+        <span class="eli-note">✓ No income restrictions</span>
+        <span class="eli-note">✓ Renews annually</span>
+        <span class="eli-note">✗ Not valid with govt. insurance</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier 2: Government insurance -->
+  <div class="ins-tier">
+    <div class="ins-head" onclick="toggleTier('govt')">
+      <div class="ins-head-left">
+        <h3>Government insurance</h3>
+        <p>Medicare, Medicaid, or CHIP</p>
+      </div>
+      <div class="ins-head-right">
+        <span class="price-pill price-pill-neutral" id="govt-preview">~$45–90/mo</span>
+        <div class="chevron-icon" id="chev-govt">▼</div>
+      </div>
+    </div>
+    <div class="ins-body" id="body-govt">
+      <div class="tier-divider"></div>
+      <div class="price-hero-neutral">
+        <div class="ph-label-dark">Typical Medicare Part D copay</div>
+        <div class="ph-amount-dark" id="govt-amount">~$45–90</div>
+        <div class="ph-period-dark">per month · varies by plan</div>
+        <div class="ph-row-dark"><span>Cash price (no insurance)</span><span id="govt-cash">~$780/mo</span></div>
+        <div class="ph-row-dark"><span>Manufacturer card</span><span class="ph-warn">Not eligible</span></div>
+      </div>
+      <div class="warn-box">⚠️ Federal law prohibits manufacturer copay cards with Medicare, Medicaid, or CHIP. This applies to all manufacturers — it's not a policy choice.</div>
+      <div class="alt-label">Ways to lower your cost</div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--success-bg);">💊</div>
+        <div>
+          <div class="alt-title">Patient assistance program (PAP)</div>
+          <div class="alt-desc">Free or low-cost medication for qualifying patients. Legal for Medicare — separate from the savings card.</div>
+          <div class="alt-link">Check eligibility →</div>
+        </div>
+      </div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--info-bg);">🏛️</div>
+        <div>
+          <div class="alt-title">Medicare Extra Help</div>
+          <div class="alt-desc">Federal program reducing Part D premiums and copays for lower-income enrollees.</div>
+          <div class="alt-link">Apply at SSA.gov →</div>
+        </div>
+      </div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--off-white);">📋</div>
+        <div>
+          <div class="alt-title">State assistance programs</div>
+          <div class="alt-desc">Many states offer additional drug cost help for Medicare beneficiaries.</div>
+          <div class="alt-link">Find your state program →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier 3: No insurance -->
+  <div class="ins-tier">
+    <div class="ins-head" onclick="toggleTier('none')">
+      <div class="ins-head-left">
+        <h3>No insurance</h3>
+        <p>Paying out of pocket</p>
+      </div>
+      <div class="ins-head-right">
+        <span class="price-pill price-pill-neutral" id="none-preview">~$780/mo</span>
+        <div class="chevron-icon" id="chev-none">▼</div>
+      </div>
+    </div>
+    <div class="ins-body" id="body-none">
+      <div class="tier-divider"></div>
+      <div class="price-hero-neutral">
+        <div class="ph-label-dark">Typical cash price without insurance</div>
+        <div class="ph-amount-dark" id="none-amount">~$780</div>
+        <div class="ph-period-dark">per month · 30-day supply</div>
+        <div class="ph-row-dark"><span>Lowest pharmacy price</span><span id="none-low">~$650/mo</span></div>
+        <div class="ph-row-dark"><span>Manufacturer card</span><span class="ph-warn">Not eligible</span></div>
+      </div>
+      <div class="info-box">ℹ️ The manufacturer savings card requires active commercial insurance. Without coverage, a patient assistance program is typically the best option.</div>
+      <div class="alt-label">Ways to lower your cost</div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--success-bg);">💊</div>
+        <div>
+          <div class="alt-title">Patient assistance program</div>
+          <div class="alt-desc">May provide the medication free or at very low cost for uninsured patients who qualify by income.</div>
+          <div class="alt-link">Check eligibility →</div>
+        </div>
+      </div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--off-white);">💲</div>
+        <div>
+          <div class="alt-title">Compare pharmacy prices</div>
+          <div class="alt-desc">Cash prices vary significantly between pharmacies. Comparing can meaningfully reduce your cost.</div>
+          <div class="alt-link">Compare prices →</div>
+        </div>
+      </div>
+      <div class="alt-opt">
+        <div class="alt-icon" style="background:var(--info-bg);">🏥</div>
+        <div>
+          <div class="alt-title">Federally qualified health centers</div>
+          <div class="alt-desc">FQHCs offer access to 340B drug pricing and sliding-scale fees for uninsured patients.</div>
+          <div class="alt-link">Find a health center →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post-CTA email capture -->
+  <div class="email-capture-card" id="email-capture" style="display:none;">
+    <h4>Price drop alerts for Repatha®</h4>
+    <p>We'll notify you if the savings amount increases or new programs become available.</p>
+    <div class="email-row">
+      <input class="email-input" type="email" placeholder="your@email.com">
+      <button class="email-submit">Notify me</button>
+    </div>
+  </div>
+
+  <div class="suggest-row">
+    Don't see your medication? <a onclick="void(0)">Suggest it here →</a>
+  </div>
+
+  <div class="results-footer">
+    Prices are estimates and vary by pharmacy and plan.<br>
+    SaveRx is not affiliated with any manufacturer. Savings card eligibility is determined by each manufacturer's program.
+  </div>
+</div>
+
+<script>
+const DRUGS = {
+  repatha: {
+    brand: 'Repatha®', generic: 'Evolocumab', mfr: 'Amgen', mfrBadge: 'AMGEN',
+    desc: 'A PCSK9 inhibitor that dramatically lowers LDL cholesterol and reduces risk of heart attack and stroke.',
+    priv: { display: '$0–15/mo', amount: '$0–15', cash: '~$780/mo', savings: 'Save up to 98%', cta: 'Get Amgen Savings Card' },
+    govt: { display: '~$45–90/mo', amount: '~$45–90', cash: '~$780/mo' },
+    none: { display: '~$780/mo', amount: '~$780', low: '~$650/mo' },
+  },
+  ozempic: {
+    brand: 'Ozempic®', generic: 'Semaglutide', mfr: 'Novo Nordisk', mfrBadge: 'NOVO NORDISK',
+    desc: 'A GLP-1 receptor agonist used to improve blood sugar control in adults with type 2 diabetes.',
+    priv: { display: '$25/mo', amount: '$25', cash: '~$935/mo', savings: 'Save up to 97%', cta: 'Get Novo Nordisk Savings Card' },
+    govt: { display: '~$50–110/mo', amount: '~$50–110', cash: '~$935/mo' },
+    none: { display: '~$935/mo', amount: '~$935', low: '~$800/mo' },
+  },
+  eliquis: {
+    brand: 'Eliquis®', generic: 'Apixaban', mfr: 'Bristol-Myers Squibb / Pfizer', mfrBadge: 'BMS / PFIZER',
+    desc: 'A blood thinner used to reduce the risk of stroke and blood clots in patients with atrial fibrillation.',
+    priv: { display: '$10/mo', amount: '$10', cash: '~$580/mo', savings: 'Save up to 98%', cta: 'Get Eliquis Savings Card' },
+    govt: { display: '~$35–75/mo', amount: '~$35–75', cash: '~$580/mo' },
+    none: { display: '~$580/mo', amount: '~$580', low: '~$470/mo' },
+  },
+  dupixent: {
+    brand: 'Dupixent®', generic: 'Dupilumab', mfr: 'Sanofi / Regeneron', mfrBadge: 'SANOFI',
+    desc: 'A biologic treatment for moderate-to-severe atopic dermatitis, asthma, and other inflammatory conditions.',
+    priv: { display: '$0–30/mo', amount: '$0–30', cash: '~$3,200/mo', savings: 'Save up to 99%', cta: 'Get Dupixent MyWay Savings Card' },
+    govt: { display: '~$100–200/mo', amount: '~$100–200', cash: '~$3,200/mo' },
+    none: { display: '~$3,200/mo', amount: '~$3,200', low: '~$2,800/mo' },
+  },
+  entresto: {
+    brand: 'Entresto®', generic: 'Sacubitril / Valsartan', mfr: 'Novartis', mfrBadge: 'NOVARTIS',
+    desc: 'Used to treat heart failure with reduced ejection fraction (HFrEF) in adults.',
+    priv: { display: '$0–10/mo', amount: '$0–10', cash: '~$680/mo', savings: 'Save up to 99%', cta: 'Get Entresto Savings Card' },
+    govt: { display: '~$40–80/mo', amount: '~$40–80', cash: '~$680/mo' },
+    none: { display: '~$680/mo', amount: '~$680', low: '~$560/mo' },
+  },
+  trulicity: {
+    brand: 'Trulicity®', generic: 'Dulaglutide', mfr: 'Eli Lilly', mfrBadge: 'ELI LILLY',
+    desc: 'A once-weekly injectable GLP-1 receptor agonist for blood sugar control in type 2 diabetes.',
+    priv: { display: '$25/mo', amount: '$25', cash: '~$890/mo', savings: 'Save up to 97%', cta: 'Get Trulicity Savings Card' },
+    govt: { display: '~$45–100/mo', amount: '~$45–100', cash: '~$890/mo' },
+    none: { display: '~$890/mo', amount: '~$890', low: '~$760/mo' },
+  },
+  keytruda: {
+    brand: 'Keytruda®', generic: 'Pembrolizumab', mfr: 'Merck', mfrBadge: 'MERCK',
+    desc: 'An immunotherapy used to treat several types of cancer by helping the immune system attack cancer cells.',
+    priv: { display: '$0/mo', amount: '$0', cash: '~$15,000/mo', savings: 'Save up to 100%', cta: 'Get Merck Savings Card' },
+    govt: { display: '~$500–2,000/mo', amount: '~$500–2,000', cash: '~$15,000/mo' },
+    none: { display: '~$15,000/mo', amount: '~$15,000', low: '~$13,000/mo' },
+  },
+  xarelto: {
+    brand: 'Xarelto®', generic: 'Rivaroxaban', mfr: 'Janssen / Bayer', mfrBadge: 'JANSSEN',
+    desc: 'An anticoagulant that reduces the risk of stroke, blood clots, and PE in at-risk patients.',
+    priv: { display: '$10/mo', amount: '$10', cash: '~$520/mo', savings: 'Save up to 98%', cta: 'Get Xarelto Savings Card' },
+    govt: { display: '~$30–70/mo', amount: '~$30–70', cash: '~$520/mo' },
+    none: { display: '~$520/mo', amount: '~$520', low: '~$430/mo' },
+  },
+};
+
+const DRUG_LIST = Object.entries(DRUGS).map(([slug, d]) => ({ slug, brand: d.brand, generic: d.generic }));
+
+function getMatches(q) {
+  if (!q || q.length < 2) return [];
+  const lower = q.toLowerCase();
+  return DRUG_LIST.filter(d =>
+    d.brand.toLowerCase().includes(lower) || d.generic.toLowerCase().includes(lower)
+  ).slice(0, 6);
+}
+
+function renderAC(matches, targetId, inputId) {
+  const el = document.getElementById(targetId);
+  if (!matches.length) { el.classList.remove('show'); return; }
+  el.innerHTML = matches.map(d => `
+    <div class="ac-item" onclick="showResults('${d.slug}')">
+      <div>
+        <div class="ac-drug">${d.brand}</div>
+        <div class="ac-generic">${d.generic}</div>
+      </div>
+      <span class="ac-badge">Card available</span>
+    </div>
+  `).join('');
+  el.classList.add('show');
+}
+
+function handleSearch(val) {
+  renderAC(getMatches(val), 'autocomplete', 'hero-search');
+}
+function handleResultsSearch(val) {
+  renderAC(getMatches(val), 'results-autocomplete', 'results-search-input');
+}
+function handleKey(e) {
+  if (e.key === 'Enter') doSearch();
+}
+function doSearch() {
+  const val = document.getElementById('hero-search').value.trim();
+  const matches = getMatches(val);
+  if (matches.length) showResults(matches[0].slug);
+}
+function focusSearch() {
+  document.getElementById('hero-search').focus();
+}
+
+function showResults(slug) {
+  const drug = DRUGS[slug];
+  if (!drug) return;
+
+  // Populate
+  document.getElementById('drug-brand').textContent = drug.brand;
+  document.getElementById('drug-meta').textContent = drug.generic + ' · ' + drug.mfr;
+  document.getElementById('drug-desc').textContent = drug.desc;
+  document.getElementById('mfr-badge').textContent = drug.mfrBadge;
+
+  document.getElementById('priv-preview').textContent = drug.priv.display;
+  document.getElementById('priv-amount').textContent = drug.priv.amount;
+  document.getElementById('priv-cash').textContent = drug.priv.cash;
+  document.getElementById('priv-savings').textContent = drug.priv.savings;
+  document.getElementById('priv-cta').innerHTML = drug.priv.cta + ' <span>↗</span>';
+  document.getElementById('priv-cta').onclick = () => {
+    document.getElementById('email-capture').style.display = 'block';
+    document.getElementById('email-capture').querySelector('h4').textContent = 'Price drop alerts for ' + drug.brand;
+    document.getElementById('email-capture').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+
+  document.getElementById('govt-preview').textContent = drug.govt.display;
+  document.getElementById('govt-amount').textContent = drug.govt.amount;
+  document.getElementById('govt-cash').textContent = drug.govt.cash;
+
+  document.getElementById('none-preview').textContent = drug.none.display;
+  document.getElementById('none-amount').textContent = drug.none.amount;
+  document.getElementById('none-low').textContent = drug.none.low;
+
+  document.getElementById('results-search-input').value = drug.brand;
+
+  // Reset tiers
+  ['priv','govt','none'].forEach(id => {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    body.classList.remove('open');
+    chev.classList.remove('open');
+  });
+  document.getElementById('body-priv').classList.add('open');
+  document.getElementById('chev-priv').classList.add('open');
+  document.getElementById('email-capture').style.display = 'none';
+
+  // Close autocompletes
+  document.getElementById('autocomplete').classList.remove('show');
+  document.getElementById('results-autocomplete').classList.remove('show');
+
+  document.getElementById('homepage').classList.add('hidden');
+  document.getElementById('results-page').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showHomepage() {
+  document.getElementById('homepage').classList.remove('hidden');
+  document.getElementById('results-page').classList.remove('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleTier(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+// Close autocomplete on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap') && !e.target.closest('.results-search-bar')) {
+    document.getElementById('autocomplete').classList.remove('show');
+    document.getElementById('results-autocomplete').classList.remove('show');
+  }
+});
+</script>
+</body>
+</html>

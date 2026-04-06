@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaveRx — Medication Results (Mobile)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f1efe8;
+    --color-background-info: #e6f1fb;
+    --color-background-success: #eaf3de;
+    --color-background-warning: #faeeda;
+    --color-text-primary: #2c2c2a;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #888780;
+    --color-text-info: #185fa5;
+    --color-text-success: #3b6d11;
+    --color-text-warning: #ba7517;
+    --color-border-tertiary: rgba(44,44,42,0.15);
+    --color-border-secondary: rgba(44,44,42,0.3);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1a1a18;
+      --color-background-secondary: #2c2c2a;
+      --color-background-info: #042c53;
+      --color-background-success: #173404;
+      --color-background-warning: #412402;
+      --color-text-primary: #f1efe8;
+      --color-text-secondary: #b4b2a9;
+      --color-text-tertiary: #888780;
+      --color-text-info: #85b7eb;
+      --color-text-success: #97c459;
+      --color-text-warning: #ef9f27;
+      --color-border-tertiary: rgba(241,239,232,0.15);
+      --color-border-secondary: rgba(241,239,232,0.3);
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-secondary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .phone-frame {
+    width: 100%;
+    max-width: 390px;
+    background: var(--color-background-secondary);
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0 16px;
+    margin-bottom: 4px;
+  }
+  .nav-logo { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .nav-search {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  /* Drug header */
+  .drug-header {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 10px;
+  }
+  .drug-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .drug-name { font-size: 20px; font-weight: 500; margin-bottom: 2px; }
+  .drug-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .badge-verified {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--color-background-success); color: var(--color-text-success);
+    font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); font-weight: 500;
+  }
+  .manufacturer-badge {
+    background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md); padding: 6px 10px;
+    font-size: 12px; font-weight: 500; color: var(--color-text-secondary);
+  }
+  .drug-description { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-top: 8px; }
+
+  /* Eligibility notice */
+  .eligibility-notice {
+    background: var(--color-background-info);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--color-text-info);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Insurance cards */
+  .ins-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .ins-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px; cursor: pointer; user-select: none;
+  }
+  .ins-header:hover { background: var(--color-background-secondary); }
+  .ins-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .ins-subtitle { font-size: 12px; color: var(--color-text-secondary); }
+  .ins-right { display: flex; align-items: center; gap: 8px; }
+  .ins-price-preview { font-size: 13px; font-weight: 500; color: #0B6E5C; }
+  .chevron { font-size: 11px; color: var(--color-text-tertiary); transition: transform .2s; display: inline-block; }
+  .chevron.open { transform: rotate(180deg); }
+
+  .ins-body { padding: 0 16px 16px; }
+  .ins-body.hidden { display: none; }
+
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 0 0 12px; }
+
+  /* Price hero */
+  .price-hero {
+    background: #0B6E5C; color: #fff;
+    border-radius: var(--border-radius-md);
+    padding: 16px; margin-bottom: 12px; text-align: center;
+  }
+  .price-hero-label { font-size: 12px; opacity: .8; margin-bottom: 4px; }
+  .price-amount { font-size: 36px; font-weight: 500; margin: 4px 0 2px; line-height: 1; }
+  .price-period { font-size: 12px; opacity: .7; margin-bottom: 10px; }
+  .price-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; padding-top: 8px;
+    border-top: 0.5px solid rgba(255,255,255,.2);
+  }
+  .price-row + .price-row { border-top: none; padding-top: 2px; }
+  .price-savings { color: #7DE8C8; font-weight: 500; }
+
+  /* Buttons */
+  .cta-btn {
+    width: 100%; background: #0B6E5C; color: #fff;
+    border: none; border-radius: var(--border-radius-md);
+    padding: 13px; font-size: 14px; font-weight: 500;
+    cursor: pointer; margin-top: 4px; font-family: var(--font-sans);
+    transition: background .15s;
+  }
+  .cta-btn:hover { background: #094f44; }
+  .cta-btn.secondary {
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-secondary);
+  }
+  .cta-btn.secondary:hover { background: var(--color-border-tertiary); }
+
+  .notes { font-size: 12px; color: var(--color-text-secondary); margin-top: 10px; line-height: 1.7; }
+
+  /* Badges */
+  .badge {
+    font-size: 11px; padding: 3px 8px;
+    border-radius: var(--border-radius-md); font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-unavail { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+  /* Govt explanation */
+  .govt-note { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 8px; }
+
+  /* Footer note */
+  .footer-note {
+    font-size: 11px; color: var(--color-text-secondary);
+    text-align: center; margin-top: 0.75rem; line-height: 1.6; padding-bottom: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+
+  <!-- Nav -->
+  <div class="nav">
+    <span class="nav-logo">SaveRx</span>
+    <div class="nav-search">🔍 &nbsp;Repatha</div>
+  </div>
+
+  <!-- Drug header -->
+  <div class="drug-header">
+    <div class="drug-header-top">
+      <div>
+        <div class="drug-name">Repatha®</div>
+        <div class="drug-sub">Evolocumab · Amgen</div>
+        <span class="badge-verified">✓ Verified link</span>
+      </div>
+      <div class="manufacturer-badge">AMGEN</div>
+    </div>
+    <div class="drug-description">Repatha® (evolocumab) is a PCSK9 inhibitor that dramatically lowers LDL-C and reduces risk of heart attack.</div>
+  </div>
+
+  <!-- Eligibility notice -->
+  <div class="eligibility-notice">
+    ℹ️ Select your insurance type to see your best price
+  </div>
+
+  <!-- Card 1: Private Insurance — default open -->
+  <div class="ins-card">
+    <div class="ins-header" onclick="toggle('priv')">
+      <div>
+        <div class="ins-title">Private insurance</div>
+        <div class="ins-subtitle">Employer or marketplace plan</div>
+      </div>
+      <div class="ins-right">
+        <span class="ins-price-preview">$0–15/mo</span>
+        <span class="chevron open" id="chev-priv">▼</span>
+      </div>
+    </div>
+    <div class="ins-body" id="body-priv">
+      <hr class="divider">
+      <div class="price-hero">
+        <div class="price-hero-label">Most commercially insured patients pay</div>
+        <div class="price-amount">$0–15</div>
+        <div class="price-period">per month · 30-day supply</div>
+        <div class="price-row">
+          <span>Typical cash price</span>
+          <span>~$780/mo</span>
+        </div>
+        <div class="price-row">
+          <span>Savings</span>
+          <span class="price-savings">Save up to 98%</span>
+        </div>
+      </div>
+      <button class="cta-btn">Get Amgen Savings Card ↗</button>
+      <div class="notes">✓ No income restrictions &nbsp;·&nbsp; ✓ Renews annually &nbsp;·&nbsp; ✗ Not valid with government insurance</div>
+    </div>
+  </div>
+
+  <!-- Card 2: Government Insurance — collapsed -->
+  <div class="ins-card">
+    <div class="ins-header" onclick="toggle('govt')">
+      <div>
+        <div class="ins-title">Government insurance</div>
+        <div class="ins-subtitle">Medicare, Medicaid, or CHIP</div>
+      </div>
+      <div class="ins-right">
+        <span class="badge badge-unavail">Card unavailable</span>
+        <span class="chevron" id="chev-govt">▼</span>
+      </div>
+    </div>
+    <div class="ins-body hidden" id="body-govt">
+      <hr class="divider">
+      <div class="govt-note">Manufacturer savings cards cannot be used with Medicare, Medicaid, or CHIP — this is a federal legal requirement, not a policy choice.</div>
+      <div class="govt-note">You may still be able to lower your cost through a patient assistance program, Medicare Extra Help, or state assistance programs.</div>
+      <button class="cta-btn secondary">See other options ↗</button>
+      <div style="height:4px;"></div>
+    </div>
+  </div>
+
+  <!-- Card 3: No Insurance — collapsed -->
+  <div class="ins-card">
+    <div class="ins-header" onclick="toggle('none')">
+      <div>
+        <div class="ins-title">No insurance</div>
+        <div class="ins-subtitle">Paying out of pocket</div>
+      </div>
+      <div class="ins-right">
+        <span class="badge badge-unavail">Card unavailable</span>
+        <span class="chevron" id="chev-none">▼</span>
+      </div>
+    </div>
+    <div class="ins-body hidden" id="body-none">
+      <hr class="divider">
+      <div class="govt-note">The Amgen savings card requires active commercial insurance. Without insurance, you may be eligible for Amgen's separate patient assistance program.</div>
+      <button class="cta-btn secondary">See Amgen patient assistance ↗</button>
+      <div style="height:4px;"></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Prices are estimates. Savings card eligibility determined by Amgen.<br>
+    SaveRx is not affiliated with Amgen.
+  </div>
+
+</div>
+
+<script>
+function toggle(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const isHidden = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !isHidden);
+  chev.classList.toggle('open', isHidden);
+}
+</script>
+</body>
+</html>
