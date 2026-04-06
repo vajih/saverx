@@ -557,11 +557,11 @@
             : (Number.isFinite(perFill) ? perFill * fillsPerYear : null);
 
           const model = {
-            brand: d.brand || "",
+            brand: d.brand || slug.replace(/-/g," ").replace(/\b\w/g,c=>c.toUpperCase()),
             generic: d.generic || "",
             manufacturer: d.manufacturer || "",
-            hero_landscape: d.hero_landscape || "/assets/img/repatha-hero.png",
-            hero_portrait:  d.hero_portrait  || "/assets/img/repatha-hero-vertical.png",
+            hero_landscape: d.hero_landscape || `/assets/img/${slug}-hero.png`,
+            hero_portrait:  d.hero_portrait  || `/assets/img/${slug}-hero-vertical.png`,
             period_label: d.period_label || "Typical monthly prescription",
             disclaimer: d.disclaimer || "*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.",
             cash_price_formatted: money(cash),
@@ -586,7 +586,7 @@
           const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
           if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
 
-          window.__manufacturerUrl = d.manufacturerUrl || "/";
+          window.__manufacturerUrl = d.manufacturerUrl || `https://www.google.com/search?q=${encodeURIComponent((d.brand||slug.replace(/-/g," "))+" copay card manufacturer savings program")}`;
           window.__drugName = model.brand || slug;
           const modalDrug = $("#modal-drug");
           if (modalDrug) modalDrug.value = window.__drugName;
