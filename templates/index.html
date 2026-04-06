@@ -540,7 +540,28 @@
           const u = `${API}?mode=drug&slug=${encodeURIComponent(slug)}`;
           const res = await fetch(u, { cache: "no-cache" });
           const json = await res.json();
-          const d = (json && json.item) ? json.item : {};
+          let d = (json && json.item) ? json.item : null;
+
+          // Fallback: if no per-drug data, try featured list (has all 360 drugs + manufacturer URLs)
+          if (!d) {
+            try {
+              const fr = await fetch(`${API}?mode=featured`, { cache: 'no-cache' });
+              const fj = await fr.json();
+              const match = (fj.items || []).find(i => {
+                const n = (i.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/, '');
+                return n === slug;
+              });
+              if (match) d = {
+                brand: match.name,
+                generic: match.generic || '',
+                manufacturer: match.manufacturer || '',
+                manufacturerUrl: match.url || '',
+                cash_price: match.cash_price,
+                copay_price: match.as_low_as
+              };
+            } catch (e) { /* silent */ }
+          }
+          d = d || {};
 
           const cash = Number(d.cash_price);
           const copay = Number(d.copay_price);
@@ -586,7 +607,7 @@
           const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
           if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
 
-          window.__manufacturerUrl = d.manufacturerUrl || `https://www.google.com/search?q=${encodeURIComponent((d.brand||slug.replace(/-/g," "))+" copay card manufacturer savings program")}`;
+          window.__manufacturerUrl = d.manufacturerUrl || '/';
           window.__drugName = model.brand || slug;
           const modalDrug = $("#modal-drug");
           if (modalDrug) modalDrug.value = window.__drugName;
