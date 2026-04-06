@@ -75,12 +75,9 @@ const EMAILS = [
 
 const DELAYS = [3, 7]; // days between email 1→2 and email 2→3
 
-// Use your MailerLite-verified sender email here.
-// Once you verify a custom domain (e.g. noreply@saverx.ai) in MailerLite under
-// Settings → Verified domains, update these values and re-run.
-const FROM_EMAIL = 'vajihkhan@gmail.com';
+const FROM_EMAIL = 'noreply@saverx.ai';
 const FROM_NAME  = 'SaveRx.ai';
-const REPLY_TO   = 'vajihkhan@gmail.com';
+const REPLY_TO   = 'noreply@saverx.ai';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

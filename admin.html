@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaveRx.ai — Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .stat-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .drug-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .category-glp1      { background: #d1fae5; color: #065f46; }
+    .category-diabetes   { background: #dbeafe; color: #1e40af; }
+    .category-cardiovascular { background: #fce7f3; color: #9d174d; }
+    .category-general    { background: #f3f4f6; color: #374151; }
+    .skeleton {
+      background: linear-gradient(90deg, #1e293b 25%, #273548 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header class="border-b border-slate-800 bg-slate-900 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-slate-900 text-sm">Rx</div>
+      <div>
+        <h1 class="font-semibold text-slate-100 text-sm leading-tight">SaveRx.ai</h1>
+        <p class="text-slate-400 text-xs">Admin Dashboard</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="status-badge" class="flex items-center gap-1.5 text-xs text-slate-400">
+        <span class="pulse-dot w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+        <span id="status-text">Loading…</span>
+      </div>
+      <button onclick="refresh()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-md transition-colors">
+        ↻ Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────────────── -->
+  <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- Error Banner -->
+    <div id="error-banner" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg px-5 py-4 text-sm">
+      <strong class="font-semibold">Connection error:</strong>
+      <span id="error-msg"></span>
+      <div class="mt-1 text-red-400 text-xs">Make sure <code>admin-server.js</code> is running and your <code>.env</code> has a valid MailerLite API key.</div>
+    </div>
+
+    <!-- ── Stat Cards ─────────────────────────────────────────────── -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+      <div class="stat-card rounded-xl p-5 border border-slate-800">
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Total Subscribers</p>
+        <p id="stat-total" class="text-3xl font-bold text-emerald-400 skeleton min-h-[2.25rem]">&nbsp;</p>
+        <p class="text-slate-500 text-xs mt-1">Active, opted-in</p>
+      </div>
+
+      <div class="stat-card rounded-xl p-5 border border-slate-800">
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">New This Week</p>
+        <p id="stat-week" class="text-3xl font-bold text-sky-400 skeleton min-h-[2.25rem]">&nbsp;</p>
+        <p class="text-slate-500 text-xs mt-1">Last 7 days</p>
+      </div>
+
+      <div class="stat-card rounded-xl p-5 border border-slate-800">
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Subscriber Groups</p>
+        <p id="stat-groups" class="text-3xl font-bold text-violet-400 skeleton min-h-[2.25rem]">&nbsp;</p>
+        <p class="text-slate-500 text-xs mt-1">Drug categories</p>
+      </div>
+
+      <div class="stat-card rounded-xl p-5 border border-slate-800">
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Data Age</p>
+        <p id="stat-cache" class="text-3xl font-bold text-amber-400 skeleton min-h-[2.25rem]">&nbsp;</p>
+        <p class="text-slate-500 text-xs mt-1">Cached 5 min</p>
+      </div>
+
+    </div>
+
+    <!-- ── Groups + Chart ─────────────────────────────────────────── -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Groups list -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Subscriber Groups
+        </h2>
+        <div id="groups-list" class="space-y-3">
+          <!-- Skeletons -->
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+          <div class="skeleton h-10 rounded-lg"></div>
+        </div>
+      </div>
+
+      <!-- Doughnut chart -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col">
+        <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sky-500"></span>
+          Group Distribution
+        </h2>
+        <div class="flex-1 flex items-center justify-center">
+          <div class="relative w-52 h-52">
+            <canvas id="groups-chart"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span id="chart-center-num" class="text-2xl font-bold text-slate-100"></span>
+              <span class="text-xs text-slate-400">total</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Recent Subscribers ─────────────────────────────────────── -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+        Recent Subscribers
+        <span class="ml-auto text-slate-500 text-xs font-normal">Most recent 15</span>
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+              <th class="pb-3 pr-4 font-medium">Email</th>
+              <th class="pb-3 pr-4 font-medium">Drug</th>
+              <th class="pb-3 pr-4 font-medium">Category</th>
+              <th class="pb-3 font-medium">Subscribed</th>
+            </tr>
+          </thead>
+          <tbody id="recent-table" class="divide-y divide-slate-800/50">
+            <tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Bottom Grid: Quick Links + Revenue Checklist ───────────── -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Quick Links -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          Quick Links
+        </h2>
+        <div class="space-y-2">
+          <a href="https://app.mailerlite.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📧</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">MailerLite Dashboard</p>
+                <p class="text-xs text-slate-500">Campaigns, automations, subscribers</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://analytics.google.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📊</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">Google Analytics (GA4)</p>
+                <p class="text-xs text-slate-500">Traffic, top pages, conversions</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://docs.google.com/spreadsheets/d/19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">📋</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">SaveRx Leads Spreadsheet</p>
+                <p class="text-xs text-slate-500">Raw email capture data</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://script.google.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">⚙️</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">Google Apps Script</p>
+                <p class="text-xs text-slate-500">Email capture + MailerLite sync backend</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://tagmanager.google.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🏷️</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">Google Tag Manager</p>
+                <p class="text-xs text-slate-500">GTM-MVZBBF7R · AdSense tags</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://saverx.ai" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">🌐</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">SaveRx.ai (Live Site)</p>
+                <p class="text-xs text-slate-500">358 drug pages · Cloudflare hosted</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Revenue Checklist -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          Revenue Checklist
+        </h2>
+        <div class="space-y-2" id="revenue-checklist">
+
+          <!-- Email (MailerLite) -->
+          <div class="text-xs text-slate-500 uppercase tracking-widest pt-1 pb-0.5">Email Revenue</div>
+
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base" id="chk-mailerlite">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">MailerLite API key (new format)</p>
+              <p class="text-xs text-slate-500">Get JWT token at app.mailerlite.com → Integrations → API</p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Run mailerlite-setup.js (create groups)</p>
+              <p class="text-xs text-slate-500"><code class="text-emerald-400">node scripts/mailerlite-setup.js</code></p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Import 252 existing leads</p>
+              <p class="text-xs text-slate-500"><code class="text-emerald-400">node scripts/mailerlite-import.js --csv data/saverx-leads.csv</code></p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Deploy updated Code.gs (live sync)</p>
+              <p class="text-xs text-slate-500">New signups auto-route to MailerLite groups</p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Build MailerLite email sequences</p>
+              <p class="text-xs text-slate-500">3-email drug-specific + 2-email general (copy in EMAIL_SEQUENCES.md)</p>
+            </div>
+          </div>
+
+          <!-- AdSense -->
+          <div class="text-xs text-slate-500 uppercase tracking-widest pt-3 pb-0.5">Display Ads</div>
+
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Apply for Google AdSense</p>
+              <p class="text-xs text-slate-500"><a href="https://adsense.google.com" target="_blank" class="text-sky-400 hover:underline">adsense.google.com</a> · Add auto-ads tag via GTM once approved</p>
+            </div>
+          </div>
+
+          <!-- Affiliates -->
+          <div class="text-xs text-slate-500 uppercase tracking-widest pt-3 pb-0.5">Affiliate Revenue</div>
+
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Apply for GoodRx Publisher API</p>
+              <p class="text-xs text-slate-500"><a href="https://www.goodrx.com/business/solutions/digital-health" target="_blank" class="text-sky-400 hover:underline">goodrx.com/developer</a> · Embed price widgets on drug pages</p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Apply for eHealth / GoHealth affiliate</p>
+              <p class="text-xs text-slate-500">Insurance lead gen · ~$30–$80/qualified lead</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────────── -->
+  <footer class="text-center text-slate-600 text-xs py-8">
+    SaveRx.ai Admin · Auto-refreshes every 60s · Data cached 5 min
+  </footer>
+
+  <!-- ── Scripts ─────────────────────────────────────────────────── -->
+  <script>
+    const GROUP_COLORS = {
+      'GLP-1 Users':       '#10b981',
+      'Cardiovascular':    '#f43f5e',
+      'Diabetes & CGM':    '#3b82f6',
+      'General Savings':   '#8b5cf6',
+      'All SaveRx Leads':  '#64748b',
+    };
+    const DEFAULT_COLORS = ['#10b981','#3b82f6','#f43f5e','#8b5cf6','#f59e0b','#64748b'];
+
+    let chartInstance = null;
+
+    function timeAgo(isoStr) {
+      if (!isoStr) return '—';
+      const d = new Date(isoStr);
+      const diff = Math.floor((Date.now() - d.getTime()) / 1000);
+      if (diff < 60)  return `${diff}s ago`;
+      if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function cacheAge(isoStr) {
+      if (!isoStr) return '—';
+      const diff = Math.floor((Date.now() - new Date(isoStr).getTime()) / 1000);
+      if (diff < 60)  return `${diff}s`;
+      return `${Math.floor(diff/60)}m`;
+    }
+
+    function categoryClass(cat) {
+      const c = (cat || '').toLowerCase();
+      if (c.includes('glp') || c.includes('glp1')) return 'category-glp1';
+      if (c.includes('diab') || c.includes('cgm')) return 'category-diabetes';
+      if (c.includes('cardio')) return 'category-cardiovascular';
+      return 'category-general';
+    }
+
+    function renderStats(data) {
+      // Stat cards
+      document.getElementById('stat-total').textContent = data.totalActive.toLocaleString();
+      document.getElementById('stat-total').classList.remove('skeleton');
+      document.getElementById('stat-week').textContent = data.newThisWeek;
+      document.getElementById('stat-week').classList.remove('skeleton');
+      document.getElementById('stat-groups').textContent = (data.groups || []).length;
+      document.getElementById('stat-groups').classList.remove('skeleton');
+      document.getElementById('stat-cache').textContent = cacheAge(data.fetchedAt);
+      document.getElementById('stat-cache').classList.remove('skeleton');
+
+      // Groups list
+      const groupsEl = document.getElementById('groups-list');
+      const groups = (data.groups || []).filter(g => g.name !== 'All SaveRx Leads');
+      if (!groups.length) {
+        groupsEl.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No groups found yet.<br><span class="text-xs">Run mailerlite-setup.js to create them.</span></p>';
+      } else {
+        const maxCount = Math.max(...groups.map(g => g.total), 1);
+        groupsEl.innerHTML = groups.map((g, i) => {
+          const pct = Math.round((g.total / maxCount) * 100);
+          const color = GROUP_COLORS[g.name] || DEFAULT_COLORS[i % DEFAULT_COLORS.length];
+          return `
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-300 font-medium">${g.name}</span>
+                <span class="text-slate-400">${g.total.toLocaleString()}</span>
+              </div>
+              <div class="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-700" style="width:${pct}%; background:${color}"></div>
+              </div>
+            </div>`;
+        }).join('');
+      }
+
+      // Chart
+      const allGroups = (data.groups || []).filter(g => g.name !== 'All SaveRx Leads' && g.total > 0);
+      const chartLabels = allGroups.map(g => g.name);
+      const chartData   = allGroups.map(g => g.total);
+      const chartColors = allGroups.map((g, i) => GROUP_COLORS[g.name] || DEFAULT_COLORS[i % DEFAULT_COLORS.length]);
+
+      document.getElementById('chart-center-num').textContent = data.totalActive.toLocaleString();
+
+      const ctx = document.getElementById('groups-chart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 0, hoverOffset: 4 }] },
+        options: {
+          cutout: '72%',
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} subscribers`
+              }
+            }
+          }
+        }
+      });
+
+      // Recent subscribers table
+      const tbody = document.getElementById('recent-table');
+      if (!data.recent || !data.recent.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">No subscribers imported yet. Run mailerlite-import.js to populate.</td></tr>';
+      } else {
+        tbody.innerHTML = data.recent.map(s => `
+          <tr class="hover:bg-slate-800/30 transition-colors">
+            <td class="py-3 pr-4 font-mono text-xs text-slate-300">${s.email}</td>
+            <td class="py-3 pr-4 text-xs text-slate-400">${s.drug}</td>
+            <td class="py-3 pr-4">
+              <span class="drug-pill ${categoryClass(s.category)}">${s.category}</span>
+            </td>
+            <td class="py-3 text-xs text-slate-500">${timeAgo(s.date)}</td>
+          </tr>`).join('');
+      }
+
+      // Update status
+      const badge = document.getElementById('status-badge');
+      const dot = badge.querySelector('.pulse-dot');
+      dot.className = 'pulse-dot w-1.5 h-1.5 rounded-full bg-emerald-500';
+      document.getElementById('status-text').textContent = `Updated ${timeAgo(data.fetchedAt)}${data.cached ? ' (cached)' : ''}`;
+
+      // Check MailerLite connected (groups exist)
+      if (data.groups && data.groups.length > 0) {
+        document.getElementById('chk-mailerlite').textContent = '✅';
+      }
+    }
+
+    function showError(msg) {
+      document.getElementById('error-banner').classList.remove('hidden');
+      document.getElementById('error-msg').textContent = ' ' + msg;
+      const dot = document.querySelector('.pulse-dot');
+      dot.className = 'w-1.5 h-1.5 rounded-full bg-red-500';
+      document.getElementById('status-text').textContent = 'Connection failed';
+    }
+
+    async function loadData(force = false) {
+      const url = force ? '/api/stats?refresh=1' : '/api/stats';
+      try {
+        document.getElementById('error-banner').classList.add('hidden');
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.error) { showError(data.error); return; }
+        renderStats(data);
+      } catch (e) {
+        showError(e.message || 'Could not reach admin server.');
+      }
+    }
+
+    function refresh() { loadData(true); }
+
+    // Initial load + auto-refresh every 60s
+    loadData();
+    setInterval(() => loadData(), 60_000);
+  </script>
+</body>
+</html>
