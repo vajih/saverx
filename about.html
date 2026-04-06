@@ -66,7 +66,8 @@
     })();
 
     // Keep the same API var so the footer newsletter works the same as index.html
-    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
+    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
   </script>
 </head>
 
@@ -245,13 +246,14 @@
             referrer: document.referrer||""
           }).toString();
           const API = window.SAVERX_API;
+      const FORM_API = window.SAVERX_FORM_API || API;
           if (API) {
             if (navigator.sendBeacon){
               const blob = new Blob([body], {type:"application/x-www-form-urlencoded"});
-              navigator.sendBeacon(API, blob);
+              navigator.sendBeacon(FORM_API, blob);
               msg && (msg.textContent="Subscribed.");
             } else {
-              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
+              fetch(FORM_API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
                 .finally(()=>{ msg && (msg.textContent="Subscribed."); });
             }
           } else {

@@ -107,7 +107,8 @@
 
   <script>
     /* Your live Apps Script URL */
-    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec";
+    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
   </script>
 </head>
 
@@ -285,6 +286,7 @@
       "use strict";
 
       const API = window.SAVERX_API;
+      const FORM_API = window.SAVERX_FORM_API || API;
       const $  = (sel, root=document)=> root.querySelector(sel);
       const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
       const norm = s => String(s||"").toLowerCase();
@@ -330,9 +332,9 @@
           try{
             const body = new URLSearchParams({ email, drug:"Newsletter", source:"Drugs Index Newsletter", useragent:navigator.userAgent||"", referrer:document.referrer||"" }).toString();
             if (navigator.sendBeacon){
-              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(API, blob); msg && (msg.textContent="Subscribed.");
+              const blob = new Blob([body], {type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(FORM_API, blob); msg && (msg.textContent="Subscribed.");
             }else{
-              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}).finally(()=>{ msg && (msg.textContent="Subscribed."); });
+              fetch(FORM_API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}).finally(()=>{ msg && (msg.textContent="Subscribed."); });
             }
           }catch{ msg && (msg.textContent="Something went wrong. Please try again."); }
         });
@@ -350,8 +352,8 @@
         window.open(href, "_blank"); closeModal(); status && (status.textContent="Opening the official savings site…");
         try{
           const body = new URLSearchParams({ email, drug, source:"Drugs Index Modal", useragent:navigator.userAgent||"", referrer:document.referrer||"" }).toString();
-          if (navigator.sendBeacon){ const blob=new Blob([body],{type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(API, blob); }
-          else { fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}); }
+          if (navigator.sendBeacon){ const blob=new Blob([body],{type:"application/x-www-form-urlencoded"}); navigator.sendBeacon(FORM_API, blob); }
+          else { fetch(FORM_API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true}); }
         }catch{}
       });
 

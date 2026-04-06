@@ -340,13 +340,14 @@
             referrer:document.referrer||""
           }).toString();
           const API = window.SAVERX_API;
+      const FORM_API = window.SAVERX_FORM_API || API;
           if (API) {
             if (navigator.sendBeacon){
               const blob = new Blob([body], {type:"application/x-www-form-urlencoded"});
-              navigator.sendBeacon(API, blob);
+              navigator.sendBeacon(FORM_API, blob);
               msg && (msg.textContent="Subscribed.");
             } else {
-              fetch(API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
+              fetch(FORM_API,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},mode:"no-cors",body,keepalive:true})
                 .finally(()=>{ msg && (msg.textContent="Subscribed."); });
             }
           } else {
