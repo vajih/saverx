@@ -276,6 +276,28 @@ function processEmailQueue() {
   }
 }
 
+// --- One-time setup ---
+
+/**
+ * Run this ONCE from the Apps Script editor to install the hourly trigger.
+ * Editor: select "createHourlyTrigger" from the function dropdown → Run.
+ * Safe to re-run — skips if trigger already exists.
+ */
+function createHourlyTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "processEmailQueue") {
+      Logger.log("Trigger already exists — skipping.");
+      return;
+    }
+  }
+  ScriptApp.newTrigger("processEmailQueue")
+    .timeBased()
+    .everyHours(1)
+    .create();
+  Logger.log("Hourly trigger created for processEmailQueue.");
+}
+
 // --- Core handlers ---
 
 function doGet() {
