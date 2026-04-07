@@ -23,6 +23,8 @@ var QUEUE_SHEET = "EmailQueue";
 var HONEYPOT = "website";
 var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
 var EMAIL_BASE_URL = "https://saverx.ai/emails/";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+var UNSUB_SHEET = "Unsubscribes";
 
 // --- Drug category mapping ---
 
@@ -119,11 +121,28 @@ function slugify(str) {
     .replace(/^-|-$/g, "");
 }
 
-function applyMergeTags(html, drug) {
+function applyMergeTags(html, drug, toEmail) {
   var slug = slugify(drug);
   html = html.replace(/\{\$subscriber\.fields\.drug\|slugify\}/g, slug);
   html = html.replace(/\{\$subscriber\.fields\.drug\}/g, drug);
+  var unsubUrl = SCRIPT_URL + "?action=unsubscribe&email=" + encodeURIComponent(toEmail);
+  html = html.replace(/\{\$unsubscribe\}/g, unsubUrl);
   return html;
+}
+
+function isUnsubscribed(email) {
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName(UNSUB_SHEET);
+    if (!sheet) return false;
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === email) return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
 }
 
 // --- Resend ---
@@ -158,8 +177,8 @@ function sendResendEmail(toEmail, drug, category, type) {
       return false;
     }
 
-    // Substitute drug name directly - no merge tag issues
-    var html = applyMergeTags(tmplRes.getContentText(), drug);
+    // Substitute drug name + unsubscribe URL
+    var html = applyMergeTags(tmplRes.getContentText(), drug, toEmail);
     var subject = EMAIL_SUBJECTS[type].replace(/\{drug\}/g, drug);
 
     var res = UrlFetchApp.fetch("https://api.resend.com/emails", {
@@ -266,6 +285,10 @@ function processEmailQueue() {
 
       if (status !== "pending") continue;
       if (sendAt > now) continue;
+      if (isUnsubscribed(email)) {
+        sheet.getRange(i + 1, 7).setValue("unsubscribed");
+        continue;
+      }
 
       var sent = sendResendEmail(email, drug, category, type);
       sheet.getRange(i + 1, 6).setValue(new Date().toISOString());
@@ -300,7 +323,37 @@ function createHourlyTrigger() {
 
 // --- Core handlers ---
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.action === "unsubscribe") {
+    var email = (e.parameter.email || "").trim().toLowerCase();
+    if (email && email.indexOf("@") !== -1) {
+      try {
+        var ss = SpreadsheetApp.openById(SHEET_ID);
+        var sheet = ss.getSheetByName(UNSUB_SHEET);
+        if (!sheet) {
+          sheet = ss.insertSheet(UNSUB_SHEET);
+          sheet.appendRow(["email", "unsubscribed_at"]);
+          sheet.setFrozenRows(1);
+        }
+        if (!isUnsubscribed(email)) {
+          sheet.appendRow([email, new Date().toISOString()]);
+        }
+        Logger.log("Unsubscribed: " + email);
+      } catch (err) {
+        Logger.log("Unsubscribe error: " + err.toString());
+      }
+      return HtmlService.createHtmlOutput(
+        '<html><head><meta charset="utf-8"><title>Unsubscribed - SaveRx.ai</title>' +
+        '<style>body{font-family:sans-serif;text-align:center;padding:80px 20px;color:#333;}' +
+        'h1{color:#0b2a4e;font-size:28px;}p{color:#64748b;font-size:16px;margin:12px 0;}' +
+        'a{color:#3b82f6;}</style></head><body>' +
+        "<h1>You've been unsubscribed</h1>" +
+        '<p>You won\'t receive any more emails from SaveRx.ai.</p>' +
+        '<p><a href="https://saverx.ai">Return to SaveRx.ai</a></p>' +
+        '</body></html>'
+      );
+    }
+  }
   return ContentService.createTextOutput("OK");
 }
 
@@ -332,9 +385,11 @@ function doPost(e) {
       Logger.log("Sheet error: " + sheetErr.toString());
     }
 
-    // 2. Send welcome email via Resend
+    // 2. Send welcome email via Resend (skip if previously unsubscribed)
     var category = getDrugCategory(drug);
-    sendResendEmail(email, drug, category, "welcome");
+    if (!isUnsubscribed(email)) {
+      sendResendEmail(email, drug, category, "welcome");
+    }
 
     // 3. Queue follow-up emails (day 3, day 7)
     queueFollowUps(email, drug, category);
