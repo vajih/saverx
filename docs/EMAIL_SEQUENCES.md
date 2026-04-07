@@ -1,17 +1,20 @@
 # SaveRx.ai — Email Sequences
-## MailerLite Automation Copy
 
-All emails use MailerLite's `{$drug}` dynamic field syntax.
+## Email Automation Copy
+
+Merge tags are replaced server-side by `applyMergeTags()` in `scripts/Code.gs` before sending via Resend.
 Fallback for empty drug field: "your prescription"
 
 ---
 
 ## AUTOMATION 1: Drug-Specific Welcome Series
-*For: GLP-1 Users, Cardiovascular, Diabetes/CGM groups*
+
+_For: GLP-1 Users, Cardiovascular, Diabetes/CGM groups_
 
 ---
 
 ### Email 1 — Day 0 (Immediate)
+
 **Internal name:** `SaveRx - Welcome - Drug Checkin`
 **Subject:** `Quick check-in about your {$drug|default:"prescription"} savings`
 **Preview text:** `Did your copay card actually work?`
@@ -34,6 +37,7 @@ Sometimes the manufacturer programs have eligibility quirks that trip people up 
 → [Check {$drug|default:"your"} savings at SaveRx.ai](https://saverx.ai)
 
 A few things that may have changed since your last visit:
+
 - Several manufacturer programs updated their income eligibility thresholds
 - New copay assistance programs were added for FreeStyleLibre, Dymista, and Trulance
 - We added a comparison tool showing which program saves the most per fill
@@ -42,11 +46,13 @@ Stay well,
 **The SaveRx Team**
 
 ---
-*You're receiving this because you looked up prescription savings at SaveRx.ai. [Unsubscribe](#)*
+
+_You're receiving this because you looked up prescription savings at SaveRx.ai. [Unsubscribe](#)_
 
 ---
 
 ### Email 2 — Day 3
+
 **Internal name:** `SaveRx - Insurance Check - Drug Specific`
 **Subject:** `Are you paying too much for {$drug|default:"your medication"}?`
 **Preview text:** `Your insurance plan may not be optimized for this drug`
@@ -75,11 +81,13 @@ Questions? Reply to this email — we read every one.
 **The SaveRx Team**
 
 ---
-*[Unsubscribe](#)*
+
+_[Unsubscribe](#)_
 
 ---
 
 ### Email 3 — Day 7
+
 **Internal name:** `SaveRx - GoodRx Comparison`
 **Subject:** `One more option for {$drug|default:"your prescription"} you may not have seen`
 **Preview text:** `GoodRx vs. manufacturer copay — which wins?`
@@ -93,16 +101,18 @@ Hi,
 
 Last one from us for a while — we promise.
 
-A question we get a lot: *"Should I use the manufacturer copay card or a GoodRx coupon?"*
+A question we get a lot: _"Should I use the manufacturer copay card or a GoodRx coupon?"_
 
 The answer depends entirely on your situation:
 
 **Use the manufacturer copay card if:**
+
 - You have commercial (employer) insurance
 - Your drug is brand-name only (no generic available)
 - The manufacturer program is still accepting new enrollees
 
 **Use GoodRx if:**
+
 - You're uninsured or underinsured
 - Your insurance doesn't cover {$drug|default:"this drug"}
 - You're in Medicare (copay cards often can't be used with Medicare)
@@ -116,16 +126,19 @@ Take care,
 **The SaveRx Team**
 
 ---
-*[Unsubscribe](#)*
+
+_[Unsubscribe](#)_
 
 ---
 
 ## AUTOMATION 2: General Welcome Series
-*For: General Savings group (newsletter signups, N/A drug)*
+
+_For: General Savings group (newsletter signups, N/A drug)_
 
 ---
 
 ### Email 1 — Day 0 (Immediate)
+
 **Internal name:** `SaveRx - General Welcome`
 **Subject:** `Welcome to SaveRx — here's what we do`
 **Preview text:** `Official savings programs most people don't know about`
@@ -143,6 +156,7 @@ Here's the short version of what we do: we find **official manufacturer savings 
 These aren't sketchy discount cards. They're programs run by Pfizer, Novo Nordisk, Amgen, and other manufacturers that can bring a $500+/month prescription down to $0–$35/month for eligible patients.
 
 **Some of the drugs we cover:**
+
 - **Ozempic / Wegovy / Mounjaro** (GLP-1 medications)
 - **Repatha / Eliquis / Entresto** (cardiovascular)
 - **FreeStyleLibre** (continuous glucose monitors)
@@ -157,6 +171,7 @@ If you're looking for a specific drug and don't see it, reply to this email with
 ---
 
 ### Email 2 — Day 5
+
 **Internal name:** `SaveRx - GLP1 Awareness`
 **Subject:** `Do you know someone on Ozempic or Wegovy?`
 **Preview text:** `These programs can save $400+/month`
@@ -184,35 +199,20 @@ These programs have enrollment limits and eligibility windows — it's worth che
 **The SaveRx Team**
 
 ---
-*[Unsubscribe](#)*
+
+_[Unsubscribe](#)_
 
 ---
 
 ## Email Personalization Reference
 
-### MailerLite Dynamic Field Syntax
-```
-{$drug}                           — renders drug name
-{$drug|default:"your medication"} — renders drug name or fallback
-{$source}                         — renders source (internal use only)
-{$drug_category}                  — renders category (glp1/cardiovascular/etc)
-```
+### Merge Tag Reference
+These are handled by applyMergeTags() in scripts/Code.gs:
+- drug name: {{$subscriber.fields.drug}}
+- URL slug: {{$subscriber.fields.drug|slugify}}
+- unsubscribe URL: {{$unsubscribe}}
 
-### Subject Line Personalization Examples
-| Template | Rendered Example |
-|----------|-----------------|
-| `Check-in about your {$drug} savings` | Check-in about your Repatha savings |
-| `Are you paying too much for {$drug}?` | Are you paying too much for Ozempic? |
-| `Your {$drug} copay card update` | Your FreeStyleLibre copay card update |
-
-### Conditional Content Block (MailerLite syntax)
-Use in email body when you want drug-specific paragraphs:
-```
-{% if drug_category == "glp1" %}
-  GLP-1 specific content here...
-{% elsif drug_category == "cardiovascular" %}
-  Cardiovascular specific content here...
-{% else %}
-  General content here...
-{% endif %}
-```
+### Subject Line Templates (EMAIL_SUBJECTS in Code.gs)
+- welcome: Your {{drug}} savings are waiting - SaveRx.ai
+- follow-up-1: Have you enrolled in your {{drug}} savings yet?
+- follow-up-2: Last reminder: your {{drug}} savings program

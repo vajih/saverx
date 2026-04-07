@@ -23,7 +23,8 @@ var QUEUE_SHEET = "EmailQueue";
 var HONEYPOT = "website";
 var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
 var EMAIL_BASE_URL = "https://saverx.ai/emails/";
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+var SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
 var UNSUB_SHEET = "Unsubscribes";
 
 // --- Drug category mapping ---
@@ -125,7 +126,8 @@ function applyMergeTags(html, drug, toEmail) {
   var slug = slugify(drug);
   html = html.replace(/\{\$subscriber\.fields\.drug\|slugify\}/g, slug);
   html = html.replace(/\{\$subscriber\.fields\.drug\}/g, drug);
-  var unsubUrl = SCRIPT_URL + "?action=unsubscribe&email=" + encodeURIComponent(toEmail);
+  var unsubUrl =
+    SCRIPT_URL + "?action=unsubscribe&email=" + encodeURIComponent(toEmail);
   html = html.replace(/\{\$unsubscribe\}/g, unsubUrl);
   return html;
 }
@@ -314,10 +316,7 @@ function createHourlyTrigger() {
       return;
     }
   }
-  ScriptApp.newTrigger("processEmailQueue")
-    .timeBased()
-    .everyHours(1)
-    .create();
+  ScriptApp.newTrigger("processEmailQueue").timeBased().everyHours(1).create();
   Logger.log("Hourly trigger created for processEmailQueue.");
 }
 
@@ -344,13 +343,13 @@ function doGet(e) {
       }
       return HtmlService.createHtmlOutput(
         '<html><head><meta charset="utf-8"><title>Unsubscribed - SaveRx.ai</title>' +
-        '<style>body{font-family:sans-serif;text-align:center;padding:80px 20px;color:#333;}' +
-        'h1{color:#0b2a4e;font-size:28px;}p{color:#64748b;font-size:16px;margin:12px 0;}' +
-        'a{color:#3b82f6;}</style></head><body>' +
-        "<h1>You've been unsubscribed</h1>" +
-        '<p>You won\'t receive any more emails from SaveRx.ai.</p>' +
-        '<p><a href="https://saverx.ai">Return to SaveRx.ai</a></p>' +
-        '</body></html>'
+          "<style>body{font-family:sans-serif;text-align:center;padding:80px 20px;color:#333;}" +
+          "h1{color:#0b2a4e;font-size:28px;}p{color:#64748b;font-size:16px;margin:12px 0;}" +
+          "a{color:#3b82f6;}</style></head><body>" +
+          "<h1>You've been unsubscribed</h1>" +
+          "<p>You won't receive any more emails from SaveRx.ai.</p>" +
+          '<p><a href="https://saverx.ai">Return to SaveRx.ai</a></p>' +
+          "</body></html>",
       );
     }
   }

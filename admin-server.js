@@ -30,8 +30,7 @@ function loadEnv() {
 }
 loadEnv();
 
-const ML_API = 'https://connect.mailerlite.com/api';
-const ML_KEY = process.env.MAILERLITE_API_KEY || '';
+const CSV_PATH = path.join(__dirname, 'data', 'saverx-leads-deduped.csv');
 
 // ─── Cache ───────────────────────────────────────────────────────────────────
 let _cache = { data: null, ts: 0, error: null };
@@ -40,59 +39,77 @@ function isCacheFresh() {
   return _cache.data && (Date.now() - _cache.ts) < CACHE_TTL_MS;
 }
 
-// ─── MailerLite API helpers ───────────────────────────────────────────────────
-async function mlFetch(path) {
-  if (!ML_KEY) throw new Error('MAILERLITE_API_KEY not set in .env');
-  const res = await fetch(`${ML_API}${path}`, {
-    headers: {
-      'Authorization': `Bearer ${ML_KEY}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  if (res.status === 401) throw new Error('MailerLite API key is invalid or expired. Get a new token from app.mailerlite.com → Integrations → API.');
-  if (!res.ok) throw new Error(`MailerLite API error: ${res.status} ${res.statusText}`);
-  return res.json();
+// ─── CSV helpers ─────────────────────────────────────────────────────────────
+function getDrugCategory(drug) {
+  if (!drug || drug === 'N/A') return 'general';
+  const d = drug.toLowerCase();
+  if (['ozempic','wegovy','mounjaro','zepbound','saxenda','victoza','rybelsus','trulicity','semaglutide','tirzepatide','liraglutide'].some(n => d.includes(n))) return 'glp1';
+  if (['repatha','entresto','eliquis','xarelto','brilinta','plavix','corlanor','evkeeza','camzyos'].some(n => d.includes(n))) return 'cardiovascular';
+  if (['jardiance','farxiga','freestylelibre','dexcom','metformin','januvia'].some(n => d.includes(n))) return 'diabetes';
+  return 'general';
+}
+
+function parseCSV(content) {
+  const lines = content.split('\n').filter(l => l.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    // Simple CSV split (fields don't contain commas in our data)
+    const parts = lines[i].split(',');
+    if (parts.length < 3) continue;
+    rows.push({
+      timestamp: parts[0].trim(),
+      email: parts[1].trim(),
+      drug: parts[2].trim(),
+    });
+  }
+  return rows;
 }
 
 async function fetchStats() {
-  // Run requests in parallel
-  const [groupsRes, subsRes, recentRes] = await Promise.all([
-    mlFetch('/groups?limit=25&sort=name'),
-    mlFetch('/subscribers?filter[status]=active&limit=1'),
-    mlFetch('/subscribers?filter[status]=active&sort=-subscribed_at&limit=20'),
-  ]);
+  if (!fs.existsSync(CSV_PATH)) throw new Error(`CSV not found at ${CSV_PATH}. Export leads from Google Sheet first.`);
 
-  // Subscribers added in the last 7 days
+  const content = fs.readFileSync(CSV_PATH, 'utf8');
+  const rows = parseCSV(content);
+
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const recentSubscribers = (recentRes.data || []).filter(s => {
-    const d = new Date(s.subscribed_at || s.created_at);
-    return d.getTime() > sevenDaysAgo;
-  });
 
-  // Group totals for percentage chart
-  const groups = (groupsRes.data || []).map(g => ({
-    id: g.id,
-    name: g.name,
-    total: g.active_count ?? 0,
-    openRate: g.open_rate ? (g.open_rate.float * 100).toFixed(1) : null,
-    clickRate: g.click_rate ? (g.click_rate.float * 100).toFixed(1) : null,
-  }));
+  // Category breakdown
+  const categoryCounts = { glp1: 0, cardiovascular: 0, diabetes: 0, general: 0 };
+  let newThisWeek = 0;
 
-  const totalActive = subsRes.total ?? 0;
+  for (const row of rows) {
+    const cat = getDrugCategory(row.drug);
+    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    // Timestamp format: M/D/YYYY H:MM:SS
+    const d = new Date(row.timestamp);
+    if (!isNaN(d.getTime()) && d.getTime() > sevenDaysAgo) newThisWeek++;
+  }
 
-  const recent = (recentRes.data || []).slice(0, 15).map(s => ({
-    email: s.email,
-    drug: s.fields?.drug || '—',
-    category: s.fields?.drug_category || '—',
-    date: s.subscribed_at || s.created_at,
+  const CATEGORY_LABELS = {
+    glp1: 'GLP-1 Users',
+    cardiovascular: 'Cardiovascular',
+    diabetes: 'Diabetes & CGM',
+    general: 'General Savings',
+  };
+
+  const groups = Object.entries(categoryCounts)
+    .filter(([, count]) => count > 0)
+    .map(([key, count]) => ({ id: key, name: CATEGORY_LABELS[key], total: count }));
+
+  const recent = rows.slice(-15).reverse().map(r => ({
+    email: r.email,
+    drug: r.drug || '—',
+    category: getDrugCategory(r.drug),
+    date: new Date(r.timestamp).toISOString(),
   }));
 
   return {
-    totalActive,
-    newThisWeek: recentSubscribers.length,
+    totalActive: rows.length,
+    newThisWeek,
     groups,
     recent,
     fetchedAt: new Date().toISOString(),
+    source: 'csv',
   };
 }
 
@@ -150,11 +167,8 @@ server.listen(PORT, () => {
   console.log('  ✅  SaveRx.ai Admin Dashboard');
   console.log(`  🌐  http://localhost:${PORT}`);
   console.log('');
+  console.log('  Reads from data/saverx-leads-deduped.csv');
   console.log('  Auto-refreshes every 60 seconds.');
   console.log('  Press Ctrl+C to stop.');
   console.log('');
-  if (!ML_KEY) {
-    console.warn('  ⚠️   MAILERLITE_API_KEY is not set in .env');
-    console.warn('       Add it and restart the server.');
-  }
 });

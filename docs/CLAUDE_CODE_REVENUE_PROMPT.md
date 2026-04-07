@@ -1,4 +1,5 @@
 # Claude Code — SaveRx Revenue Build Prompt
+
 > Copy the prompt below and paste it into Claude Code (in VSCode or terminal).
 > Run it from the root of the `saverx/` directory.
 > Claude Code will read the spec files and implement each feature step by step.
@@ -24,8 +25,7 @@ Cloudflare Worker AI chat proxy.
 Before writing any code, read these files in this order:
 1. ROADMAP.md — the strategic context and master to-do list
 2. docs/REVENUE_SPEC.md — the technical specification for all 5 revenue features
-3. docs/MAILERLITE_SPEC.md — the MailerLite integration architecture
-4. docs/EMAIL_SEQUENCES.md — the email copy and sequences
+3. docs/EMAIL_SEQUENCES.md — the email copy and sequences
 
 Then implement the following features in priority order. After each feature,
 confirm it is complete before moving to the next.
@@ -73,13 +73,13 @@ Rules:
 
 FEATURE 3: Email Sequence CTA Updates (Priority: High)
 
-I will update the MailerLite emails manually, but please:
+Update the follow-up email templates in the `emails/` folder to include affiliate CTAs:
 - Create docs/EMAIL_UPDATES.md with the exact updated copy for:
   - GLP-1 Email 2 addition (the bottom append block)
   - GLP-1 Email 3 full rewrite
   - General Email 2 addition
 - Include the correct UTM parameters from the spec
-- Format it clearly so I can copy-paste each section directly into MailerLite
+- Format it clearly for editing the HTML files in `emails/` directly
 
 FEATURE 4: AI Chat Upgrade (Priority: Medium)
 
@@ -127,6 +127,7 @@ After all features are complete:
 If you want to build one feature at a time, use these individual prompts:
 
 ### Feature 1 Only — Affiliate CTAs
+
 ```
 Read ROADMAP.md and docs/REVENUE_SPEC.md.
 Implement Feature 1 (GLP-1 Affiliate CTA Component) only.
@@ -136,6 +137,7 @@ Confirm each file when done.
 ```
 
 ### Feature 2 Only — Comparison Page
+
 ```
 Read ROADMAP.md and docs/REVENUE_SPEC.md.
 Create drugs/glp1-online.html per Feature 2 spec.
@@ -144,6 +146,7 @@ email capture, affiliate cards, internal links, and legal disclosures.
 ```
 
 ### Feature 4 Only — Chat Upgrade
+
 ```
 Read docs/REVENUE_SPEC.md Feature 4.
 Modify saverx-chat-proxy/src/index.js to add GLP-1 intent detection and
@@ -173,6 +176,7 @@ When using Claude Code, these techniques get better results:
 Once Claude Code has implemented the features:
 
 ### 1. Test locally
+
 ```bash
 # Serve the site locally to check all pages
 npx serve . -p 8080
@@ -182,22 +186,26 @@ npx serve . -p 8080
 ```
 
 ### 2. Deploy drug pages to Cloudflare
+
 ```bash
 wrangler pages deploy . --project-name saverx
 ```
 
 ### 3. Deploy Worker changes
+
 ```bash
 cd saverx-chat-proxy
 wrangler deploy
 ```
 
 ### 4. Verify live
+
 - Check saverx.ai/drugs/ozempic.html for affiliate CTA
 - Check saverx.ai/drugs/glp1-online.html for comparison page
 - Test chat on any drug page with "how do I get Ozempic online?"
 
 ### 5. Set up affiliate tracking in GA4
+
 - Go to GA4 → Configure → Events → Mark `affiliate_click` as a conversion
 - Create a GA4 audience: "Clicked affiliate link" for retargeting
 
@@ -206,9 +214,11 @@ wrangler deploy
 ## Reference: Current Google Apps Script Endpoint
 
 The email capture form on all drug pages submits to:
+
 ```
 https://script.google.com/macros/s/[DEPLOYMENT_ID]/exec
 ```
+
 POST body: `{ email, drug, source }`
 
-The new MailerLite-integrated Code.gs (at `scripts/Code.gs`) must be deployed to this same endpoint. Until it is deployed, keep all forms pointing to the current endpoint.
+The current `scripts/Code.gs` is deployed to this endpoint. Do not change the deployment URL.

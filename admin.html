@@ -61,7 +61,7 @@
     <div id="error-banner" class="hidden bg-red-950 border border-red-800 text-red-300 rounded-lg px-5 py-4 text-sm">
       <strong class="font-semibold">Connection error:</strong>
       <span id="error-msg"></span>
-      <div class="mt-1 text-red-400 text-xs">Make sure <code>admin-server.js</code> is running and your <code>.env</code> has a valid MailerLite API key.</div>
+      <div class="mt-1 text-red-400 text-xs">Make sure <code>admin-server.js</code> is running and <code>data/saverx-leads-deduped.csv</code> exists.</div>
     </div>
 
     <!-- ── Stat Cards ─────────────────────────────────────────────── -->
@@ -80,9 +80,9 @@
       </div>
 
       <div class="stat-card rounded-xl p-5 border border-slate-800">
-        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Subscriber Groups</p>
+        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Lead Categories</p>
         <p id="stat-groups" class="text-3xl font-bold text-violet-400 skeleton min-h-[2.25rem]">&nbsp;</p>
-        <p class="text-slate-500 text-xs mt-1">Drug categories</p>
+        <p class="text-slate-500 text-xs mt-1">GLP-1, Cardio, Diabetes, General</p>
       </div>
 
       <div class="stat-card rounded-xl p-5 border border-slate-800">
@@ -100,7 +100,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          Subscriber Groups
+          Lead Categories
         </h2>
         <div id="groups-list" class="space-y-3">
           <!-- Skeletons -->
@@ -116,7 +116,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col">
         <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-          Group Distribution
+          Category Distribution
         </h2>
         <div class="flex-1 flex items-center justify-center">
           <div class="relative w-52 h-52">
@@ -135,7 +135,7 @@
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
       <h2 class="text-slate-300 font-semibold text-sm mb-4 flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-violet-500"></span>
-        Recent Subscribers
+        Recent Leads
         <span class="ml-auto text-slate-500 text-xs font-normal">Most recent 15</span>
       </h2>
       <div class="overflow-x-auto">
@@ -165,12 +165,12 @@
           Quick Links
         </h2>
         <div class="space-y-2">
-          <a href="https://app.mailerlite.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+          <a href="https://resend.com/emails" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
             <div class="flex items-center gap-3">
               <span class="text-base">📧</span>
               <div>
-                <p class="text-sm font-medium text-slate-200">MailerLite Dashboard</p>
-                <p class="text-xs text-slate-500">Campaigns, automations, subscribers</p>
+                <p class="text-sm font-medium text-slate-200">Resend Dashboard</p>
+                <p class="text-xs text-slate-500">Transactional email logs + delivery status</p>
               </div>
             </div>
             <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
@@ -200,7 +200,7 @@
               <span class="text-base">⚙️</span>
               <div>
                 <p class="text-sm font-medium text-slate-200">Google Apps Script</p>
-                <p class="text-xs text-slate-500">Email capture + MailerLite sync backend</p>
+                <p class="text-xs text-slate-500">Email capture + Resend delivery backend</p>
               </div>
             </div>
             <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
@@ -236,42 +236,28 @@
         </h2>
         <div class="space-y-2" id="revenue-checklist">
 
-          <!-- Email (MailerLite) -->
+          <!-- Email (Resend) -->
           <div class="text-xs text-slate-500 uppercase tracking-widest pt-1 pb-0.5">Email Revenue</div>
 
           <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
-            <span class="mt-0.5 text-base" id="chk-mailerlite">⬜</span>
+            <span class="mt-0.5 text-base">✅</span>
             <div>
-              <p class="text-sm font-medium text-slate-300">MailerLite API key (new format)</p>
-              <p class="text-xs text-slate-500">Get JWT token at app.mailerlite.com → Integrations → API</p>
+              <p class="text-sm font-medium text-slate-300">Resend.com email delivery</p>
+              <p class="text-xs text-slate-500">RESEND_API_KEY set in Apps Script Properties — domain verified</p>
+            </div>
+          </div>
+          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
+            <span class="mt-0.5 text-base" id="chk-redeploy">⬜</span>
+            <div>
+              <p class="text-sm font-medium text-slate-300">Redeploy Code.gs (new deployment)</p>
+              <p class="text-xs text-slate-500">doGet unsubscribe handler was added since last deploy</p>
             </div>
           </div>
           <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
             <span class="mt-0.5 text-base">⬜</span>
             <div>
-              <p class="text-sm font-medium text-slate-300">Run mailerlite-setup.js (create groups)</p>
-              <p class="text-xs text-slate-500"><code class="text-emerald-400">node scripts/mailerlite-setup.js</code></p>
-            </div>
-          </div>
-          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
-            <span class="mt-0.5 text-base">⬜</span>
-            <div>
-              <p class="text-sm font-medium text-slate-300">Import 252 existing leads</p>
-              <p class="text-xs text-slate-500"><code class="text-emerald-400">node scripts/mailerlite-import.js --csv data/saverx-leads.csv</code></p>
-            </div>
-          </div>
-          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
-            <span class="mt-0.5 text-base">⬜</span>
-            <div>
-              <p class="text-sm font-medium text-slate-300">Deploy updated Code.gs (live sync)</p>
-              <p class="text-xs text-slate-500">New signups auto-route to MailerLite groups</p>
-            </div>
-          </div>
-          <div class="checklist-item flex items-start gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50">
-            <span class="mt-0.5 text-base">⬜</span>
-            <div>
-              <p class="text-sm font-medium text-slate-300">Build MailerLite email sequences</p>
-              <p class="text-xs text-slate-500">3-email drug-specific + 2-email general (copy in EMAIL_SEQUENCES.md)</p>
+              <p class="text-sm font-medium text-slate-300">Run createHourlyTrigger() in Apps Script</p>
+              <p class="text-xs text-slate-500">Installs hourly follow-up email processor</p>
             </div>
           </div>
 
@@ -368,8 +354,9 @@
       // Groups list
       const groupsEl = document.getElementById('groups-list');
       const groups = (data.groups || []).filter(g => g.name !== 'All SaveRx Leads');
+      // Group list empty state
       if (!groups.length) {
-        groupsEl.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No groups found yet.<br><span class="text-xs">Run mailerlite-setup.js to create them.</span></p>';
+        groupsEl.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No leads found yet.<br><span class="text-xs">Export data from Google Sheet to data/saverx-leads-deduped.csv</span></p>';
       } else {
         const maxCount = Math.max(...groups.map(g => g.total), 1);
         groupsEl.innerHTML = groups.map((g, i) => {
@@ -407,7 +394,7 @@
             legend: { display: false },
             tooltip: {
               callbacks: {
-                label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} subscribers`
+                label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} leads`
               }
             }
           }
@@ -417,7 +404,7 @@
       // Recent subscribers table
       const tbody = document.getElementById('recent-table');
       if (!data.recent || !data.recent.length) {
-        tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">No subscribers imported yet. Run mailerlite-import.js to populate.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">No leads found. Export from Google Sheet to data/saverx-leads-deduped.csv</td></tr>';
       } else {
         tbody.innerHTML = data.recent.map(s => `
           <tr class="hover:bg-slate-800/30 transition-colors">
@@ -434,12 +421,7 @@
       const badge = document.getElementById('status-badge');
       const dot = badge.querySelector('.pulse-dot');
       dot.className = 'pulse-dot w-1.5 h-1.5 rounded-full bg-emerald-500';
-      document.getElementById('status-text').textContent = `Updated ${timeAgo(data.fetchedAt)}${data.cached ? ' (cached)' : ''}`;
-
-      // Check MailerLite connected (groups exist)
-      if (data.groups && data.groups.length > 0) {
-        document.getElementById('chk-mailerlite').textContent = '✅';
-      }
+      document.getElementById('status-text').textContent = `Updated ${timeAgo(data.fetchedAt)}${data.cached ? ' (cached)' : ''} — from CSV`;
     }
 
     function showError(msg) {

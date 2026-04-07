@@ -1,6 +1,7 @@
 # SaveRx.ai — Master Claude Code Prompt
+
 > This is the single, consolidated prompt to use in Claude Code.
-> It covers all build phases: MailerLite completion + all 5 revenue features.
+> It covers all 5 revenue build phases.
 > Paste the prompt under "FULL PROMPT" into Claude Code from the saverx/ root directory.
 
 ---
@@ -12,6 +13,7 @@ read `CLAUDE.md` for project context. You do not need to explain the project —
 just paste the prompt below.
 
 **Run Claude Code from terminal:**
+
 ```bash
 cd ~/Development/saverx
 claude
@@ -25,29 +27,6 @@ claude
 Read CLAUDE.md first for full project context. Then read the files listed under
 "Read before building" for each phase below. Implement each phase in order,
 confirming completion before proceeding to the next.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PHASE 0 — COMPLETE MAILERLITE FOUNDATION (do this first)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Read: docs/MAILERLITE_SPEC.md, docs/SETUP_GUIDE.md, scripts/Code.gs
-
-Status check — before writing any code, confirm the following by reading the
-files listed above:
-
-1. Does scripts/Code.gs have addToMailerLite() and getDrugCategory() functions?
-2. Does the MAILERLITE_GROUPS constant have real group IDs (not empty strings)?
-   - Check .env for MAILERLITE_GROUP_GLP1 etc. and verify they match Code.gs
-3. Does data/saverx-leads-deduped.csv exist?
-
-If Code.gs has empty group IDs, update MAILERLITE_GROUPS using the IDs from .env.
-
-Then verify scripts/mailerlite-import.js is ready to run by checking:
-- It reads from data/saverx-leads-deduped.csv (the deduped file)
-- It handles the CSV columns: Timestamp, Email, Drug, Source, UserAgent
-- Dry-run command is: node scripts/mailerlite-import.js --csv data/saverx-leads-deduped.csv --dry-run
-
-Report what you found and what (if anything) needed fixing.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE 1 — GLP-1 AFFILIATE CTA CARDS  [Highest revenue priority]
@@ -105,19 +84,19 @@ PHASE 3 — EMAIL SEQUENCE UPDATES (copy file only)
 
 Read: docs/EMAIL_SEQUENCES.md, docs/REVENUE_SPEC.md (Feature 3 section)
 
-Task: Create docs/EMAIL_UPDATES.md
+Task: Update the HTML email templates in `emails/` with affiliate CTAs.
 
-This file will contain the updated email copy for MailerLite. I will paste each
-section directly into the MailerLite dashboard — I am not editing MailerLite via code.
+Edit the following files (read each before modifying):
+1. `emails/glp1-follow-up-1.html` — APPEND affiliate block before the footer
+2. `emails/glp1-follow-up-2.html` — FULL REWRITE of the CTA section
+3. `emails/follow-up-1.html` — APPEND affiliate block before the footer
 
-The file should contain clearly separated, copy-paste-ready sections for:
-1. GLP-1 Email 2 — the affiliate block to APPEND at the bottom of existing email 2
-2. GLP-1 Email 3 — the FULL REWRITE of email 3 (subject line + body)
-3. General Email 2 — the affiliate block to APPEND at the bottom
+Merge tags are handled by `applyMergeTags()` in `scripts/Code.gs`. Use:
+{$subscriber.fields.drug} for drug name, {$subscriber.fields.drug|slugify} for slug.
 
-Each section should be formatted as plain text (not markdown) so it pastes cleanly
-into MailerLite's text editor. Include MailerLite dynamic field syntax:
-{$drug|default:"your medication"} where appropriate.
+Include correct UTM parameters on all affiliate links:
+?utm_source=saverx_email&utm_medium=email&utm_campaign=glp1-sequence&utm_content=email2
+(adjust utm_content per email)
 
 Include correct UTM parameters on all affiliate links:
 ?utm_source=saverx_email&utm_medium=email&utm_campaign=glp1-sequence&utm_content=email2
@@ -167,19 +146,17 @@ DEFINITION OF DONE
 
 After completing all phases, produce a completion report with:
 
-□ Phase 0: List any Code.gs fixes made and confirm import script is ready
 □ Phase 1: List all 8 drug pages modified + confirm CTA CSS added to components.css
 □ Phase 2: Confirm drugs/glp1-online.html created + 3 internal links added
-□ Phase 3: Confirm docs/EMAIL_UPDATES.md created with all 3 sections
+□ Phase 3: Confirm email templates in emails/ updated with affiliate CTAs
 □ Phase 4: Confirm saverx-chat-proxy/src/index.js modified + existing tests pass
 □ Phase 5: Confirm data/affiliates.json created
 
 For every file modified, state: filename | what changed | lines affected
 
-Then list the 3 manual steps I still need to do myself:
-1. What to run in the terminal (import script command)
-2. What to update in Google Apps Script dashboard
-3. What to paste into MailerLite dashboard
+Then list any manual steps remaining:
+1. Any Google Apps Script dashboard changes needed
+2. Any Cloudflare deploy commands needed
 ```
 
 ---
@@ -189,6 +166,7 @@ Then list the 3 manual steps I still need to do myself:
 If Claude Code loses context or you want to continue a specific phase:
 
 ### Resume Phase 1 (affiliate CTAs)
+
 ```
 Read CLAUDE.md and docs/REVENUE_SPEC.md Feature 1.
 I have already completed [list completed pages]. Continue adding the GLP-1 affiliate
@@ -197,6 +175,7 @@ Read the first remaining page before modifying anything.
 ```
 
 ### Resume Phase 2 (comparison page)
+
 ```
 Read CLAUDE.md and docs/REVENUE_SPEC.md Feature 2.
 Create drugs/glp1-online.html following the spec. Read drugs/ozempic.html first
@@ -205,6 +184,7 @@ data, email capture, and affiliate disclosure.
 ```
 
 ### Resume Phase 4 (Worker upgrade)
+
 ```
 Read CLAUDE.md and docs/REVENUE_SPEC.md Feature 4.
 Read saverx-chat-proxy/src/index.js in full before making changes.
@@ -229,11 +209,6 @@ wrangler pages deploy . --project-name saverx
 cd saverx-chat-proxy
 wrangler deploy
 cd ..
-
-# Import leads to MailerLite (run after Worker is deployed)
-node scripts/mailerlite-import.js --csv data/saverx-leads-deduped.csv --dry-run
-# If dry-run looks good:
-node scripts/mailerlite-import.js --csv data/saverx-leads-deduped.csv
 ```
 
 ---
@@ -242,18 +217,19 @@ node scripts/mailerlite-import.js --csv data/saverx-leads-deduped.csv
 
 These require human sign-up — do these while Claude Code is building:
 
-| Program | URL | Commission | Notes |
-|---------|-----|-----------|-------|
-| Hims & Hers | hims.com/partners | $30–$50/signup | GLP-1 weight loss program |
-| Ro Body | ro.co/affiliates | $30–$50/signup | Semaglutide program |
-| Calibrate | joincalibrate.com/affiliate | $40–$60/signup | Metabolic health |
-| Noom Med | noom.com/affiliate | $30/signup | GLP-1 program |
-| Found | joinfound.com/affiliate | $25–$40/signup | Weight management |
-| GoodRx Publisher | goodrx.com/business | $0.10–0.50/click | Price widget |
-| Google AdSense | adsense.google.com | CPM-based | Display ads |
-| eHealth | ehealthinsurance.com/affiliate | $30–$80/lead | Insurance |
+| Program          | URL                            | Commission       | Notes                     |
+| ---------------- | ------------------------------ | ---------------- | ------------------------- |
+| Hims & Hers      | hims.com/partners              | $30–$50/signup   | GLP-1 weight loss program |
+| Ro Body          | ro.co/affiliates               | $30–$50/signup   | Semaglutide program       |
+| Calibrate        | joincalibrate.com/affiliate    | $40–$60/signup   | Metabolic health          |
+| Noom Med         | noom.com/affiliate             | $30/signup       | GLP-1 program             |
+| Found            | joinfound.com/affiliate        | $25–$40/signup   | Weight management         |
+| GoodRx Publisher | goodrx.com/business            | $0.10–0.50/click | Price widget              |
+| Google AdSense   | adsense.google.com             | CPM-based        | Display ads               |
+| eHealth          | ehealthinsurance.com/affiliate | $30–$80/lead     | Insurance                 |
 
 Once affiliate links are approved, replace placeholder URLs in:
+
 1. `data/affiliates.json` — update all `*_url` fields
 2. Each GLP-1 drug page — find `HIMS_AFFILIATE_URL`, `RO_AFFILIATE_URL`, `CALIBRATE_AFFILIATE_URL`
 3. `drugs/glp1-online.html` — update all provider CTA links
