@@ -530,11 +530,38 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   <!-- Main JS (handles modal, featured rendering, forms, etc.) -->
   <script defer src="assets/scripts.js?v=2025-10-06a"></script>
 
-  <!-- Trigger Featured load from static JSON -->
+  <!-- Load top 30 drug cards: featured first (with prices), then fill from full list -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.renderFeaturedDrugs) {
-        window.renderFeaturedDrugs('/data/featured-drugs.json');
+    document.addEventListener('DOMContentLoaded', async function () {
+      const grid = document.getElementById('featured-cards');
+      if (!grid) return;
+      const SHOW = 30;
+      try {
+        const [featRes, allRes] = await Promise.all([
+          fetch('/data/featured-drugs.json', {cache:'no-cache'}),
+          fetch('/data/drugs.json', {cache:'no-cache'})
+        ]);
+        const featData = await featRes.json();
+        const allData  = await allRes.json();
+
+        const featured = (Array.isArray(featData) ? featData : featData.items || [])
+          .filter(x => String(x.active).toLowerCase() !== 'false')
+          .sort((a,b) => (a.priority ?? 999) - (b.priority ?? 999));
+
+        const allItems = Array.isArray(allData) ? allData : (allData.items || []);
+        grid.dataset.total = allItems.length;
+
+        const featNames = new Set(featured.map(f => (f.name||'').toLowerCase()));
+        const extras = allItems
+          .filter(d => !featNames.has((d.brand||d.name||'').toLowerCase()))
+          .sort((a,b) => (a.brand||a.name||'').localeCompare(b.brand||b.name||''))
+          .slice(0, SHOW - featured.length)
+          .map(d => ({ name: d.brand||d.name||'', url: d.url||`/drugs/${d.slug}/` }));
+
+        const merged = [...featured, ...extras].slice(0, SHOW);
+        if (window.renderFeaturedDrugs) window.renderFeaturedDrugs(merged);
+      } catch (err) {
+        console.error('Featured load error:', err);
       }
     });
   </script>
@@ -573,7 +600,8 @@ body.design-v2 section > :first-child{ margin-top: 0; }
 
       function updateCount(){
         const visible = INDEX.filter(el=>!el.hidden).length;
-        if(countEl) countEl.textContent = String(visible);
+        const total = grid?.dataset.total;
+        if(countEl) countEl.textContent = total ? `${visible} / ${total}` : String(visible);
       }
 
       function applyFilter(term){
@@ -587,7 +615,8 @@ body.design-v2 section > :first-child{ margin-top: 0; }
           el.hidden = !match;
           if(match) shown++;
         });
-        if(countEl) countEl.textContent = String(shown);
+        const total = grid?.dataset.total;
+        if(countEl) countEl.textContent = total ? `${shown} / ${total}` : String(shown);
         if(empty) empty.setAttribute('aria-hidden', String(shown>0));
       }
 
