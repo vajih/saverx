@@ -24,7 +24,7 @@ var HONEYPOT = "website";
 var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
 var EMAIL_BASE_URL = "https://saverx.ai/emails/";
 var SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwNy0A7VXRyFo8oWjqi0RsuV8U4u90ITCqFRubqm5FICBZFQAKdmCOBs6041yG3HM0lnQ/exec";
+  "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
 var UNSUB_SHEET = "Unsubscribes";
 
 // --- Drug category mapping ---
