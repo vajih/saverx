@@ -35,17 +35,17 @@ PHASE 1 — GLP-1 AFFILIATE CTA CARDS  [Highest revenue priority]
 Read: docs/REVENUE_SPEC.md (Feature 1 section), assets/css/components.css, assets/css/tokens.css
 
 Task: Add the affiliate CTA section to each of these 8 drug pages:
-- drugs/ozempic.html
-- drugs/wegovy.html
-- drugs/mounjaro.html
-- drugs/zepbound.html
-- drugs/saxenda.html
-- drugs/victoza.html
-- drugs/rybelsus.html
-- drugs/trulicity.html
+- drugs/ozempic/index.html
+- drugs/wegovy/index.html
+- drugs/mounjaro/index.html
+- drugs/zepbound/index.html
+- drugs/saxenda/index.html
+- drugs/victoza/index.html
+- drugs/rybelsus/index.html
+- drugs/trulicity/index.html
 
 Rules:
-- First READ one drug page (e.g. drugs/ozempic.html) to understand the existing
+- First READ one drug page (e.g. drugs/ozempic/index.html) to understand the existing
   structure before modifying any files
 - Insert the CTA block AFTER the savings/pricing section, BEFORE the email
   capture form — find the right location by reading the file
@@ -61,7 +61,7 @@ Rules:
 PHASE 2 — GLP-1 TELEHEALTH COMPARISON PAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Read: docs/REVENUE_SPEC.md (Feature 2 section), drugs/ozempic.html (for style reference)
+Read: docs/REVENUE_SPEC.md (Feature 2 section), drugs/ozempic/index.html (for style reference)
 
 Task: Create drugs/glp1-online.html
 
@@ -75,8 +75,8 @@ Rules:
 - Use the same email capture form + Google Apps Script endpoint as other drug pages
 - Add both affiliate disclosure and medical disclaimer from REVENUE_SPEC.md
 - Include GTM tag (copy from an existing drug page)
-- After creating the file, add an internal link to this page from drugs/ozempic.html,
-  drugs/wegovy.html, and drugs/mounjaro.html ("Compare GLP-1 online providers →")
+- After creating the file, add an internal link to this page from drugs/ozempic/index.html,
+  drugs/wegovy/index.html, and drugs/mounjaro/index.html ("Compare GLP-1 online providers →")
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PHASE 3 — EMAIL SEQUENCE UPDATES (copy file only)
@@ -178,7 +178,7 @@ Read the first remaining page before modifying anything.
 
 ```
 Read CLAUDE.md and docs/REVENUE_SPEC.md Feature 2.
-Create drugs/glp1-online.html following the spec. Read drugs/ozempic.html first
+Create drugs/glp1-online.html following the spec. Read drugs/ozempic/index.html first
 to match the exact styling. Include all FAQs with full answers, JSON-LD structured
 data, email capture, and affiliate disclosure.
 ```
@@ -199,7 +199,7 @@ Preserve all existing chat functionality.
 ```bash
 # Test locally before deploying
 npx serve . -p 8080
-# Check: http://localhost:8080/drugs/ozempic.html  (affiliate CTA visible?)
+# Check: http://localhost:8080/drugs/ozempic/index.html  (affiliate CTA visible?)
 # Check: http://localhost:8080/drugs/glp1-online.html  (comparison page works?)
 
 # Deploy static pages to Cloudflare

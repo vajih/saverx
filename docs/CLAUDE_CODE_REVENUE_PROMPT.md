@@ -36,14 +36,14 @@ FEATURE 1: GLP-1 Affiliate CTA Component (Priority: Immediate)
 
 Add the affiliate CTA section from docs/REVENUE_SPEC.md (Feature 1) to these
 drug pages:
-- drugs/ozempic.html
-- drugs/wegovy.html
-- drugs/mounjaro.html
-- drugs/zepbound.html
-- drugs/saxenda.html
-- drugs/victoza.html
-- drugs/rybelsus.html
-- drugs/trulicity.html
+- drugs/ozempic/index.html
+- drugs/wegovy/index.html
+- drugs/mounjaro/index.html
+- drugs/zepbound/index.html
+- drugs/saxenda/index.html
+- drugs/victoza/index.html
+- drugs/rybelsus/index.html
+- drugs/trulicity/index.html
 
 Rules:
 - Insert the CTA block AFTER the savings/pricing section and BEFORE the email
@@ -159,11 +159,11 @@ append the affiliate recommendation block. Preserve all existing functionality.
 
 When using Claude Code, these techniques get better results:
 
-**Be specific about file paths.** Claude Code works best when you name exact files. Vague instructions like "update the drug pages" produce worse results than "update drugs/ozempic.html".
+**Be specific about file paths.** Claude Code works best when you name exact files. Vague instructions like "update the drug pages" produce worse results than "update drugs/ozempic/index.html".
 
-**Ask for confirmation after each file.** Add "Confirm when ozempic.html is complete before moving to wegovy.html" to prevent Claude from batching changes incorrectly.
+**Ask for confirmation after each file.** Add "Confirm when drugs/ozempic/index.html is complete before moving to drugs/wegovy/index.html" to prevent Claude from batching changes incorrectly.
 
-**Request a diff before applying.** For large changes, say "Show me the diff for ozempic.html before making any changes" to review first.
+**Request a diff before applying.** For large changes, say "Show me the diff for drugs/ozempic/index.html before making any changes" to review first.
 
 **Run in sequence, not parallel.** The features build on each other. Feature 2 (comparison page) should reference the affiliate component from Feature 1.
 
@@ -180,7 +180,7 @@ Once Claude Code has implemented the features:
 ```bash
 # Serve the site locally to check all pages
 npx serve . -p 8080
-# Open http://localhost:8080/drugs/ozempic.html
+# Open http://localhost:8080/drugs/ozempic/index.html
 # Open http://localhost:8080/drugs/glp1-online.html
 # Open http://localhost:8080/coverage-check.html
 ```
@@ -200,8 +200,8 @@ wrangler deploy
 
 ### 4. Verify live
 
-- Check saverx.ai/drugs/ozempic.html for affiliate CTA
-- Check saverx.ai/drugs/glp1-online.html for comparison page
+- Check saverx.ai/drugs/ozempic/index.html for affiliate CTA
+- Check saverx.ai/drugs/glp1-online/ for comparison page
 - Test chat on any drug page with "how do I get Ozempic online?"
 
 ### 5. Set up affiliate tracking in GA4

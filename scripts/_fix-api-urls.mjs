@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 
 const OLD_URL = 'https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec';
-const NEW_URL = 'https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec';
+const NEW_URL = 'https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec';
 
 let filesFixed = 0;
 let filesSkipped = 0;

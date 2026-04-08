@@ -208,8 +208,8 @@
 
   <script>
     // Set your live Apps Script URL here
-    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
-    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbwNy0A7VXRyFo8oWjqi0RsuV8U4u90ITCqFRubqm5FICBZFQAKdmCOBs6041yG3HM0lnQ/exec";
+    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbwNy0A7VXRyFo8oWjqi0RsuV8U4u90ITCqFRubqm5FICBZFQAKdmCOBs6041yG3HM0lnQ/exec";
   </script>
 </head>
 
@@ -335,6 +335,42 @@
       </div>
     </section>
   </main>
+
+  <!-- AFFILIATE CTA: GLP-1 Online Access -->
+  <section class="affiliate-cta" id="glp1-online-access">
+    <div class="affiliate-cta-header">
+      <h2>Get Wegovy Online — Without Insurance</h2>
+      <p>Telehealth providers can prescribe GLP-1 medications online, often at a fraction of the retail price. <a href="/drugs/glp1-online.html" style="color:#15803d;">Compare all providers →</a></p>
+    </div>
+    <div class="affiliate-cards">
+      <a class="affiliate-card" href="https://www.hims.com/weight-loss?utm_source=saverx&amp;utm_medium=referral" target="_blank" rel="noopener" data-provider="hims" data-drug="wegovy" onclick="trackAffiliateClick('hims','wegovy')">
+        <div class="affiliate-card-name">Hims &amp; Hers</div>
+        <div class="affiliate-card-price">From $199/month</div>
+        <div class="affiliate-card-note">No insurance needed</div>
+        <div class="affiliate-card-cta">Get Started →</div>
+      </a>
+      <a class="affiliate-card" href="https://ro.co/weight-loss?utm_source=saverx&amp;utm_medium=referral" target="_blank" rel="noopener" data-provider="ro" data-drug="wegovy" onclick="trackAffiliateClick('ro','wegovy')">
+        <div class="affiliate-card-name">Ro Body</div>
+        <div class="affiliate-card-price">From $145/month</div>
+        <div class="affiliate-card-note">Includes provider consultation</div>
+        <div class="affiliate-card-cta">Get Started →</div>
+      </a>
+      <a class="affiliate-card" href="https://joincalibrate.com?utm_source=saverx&amp;utm_medium=referral" target="_blank" rel="noopener" data-provider="calibrate" data-drug="wegovy" onclick="trackAffiliateClick('calibrate','wegovy')">
+        <div class="affiliate-card-name">Calibrate</div>
+        <div class="affiliate-card-price">From $249/month</div>
+        <div class="affiliate-card-note">Metabolic health program</div>
+        <div class="affiliate-card-cta">Get Started →</div>
+      </a>
+    </div>
+    <p class="affiliate-disclosure">SaveRx.ai earns a commission on purchases made through affiliate links. This does not affect the prices you pay or our editorial independence.</p>
+  </section>
+  <script>
+    function trackAffiliateClick(provider, drug) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'affiliate_click', { event_category: 'revenue', event_label: provider, drug: drug, provider: provider });
+      }
+    }
+  </script>
 
   <!-- Footer email capture (kept as-is) -->
   <section class="cta-band" aria-labelledby="ctaTitle">

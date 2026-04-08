@@ -48,19 +48,26 @@ saverx.ai (Cloudflare Pages)
 - `scripts/Code.gs` — Apps Script with Resend email delivery + follow-up queue
 - `docs/EMAIL_SEQUENCES.md` — full email copy for all sequences
 - `admin-server.js` + `admin.html` — local admin dashboard at localhost:3001
+- **GLP-1 affiliate CTA cards** on 7 drug pages (ozempic, wegovy, mounjaro, zepbound, saxenda, rybelsus, trulicity)
+- **`drugs/glp1-online.html`** — GLP-1 telehealth comparison page (5 providers, FAQs, JSON-LD)
+- **`docs/EMAIL_UPDATES.md`** — email CTA copy with UTM params for GLP-1 sequences
+- **`data/affiliates.json`** — affiliate provider data (placeholder URLs pending approval)
+- **AI chat upgrade** — GLP-1 intent detection + affiliate recommendations in Worker
+- **`SETUP_GUIDE.md`** — step-by-step affiliate setup and deployment guide
+- `sitemap.xml` updated with glp1-online.html at priority 0.9
 
 ### In Progress 🔄
 
-- [ ] Redeploy `scripts/Code.gs` as new deployment (doGet unsubscribe handler added)
+- [ ] Redeploy `scripts/Code.gs` as new Web App deployment (current URL is returning 404 — see SETUP_GUIDE.md Part 5)
 - [ ] Run `createHourlyTrigger()` in Apps Script editor (installs hourly follow-up processor)
-- [ ] Apply for Google AdSense, Hims & Hers affiliate, Ro affiliate, GoodRx Publisher API
+- [ ] Apply for affiliate programs: Hims & Hers, Ro, Calibrate, Noom, Found (see SETUP_GUIDE.md Part 1)
+- [ ] Apply for Google AdSense, GoodRx Publisher API
+- [ ] Replace placeholder affiliate URLs once programs approve (see SETUP_GUIDE.md Part 2)
 
 ### Not Started ⬜
 
-- GLP-1 affiliate CTA cards on drug pages (Phase 1 — highest priority revenue)
-- GLP-1 telehealth comparison page `/drugs/glp1-online.html` (Phase 2)
-- AI chat upgrade — revenue-aware responses (Phase 4)
 - Insurance coverage check tool `/coverage-check.html` (Phase 5)
+- Update email HTML files with affiliate CTAs from `docs/EMAIL_UPDATES.md` (after affiliate approval)
 
 ---
 
@@ -72,11 +79,17 @@ saverx.ai (Cloudflare Pages)
 | `ROADMAP.md`                     | Strategic roadmap, all phases, master to-do checklist, revenue projections   |
 | `docs/REVENUE_SPEC.md`           | Technical specs for all 5 revenue features (HTML, CSS, JS, JSON)             |
 | `docs/EMAIL_SEQUENCES.md`        | Complete email copy for all automation sequences                             |
+| `docs/EMAIL_UPDATES.md`          | Updated email copy with affiliate CTAs for MailerLite/Resend sequences       |
 | `docs/MASTER_PROMPT.md`          | Consolidated Claude Code prompt for all build phases                         |
+| `SETUP_GUIDE.md`                 | Step-by-step affiliate setup, URL replacement, deployment, and verification  |
+| `HANDOFF.md`                     | Session handoff brief — architecture, credentials, outstanding tasks         |
+| `ROADMAP.md`                     | Strategic roadmap, all phases, master to-do checklist, revenue projections   |
 | `scripts/Code.gs`                | Google Apps Script — email capture + Resend email delivery + follow-up queue |
 | `scripts/dedup-csv.mjs`          | Deduplicates the leads CSV                                                   |
+| `emails/*.html`                  | 12 email templates (served from Cloudflare Pages at saverx.ai/emails/)       |
 | `data/saverx-leads.csv`          | Raw exported leads from Google Sheet                                         |
-| `data/saverx-leads-deduped.csv`  | Deduplicated leads (use this for import)                                     |
+| `data/saverx-leads-deduped.csv`  | Deduplicated leads                                                           |
+| `data/affiliates.json`           | Affiliate provider data + placeholder URLs (update after approval)           |
 | `saverx-chat-proxy/src/index.js` | Cloudflare Worker — AI chat proxy                                            |
 | `assets/css/components.css`      | Shared CSS components                                                        |
 | `assets/css/tokens.css`          | Design tokens (colors, spacing, fonts)                                       |
@@ -128,7 +141,7 @@ Each drug page follows this pattern:
 The Google Apps Script endpoint:
 
 ```
-https://script.google.com/macros/s/AKfycbyPArHul2llNlpy2YIW9-4X1G6AQSLmYw9jPpUoGx_KdAhIwcR_-ebRme6b0EVk7znUDw/exec
+https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec
 ```
 
 POST body: `{ email, drug, source }`
@@ -156,7 +169,7 @@ Category drives which email template is sent (12 templates in `emails/`).
 2. The email capture form must always return success to the user — Resend errors must be silent
 3. Do not change the Google Apps Script web app deployment URL
 4. Do not remove GTM tags from any drug page — they power GA4 analytics
-5. All 358 drug pages must remain functional after any CSS or JS changes
+5. All 361 drug pages must remain functional after any CSS or JS changes
 6. Drug pages are static HTML — no build step, no bundler, no framework
 
 **Never commit:**

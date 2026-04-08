@@ -67,7 +67,7 @@ User clicks Unsubscribe link in email
 ### Apps Script
 | Variable | Value |
 |---|---|
-| **Live deployment URL** | `https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec` |
+| **Live deployment URL** | `https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec` |
 | **Old URL (retired)** | `AKfycbyPArHul2llNlpy2YIW9-...` — no longer used |
 | **Google Sheet ID** | `19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE` |
 | **Script Property** | `RESEND_API_KEY = re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` |
@@ -232,7 +232,7 @@ Lead gen tool. Spec in `docs/REVENUE_SPEC.md` Feature 5.
 ```bash
 # Test E2E via Apps Script (replace email as needed)
 REDIR=$(curl -s -o /dev/null -w "%{redirect_url}" -X POST \
-  "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec" \
+  "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "email=TEST@example.com&drug=Ozempic&source=test")
 curl -s -L "$REDIR"

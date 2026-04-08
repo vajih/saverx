@@ -11,8 +11,8 @@
 saverx.ai/
 ├── index.html                  ← Homepage
 ├── drugs/
-│   ├── ozempic.html            ← Drug page (×358 total)
-│   ├── wegovy.html
+│   ├── ozempic/index.html  ← Drug page (×358 total)
+│   ├── wegovy/index.html
 │   └── ...
 ├── saverx-chat-proxy/          ← Cloudflare Worker (AI chat)
 │   └── src/index.js
@@ -47,14 +47,14 @@ Add a revenue-generating CTA section to each GLP-1 drug page that links to teleh
 ### Target pages (8 files)
 
 ```
-drugs/ozempic.html
-drugs/wegovy.html
-drugs/mounjaro.html
-drugs/zepbound.html
-drugs/saxenda.html
-drugs/victoza.html
-drugs/rybelsus.html
-drugs/trulicity.html
+drugs/ozempic/index.html
+drugs/wegovy/index.html
+drugs/mounjaro/index.html
+drugs/zepbound/index.html
+drugs/saxenda/index.html
+drugs/victoza/index.html
+drugs/rybelsus/index.html
+drugs/trulicity/index.html
 ```
 
 ### HTML component to add

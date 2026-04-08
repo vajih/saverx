@@ -24,7 +24,7 @@ var HONEYPOT = "website";
 var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
 var EMAIL_BASE_URL = "https://saverx.ai/emails/";
 var SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec";
+  "https://script.google.com/macros/s/AKfycbwNy0A7VXRyFo8oWjqi0RsuV8U4u90ITCqFRubqm5FICBZFQAKdmCOBs6041yG3HM0lnQ/exec";
 var UNSUB_SHEET = "Unsubscribes";
 
 // --- Drug category mapping ---
@@ -397,7 +397,11 @@ function doPost(e) {
     queueFollowUps(email, drug, category);
 
     return ContentService.createTextOutput(
-      JSON.stringify({ status: "ok", sheetError: sheetErr, emailSent: emailResult }),
+      JSON.stringify({
+        status: "ok",
+        sheetError: sheetErr,
+        emailSent: emailResult,
+      }),
     ).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     Logger.log("doPost error: " + err.toString());
@@ -420,13 +424,16 @@ function testConnection() {
   try {
     var ss = SpreadsheetApp.openById(SHEET_ID);
     result.sheet = ss.getName();
-    result.tabs = ss.getSheets().map(function(s){ return s.getName(); });
+    result.tabs = ss.getSheets().map(function (s) {
+      return s.getName();
+    });
   } catch (e) {
     result.sheetError = e.toString();
   }
 
   // Test Resend key presence (don't log the key itself)
-  var key = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+  var key =
+    PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
   result.resendKey = key ? "SET (length " + key.length + ")" : "NOT SET";
 
   Logger.log("testConnection result: " + JSON.stringify(result));
@@ -443,8 +450,8 @@ function testPostSimulation() {
     parameter: {
       email: "test-simulation@saverx.ai",
       drug: "Ozempic",
-      source: "Editor Test Simulation"
-    }
+      source: "Editor Test Simulation",
+    },
   };
   var result = doPost(fakeEvent);
   Logger.log("testPostSimulation result: " + result.getContent());

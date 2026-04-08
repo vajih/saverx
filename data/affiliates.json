@@ -1,0 +1,83 @@
+{
+    "providers": [{
+            "id": "hims",
+            "name": "Hims & Hers",
+            "glp1_url": "https://www.hims.com/weight-loss?utm_source=saverx&utm_medium=referral",
+            "logo": "/assets/img/affiliates/hims-logo.png",
+            "monthly_from": 199,
+            "monthly_to": 449,
+            "drugs": ["semaglutide", "tirzepatide"],
+            "insurance_required": false,
+            "turnaround_days": "2–3",
+            "rating": 4,
+            "rating_max": 5,
+            "commission": "CPA — contact affiliate team",
+            "notes": "Largest telehealth GLP-1 provider. Prescribes compounded semaglutide and tirzepatide."
+        },
+        {
+            "id": "ro",
+            "name": "Ro Body",
+            "glp1_url": "https://ro.co/weight-loss?utm_source=saverx&utm_medium=referral",
+            "logo": "/assets/img/affiliates/ro-logo.png",
+            "monthly_from": 145,
+            "monthly_to": 299,
+            "drugs": ["semaglutide"],
+            "insurance_required": false,
+            "turnaround_days": "3–5",
+            "rating": 4,
+            "rating_max": 5,
+            "commission": "CPA — contact affiliate team",
+            "notes": "Lowest starting price. Prescribes compounded semaglutide."
+        },
+        {
+            "id": "calibrate",
+            "name": "Calibrate",
+            "glp1_url": "https://joincalibrate.com?utm_source=saverx&utm_medium=referral",
+            "logo": "/assets/img/affiliates/calibrate-logo.png",
+            "monthly_from": 249,
+            "monthly_to": 249,
+            "drugs": ["glp1-varies"],
+            "insurance_required": false,
+            "turnaround_days": "5–7",
+            "rating": 4,
+            "rating_max": 5,
+            "commission": "CPA — contact affiliate team",
+            "notes": "Metabolic health program with coaching component."
+        },
+        {
+            "id": "noom",
+            "name": "Noom Med",
+            "glp1_url": "https://www.noom.com/programs/weight-loss-medication/?utm_source=saverx&utm_medium=referral",
+            "logo": "/assets/img/affiliates/noom-logo.png",
+            "monthly_from": 149,
+            "monthly_to": 249,
+            "drugs": ["semaglutide"],
+            "insurance_required": false,
+            "turnaround_days": "2–4",
+            "rating": 4,
+            "rating_max": 5,
+            "commission": "CPA — contact affiliate team",
+            "notes": "Combines behavioral coaching with GLP-1 prescribing."
+        },
+        {
+            "id": "found",
+            "name": "Found",
+            "glp1_url": "https://www.joinfound.com?utm_source=saverx&utm_medium=referral",
+            "logo": "/assets/img/affiliates/found-logo.png",
+            "monthly_from": 99,
+            "monthly_to": 199,
+            "drugs": ["multiple"],
+            "insurance_required": false,
+            "turnaround_days": "3–5",
+            "rating": 3,
+            "rating_max": 5,
+            "commission": "CPA — contact affiliate team",
+            "notes": "Offers multiple medication options including non-GLP-1 weight loss medications."
+        }
+    ],
+    "_meta": {
+        "last_updated": "2026-01",
+        "note": "All affiliate URLs use utm_source=saverx&utm_medium=referral. Replace with actual affiliate tracking URLs once approved by each program. Commission rates are TBD pending affiliate account approval.",
+        "utm_pattern": "utm_source=saverx&utm_medium=referral&utm_campaign={page}"
+    }
+}

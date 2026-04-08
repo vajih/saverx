@@ -1,5 +1,21 @@
 // src/index.js — SaveRx Chat proxy (Cloudflare Worker, Responses API)
 
+// GLP-1 intent detection — when a user asks about accessing/affording GLP-1 medications,
+// append a pointer to the provider comparison page in the system prompt.
+const GLP1_INTENT_KEYWORDS = [
+  "get prescription", "get ozempic", "get wegovy", "get mounjaro", "get zepbound",
+  "can i get", "how do i get", "where can i get", "qualify for", "do i qualify",
+  "online prescription", "telehealth", "without insurance", "no insurance",
+  "cheaper alternative", "affordable", "compounded semaglutide", "compounded tirzepatide",
+  "glp-1 online", "glp1 online", "buy ozempic", "buy wegovy", "buy mounjaro"
+];
+
+function detectGLP1Intent(message) {
+  if (typeof message !== "string") return false;
+  const lower = message.toLowerCase();
+  return GLP1_INTENT_KEYWORDS.some((kw) => lower.includes(kw));
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -41,23 +57,40 @@ export default {
         ? payload.messages
         : [];
 
+    // Extract the last user message for intent detection
+    const lastUserMsg = incoming
+      .filter((m) => m.role === "user")
+      .map((m) => (typeof m.content === "string" ? m.content : JSON.stringify(m.content)))
+      .pop() || "";
+
+    // Base system instructions
+    const systemParts = [
+      "You are Ask SaveRx, a helpful empathetic assistant focused on manufacturer savings (copay cards, patient assistance) and insurance basics.",
+      "Formatting rules:",
+      "- Always answer in concise **Markdown**.",
+      "- Avoid '!' exclamation points or patronizing language.",
+      "- Start with polite one short sentence summary.",
+      "- Use short **bullet points** (•) for options and steps.",
+      "- Put official program names in **bold** and include clear links in parentheses.",
+      "- Add a tiny 'Eligibility' bullet if relevant (e.g., Commercial only / Not for Medicare).",
+      "- If user asks for medical advice, respond with respond **bold** 'I'm not a doctor' and suggest contacting a clinician and .",
+      "- Never give dosing or medical advice; for clinical questions suggest contacting a clinician."
+    ];
+
+    // Conditionally append GLP-1 online access guidance
+    if (detectGLP1Intent(lastUserMsg)) {
+      systemParts.push(
+        "When discussing GLP-1 access, cost, or how to get a prescription: after your informational answer, append a brief note:",
+        "\"**Get a GLP-1 prescription online:** Compare providers who offer online prescriptions without insurance at SaveRx's [GLP-1 Provider Comparison](/drugs/glp1-online.html) — with current pricing from Hims & Hers, Ro Body, Calibrate, and others.\""
+      );
+    }
+
     // Keep prompt small/safe; append our system instructions first. This is where you can set the bot's behavior - th ebot 'Character' traits.
     // Note: Responses API has a hard limit of 4096 tokens for input+output combined.
     // We keep last N messages to preserve some context, but you may want to do more aggressive pruning.
     const system = {
       role: "system",
-      content: [
-        "You are Ask SaveRx, a helpful empathetic assistant focused on manufacturer savings (copay cards, patient assistance) and insurance basics.",
-        "Formatting rules:",
-        "- Always answer in concise **Markdown**.",
-        "- Avoid '!' exclamation points or patronizing language.",
-        "- Start with polite one short sentence summary.",
-        "- Use short **bullet points** (•) for options and steps.",
-        "- Put official program names in **bold** and include clear links in parentheses.",
-        "- Add a tiny 'Eligibility' bullet if relevant (e.g., Commercial only / Not for Medicare).",
-        "- If user asks for medical advice, respond with respond **bold** 'I'm not a doctor' and suggest contacting a clinician and .",
-        "- Never give dosing or medical advice; for clinical questions suggest contacting a clinician."
-      ].join(" ")
+      content: systemParts.join(" ")
     };
 
     const safeInput = [system, ...incoming].slice(-12); // last N messages incl. system

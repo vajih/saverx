@@ -246,3 +246,41 @@
   /* Let the log area scroll comfortably */
   #srx-log { overflow: auto; -webkit-overflow-scrolling: touch; }
 }
+
+/* ---------------------------------------------------------------
+   Affiliate CTA block (GLP-1 telehealth referral cards)
+   --------------------------------------------------------------- */
+.affiliate-cta {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 1120px;
+  padding-inline: clamp(1rem, 5vw, 2rem);
+}
+.affiliate-cta-header h2 { font-size: 1.4rem; color: #14532d; margin: 0 0 0.5rem; }
+.affiliate-cta-header p { color: #166534; margin: 0 0 1.5rem; }
+.affiliate-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.affiliate-card {
+  background: #fff;
+  border: 1px solid #d1fae5;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.affiliate-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-2px); }
+.affiliate-card-name { font-weight: 700; font-size: 1rem; color: #14532d; }
+.affiliate-card-price { font-size: 1.1rem; font-weight: 600; color: #16a34a; }
+.affiliate-card-note { font-size: 0.8rem; color: #6b7280; }
+.affiliate-card-cta { margin-top: 0.75rem; font-size: 0.9rem; font-weight: 600; color: #15803d; }
+.affiliate-disclosure { font-size: 0.75rem; color: #9ca3af; margin-top: 1rem; }
