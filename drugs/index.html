@@ -107,8 +107,8 @@
 
   <script>
     /* Your live Apps Script URL */
-    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
-    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+    window.SAVERX_API = "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec";
+    window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec";
   </script>
 </head>
 
@@ -497,20 +497,14 @@
         }catch{}
       }
 
-      // Fetch list from Drugs sheet first; fallback to Featured; then to local fallback
+      // Load all drugs from static JSON
       async function load(){
         $("#grid")?.setAttribute("aria-busy","true");
 
-        async function getItems(mode){
-          const res = await fetch(`${API}?mode=${mode}`, {cache:"no-cache"});
-          const json = await res.json();
-          return Array.isArray(json?.items) ? json.items : [];
-        }
-
         try{
-          let items = [];
-          try { items = await getItems("drugs"); } catch {}
-          if (!items.length) { try { items = await getItems("featured"); } catch {} }
+          const res = await fetch("/data/drugs.json", {cache:"no-cache"});
+          const json = await res.json();
+          const items = Array.isArray(json?.items) ? json.items : (Array.isArray(json) ? json : []);
           state.items = items.length ? normalizeItems(items) : normalizeItems(fallbackItems);
         }catch{
           state.items = normalizeItems(fallbackItems);

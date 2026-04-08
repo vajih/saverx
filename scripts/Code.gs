@@ -24,7 +24,7 @@ var HONEYPOT = "website";
 var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
 var EMAIL_BASE_URL = "https://saverx.ai/emails/";
 var SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec";
+  "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec";
 var UNSUB_SHEET = "Unsubscribes";
 
 // --- Drug category mapping ---
@@ -357,6 +357,8 @@ function doGet(e) {
 }
 
 function doPost(e) {
+  var sheetErr = null;
+  var emailResult = null;
   try {
     if (!e || !e.parameter)
       return ContentService.createTextOutput("No payload");
@@ -380,21 +382,22 @@ function doPost(e) {
       var ss = SpreadsheetApp.openById(SHEET_ID);
       var sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
       sheet.appendRow([ts, email, drug, source, p["user-agent"] || ""]);
-    } catch (sheetErr) {
-      Logger.log("Sheet error: " + sheetErr.toString());
+    } catch (err) {
+      sheetErr = err.toString();
+      Logger.log("Sheet error: " + sheetErr);
     }
 
     // 2. Send welcome email via Resend (skip if previously unsubscribed)
     var category = getDrugCategory(drug);
     if (!isUnsubscribed(email)) {
-      sendResendEmail(email, drug, category, "welcome");
+      emailResult = sendResendEmail(email, drug, category, "welcome");
     }
 
     // 3. Queue follow-up emails (day 3, day 7)
     queueFollowUps(email, drug, category);
 
     return ContentService.createTextOutput(
-      JSON.stringify({ status: "ok" }),
+      JSON.stringify({ status: "ok", sheetError: sheetErr, emailSent: emailResult }),
     ).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     Logger.log("doPost error: " + err.toString());
@@ -402,4 +405,47 @@ function doPost(e) {
       JSON.stringify({ status: "error", message: err.toString() }),
     ).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// --- Diagnostics (run from editor to verify setup) ---
+
+/**
+ * Run from editor to confirm Google Sheet + Resend are configured correctly.
+ * Select "testConnection" in the function dropdown → Run → view Execution log.
+ */
+function testConnection() {
+  var result = { sheet: null, sheetError: null, resendKey: null, tabs: [] };
+
+  // Test sheet access
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    result.sheet = ss.getName();
+    result.tabs = ss.getSheets().map(function(s){ return s.getName(); });
+  } catch (e) {
+    result.sheetError = e.toString();
+  }
+
+  // Test Resend key presence (don't log the key itself)
+  var key = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+  result.resendKey = key ? "SET (length " + key.length + ")" : "NOT SET";
+
+  Logger.log("testConnection result: " + JSON.stringify(result));
+  return result;
+}
+
+/**
+ * Simulates a real form POST from a drug page.
+ * Run from editor to add a test row to the sheet + send a test email.
+ * Select "testPostSimulation" → Run → check Execution log + Google Sheet.
+ */
+function testPostSimulation() {
+  var fakeEvent = {
+    parameter: {
+      email: "test-simulation@saverx.ai",
+      drug: "Ozempic",
+      source: "Editor Test Simulation"
+    }
+  };
+  var result = doPost(fakeEvent);
+  Logger.log("testPostSimulation result: " + result.getContent());
 }

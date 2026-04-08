@@ -431,7 +431,7 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   <!-- Config for Apps Script -->
   <script>
     window.PAGE_CONFIG = {
-      scriptUrl: "https://script.google.com/macros/s/AKfycbxC1tTVJEWrc7LsnwqsnuCrqUNLV_FZkE4Q3AKq-PtjBN0ZNSdC-IncGa0BqjbzzIBakQ/exec"
+      scriptUrl: "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec"
     };
   </script>
 
@@ -530,11 +530,45 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   <!-- Main JS (handles modal, featured rendering, forms, etc.) -->
   <script defer src="assets/scripts.js?v=2025-10-06a"></script>
 
-  <!-- Trigger Featured load (safe) -->
+  <!-- Trigger Featured load from static JSON -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (window.renderFeaturedDrugs && window.PAGE_CONFIG?.scriptUrl) {
-        window.renderFeaturedDrugs(window.PAGE_CONFIG.scriptUrl + '?mode=featured');
+    document.addEventListener('DOMContentLoaded', async function () {
+      const grid = document.getElementById('featured-cards');
+      const skeletons = document.getElementById('skeleton-cards');
+      const aiLoader = document.getElementById('ai-loader');
+      const textLoader = document.getElementById('cards-loading');
+      const wrapper = document.getElementById('featured');
+      if (!grid) return;
+
+      const esc = s => (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+      try {
+        const res = await fetch('/data/drugs.json', {cache:'no-cache'});
+        const json = await res.json();
+        const items = (json.items || json || []).slice().sort((a,b) => (a.name||a.brand||'').localeCompare(b.name||b.brand||''));
+        grid.innerHTML = items.map(d => {
+          const name = esc(d.name || d.brand || '');
+          const slug = d.slug || (d.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+          const href = d.url || `/drugs/${slug}/`;
+          return `<article class="drug-card" role="listitem" data-brand="${name}">
+            <div class="card-body" style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+              <h3 class="drug-title" style="margin:0;font-size:16px;font-weight:700;">${name}</h3>
+              <a class="btn btn-primary" href="${href}" style="font-size:14px;padding:8px 14px;">Check savings</a>
+            </div>
+          </article>`;
+        }).join('');
+      } catch (err) {
+        grid.innerHTML = '<p class="muted small">Could not load drugs. <a href="/drugs/">Browse all drugs</a>.</p>';
+        console.error('Drug load error:', err);
+      } finally {
+        skeletons?.remove();
+        aiLoader?.remove();
+        if (textLoader) textLoader.style.display = 'none';
+        if (wrapper) {
+          wrapper.classList.remove('loading');
+          wrapper.classList.add('loaded');
+          wrapper.setAttribute('aria-busy','false');
+        }
       }
     });
   </script>
