@@ -323,6 +323,57 @@ function createHourlyTrigger() {
 // --- Core handlers ---
 
 function doGet(e) {
+  // ── Individual drug lookup ───────────────────────────────────────────────
+  if (e && e.parameter && e.parameter.mode === "drug") {
+    try {
+      var slug = String(e.parameter.slug || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/, "");
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName("Featured");
+      var item = null;
+      if (sheet && slug) {
+        var rows = sheet.getDataRange().getValues();
+        var headers = rows[0].map(function (h) {
+          return String(h).trim().toLowerCase();
+        });
+        for (var i = 1; i < rows.length; i++) {
+          var row = rows[i];
+          var rec = {};
+          headers.forEach(function (h, idx) {
+            rec[h] = row[idx];
+          });
+          var nameSlug = String(rec["name"] || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/, "");
+          if (nameSlug === slug) {
+            item = {
+              brand: String(rec["name"] || "").trim(),
+              generic: String(rec["generic"] || "").trim(),
+              manufacturer: String(rec["manufacturer"] || "").trim(),
+              cash_price:
+                rec["cash_price"] !== "" ? Number(rec["cash_price"]) : null,
+              copay_price:
+                rec["as_low_as"] !== "" ? Number(rec["as_low_as"]) : null,
+              manufacturerUrl: String(rec["url"] || "").trim(),
+            };
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(
+        JSON.stringify({ item: item }),
+      ).setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(
+        JSON.stringify({ item: null, error: err.toString() }),
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // ── Featured drugs feed ──────────────────────────────────────────────────
   if (e && e.parameter && e.parameter.mode === "featured") {
     try {
@@ -330,34 +381,43 @@ function doGet(e) {
       var sheet = ss.getSheetByName("Featured");
       if (!sheet) throw new Error("Featured sheet not found");
       var rows = sheet.getDataRange().getValues();
-      var headers = rows[0].map(function(h){ return String(h).trim().toLowerCase(); });
+      var headers = rows[0].map(function (h) {
+        return String(h).trim().toLowerCase();
+      });
       var items = [];
       for (var i = 1; i < rows.length; i++) {
         var row = rows[i];
         var rec = {};
-        headers.forEach(function(h, idx){ rec[h] = row[idx]; });
+        headers.forEach(function (h, idx) {
+          rec[h] = row[idx];
+        });
         // Skip rows where active is explicitly FALSE
         var activeVal = String(rec["active"]).trim().toUpperCase();
         if (activeVal === "FALSE" || activeVal === "0") continue;
         items.push({
-          name:         String(rec["name"]         || "").trim(),
-          generic:      String(rec["generic"]      || "").trim(),
+          name: String(rec["name"] || "").trim(),
+          generic: String(rec["generic"] || "").trim(),
           manufacturer: String(rec["manufacturer"] || "").trim(),
-          cash_price:   rec["cash_price"]  !== "" ? Number(rec["cash_price"])  : null,
-          as_low_as:    rec["as_low_as"]   !== "" ? Number(rec["as_low_as"])   : null,
-          url:          String(rec["url"]          || "").trim(),
-          priority:     rec["priority"]    !== "" ? Number(rec["priority"])    : 999,
-          active:       true
+          cash_price:
+            rec["cash_price"] !== "" ? Number(rec["cash_price"]) : null,
+          as_low_as: rec["as_low_as"] !== "" ? Number(rec["as_low_as"]) : null,
+          url: String(rec["url"] || "").trim(),
+          priority: rec["priority"] !== "" ? Number(rec["priority"]) : 999,
+          active: true,
         });
       }
       // Sort by priority ascending
-      items.sort(function(a, b){ return a.priority - b.priority; });
-      var output = ContentService.createTextOutput(JSON.stringify({ items: items }))
-        .setMimeType(ContentService.MimeType.JSON);
+      items.sort(function (a, b) {
+        return a.priority - b.priority;
+      });
+      var output = ContentService.createTextOutput(
+        JSON.stringify({ items: items }),
+      ).setMimeType(ContentService.MimeType.JSON);
       return output;
     } catch (err) {
-      return ContentService.createTextOutput(JSON.stringify({ error: err.toString(), items: [] }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(
+        JSON.stringify({ error: err.toString(), items: [] }),
+      ).setMimeType(ContentService.MimeType.JSON);
     }
   }
 
