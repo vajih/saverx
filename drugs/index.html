@@ -79,8 +79,51 @@
       background:#fff; border:1px solid #e6eaf2; border-radius:16px; overflow:hidden; display:flex; flex-direction:column;
       box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,.04));
     }
-    .drug-media { position: relative; display:block; }
+    .drug-media { position: relative; display:block; text-decoration:none; }
     .drug-media img { width:100%; height:auto; display:block; object-fit:cover; aspect-ratio: 16/9; }
+
+    /* ── Branded color card (shown when no photo available) ── */
+    .drug-media-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      aspect-ratio: 16/9;
+      padding: 16px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .drug-media-brand::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .12;
+      background: radial-gradient(circle at 70% 30%, #fff 0%, transparent 55%);
+    }
+    .drug-brand-initial {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 900;
+      color: rgba(255,255,255,0.95);
+      line-height: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,.2);
+      letter-spacing: -1px;
+    }
+    .drug-brand-name {
+      font-size: clamp(0.75rem, 2vw, 0.92rem);
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .drug-brand-mfr {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+    }
 
     .drug-body { padding:14px; display:grid; gap:8px; }
     .drug-title { font-size:18px; font-weight:800; margin:0; }
@@ -388,21 +431,52 @@
       }
 
       // -------- Rendering --------
+      // ── Brand color palette (12 gradients, one per name-hash bucket) ──
+      const BRAND_GRADIENTS = [
+        "linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%)",   // blue
+        "linear-gradient(135deg,#059669 0%,#10b981 100%)",   // emerald
+        "linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%)",   // violet
+        "linear-gradient(135deg,#d97706 0%,#fbbf24 100%)",   // amber
+        "linear-gradient(135deg,#0891b2 0%,#22d3ee 100%)",   // cyan
+        "linear-gradient(135deg,#be185d 0%,#f472b6 100%)",   // pink
+        "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",   // teal
+        "linear-gradient(135deg,#4338ca 0%,#818cf8 100%)",   // indigo
+        "linear-gradient(135deg,#b91c1c 0%,#f87171 100%)",   // red
+        "linear-gradient(135deg,#15803d 0%,#4ade80 100%)",   // green
+        "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",   // sky
+        "linear-gradient(135deg,#9333ea 0%,#c084fc 100%)",   // purple
+      ];
+      function brandGradient(slug){
+        const s = slug || "";
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+        return BRAND_GRADIENTS[h % BRAND_GRADIENTS.length];
+      }
+
       function cardHTML(d){
         const priceLine = d.copay_price ? `<span class="pill">As low as <b>${money(d.copay_price)}</b></span>` : "";
         const cond = d.condition ? `<span class="pill">${d.condition}</span>` : "";
         const href = `/drugs/${encodeURIComponent(d.slug)}/`;
-        const img = d.hero_landscape || "/assets/img/hero-1200.jpg";
-        const alt = `${d.brand || "Medication"} savings`;
         const genericPart = d.generic ? ` (${d.generic})` : "";
         const mfrPart = d.manufacturer ? ` • ${d.manufacturer}` : "";
 
+        // Use real photo if available, otherwise show branded color card
+        const hasPhoto = d.hero_landscape && !d.hero_landscape.includes("hero-1200");
+        const mediaBlock = hasPhoto
+          ? `<a class="drug-media" href="${href}" aria-label="${d.brand} savings">
+               <img src="${d.hero_landscape}" alt="${d.brand}" loading="lazy" decoding="async"
+                    width="800" height="450" onerror="this.closest('.drug-card').querySelector('.drug-media-brand')&&(this.closest('a').style.display='none');">
+             </a>`
+          : `<a class="drug-media-brand" href="${href}" aria-label="${d.brand} savings"
+               style="background:${brandGradient(d.slug)}">
+               <span class="drug-brand-initial">${(d.brand||"?").charAt(0).toUpperCase()}</span>
+               <span class="drug-brand-name">${d.brand || ""}</span>
+               ${d.manufacturer ? `<span class="drug-brand-mfr">${d.manufacturer}</span>` : ""}
+             </a>`;
+
         return `
           <article class="drug-card">
-            <a class="drug-media" href="${href}" aria-label="Open ${d.brand} details">
-              <img src="${img}" alt="${alt}" loading="lazy" decoding="async" width="800" height="450"
-                   onerror="this.onerror=null;this.src='/assets/img/hero-1200.jpg';">
-            </a>
+            ${mediaBlock}
             <div class="drug-body">
               <h3 class="drug-title"><a href="${href}">${d.brand || "Brand"}</a></h3>
               <p class="drug-sub"><b>${d.brand || "Brand"}</b>${genericPart}${mfrPart}</p>
