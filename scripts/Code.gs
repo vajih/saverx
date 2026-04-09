@@ -323,6 +323,44 @@ function createHourlyTrigger() {
 // --- Core handlers ---
 
 function doGet(e) {
+  // ── Featured drugs feed ──────────────────────────────────────────────────
+  if (e && e.parameter && e.parameter.mode === "featured") {
+    try {
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName("Featured");
+      if (!sheet) throw new Error("Featured sheet not found");
+      var rows = sheet.getDataRange().getValues();
+      var headers = rows[0].map(function(h){ return String(h).trim().toLowerCase(); });
+      var items = [];
+      for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        var rec = {};
+        headers.forEach(function(h, idx){ rec[h] = row[idx]; });
+        // Skip rows where active is explicitly FALSE
+        var activeVal = String(rec["active"]).trim().toUpperCase();
+        if (activeVal === "FALSE" || activeVal === "0") continue;
+        items.push({
+          name:         String(rec["name"]         || "").trim(),
+          generic:      String(rec["generic"]      || "").trim(),
+          manufacturer: String(rec["manufacturer"] || "").trim(),
+          cash_price:   rec["cash_price"]  !== "" ? Number(rec["cash_price"])  : null,
+          as_low_as:    rec["as_low_as"]   !== "" ? Number(rec["as_low_as"])   : null,
+          url:          String(rec["url"]          || "").trim(),
+          priority:     rec["priority"]    !== "" ? Number(rec["priority"])    : 999,
+          active:       true
+        });
+      }
+      // Sort by priority ascending
+      items.sort(function(a, b){ return a.priority - b.priority; });
+      var output = ContentService.createTextOutput(JSON.stringify({ items: items }))
+        .setMimeType(ContentService.MimeType.JSON);
+      return output;
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ error: err.toString(), items: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   if (e && e.parameter && e.parameter.action === "unsubscribe") {
     var email = (e.parameter.email || "").trim().toLowerCase();
     if (email && email.indexOf("@") !== -1) {

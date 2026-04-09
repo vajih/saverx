@@ -541,8 +541,8 @@ body.design-v2 section > :first-child{ margin-top: 0; }
         const data = await res.json();
         grid.dataset.total = (Array.isArray(data) ? data : (data.items || [])).length;
       } catch (_) {}
-      // Render featured drugs — filters active=FALSE, sorts by priority
-      window.renderFeaturedDrugs('/data/featured-drugs.json');
+      // Render featured drugs — live from Google Sheet "Featured" tab, filtered + sorted by Apps Script
+      window.renderFeaturedDrugs(window.PAGE_CONFIG.scriptUrl + '?mode=featured');
     });
   </script>
 
