@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCKENS1BWB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCKENS1BWB');
+  </script>
+
+  <meta charset="utf-8" />
+  <title>Find the Best GLP-1 Provider for You — Free 60-Second Quiz | SaveRx.ai</title>
+  <meta name="description" content="Answer 4 quick questions and we'll match you with the best online GLP-1 provider for your budget and situation. Get semaglutide or tirzepatide prescribed online." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#10b981" />
+
+  <link rel="canonical" href="https://saverx.ai/get-glp1.html" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Find the Best GLP-1 Provider for You — Free 60-Second Quiz" />
+  <meta property="og:description" content="Answer 4 quick questions and we'll match you with the best online GLP-1 provider for your budget and situation." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://saverx.ai/get-glp1.html" />
+  <meta property="og:site_name" content="SaveRx.ai" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/components.css" />
+
+  <style>
+    /* ── Quiz layout ──────────────────────────────────────────────────────── */
+    body { background: #f8fafc; }
+
+    .quiz-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 16px 80px;
+    }
+
+    /* hero */
+    .quiz-hero {
+      text-align: center;
+      padding: 2.5rem 0 1.5rem;
+    }
+    .quiz-hero-badge {
+      display: inline-block;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 0.75rem;
+    }
+    .quiz-hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: #0b2a4e;
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+    .quiz-hero p {
+      color: #64748b;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    /* progress bar */
+    .quiz-progress-wrap {
+      margin: 1.5rem 0 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quiz-progress-bar {
+      flex: 1;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: #10b981;
+      border-radius: 99px;
+      transition: width .35s ease;
+      width: 0%;
+    }
+    .quiz-progress-label {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* card */
+    .quiz-card {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      margin-top: 0.75rem;
+    }
+    .quiz-q {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0b2a4e;
+      margin: 0 0 1.25rem;
+      line-height: 1.35;
+    }
+
+    /* answer options */
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background: #fff;
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
+    }
+    .quiz-option:hover { border-color: #10b981; background: #f0fdf4; }
+    .quiz-option.selected { border-color: #10b981; background: #f0fdf4; }
+    .quiz-option-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      width: 32px;
+      text-align: center;
+    }
+    .quiz-option-text { flex: 1; }
+    .quiz-option-label { font-weight: 600; display: block; }
+    .quiz-option-sub { font-size: 0.8rem; color: #64748b; margin-top: 1px; display: block; }
+
+    /* nav buttons */
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+    .quiz-btn-back {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+    }
+    .quiz-btn-back:hover { color: #475569; }
+    .quiz-btn-next {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .quiz-btn-next:hover { background: #059669; }
+    .quiz-btn-next:disabled { background: #d1fae5; color: #6ee7b7; cursor: not-allowed; }
+
+    /* step visibility */
+    .quiz-step { display: none; }
+    .quiz-step.active { display: block; }
+
+    /* result card */
+    .result-card {
+      background: #fff;
+      border: 2px solid #10b981;
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+    .result-match-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #059669;
+      margin-bottom: 0.5rem;
+    }
+    .result-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0b2a4e;
+      margin: 0 0 0.25rem;
+    }
+    .result-tagline {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin: 0 0 1.5rem;
+    }
+    .result-details {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .result-detail {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px 8px;
+    }
+    .result-detail-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0b2a4e;
+      display: block;
+    }
+    .result-detail-label {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      display: block;
+      margin-top: 2px;
+    }
+    .result-cta {
+      display: block;
+      background: #10b981;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 15px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background .15s;
+      margin-bottom: 0.75rem;
+    }
+    .result-cta:hover { background: #059669; color: #fff; }
+    .result-cta-secondary {
+      display: block;
+      font-size: 0.85rem;
+      color: #64748b;
+      text-decoration: none;
+      margin-bottom: 1.25rem;
+    }
+    .result-cta-secondary:hover { color: #1d4ed8; text-decoration: underline; }
+    .result-why {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: #166534;
+      text-align: left;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+    .result-why strong { color: #14532d; }
+    .result-alt {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+    }
+    .result-alt-cards {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .result-alt-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: #334155;
+      text-decoration: none;
+      transition: border-color .15s;
+      display: block;
+    }
+    .result-alt-card:hover { border-color: #10b981; color: #059669; }
+    .result-alt-card strong { display: block; font-weight: 700; color: #0b2a4e; }
+
+    .result-disclaimer {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 1.25rem;
+      line-height: 1.5;
+    }
+
+    /* intro */
+    .quiz-intro-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid #bbf7d0;
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+    .quiz-intro-card h2 { font-size: 1.25rem; color: #14532d; margin: 0 0 0.5rem; }
+    .quiz-intro-card p { color: #166534; font-size: 0.95rem; margin: 0 0 1.25rem; }
+    .quiz-start-btn {
+      display: inline-block;
+      background: #10b981;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .quiz-start-btn:hover { background: #059669; }
+
+    .trust-row {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    .trust-item svg { flex-shrink: 0; }
+
+    .notice-mini {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: #78350f;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .result-details { grid-template-columns: repeat(3, 1fr); }
+      .quiz-card, .result-card { padding: 1.5rem 1.25rem; }
+    }
+  </style>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Find the Best GLP-1 Provider for You — Free Quiz",
+    "description": "Answer 4 questions and get matched with the best online GLP-1 telehealth provider for your budget, insurance situation, and health goals.",
+    "url": "https://saverx.ai/get-glp1.html",
+    "publisher": { "@type": "Organization", "name": "SaveRx.ai", "url": "https://saverx.ai" }
+  }
+  </script>
+</head>
+
+<body class="design-v2 theme-light">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
+      </a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/">Drugs</a>
+        <a href="/drugs/glp1-online.html">GLP-1 Compare</a>
+        <a href="/about.html">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="quiz-wrap">
+
+      <!-- Hero -->
+      <div class="quiz-hero">
+        <span class="quiz-hero-badge">60-Second Quiz</span>
+        <h1>Find the Right GLP-1 Provider for You</h1>
+        <p>Answer 4 quick questions. We'll match you with the provider that fits your budget and goals — no insurance required.</p>
+      </div>
+
+      <!-- Progress bar (hidden on intro) -->
+      <div class="quiz-progress-wrap" id="progressWrap" style="display:none">
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="progressFill"></div>
+        </div>
+        <span class="quiz-progress-label" id="progressLabel">Step 1 of 4</span>
+      </div>
+
+      <!-- ── INTRO ──────────────────────────────────────────────────────── -->
+      <div class="quiz-step active" id="step-intro">
+        <div class="quiz-intro-card">
+          <h2>Find your best match in 60 seconds</h2>
+          <p>We'll ask about your goals, budget, and insurance — then recommend the right telehealth provider for you.</p>
+          <button class="quiz-start-btn" onclick="startQuiz()">Start Free Quiz →</button>
+        </div>
+        <div class="trust-row">
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981"><path d="M10 1l2.39 6.26L19 8.27l-5 4.91 1.18 6.82L10 16.77l-5.18 3.23L6 13.18 1 8.27l6.61-1.01z"/></svg>
+            Free — no signup required
+          </span>
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981"><path d="M10 1l2.39 6.26L19 8.27l-5 4.91 1.18 6.82L10 16.77l-5.18 3.23L6 13.18 1 8.27l6.61-1.01z"/></svg>
+            5 providers compared
+          </span>
+          <span class="trust-item">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981"><path d="M10 1l2.39 6.26L19 8.27l-5 4.91 1.18 6.82L10 16.77l-5.18 3.23L6 13.18 1 8.27l6.61-1.01z"/></svg>
+            No insurance needed
+          </span>
+        </div>
+        <div class="notice-mini">
+          <strong>Note:</strong> Most providers prescribe <em>compounded</em> semaglutide or tirzepatide — not branded Ozempic, Wegovy, or Mounjaro. Compounded versions are not FDA-approved. Verify pricing on each provider's website.
+        </div>
+      </div>
+
+      <!-- ── Q1: Goal ───────────────────────────────────────────────────── -->
+      <div class="quiz-step" id="step-1">
+        <div class="quiz-card">
+          <p class="quiz-q">What's your primary goal?</p>
+          <div class="quiz-options" id="options-1">
+            <button class="quiz-option" data-value="weight-loss" onclick="selectOption(1, 'weight-loss', this)">
+              <span class="quiz-option-icon">⚖️</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Weight loss</span>
+                <span class="quiz-option-sub">I want to lose weight with semaglutide or tirzepatide</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="diabetes" onclick="selectOption(1, 'diabetes', this)">
+              <span class="quiz-option-icon">🩺</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Blood sugar / diabetes management</span>
+                <span class="quiz-option-sub">I have Type 2 diabetes or pre-diabetes</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="savings" onclick="selectOption(1, 'savings', this)">
+              <span class="quiz-option-icon">💊</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Already taking a GLP-1 — need lower cost</span>
+                <span class="quiz-option-sub">I have a prescription but it's too expensive</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-back" onclick="goBack(1)" style="visibility:hidden">← Back</button>
+          <button class="quiz-btn-next" id="next-1" disabled onclick="goNext(1)">Next →</button>
+        </div>
+      </div>
+
+      <!-- ── Q2: Insurance ──────────────────────────────────────────────── -->
+      <div class="quiz-step" id="step-2">
+        <div class="quiz-card">
+          <p class="quiz-q">Do you have health insurance?</p>
+          <div class="quiz-options" id="options-2">
+            <button class="quiz-option" data-value="has-insurance" onclick="selectOption(2, 'has-insurance', this)">
+              <span class="quiz-option-icon">✅</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Yes — but it won't cover GLP-1s</span>
+                <span class="quiz-option-sub">I want to pay out-of-pocket to avoid hassle</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="no-insurance" onclick="selectOption(2, 'no-insurance', this)">
+              <span class="quiz-option-icon">❌</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">No insurance</span>
+                <span class="quiz-option-sub">I need a cash-pay option</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="use-insurance" onclick="selectOption(2, 'use-insurance', this)">
+              <span class="quiz-option-icon">🔍</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Yes — I want to try using my insurance</span>
+                <span class="quiz-option-sub">I'd like a provider that works with insurance</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-back" onclick="goBack(2)">← Back</button>
+          <button class="quiz-btn-next" id="next-2" disabled onclick="goNext(2)">Next →</button>
+        </div>
+      </div>
+
+      <!-- ── Q3: Budget ─────────────────────────────────────────────────── -->
+      <div class="quiz-step" id="step-3">
+        <div class="quiz-card">
+          <p class="quiz-q">What's your monthly budget for medication?</p>
+          <div class="quiz-options" id="options-3">
+            <button class="quiz-option" data-value="under150" onclick="selectOption(3, 'under150', this)">
+              <span class="quiz-option-icon">💚</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Under $150/month</span>
+                <span class="quiz-option-sub">I need the lowest possible cost</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="150-300" onclick="selectOption(3, '150-300', this)">
+              <span class="quiz-option-icon">💛</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">$150 – $300/month</span>
+                <span class="quiz-option-sub">I'm looking for good value</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="300plus" onclick="selectOption(3, '300plus', this)">
+              <span class="quiz-option-icon">🟠</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">$300+/month</span>
+                <span class="quiz-option-sub">I prioritize quality and support over price</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-back" onclick="goBack(3)">← Back</button>
+          <button class="quiz-btn-next" id="next-3" disabled onclick="goNext(3)">Next →</button>
+        </div>
+      </div>
+
+      <!-- ── Q4: Coaching ───────────────────────────────────────────────── -->
+      <div class="quiz-step" id="step-4">
+        <div class="quiz-card">
+          <p class="quiz-q">Would you like lifestyle coaching alongside your medication?</p>
+          <div class="quiz-options" id="options-4">
+            <button class="quiz-option" data-value="yes-coaching" onclick="selectOption(4, 'yes-coaching', this)">
+              <span class="quiz-option-icon">🧑‍⚕️</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">Yes — I want coaching or a structured program</span>
+                <span class="quiz-option-sub">Nutrition guidance, check-ins, or behavior support</span>
+              </span>
+            </button>
+            <button class="quiz-option" data-value="no-coaching" onclick="selectOption(4, 'no-coaching', this)">
+              <span class="quiz-option-icon">💊</span>
+              <span class="quiz-option-text">
+                <span class="quiz-option-label">No — just the prescription</span>
+                <span class="quiz-option-sub">I want medication only, as affordable as possible</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-btn-back" onclick="goBack(4)">← Back</button>
+          <button class="quiz-btn-next" id="next-4" disabled onclick="showResult()">See My Match →</button>
+        </div>
+      </div>
+
+      <!-- ── RESULT ─────────────────────────────────────────────────────── -->
+      <div class="quiz-step" id="step-result">
+        <!-- Populated by JS -->
+      </div>
+
+    </div><!-- /.quiz-wrap -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container grid">
+      <div>
+        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
+        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
+          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy or telehealth provider.
+        </p>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/">Drugs</a></div>
+        <div><a href="/drugs/glp1-online.html">GLP-1 Compare</a></div>
+        <div><a href="/about.html">About</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">Legal</h4>
+        <div><a href="/privacy.html">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;color:#fff">GLP-1 Resources</h4>
+        <div><a href="/drugs/ozempic/">Ozempic Savings</a></div>
+        <div><a href="/drugs/wegovy/">Wegovy Savings</a></div>
+        <div><a href="/drugs/mounjaro/">Mounjaro Savings</a></div>
+        <div><a href="/drugs/zepbound/">Zepbound Savings</a></div>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="container">
+        <small>
+          SaveRx.ai is an independent educational platform. We earn a commission if you purchase through affiliate links on this page.
+          This does not affect our editorial independence. We are not a pharmacy, prescriber, or telehealth provider.
+          All trademarks are property of their respective owners. Consult a licensed healthcare provider before starting any medication.
+        </small>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shared site JS -->
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+
+  <script>
+    // ── Answer store ───────────────────────────────────────────────────────
+    var answers = { 1: null, 2: null, 3: null, 4: null };
+    var TOTAL_STEPS = 4;
+
+    // ── Provider definitions ───────────────────────────────────────────────
+    var PROVIDERS = {
+      found: {
+        id: 'found',
+        name: 'Found',
+        tagline: 'Most affordable GLP-1 program — multiple medication options',
+        url: 'https://www.joinfound.com?utm_source=saverx&utm_medium=referral&utm_campaign=quiz',
+        price_from: '$99',
+        turnaround: '3–5 days',
+        coaching: 'Optional',
+        why_template: 'Based on your budget, Found is your best match. Starting at <strong>$99/month</strong>, it\'s the most affordable GLP-1 telehealth service and supports multiple medication options beyond just semaglutide.',
+      },
+      ro: {
+        id: 'ro',
+        name: 'Ro Body',
+        tagline: 'Lowest-cost semaglutide program with included provider visit',
+        url: 'https://ro.co/weight-loss?utm_source=saverx&utm_medium=referral&utm_campaign=quiz',
+        price_from: '$145',
+        turnaround: '3–5 days',
+        coaching: 'Basic',
+        why_template: 'Ro Body is the best value for semaglutide prescriptions, starting at <strong>$145/month</strong>. Your provider consultation and medication are included at a simple flat rate.',
+      },
+      noom: {
+        id: 'noom',
+        name: 'Noom Med',
+        tagline: 'Semaglutide prescription + behavioral coaching app',
+        url: 'https://www.noom.com/programs/weight-loss-medication/?utm_source=saverx&utm_medium=referral&utm_campaign=quiz',
+        price_from: '$149',
+        turnaround: '2–4 days',
+        coaching: 'Yes — included',
+        why_template: 'Noom Med combines semaglutide prescribing with their proven behavioral coaching platform. At <strong>$149/month</strong>, it\'s great value if you want both medication and structured support.',
+      },
+      hims: {
+        id: 'hims',
+        name: 'Hims & Hers',
+        tagline: 'Largest GLP-1 telehealth provider — semaglutide & tirzepatide',
+        url: 'https://www.hims.com/weight-loss?utm_source=saverx&utm_medium=referral&utm_campaign=quiz',
+        price_from: '$199',
+        turnaround: '2–3 days',
+        coaching: 'Optional',
+        why_template: 'Hims & Hers is the largest GLP-1 telehealth provider, offering both semaglutide and tirzepatide. Starting at <strong>$199/month</strong>, it has the fastest turnaround (2–3 days) and strong provider support.',
+      },
+      calibrate: {
+        id: 'calibrate',
+        name: 'Calibrate',
+        tagline: 'Metabolic health program with intensive coaching + GLP-1',
+        url: 'https://joincalibrate.com?utm_source=saverx&utm_medium=referral&utm_campaign=quiz',
+        price_from: '$249',
+        turnaround: '5–7 days',
+        coaching: 'Yes — intensive 1-year program',
+        why_template: 'Calibrate is built for people who want a full metabolic health program, not just a prescription. Their 1-year coaching program combined with GLP-1 prescribing delivers strong long-term results. At <strong>$249/month</strong> it\'s comprehensive.',
+      },
+    };
+
+    // ── Matching logic ─────────────────────────────────────────────────────
+    function getMatch() {
+      var goal     = answers[1];
+      var insurance = answers[2];
+      var budget   = answers[3];
+      var coaching = answers[4];
+
+      // If already taking GLP-1 but need savings → Ro is cheapest switch
+      if (goal === 'savings') return 'ro';
+
+      // Wants coaching + can afford it
+      if (coaching === 'yes-coaching') {
+        if (budget === '300plus') return 'calibrate';
+        return 'noom'; // coaching + value = Noom
+      }
+
+      // No coaching, just medication
+      if (budget === 'under150') return 'found';
+      if (budget === '150-300')  return 'ro';
+
+      // $300+ — biggest provider
+      return 'hims';
+    }
+
+    function getAlternatives(primaryId) {
+      var order = ['found', 'ro', 'noom', 'hims', 'calibrate'];
+      return order.filter(function(id) { return id !== primaryId; }).slice(0, 3);
+    }
+
+    // ── UI helpers ─────────────────────────────────────────────────────────
+    function updateProgress(step) {
+      var pct = Math.round((step / TOTAL_STEPS) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = 'Step ' + step + ' of ' + TOTAL_STEPS;
+    }
+
+    function showStep(id) {
+      document.querySelectorAll('.quiz-step').forEach(function(el) {
+        el.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    function startQuiz() {
+      document.getElementById('progressWrap').style.display = 'flex';
+      updateProgress(1);
+      showStep('step-1');
+
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'quiz_start', { event_category: 'telehealth_quiz' });
+      }
+    }
+
+    function selectOption(step, value, el) {
+      // Clear other selections in this step
+      document.querySelectorAll('#options-' + step + ' .quiz-option').forEach(function(btn) {
+        btn.classList.remove('selected');
+      });
+      el.classList.add('selected');
+      answers[step] = value;
+      document.getElementById('next-' + step).disabled = false;
+    }
+
+    function goNext(step) {
+      var next = step + 1;
+      updateProgress(next);
+      showStep('step-' + next);
+
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'quiz_step_complete', {
+          event_category: 'telehealth_quiz',
+          step: step,
+          answer: answers[step]
+        });
+      }
+    }
+
+    function goBack(step) {
+      var prev = step - 1;
+      if (prev < 1) { showStep('step-intro'); document.getElementById('progressWrap').style.display = 'none'; return; }
+      updateProgress(prev);
+      showStep('step-' + prev);
+    }
+
+    function showResult() {
+      var matchId  = getMatch();
+      var provider = PROVIDERS[matchId];
+      var alts     = getAlternatives(matchId);
+
+      var altCardsHtml = alts.map(function(id) {
+        var p = PROVIDERS[id];
+        return '<a class="result-alt-card" href="' + p.url + '" target="_blank" rel="noopener sponsored" onclick="trackClick(\'' + id + '\', \'alt\')">'
+          + '<strong>' + p.name + '</strong>From ' + p.price_from + '/mo</a>';
+      }).join('');
+
+      document.getElementById('step-result').innerHTML =
+        '<div class="result-card">'
+        + '<p class="result-match-label">✅ Your Best Match</p>'
+        + '<p class="result-name">' + provider.name + '</p>'
+        + '<p class="result-tagline">' + provider.tagline + '</p>'
+        + '<div class="result-details">'
+        +   '<div class="result-detail"><span class="result-detail-value">From ' + provider.price_from + '</span><span class="result-detail-label">per month</span></div>'
+        +   '<div class="result-detail"><span class="result-detail-value">' + provider.turnaround + '</span><span class="result-detail-label">to prescribe</span></div>'
+        +   '<div class="result-detail"><span class="result-detail-value">' + provider.coaching + '</span><span class="result-detail-label">coaching</span></div>'
+        + '</div>'
+        + '<div class="result-why">💡 ' + provider.why_template + '</div>'
+        + '<a class="result-cta" href="' + provider.url + '" target="_blank" rel="noopener sponsored" onclick="trackClick(\'' + matchId + '\', \'primary\')">'
+        +   'Get Started with ' + provider.name + ' →'
+        + '</a>'
+        + '<a class="result-cta-secondary" href="/drugs/glp1-online.html">Compare all 5 providers instead</a>'
+        + '<p class="result-alt">Or explore these alternatives:</p>'
+        + '<div class="result-alt-cards">' + altCardsHtml + '</div>'
+        + '<p class="result-disclaimer">SaveRx.ai earns a commission if you purchase through links above. Prices are estimates — verify on the provider\'s website. We are not a pharmacy or prescriber. Consult a licensed provider before starting any medication.</p>'
+        + '</div>';
+
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('progressLabel').textContent = 'Your match is ready!';
+      showStep('step-result');
+
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'quiz_complete', {
+          event_category: 'telehealth_quiz',
+          matched_provider: matchId,
+          goal: answers[1],
+          budget: answers[3],
+        });
+      }
+    }
+
+    function trackClick(provider, position) {
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'affiliate_click', {
+          event_category: 'revenue',
+          provider: provider,
+          position: position,
+          source: 'telehealth_quiz',
+        });
+      }
+    }
+  </script>
+</body>
+</html>
