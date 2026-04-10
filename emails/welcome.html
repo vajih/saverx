@@ -103,7 +103,7 @@
               <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                 <tr>
                   <td style="border-radius: 8px; background-color: #ef7d57;">
-                    <a href="https://saverx.ai/drugs/{$subscriber.fields.drug|slugify}/"
+                    <a href="https://saverx.ai/drugs/{$subscriber.fields.drug|slugify}/?utm_source=email&utm_medium=welcome&utm_campaign=general"
                        style="display: inline-block; padding: 16px 36px; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none; letter-spacing: -0.01em; mso-padding-alt: 0; border-radius: 8px;"
                        class="btn-cta">
                       See My {$subscriber.fields.drug} Savings &rarr;
@@ -199,6 +199,21 @@
             </td>
           </tr>
 
+          <!-- ── SOCIAL PROOF ── -->
+          <tr>
+            <td style="padding: 0 40px 8px;" class="padding-sm">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8faff; border-radius: 10px; border-left: 4px solid #1d4ed8;">
+                <tr>
+                  <td style="padding: 20px 24px;">
+                    <p style="margin: 0 0 6px; font-size: 24px; line-height: 1; color: #1d4ed8;">&ldquo;</p>
+                    <p style="margin: 0 0 10px; font-size: 14px; line-height: 1.6; color: #0b2a4e; font-style: italic;">I didn't know manufacturer programs existed. SaveRx.ai showed me exactly where to enroll. I saved $900 on my first refill.</p>
+                    <p style="margin: 0; font-size: 12px; color: #5b708b; font-weight: 600;">— SaveRx.ai reader, Florida</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
           <!-- ── FOOTER ── -->
           <tr>
             <td style="background-color: #f1f5f9; padding: 24px 40px; border-radius: 0 0 12px 12px;" class="padding-sm">
@@ -214,7 +229,8 @@
                     </p>
                     <p style="margin: 0; font-size: 11px; color: #b0bec5;">
                       You're receiving this because you signed up for savings alerts at SaveRx.ai.<br>
-                      SaveRx.ai is not affiliated with any drug manufacturer. Programs subject to eligibility.
+                      SaveRx.ai is not affiliated with any drug manufacturer. Programs subject to eligibility.<br>
+                      <strong style="color: #94a3b8;">Know someone struggling with drug costs? Forward this email.</strong>
                     </p>
                   </td>
                 </tr>

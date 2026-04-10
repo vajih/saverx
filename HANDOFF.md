@@ -67,8 +67,8 @@ User clicks Unsubscribe link in email
 ### Apps Script
 | Variable | Value |
 |---|---|
-| **Live deployment URL** | `https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec` |
-| **Old URL (retired)** | `AKfycbyPArHul2llNlpy2YIW9-...` — no longer used |
+| **Live deployment URL** | `https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec` |
+| **Old URLs (retired)** | `AKfycbx94hvo...` and `AKfycbyPArHul...` — no longer used |
 | **Google Sheet ID** | `19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE` |
 | **Script Property** | `RESEND_API_KEY = re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` |
 
@@ -116,6 +116,7 @@ All 12 HTML files live in `emails/` → deployed to `https://saverx.ai/emails/`
 | `glp1-welcome.html` | Ozempic, Wegovy, Mounjaro, Zepbound, Trulicity, Victoza, Saxenda, Rybelsus | Immediately on signup |
 | `glp1-follow-up-1.html` | GLP-1 drugs | Day 3 |
 | `glp1-follow-up-2.html` | GLP-1 drugs | Day 7 |
+| `glp1-follow-up-3.html` | GLP-1 drugs | Day 14 — online prescription angle (new) |
 | `cardiovascular-welcome.html` | Repatha, Eliquis, Entresto, Jardiance, Brilinta, Xarelto, Farxiga, etc. | Immediately |
 | `cardiovascular-follow-up-1.html` | Cardiovascular | Day 3 |
 | `cardiovascular-follow-up-2.html` | Cardiovascular | Day 7 |
@@ -157,6 +158,26 @@ All 12 HTML files live in `emails/` → deployed to `https://saverx.ai/emails/`
 ### Critical
 - [ ] **Redeploy Code.gs** — paste current `scripts/Code.gs` into Apps Script editor, create a **new deployment** (not update existing) since `doGet` signature changed. Update `SCRIPT_URL` var in Code.gs if new deployment URL differs.
 - [ ] **Run `createHourlyTrigger()`** — in Apps Script editor, select `createHourlyTrigger` from dropdown → Run. Installs the hourly trigger for follow-up emails.
+
+### Day 14 GLP-1 Email — Apps Script Change Required
+`glp1-follow-up-3.html` is deployed but won't send until you add a Day 14 queue entry in `queueFollowUps()` inside Apps Script. Find the `queueFollowUps` function and add this line alongside the existing day 3/7 entries:
+
+```javascript
+// Existing lines (already there):
+sheet.appendRow([email, drug, category, 'follow-up-1', new Date(now.getTime() + 3*24*60*60*1000), '', 'pending']);
+sheet.appendRow([email, drug, category, 'follow-up-2', new Date(now.getTime() + 7*24*60*60*1000), '', 'pending']);
+
+// ADD THIS LINE — Day 14 follow-up (GLP-1 only, online prescription angle):
+if (category === 'glp1') {
+  sheet.appendRow([email, drug, category, 'follow-up-3', new Date(now.getTime() + 14*24*60*60*1000), '', 'pending']);
+}
+```
+
+Also ensure `sendResendEmail()` maps `'follow-up-3'` to the correct template file. Look for the template filename lookup and add:
+```javascript
+// In the template map / switch statement:
+'follow-up-3': category + '-follow-up-3.html'  // resolves to glp1-follow-up-3.html
+```
 
 ### Important
 - [ ] **Test unsubscribe flow** — send a test email, click the unsubscribe link, confirm the Unsubscribes sheet gets an entry and a re-submission doesn't send email.
@@ -232,7 +253,7 @@ Lead gen tool. Spec in `docs/REVENUE_SPEC.md` Feature 5.
 ```bash
 # Test E2E via Apps Script (replace email as needed)
 REDIR=$(curl -s -o /dev/null -w "%{redirect_url}" -X POST \
-  "https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec" \
+  "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "email=TEST@example.com&drug=Ozempic&source=test")
 curl -s -L "$REDIR"
