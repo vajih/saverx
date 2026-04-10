@@ -279,6 +279,8 @@
   gap: 0.25rem;
 }
 .affiliate-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); transform: translateY(-2px); }
+.affiliate-card--featured { border: 2px solid #16a34a; background: #f0fdf4; position: relative; }
+.affiliate-card-badge { display: inline-block; background: #16a34a; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .affiliate-card-name { font-weight: 700; font-size: 1rem; color: #14532d; }
 .affiliate-card-price { font-size: 1.1rem; font-weight: 600; color: #16a34a; }
 .affiliate-card-note { font-size: 0.8rem; color: #6b7280; }

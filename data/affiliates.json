@@ -1,5 +1,22 @@
 {
     "providers": [{
+            "id": "embody-glp1",
+            "name": "Embody GLP1",
+            "glp1_url": "https://track.katalys.com/aff_c?offer_id=1548&aff_id=12122",
+            "logo": "/assets/img/affiliates/embody-logo.png",
+            "monthly_from": null,
+            "monthly_to": null,
+            "drugs": ["semaglutide", "tirzepatide", "glp1"],
+            "insurance_required": false,
+            "turnaround_days": "2–5",
+            "rating": 4,
+            "rating_max": 5,
+            "commission": "$400 CPA (Katalys — approved)",
+            "katalys_offer_id": "1548",
+            "katalys_aff_id": "12122",
+            "notes": "Approved Katalys affiliate. $400 CPA. Tracked via track.katalys.com."
+        },
+        {
             "id": "hims",
             "name": "Hims & Hers",
             "glp1_url": "https://www.hims.com/weight-loss?utm_source=saverx&utm_medium=referral",
