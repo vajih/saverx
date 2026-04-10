@@ -34,6 +34,35 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
+  <!-- ── Login Overlay ─────────────────────────────────────────────── -->
+  <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
+    <div class="w-full max-w-sm mx-4">
+      <div class="flex items-center gap-3 justify-center mb-8">
+        <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center font-bold text-slate-900">Rx</div>
+        <div>
+          <h1 class="font-bold text-slate-100 text-lg leading-tight">SaveRx.ai</h1>
+          <p class="text-slate-400 text-xs">Admin Dashboard</p>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-7 shadow-2xl">
+        <h2 class="text-slate-100 font-semibold text-sm mb-5">Sign in to continue</h2>
+        <div id="login-error" class="hidden mb-4 text-xs text-red-400 bg-red-950 border border-red-800 rounded-lg px-3 py-2">Incorrect password — try again.</div>
+        <input
+          id="login-password"
+          type="password"
+          placeholder="Password"
+          autocomplete="current-password"
+          class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 mb-4"
+          onkeydown="if(event.key==='Enter') doLogin()"
+        />
+        <button
+          onclick="doLogin()"
+          class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold text-sm py-3 rounded-lg transition-colors"
+        >Access Dashboard</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Header ──────────────────────────────────────────────────── -->
   <header class="border-b border-slate-800 bg-slate-900 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
     <div class="flex items-center gap-3">
@@ -485,11 +514,53 @@
       document.getElementById('status-text').textContent = 'Connection failed';
     }
 
+    // ── Auth helpers ──
+    function getAuthHeader() {
+      const pw = sessionStorage.getItem('saverx_admin_pw');
+      if (!pw) return null;
+      return 'Basic ' + btoa('admin:' + pw);
+    }
+    function showLoginOverlay(shake = false) {
+      const overlay = document.getElementById('login-overlay');
+      overlay.classList.remove('hidden');
+      const err = document.getElementById('login-error');
+      if (shake) {
+        err.classList.remove('hidden');
+        const input = document.getElementById('login-password');
+        input.value = '';
+        input.focus();
+      } else {
+        err.classList.add('hidden');
+        setTimeout(() => document.getElementById('login-password').focus(), 100);
+      }
+    }
+    function doLogin() {
+      const pw = document.getElementById('login-password').value.trim();
+      if (!pw) return;
+      sessionStorage.setItem('saverx_admin_pw', pw);
+      document.getElementById('login-overlay').classList.add('hidden');
+      loadData();
+      loadKatalysData();
+    }
+    async function authFetch(url) {
+      const headers = {};
+      const auth = getAuthHeader();
+      if (auth) headers['Authorization'] = auth;
+      const res = await fetch(url, { headers });
+      if (res.status === 401) {
+        sessionStorage.removeItem('saverx_admin_pw');
+        showLoginOverlay(true);
+        return null;
+      }
+      return res;
+    }
+
     async function loadData(force = false) {
       const url = force ? '/api/stats?refresh=1' : '/api/stats';
       try {
         document.getElementById('error-banner').classList.add('hidden');
-        const res = await fetch(url);
+        const res = await authFetch(url);
+        if (!res) return;
         const data = await res.json();
         if (data.error) { showError(data.error); return; }
         renderStats(data);
@@ -504,7 +575,8 @@
     async function loadKatalysData(force = false) {
       const url = force ? '/api/katalys?refresh=1' : '/api/katalys';
       try {
-        const res = await fetch(url);
+        const res = await authFetch(url);
+        if (!res) return;
         const data = await res.json();
         renderKatalys(data);
       } catch (e) {
@@ -551,6 +623,9 @@
     }
 
     // Initial load + auto-refresh every 60s
+    // Try loading immediately — authFetch will show login overlay on 401
+    // (works for both local dev with no auth and Vercel with ADMIN_PASSWORD set)
+    document.getElementById('login-overlay').classList.add('hidden');
     loadData();
     loadKatalysData();
     setInterval(() => loadData(), 60_000);
