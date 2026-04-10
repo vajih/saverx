@@ -154,7 +154,50 @@
         </table>
       </div>
     </div>
+    <!-- ── Katalys Affiliate Performance ───────────────────────────── -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-slate-300 font-semibold text-sm flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+          Affiliate Performance
+          <span class="text-slate-500 text-xs font-normal ml-1">Katalys &middot; Last 30 days</span>
+        </h2>
+        <a href="https://app.katalys.com" target="_blank" class="text-xs text-sky-400 hover:underline">Open Dashboard ↗</a>
+      </div>
 
+      <!-- Mini stat cards -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-slate-800/60 rounded-lg p-4 text-center">
+          <p id="kat-clicks" class="text-2xl font-bold text-orange-400 skeleton min-h-[2rem]">&nbsp;</p>
+          <p class="text-xs text-slate-500 mt-1">Unique Clicks</p>
+        </div>
+        <div class="bg-slate-800/60 rounded-lg p-4 text-center">
+          <p id="kat-conversions" class="text-2xl font-bold text-emerald-400 skeleton min-h-[2rem]">&nbsp;</p>
+          <p class="text-xs text-slate-500 mt-1">Conversions</p>
+        </div>
+        <div class="bg-slate-800/60 rounded-lg p-4 text-center">
+          <p id="kat-payout" class="text-2xl font-bold text-sky-400 skeleton min-h-[2rem]">&nbsp;</p>
+          <p class="text-xs text-slate-500 mt-1">Earnings</p>
+        </div>
+      </div>
+
+      <!-- Per-program breakdown -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-500 text-xs uppercase tracking-wider border-b border-slate-800">
+              <th class="pb-3 pr-4 font-medium">Program</th>
+              <th class="pb-3 pr-4 font-medium text-right">Clicks</th>
+              <th class="pb-3 pr-4 font-medium text-right">Conversions</th>
+              <th class="pb-3 font-medium text-right">Payout</th>
+            </tr>
+          </thead>
+          <tbody id="katalys-table" class="divide-y divide-slate-800/50">
+            <tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">Loading affiliate data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
     <!-- ── Bottom Grid: Quick Links + Revenue Checklist ───────────── -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -221,6 +264,16 @@
               <div>
                 <p class="text-sm font-medium text-slate-200">SaveRx.ai (Live Site)</p>
                 <p class="text-xs text-slate-500">358 drug pages · Cloudflare hosted</p>
+              </div>
+            </div>
+            <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
+          </a>
+          <a href="https://app.katalys.com" target="_blank" class="flex items-center justify-between px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-base">💰</span>
+              <div>
+                <p class="text-sm font-medium text-slate-200">Katalys Affiliate Dashboard</p>
+                <p class="text-xs text-slate-500">Program applications, tracking links, payouts</p>
               </div>
             </div>
             <span class="text-slate-600 group-hover:text-slate-400 text-xs">↗</span>
@@ -445,11 +498,63 @@
       }
     }
 
-    function refresh() { loadData(true); }
+    function refresh() { loadData(true); loadKatalysData(true); }
+
+    // ── Katalys affiliate data ──
+    async function loadKatalysData(force = false) {
+      const url = force ? '/api/katalys?refresh=1' : '/api/katalys';
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        renderKatalys(data);
+      } catch (e) {
+        renderKatalys({ error: e.message || 'Could not reach admin server.' });
+      }
+    }
+
+    function renderKatalys(data) {
+      const ids = ['kat-clicks', 'kat-conversions', 'kat-payout'];
+      ids.forEach(id => document.getElementById(id).classList.remove('skeleton'));
+
+      if (data.error) {
+        document.getElementById('kat-clicks').textContent = '—';
+        document.getElementById('kat-conversions').textContent = '—';
+        document.getElementById('kat-payout').textContent = '—';
+        document.getElementById('katalys-table').innerHTML =
+          `<tr><td colspan="4" class="py-4 text-center text-red-400 text-xs">${data.error}</td></tr>`;
+        return;
+      }
+
+      const rows = data.rows || [];
+      const totalClicks      = rows.reduce((s, r) => s + (r.unique_clicks || 0), 0);
+      const totalConversions = rows.reduce((s, r) => s + (r.conversions || 0), 0);
+      const totalPayout      = rows.reduce((s, r) => s + (Number(r.payout) || 0), 0);
+
+      document.getElementById('kat-clicks').textContent      = totalClicks.toLocaleString();
+      document.getElementById('kat-conversions').textContent = totalConversions.toLocaleString();
+      document.getElementById('kat-payout').textContent      = '$' + totalPayout.toFixed(2);
+
+      if (!rows.length) {
+        document.getElementById('katalys-table').innerHTML =
+          `<tr><td colspan="4" class="py-6 text-center text-slate-500 text-xs">No activity yet — programs pending approval. Check <a href="https://app.katalys.com" target="_blank" class="text-sky-400 hover:underline">app.katalys.com</a> for status.</td></tr>`;
+        return;
+      }
+
+      const sorted = [...rows].sort((a, b) => (Number(b.payout) || 0) - (Number(a.payout) || 0));
+      document.getElementById('katalys-table').innerHTML = sorted.map(r => `
+        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="py-3 pr-4 text-sm text-slate-200">${r.offer || '—'}</td>
+          <td class="py-3 pr-4 text-xs text-slate-400 text-right">${(r.unique_clicks || 0).toLocaleString()}</td>
+          <td class="py-3 pr-4 text-xs text-slate-400 text-right">${(r.conversions || 0).toLocaleString()}</td>
+          <td class="py-3 text-xs text-emerald-400 font-medium text-right">$${(Number(r.payout) || 0).toFixed(2)}</td>
+        </tr>`).join('');
+    }
 
     // Initial load + auto-refresh every 60s
     loadData();
+    loadKatalysData();
     setInterval(() => loadData(), 60_000);
+    setInterval(() => loadKatalysData(), 60_000);
   </script>
 </body>
 </html>

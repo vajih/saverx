@@ -1,5 +1,12 @@
 {
   "type": "module",
+  "scripts": {
+    "start": "node admin-server.js",
+    "dev": "node admin-server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "wrangler": "^4.43.0"
   }

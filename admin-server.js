@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 // ─── Load .env ───────────────────────────────────────────────────────────────
@@ -34,9 +34,13 @@ const CSV_PATH = path.join(__dirname, 'data', 'saverx-leads-deduped.csv');
 
 // ─── Cache ───────────────────────────────────────────────────────────────────
 let _cache = { data: null, ts: 0, error: null };
+let _katalysCache = { data: null, ts: 0, error: null };
 
 function isCacheFresh() {
   return _cache.data && (Date.now() - _cache.ts) < CACHE_TTL_MS;
+}
+function isKatalysCacheFresh() {
+  return _katalysCache.data && (Date.now() - _katalysCache.ts) < CACHE_TTL_MS;
 }
 
 // ─── CSV helpers ─────────────────────────────────────────────────────────────
@@ -113,12 +117,73 @@ async function fetchStats() {
   };
 }
 
+// ─── Katalys Stats ───────────────────────────────────────────────────────────
+async function fetchKatalysStats() {
+  const apiKey = process.env.KATALYS_API_KEY;
+  if (!apiKey) throw new Error('KATALYS_API_KEY not set in .env');
+
+  const nowSec   = Math.floor(Date.now() / 1000);
+  const startSec = nowSec - 30 * 24 * 60 * 60;
+
+  const body = JSON.stringify({
+    dimensions: ['offer', 'unique_clicks', 'conversions', 'payout'],
+    filters: [
+      { field: 'time', type: 'range', values: [String(startSec), String(nowSec)] },
+      { field: 'org_id', type: 'include', values: ['70a7c458-e3dd-4ab0-bc27-b9b3ac6f9432'] },
+    ],
+  });
+
+  const res = await fetch('https://api.katalys.com/v1/report/stats', {
+    method: 'POST',
+    headers: {
+      'Authorization': `apikey ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body,
+  });
+
+  if (!res.ok) throw new Error(`Katalys API returned HTTP ${res.status}`);
+  const json = await res.json();
+  if (json.errors && json.errors.length) throw new Error(json.errors[0].message);
+  return json;
+}
+
+// ─── Basic Auth ──────────────────────────────────────────────────────────────
+function checkAuth(req, res) {
+  const password = process.env.ADMIN_PASSWORD;
+  // If no password is set (local dev), skip auth
+  if (!password) return true;
+
+  const authHeader = req.headers['authorization'] || '';
+  if (!authHeader.startsWith('Basic ')) {
+    res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="SaveRx Admin"', 'Content-Type': 'text/plain' });
+    res.end('Unauthorized');
+    return false;
+  }
+
+  const encoded = authHeader.slice('Basic '.length);
+  const decoded = Buffer.from(encoded, 'base64').toString('utf8');
+  // Accepts "admin:<password>" or just ":<password>" (any username)
+  const colonIdx = decoded.indexOf(':');
+  const providedPassword = colonIdx >= 0 ? decoded.slice(colonIdx + 1) : decoded;
+
+  if (providedPassword !== password) {
+    res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="SaveRx Admin"', 'Content-Type': 'text/plain' });
+    res.end('Unauthorized');
+    return false;
+  }
+  return true;
+}
+
 // ─── HTTP Server ──────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
-  // CORS (localhost only)
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Password-protect every route when ADMIN_PASSWORD is set
+  if (!checkAuth(req, res)) return;
 
   // ── GET / → serve dashboard HTML ──
   if (url.pathname === '/' || url.pathname === '/admin.html') {
@@ -157,6 +222,29 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── GET /api/katalys → Katalys affiliate stats ──
+  if (url.pathname === '/api/katalys') {
+    if (url.searchParams.get('refresh') === '1') _katalysCache = { data: null, ts: 0, error: null };
+
+    if (isKatalysCacheFresh()) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ...(_katalysCache.data), cached: true }));
+      return;
+    }
+
+    try {
+      const data = await fetchKatalysStats();
+      _katalysCache = { data, ts: Date.now(), error: null };
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      _katalysCache.error = err.message;
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
   // ── 404 ──
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('Not found');
@@ -166,8 +254,10 @@ server.listen(PORT, () => {
   console.log('');
   console.log('  ✅  SaveRx.ai Admin Dashboard');
   console.log(`  🌐  http://localhost:${PORT}`);
+  if (process.env.ADMIN_PASSWORD) console.log('  🔒  Password protection: ON');
+  else console.log('  ⚠️   No ADMIN_PASSWORD set — auth disabled (local dev mode)');
   console.log('');
-  console.log('  Reads from data/saverx-leads-deduped.csv');
+  console.log('  Reads from data/saverx-leads-deduped.csv if present.');
   console.log('  Auto-refreshes every 60 seconds.');
   console.log('  Press Ctrl+C to stop.');
   console.log('');
