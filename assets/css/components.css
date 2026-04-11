@@ -369,14 +369,14 @@
   justify-content: center;
   font-size: 26px;
 }
-.tile-title { font-size: 20px; font-weight: 700; color: var(--brand-900, #0b2a4e); letter-spacing: -.3px; }
-.tile-description { font-size: 15px; color: var(--text-muted, #64748b); line-height: 1.5; }
+.tile-title { font-size: 20px; font-weight: 700; color: var(--brand-900, #0b2a4e); letter-spacing: -.3px; margin: 0; }
+.tile-description { font-size: 15px; color: var(--text-muted, #64748b); line-height: 1.5; margin: 0; }
 .tile-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid #f1f5f9;
 }
 .tile-count { font-size: 13px; color: var(--text-muted, #64748b); font-weight: 500; }
@@ -425,13 +425,20 @@
 .tile.mental-health { --tile-color: #ec4899; --tile-bg: #fdf2f8; }
 
 @media (max-width: 720px) {
+  .categories { padding: 32px 16px 24px; }
+  .section-heading { margin-bottom: 20px; }
+  .section-heading h2 { font-size: 22px; }
+  .section-heading p { font-size: 14px; }
   .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tile { padding: 14px 12px; gap: 6px; }
-  .tile-icon { width: 36px; height: 36px; font-size: 18px; border-radius: 8px; }
-  .tile-title { font-size: 14px; }
+  .tile { padding: 12px 10px; gap: 4px; }
+  .tile-icon { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
+  .tile-title { font-size: 13px; }
   .tile-description { display: none; }
-  .tile-meta { padding-top: 8px; }
+  .tile-meta { padding-top: 8px; margin-top: 4px; border-top-color: #f1f5f9; }
+  .tile-count { font-size: 11px; }
+  .tile-cta { font-size: 11px; }
   .tile-badge { font-size: 9px; padding: 3px 6px; top: 8px; right: 8px; }
+  .view-all { margin-top: 20px; }
 }
 
 /* =========================================================
