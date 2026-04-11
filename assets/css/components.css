@@ -425,20 +425,21 @@
 .tile.mental-health { --tile-color: #ec4899; --tile-bg: #fdf2f8; }
 
 @media (max-width: 720px) {
-  .categories { padding: 32px 16px 24px; }
-  .section-heading { margin-bottom: 20px; }
-  .section-heading h2 { font-size: 22px; }
-  .section-heading p { font-size: 14px; }
-  .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tile { padding: 12px 10px; gap: 4px; }
-  .tile-icon { width: 32px; height: 32px; font-size: 16px; border-radius: 8px; }
+  .categories { padding: 28px 16px 20px; }
+  .section-heading { margin-bottom: 16px; }
+  .section-heading h2 { font-size: 20px; }
+  .section-heading p { font-size: 13px; }
+  .tiles { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile { padding: 10px; gap: 4px; }
+  .tile::before { opacity: 1; }        /* always show color stripe — replaces icon as visual cue */
+  .tile-icon { display: none; }        /* icon removed on mobile — saves ~36px per card */
   .tile-title { font-size: 13px; }
   .tile-description { display: none; }
-  .tile-meta { padding-top: 8px; margin-top: 4px; border-top-color: #f1f5f9; }
+  .tile-meta { padding-top: 6px; margin-top: 4px; }
   .tile-count { font-size: 11px; }
   .tile-cta { font-size: 11px; }
   .tile-badge { font-size: 9px; padding: 3px 6px; top: 8px; right: 8px; }
-  .view-all { margin-top: 20px; }
+  .view-all { margin-top: 16px; }
 }
 
 /* =========================================================
