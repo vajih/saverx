@@ -80,13 +80,18 @@
   <style>
     .home-search { margin-top: 10px; }
     .home-search .search-bar {
-      display:grid; gap:10px; grid-template-columns: 1fr auto; align-items:start;
-      margin-top: 12px; background:#fff; border:1px solid #e6eaf2; border-radius:14px; padding:10px;
+      display:flex; align-items:center; gap:0;
+      margin-top: 12px; background:#fff; border:1px solid #e6eaf2; border-radius:14px;
+      padding:6px 6px 6px 14px;
     }
-    .home-search input[type="search"]{ width:100%; padding:12px 14px; border:1px solid #dbe3f1; border-radius:10px; font-size:16px; }
-    .home-search .search-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:13px; color:#334155; }
-    .chip .count{ font-weight:800; }
+    .home-search input[type="search"]{ flex:1; padding:10px 8px 10px 0; border:none; outline:none; font-size:16px; background:transparent; min-width:0; }
+    .home-search input[type="search"]::-webkit-search-cancel-button{ display:none; } /* hide native X */
+    .clear-x{ flex-shrink:0; width:32px; height:32px; border:none; border-radius:50%; background:#f1f5f9; color:#64748b; font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+    .clear-x:hover{ background:#e2e8f0; }
+    .featured-header{ display:flex; align-items:center; justify-content:space-between; margin-top:20px; margin-bottom:4px; }
+    .featured-header .section-title{ margin:0; }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:12px; color:#64748b; }
+    .chip .count{ font-weight:700; color:#334155; }
     .no-results{ display:none; margin-top:14px; padding:14px; border:1px dashed #e6eaf2; border-radius:12px; color:#64748b; }
     .no-results[aria-hidden="false"]{ display:block; }
     /* Guard: modal visibility (safe no-op if your CSS already covers it) */
@@ -376,16 +381,16 @@ body.design-v2 section > :first-child{ margin-top: 0; }
     <!-- In-place search (borrowed from /drugs, tuned for homepage) -->
     <div class="home-search" role="search" aria-label="Search featured medications">
       <div class="search-bar">
-        <input id="home-q" type="search" placeholder="Search by brand, generic, or manufacturer…" autocomplete="off" aria-label="Search drugs">
-        <div class="search-meta">
-          <span class="chip">Showing <span id="home-resultCount" class="count">…</span></span>
-          <button id="home-clearBtn" class="btn btn-outline" type="button" aria-label="Clear search" hidden>Clear</button>
-        </div>
+        <input id="home-q" type="search" placeholder="Search medications…" autocomplete="off" aria-label="Search drugs">
+        <button id="home-clearBtn" class="clear-x" type="button" aria-label="Clear search" hidden>✕</button>
       </div>
       <div id="home-no-results" class="no-results" aria-hidden="true">No matches. Try a shorter name or <a href="/drugs/">browse all drugs</a>.</div>
     </div>
-    <br>
-    <h2 id="savings-heading" class="section-title">Featured:</h2>
+
+    <div class="featured-header">
+      <h2 id="savings-heading" class="section-title">Featured</h2>
+      <span class="chip">Showing <span id="home-resultCount" class="count">…</span></span>
+    </div>
 
     <!-- AI scanning loader banner -->
     <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
