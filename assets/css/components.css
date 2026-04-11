@@ -357,6 +357,7 @@
   transform: translateX(4px);
   color: var(--tile-color, var(--brand-600, #2563eb));
 }
+/* tile-cta hover handled via gap above */
 .tile-icon {
   width: 52px;
   height: 52px;
@@ -380,7 +381,17 @@
 }
 .tile-count { font-size: 13px; color: var(--text-muted, #64748b); font-weight: 500; }
 .tile-count strong { color: var(--brand-900, #0b2a4e); font-weight: 700; }
-.tile-arrow { font-size: 20px; color: var(--text-muted, #64748b); transition: all .2s; font-weight: 600; }
+.tile-cta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tile-color, var(--brand-600, #2563eb));
+  letter-spacing: .1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap .2s;
+}
+.tile:hover .tile-cta { gap: 8px; }
 .tile-badge {
   position: absolute;
   top: 16px; right: 16px;
@@ -414,8 +425,13 @@
 .tile.mental-health { --tile-color: #ec4899; --tile-bg: #fdf2f8; }
 
 @media (max-width: 720px) {
-  .tiles { grid-template-columns: 1fr; }
-  .tile { padding: 24px 20px; }
+  .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { padding: 14px 12px; gap: 6px; }
+  .tile-icon { width: 36px; height: 36px; font-size: 18px; border-radius: 8px; }
+  .tile-title { font-size: 14px; }
+  .tile-description { display: none; }
+  .tile-meta { padding-top: 8px; }
+  .tile-badge { font-size: 9px; padding: 3px 6px; top: 8px; right: 8px; }
 }
 
 /* =========================================================
