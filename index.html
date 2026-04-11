@@ -164,7 +164,54 @@ body.design-v2 #featured .search-bar{   /* shrink inner gap a touch */
 /* General: prevent headings from adding extra top gap when a section begins */
 body.design-v2 section > :first-child{ margin-top: 0; }
 
-
+/* ===== Category Condition Tabs ===== */
+#condition-tabs { padding: 1.25rem 0 0.5rem; }
+#condition-tabs .section-title { margin-bottom: 0.75rem; }
+.cat-tab-list {
+  display: flex; flex-wrap: wrap; gap: 0.45rem;
+  padding-bottom: 0.85rem; border-bottom: 1px solid #e6eaf2; margin-bottom: 0;
+}
+.cat-tab {
+  padding: 0.45rem 1.1rem; border-radius: 999px;
+  border: 1.5px solid #e6eaf2; background: #f8fafc;
+  font-size: 0.87rem; font-weight: 500; color: #475569;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+  line-height: 1.4;
+}
+.cat-tab:hover { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+.cat-tab[aria-selected="true"] {
+  border-color: #1d4ed8; background: #1d4ed8; color: #fff; font-weight: 600;
+}
+.cat-panel { display: none; padding: 1rem 0 0.5rem; }
+.cat-panel.active { display: block; }
+.cat-desc { color: #475569; font-size: 0.9rem; margin: 0 0 0.85rem; max-width: 62ch; }
+.cat-drug-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.cat-drug-chips a {
+  display: inline-block; padding: 0.35rem 0.9rem; border-radius: 8px;
+  border: 1px solid #dbe3f1; background: #f1f5f9; color: #1e3a5f;
+  font-size: 0.84rem; font-weight: 600; text-decoration: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+.cat-drug-chips a:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+.cat-affiliate-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.7rem;
+  padding: 0.8rem 1.1rem; background: #f0fdf4;
+  border: 1.5px solid #16a34a; border-radius: 10px; margin-bottom: 0.75rem;
+}
+.cat-affiliate-banner strong { color: #14532d; font-size: 0.87rem; display: block; }
+.cat-affiliate-banner span { color: #374151; font-size: 0.83rem; }
+.cat-affiliate-banner a {
+  background: #16a34a; color: #fff; font-weight: 700; font-size: 0.85rem;
+  padding: 0.45rem 1.05rem; border-radius: 7px; text-decoration: none; white-space: nowrap;
+  flex-shrink: 0;
+}
+.cat-affiliate-banner a:hover { background: #15803d; }
+.cat-see-all {
+  display: inline-block; font-size: 0.84rem; font-weight: 600;
+  color: #1d4ed8; text-decoration: none;
+}
+.cat-see-all:hover { text-decoration: underline; }
 
   </style>
 
@@ -259,6 +306,105 @@ body.design-v2 section > :first-child{ margin-top: 0; }
       </figure>
     </div>
   </section>
+
+  <!-- =======================
+       Browse by Condition
+       ======================= -->
+  <section class="container" id="condition-tabs" aria-label="Browse savings by condition">
+    <h2 class="section-title">Browse by Condition</h2>
+
+    <div class="cat-tab-list" role="tablist" aria-label="Drug categories">
+      <button class="cat-tab" role="tab" aria-selected="true"  aria-controls="cat-panel-glp1"     id="cat-btn-glp1">💉 GLP-1 / Weight Loss</button>
+      <button class="cat-tab" role="tab" aria-selected="false" aria-controls="cat-panel-cardio"   id="cat-btn-cardio">❤️ Heart &amp; Cholesterol</button>
+      <button class="cat-tab" role="tab" aria-selected="false" aria-controls="cat-panel-diabetes" id="cat-btn-diabetes">🩸 Diabetes</button>
+      <button class="cat-tab" role="tab" aria-selected="false" aria-controls="cat-panel-immuno"   id="cat-btn-immuno">🧬 Immunology</button>
+    </div>
+
+    <!-- GLP-1 / Weight Loss -->
+    <div class="cat-panel active" id="cat-panel-glp1" role="tabpanel" aria-labelledby="cat-btn-glp1">
+      <p class="cat-desc">GLP-1 receptor agonists for weight management and blood sugar control. Manufacturer savings cards can reduce costs to as little as $25/month.</p>
+      <div class="cat-drug-chips">
+        <a href="/drugs/ozempic/">Ozempic</a>
+        <a href="/drugs/wegovy/">Wegovy</a>
+        <a href="/drugs/mounjaro/">Mounjaro</a>
+        <a href="/drugs/zepbound/">Zepbound</a>
+        <a href="/drugs/saxenda/">Saxenda</a>
+        <a href="/drugs/rybelsus/">Rybelsus</a>
+        <a href="/drugs/trulicity/">Trulicity</a>
+      </div>
+      <div class="cat-affiliate-banner">
+        <div>
+          <strong>Can't use insurance?</strong>
+          <span>Embody GLP1 connects you with a licensed provider for a compounded GLP-1 prescription — no insurance required.</span>
+        </div>
+        <a href="https://track.katalys.com/aff_c?offer_id=1548&aff_id=12122" target="_blank" rel="noopener sponsored"
+           onclick="typeof gtag!=='undefined'&&gtag('event','affiliate_click',{event_category:'revenue',event_label:'embody-glp1',source:'homepage-cat-tab'})">
+          Get a GLP-1 Prescription →
+        </a>
+      </div>
+      <a class="cat-see-all" href="/drugs/glp1-online.html">Compare GLP-1 telehealth providers — Hims, Ro, Embody &amp; more →</a>
+    </div>
+
+    <!-- Heart & Cholesterol -->
+    <div class="cat-panel" id="cat-panel-cardio" role="tabpanel" aria-labelledby="cat-btn-cardio">
+      <p class="cat-desc">Cardiovascular medications for high cholesterol, heart failure, and blood clots. Manufacturer copay programs can save hundreds per month for eligible patients.</p>
+      <div class="cat-drug-chips">
+        <a href="/drugs/repatha/">Repatha</a>
+        <a href="/drugs/entresto/">Entresto</a>
+        <a href="/drugs/eliquis/">Eliquis</a>
+        <a href="/drugs/xarelto/">Xarelto</a>
+        <a href="/drugs/brilinta/">Brilinta</a>
+        <a href="/drugs/corlanor/">Corlanor</a>
+        <a href="/drugs/evkeeza/">Evkeeza</a>
+      </div>
+      <a class="cat-see-all" href="/drugs/">Browse all heart &amp; cholesterol drugs →</a>
+    </div>
+
+    <!-- Diabetes -->
+    <div class="cat-panel" id="cat-panel-diabetes" role="tabpanel" aria-labelledby="cat-btn-diabetes">
+      <p class="cat-desc">Medications and monitoring devices for Type 1 and Type 2 diabetes. Many programs offer $0 copay or free meters and sensors for qualifying patients.</p>
+      <div class="cat-drug-chips">
+        <a href="/drugs/jardiance/">Jardiance</a>
+        <a href="/drugs/farxiga/">Farxiga</a>
+        <a href="/drugs/freestylelibre/">FreeStyle Libre</a>
+        <a href="/drugs/januvia/">Januvia</a>
+        <a href="/drugs/basaglar/">Basaglar</a>
+        <a href="/drugs/fiasp/">Fiasp</a>
+        <a href="/drugs/glyxambi/">Glyxambi</a>
+      </div>
+      <a class="cat-see-all" href="/drugs/">Browse all diabetes drugs →</a>
+    </div>
+
+    <!-- Immunology -->
+    <div class="cat-panel" id="cat-panel-immuno" role="tabpanel" aria-labelledby="cat-btn-immuno">
+      <p class="cat-desc">Biologics and specialty drugs for autoimmune conditions including eczema, psoriasis, Crohn's, and rheumatoid arthritis. Many qualify for $0–$5/month copay programs.</p>
+      <div class="cat-drug-chips">
+        <a href="/drugs/dupixent/">Dupixent</a>
+        <a href="/drugs/enbrel/">Enbrel</a>
+        <a href="/drugs/cosentyx/">Cosentyx</a>
+        <a href="/drugs/entyvio/">Entyvio</a>
+        <a href="/drugs/benlysta/">Benlysta</a>
+        <a href="/drugs/cimzia/">Cimzia</a>
+        <a href="/drugs/stelara/">Stelara</a>
+      </div>
+      <a class="cat-see-all" href="/drugs/">Browse all immunology drugs →</a>
+    </div>
+  </section>
+
+  <script>
+    (function(){
+      const tabs = document.querySelectorAll('.cat-tab');
+      tabs.forEach(function(tab){
+        tab.addEventListener('click', function(){
+          tabs.forEach(function(t){ t.setAttribute('aria-selected','false'); });
+          document.querySelectorAll('.cat-panel').forEach(function(p){ p.classList.remove('active'); });
+          tab.setAttribute('aria-selected','true');
+          var panel = document.getElementById(tab.getAttribute('aria-controls'));
+          if (panel) panel.classList.add('active');
+        });
+      });
+    })();
+  </script>
 
   <!-- =======================
        Featured (Loader + Skeletons + Cards)
