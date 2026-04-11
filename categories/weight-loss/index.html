@@ -18,13 +18,7 @@
   <link rel="stylesheet" href="/assets/styles.css">
   <link rel="stylesheet" href="/assets/css/components.css">
 
-  <style>
-    :root {
-      --cat-accent: #10b981;
-      --cat-accent-bg: #ecfdf5;
-      --cat-hero-bg: #f0fdf4;
-    }
-  </style>
+
 
   <script type="application/ld+json">
   {
@@ -83,7 +77,7 @@
   }
   </script>
 </head>
-<body class="design-v2 theme-light">
+<body class="design-v2 theme-light cat-page-weight-loss">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
@@ -95,7 +89,20 @@
       <nav class="nav">
         <a href="/">Home</a>
         <a href="/drugs/">Drugs</a>
-        <a href="/categories/" aria-current="page">Categories</a>
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem" aria-current="page">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
         <a href="/comparisons.html">Comparisons</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
@@ -130,69 +137,132 @@
     <div class="cat-hero-icon">⚖️</div>
     <h1>Weight Loss &amp; GLP-1 Medications</h1>
     <p>Ozempic, Wegovy, Mounjaro, Zepbound and other GLP-1 medications for weight management and Type 2 diabetes. Find the cheapest way to get your prescription.</p>
-    <div class="cat-hero-meta">
-      <strong>8 medications</strong> · Manufacturer programs &amp; telehealth options
+    <div class="cat-stats-bar">
+      <div class="cat-stat"><span class="cat-stat-label">Medications</span><span class="cat-stat-value">8</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">Avg savings up to</span><span class="cat-stat-value">$800/mo</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">Telehealth starting at</span><span class="cat-stat-value">$145/mo</span></div>
     </div>
   </section>
 
-  <section class="drug-chips">
-    <div class="drug-chips-inner">
-      <h2>All Weight Loss &amp; GLP-1 Medications</h2>
-      <div class="chip-grid">
-        <a href="/drugs/ozempic/" class="chip">💊 Ozempic <small>(semaglutide)</small></a>
-        <a href="/drugs/wegovy/" class="chip">💊 Wegovy <small>(semaglutide)</small></a>
-        <a href="/drugs/mounjaro/" class="chip">💊 Mounjaro <small>(tirzepatide)</small></a>
-        <a href="/drugs/zepbound/" class="chip">💊 Zepbound <small>(tirzepatide)</small></a>
-        <a href="/drugs/saxenda/" class="chip">💊 Saxenda <small>(liraglutide)</small></a>
-        <a href="/drugs/rybelsus/" class="chip">💊 Rybelsus <small>(semaglutide)</small></a>
-        <a href="/drugs/trulicity/" class="chip">💊 Trulicity <small>(dulaglutide)</small></a>
-        <a href="/drugs/qsymia/" class="chip">💊 Qsymia <small>(phentermine/topiramate)</small></a>
-      </div>
+  <!-- Medications in this category -->
+  <section class="cat-drug-grid">
+    <h2>All Weight Loss &amp; GLP-1 Medications</h2>
+    <div id="cat-skeleton" class="cat-skeletons" aria-hidden="true">
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
     </div>
+    <div id="cat-drug-cards" class="cards" role="list"></div>
+    <div id="cat-chip-fallback" class="chip-grid" style="display:none" aria-label="Medications in this category">
+      <p class="cat-fallback-label">Browse medications in this category:</p>
+      <a href="/drugs/ozempic/" class="chip">💊 Ozempic <small>(semaglutide)</small></a>
+      <a href="/drugs/wegovy/" class="chip">💊 Wegovy <small>(semaglutide)</small></a>
+      <a href="/drugs/mounjaro/" class="chip">💊 Mounjaro <small>(tirzepatide)</small></a>
+      <a href="/drugs/zepbound/" class="chip">💊 Zepbound <small>(tirzepatide)</small></a>
+      <a href="/drugs/saxenda/" class="chip">💊 Saxenda <small>(liraglutide)</small></a>
+      <a href="/drugs/rybelsus/" class="chip">💊 Rybelsus <small>(semaglutide)</small></a>
+      <a href="/drugs/trulicity/" class="chip">💊 Trulicity <small>(dulaglutide)</small></a>
+      <a href="/drugs/qsymia/" class="chip">💊 Qsymia <small>(phentermine/topiramate)</small></a>
+    </div>
+  </section>
+
+  <!-- Email savings alerts -->
+  <section class="cat-email-capture">
+    <h2>Get savings alerts for Weight Loss &amp; GLP-1</h2>
+    <p>We’ll email you when new manufacturer programs, coupons, or telehealth options become available for your medications.</p>
+    <form id="catEmailForm" class="cat-signup-form" novalidate>
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="email" id="catEmail" name="email" required placeholder="your@email.com"
+             inputmode="email" autocomplete="email" aria-label="Email address">
+      <input type="hidden" name="drug" value="Weight Loss &amp; GLP-1">
+      <input type="hidden" name="source" value="SaveRx Category - weight-loss">
+      <button type="submit" class="cat-submit-btn">Get Savings Alerts</button>
+      <p class="form-msg" id="catFormMsg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="microcopy">No spam. Unsubscribe anytime.</p>
   </section>
 
   <section class="cat-cta-band">
-    <h2>Can't afford your GLP-1 medication?</h2>
+    <h2>Can’t afford your GLP-1 medication?</h2>
     <p>Online telehealth providers prescribe GLP-1 medications for a fraction of retail — often without insurance. Compare providers or find your best option.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
-      <a href="https://track.katalys.com/aff_c?offer_id=1548&aff_id=12122" target="_blank" rel="noopener sponsored" class="btn btn-primary" onclick="gtag('event','affiliate_click',{event_category:'revenue',event_label:'embody-glp1',source:'category-page'})">Get a GLP-1 Prescription Online →</a>
+    <div class="cat-cta-band-actions">
+      <a href="https://track.katalys.com/aff_c?offer_id=1548&aff_id=12122" target="_blank" rel="noopener sponsored" class="btn btn-primary"
+         onclick="typeof gtag!=='undefined'&&gtag('event','affiliate_click',{event_category:'revenue',event_label:'embody-glp1',source:'category-page'})">Get a GLP-1 Prescription Online →</a>
       <a href="/drugs/glp1-online.html" class="btn">Compare All Telehealth Providers</a>
     </div>
-    <p style="font-size:13px;color:#9ca3af;margin-top:12px;">
+    <p class="cat-trust-line">Licensed US providers · No insurance required · HSA/FSA eligible</p>
+    <p class="cat-disclosure">
       SaveRx.ai earns a commission on purchases made through affiliate links. This does not affect editorial content.
     </p>
   </section>
 
-  <section style="padding:40px 24px;max-width:900px;margin:0 auto;">
-    <h2 style="font-size:22px;font-weight:700;color:#0b2a4e;margin-bottom:16px;letter-spacing:-.3px;">About GLP-1 Savings Programs</h2>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;">
-      GLP-1 receptor agonists are the most prescribed weight-loss medications today. They work by slowing digestion and reducing appetite. Savings are complicated — most insurance plans don't cover GLP-1s specifically for weight loss, and copay cards often have strict eligibility rules.
+  <section class="cat-about">
+    <h2>About GLP-1 Savings Programs</h2>
+    <p>
+      GLP-1 receptor agonists are the most prescribed weight-loss medications today. They work by slowing digestion and reducing appetite. Savings are complicated — most insurance plans don’t cover GLP-1s specifically for weight loss, and copay cards often have strict eligibility rules.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>For Type 2 diabetes patients:</strong> Ozempic, Rybelsus, and Trulicity are FDA-approved for T2D and more commonly covered by insurance. Manufacturer savings cards can bring costs down to $25–$99/month for commercially insured patients.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>For weight loss without insurance:</strong> Online GLP-1 providers like Embody GLP1, Hims &amp; Hers, and Ro Body offer compounded alternatives starting around $145–$349/month with a telehealth consultation included.
     </p>
   </section>
 
-  <section class="cat-faq" aria-labelledby="faqTitle">
+  <section class="cat-faq cat-faq-accordion" aria-labelledby="faqTitle">
     <h2 id="faqTitle">Frequently Asked Questions</h2>
-    <div class="faq-item">
-      <p class="faq-q">Does insurance cover GLP-1 medications for weight loss?</p>
-      <p class="faq-a">Most commercial insurance plans do NOT cover GLP-1s (like Ozempic or Wegovy) specifically for weight loss. Ozempic may be covered for Type 2 diabetes. Wegovy and Zepbound are FDA-approved for obesity and covered by some plans. Always check your formulary and ask your prescriber to use the correct diagnosis code.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">How much do Ozempic and Wegovy cost without insurance?</p>
-      <p class="faq-a">Ozempic retails for approximately $968/month and Wegovy for approximately $1,349/month without insurance. With manufacturer savings cards for commercially insured patients, costs may be reduced to $25/month. Uninsured patients may qualify for patient assistance or telehealth providers offering alternatives starting around $145/month.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">What is the cheapest way to get a GLP-1 prescription?</p>
-      <p class="faq-a">For insured patients: use the manufacturer savings card (Novo Nordisk for Ozempic/Wegovy, Eli Lilly for Mounjaro/Zepbound). For uninsured patients: online telehealth providers offer compounded GLP-1 alternatives at $145–$349/month. Compare all options at our <a href="/drugs/glp1-online.html" style="color:var(--brand-600,#2563eb)">GLP-1 telehealth comparison page</a>.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">Are compounded GLP-1 medications safe?</p>
-      <p class="faq-a">Compounded semaglutide and tirzepatide have been available through FDA-registered 503B compounding pharmacies. Compounded drugs held to sterility and potency standards differ from FDA-approved branded drugs. They are not FDA-approved. Always consult your prescriber and get a legitimate prescription from a licensed telehealth provider.</p>
+    <details>
+      <summary>Does insurance cover GLP-1 medications for weight loss?</summary>
+      <p>Most commercial insurance plans do NOT cover GLP-1s (like Ozempic or Wegovy) specifically for weight loss. Ozempic may be covered for Type 2 diabetes. Wegovy and Zepbound are FDA-approved for obesity and covered by some plans. Always check your formulary and ask your prescriber to use the correct diagnosis code.</p>
+    </details>
+    <details>
+      <summary>How much do Ozempic and Wegovy cost without insurance?</summary>
+      <p>Ozempic retails for approximately $968/month and Wegovy for approximately $1,349/month without insurance. With manufacturer savings cards for commercially insured patients, costs may be reduced to $25/month. Uninsured patients may qualify for patient assistance or telehealth providers offering alternatives starting around $145/month.</p>
+    </details>
+    <details>
+      <summary>What is the cheapest way to get a GLP-1 prescription?</summary>
+      <p>For insured patients: use the manufacturer savings card (Novo Nordisk for Ozempic/Wegovy, Eli Lilly for Mounjaro/Zepbound). For uninsured patients: online telehealth providers offer compounded GLP-1 alternatives at $145–$349/month. Compare all options at our <a href="/drugs/glp1-online.html">GLP-1 telehealth comparison page</a>.</p>
+    </details>
+    <details>
+      <summary>Are compounded GLP-1 medications safe?</summary>
+      <p>Compounded semaglutide and tirzepatide have been available through FDA-registered 503B compounding pharmacies. Compounded drugs held to sterility and potency standards differ from FDA-approved branded drugs. They are not FDA-approved. Always consult your prescriber and get a legitimate prescription from a licensed telehealth provider.</p>
+    </details>
+  </section>
+
+  <!-- Related categories -->
+  <section class="cat-related">
+    <h2>Explore other savings categories</h2>
+    <div class="cat-related-strip">
+      <a class="cat-related-item" href="/categories/diabetes/" style="--item-accent-color:#3b82f6;--item-accent-bg:#eff6ff">
+        <span class="cat-related-icon">💉</span>
+        <span class="cat-related-name">Diabetes</span>
+        <span class="cat-related-count">32 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/heart-cholesterol/" style="--item-accent-color:#ef4444;--item-accent-bg:#fef2f2">
+        <span class="cat-related-icon">❤️</span>
+        <span class="cat-related-name">Heart &amp; Cholesterol</span>
+        <span class="cat-related-count">15 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/autoimmune/" style="--item-accent-color:#8b5cf6;--item-accent-bg:#f5f3ff">
+        <span class="cat-related-icon">🛡️</span>
+        <span class="cat-related-name">Autoimmune &amp; Inflammation</span>
+        <span class="cat-related-count">25 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/migraine/" style="--item-accent-color:#f59e0b;--item-accent-bg:#fffbeb">
+        <span class="cat-related-icon">⚡</span>
+        <span class="cat-related-name">Migraine</span>
+        <span class="cat-related-count">9 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/respiratory/" style="--item-accent-color:#06b6d4;--item-accent-bg:#ecfeff">
+        <span class="cat-related-icon">🫁</span>
+        <span class="cat-related-name">Asthma &amp; Respiratory</span>
+        <span class="cat-related-count">12 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/mental-health/" style="--item-accent-color:#ec4899;--item-accent-bg:#fdf2f8">
+        <span class="cat-related-icon">🧠</span>
+        <span class="cat-related-name">Mental Health</span>
+        <span class="cat-related-count">13 medications</span>
+      </a>
     </div>
   </section>
 
@@ -240,5 +310,110 @@
   </footer>
 
   <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+  <script>
+  /* ---- view_category GA4 event ---- */
+  if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'weight-loss'});
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'weight-loss'});
+  });
+
+  /* ---- Nav dropdown ---- */
+  (function(){
+    var dd = document.getElementById('catDropdown');
+    if (!dd) return;
+    var btn = dd.querySelector('.nav-dropdown-toggle');
+    var menu = dd.querySelector('.nav-dropdown-menu');
+    function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
+    function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
+    document.addEventListener('click', close);
+    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+  })();
+
+  /* ---- Drug card grid fetch ---- */
+  (function(){
+    var SLUGS = ['ozempic','wegovy','mounjaro','zepbound','saxenda','rybelsus','trulicity','qsymia'];
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec';
+    var skeleton = document.getElementById('cat-skeleton');
+    var cardsEl = document.getElementById('cat-drug-cards');
+    var fallback = document.getElementById('cat-chip-fallback');
+    function esc(s) { return String(s||'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+    fetch(SCRIPT_URL + '?mode=featured', {cache:'no-cache'})
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var items = Array.isArray(data) ? data : (data.items || []);
+        var matched = items.filter(function(item){
+          var slug = (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,'');
+          return SLUGS.indexOf(slug) !== -1;
+        });
+        if (skeleton) skeleton.remove();
+        if (!matched.length) { if (fallback) fallback.style.display = ''; return; }
+        cardsEl.innerHTML = matched.map(function(item){
+          var brand = esc(item.name||'');
+          var generic = esc(item.generic||'');
+          var url = item.url || '#';
+          var cashPrice = (item.cash_price != null && !isNaN(+item.cash_price)) ? '$'+Number(item.cash_price).toLocaleString() : '';
+          var asLow = (item.as_low_as != null && !isNaN(+item.as_low_as)) ? 'As low as $'+Number(item.as_low_as).toLocaleString() : '';
+          return '<article class="card" role="listitem" style="text-align:left">'
+            +'<div style="padding:20px">'
+            +'<h3 style="margin:0 0 4px;font-size:18px">'+ brand +'</h3>'
+            +(generic ? '<p style="margin:0 0 8px;font-size:13px;color:#64748b">'+generic+'</p>' : '')
+            +(cashPrice||asLow ? '<p style="margin:0 0 12px;font-size:14px">'+(cashPrice?'Cash price: <strong>'+cashPrice+'</strong>':'')+( cashPrice&&asLow?' &middot; ':'')+( asLow?'<strong style=\'color:#16a34a\'>'+asLow+'</strong>':'')+'</p>' : '')
+            +'<a class="btn btn-primary" href="'+url+'">View savings &rarr;</a>'
+            +'</div></article>';
+        }).join('');
+        // show chip fallback for any slugs not in the response
+        var matchedSlugs = matched.map(function(item){ return (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,''); });
+        var unmatched = SLUGS.filter(function(s){ return matchedSlugs.indexOf(s) === -1; });
+        if (unmatched.length && fallback) {
+          var extra = fallback.querySelector('.cat-fallback-label');
+          var chipHtml = unmatched.map(function(s){
+            var label = s.charAt(0).toUpperCase()+s.slice(1);
+            return '<a href="/drugs/'+s+'/" class="chip">\ud83d\udc8a '+label+'</a>';
+          }).join('');
+          if (extra) extra.textContent = 'Also in this category:';
+          fallback.innerHTML = (extra ? '<p class="cat-fallback-label">Also in this category:</p>' : '') + chipHtml;
+          fallback.style.display = '';
+        }
+      })
+      .catch(function(){
+        if (skeleton) skeleton.remove();
+        if (fallback) fallback.style.display = '';
+      });
+  })();
+
+  /* ---- Email capture form ---- */
+  (function(){
+    var form = document.getElementById('catEmailForm');
+    var msg = document.getElementById('catFormMsg');
+    if (!form) return;
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec';
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (form.querySelector('[name="website"]').value) return; // honeypot
+      var email = form.querySelector('[name="email"]').value.trim();
+      if (!email) return;
+      var submitBtn = form.querySelector('.cat-submit-btn');
+      var orig = submitBtn.textContent;
+      submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026';
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+          email: email,
+          drug: form.querySelector('[name="drug"]').value,
+          source: form.querySelector('[name="source"]').value
+        })
+      })
+      .then(function(){
+        msg.textContent = '\u2713 Got it! Check your inbox.';
+        form.reset();
+        if (typeof gtag !== 'undefined') gtag('event','email_signup',{category:'weight-loss',source:'category-page-form'});
+      })
+      .catch(function(){ msg.textContent = 'Something went wrong. Please try again.'; })
+      .finally(function(){ submitBtn.disabled = false; submitBtn.textContent = orig; });
+    });
+  })();
+  </script>
 </body>
 </html>

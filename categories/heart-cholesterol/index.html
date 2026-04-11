@@ -18,13 +18,7 @@
   <link rel="stylesheet" href="/assets/styles.css">
   <link rel="stylesheet" href="/assets/css/components.css">
 
-  <style>
-    :root {
-      --cat-accent: #ef4444;
-      --cat-accent-bg: #fef2f2;
-      --cat-hero-bg: #fef2f2;
-    }
-  </style>
+  
 
   <script type="application/ld+json">
   {
@@ -83,7 +77,7 @@
   }
   </script>
 </head>
-<body class="design-v2 theme-light">
+<body class="design-v2 theme-light cat-page-heart-cholesterol">
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <header class="header">
@@ -94,7 +88,20 @@
       <nav class="nav">
         <a href="/">Home</a>
         <a href="/drugs/">Drugs</a>
-        <a href="/categories/" aria-current="page">Categories</a>
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
         <a href="/comparisons.html">Comparisons</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
@@ -128,72 +135,133 @@
     <div class="cat-hero-icon">❤️</div>
     <h1>Heart &amp; Cholesterol Medications</h1>
     <p>Repatha, Praluent, Leqvio, Entresto, Eliquis, Xarelto and other cardiovascular medications for high cholesterol, heart failure, and stroke prevention. Find every current savings program.</p>
-    <div class="cat-hero-meta">
-      <strong>15 medications</strong> · Copay cards &amp; patient assistance programs
+        <div class="cat-stats-bar">
+      <div class="cat-stat"><span class="cat-stat-label">Medications</span><span class="cat-stat-value">15</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">Avg savings up to</span><span class="cat-stat-value">$500/mo</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">PCSK9 as low as</span><span class="cat-stat-value">$5/mo</span></div>
     </div>
   </section>
 
-  <section class="drug-chips">
-    <div class="drug-chips-inner">
-      <h2>All Heart &amp; Cholesterol Medications</h2>
-      <div class="chip-grid">
-        <a href="/drugs/repatha/" class="chip">💊 Repatha</a>
-        <a href="/drugs/praluent/" class="chip">💊 Praluent</a>
-        <a href="/drugs/leqvio/" class="chip">💉 Leqvio</a>
-        <a href="/drugs/nexletol/" class="chip">💊 Nexletol</a>
-        <a href="/drugs/nexlizet/" class="chip">💊 Nexlizet</a>
-        <a href="/drugs/vascepa/" class="chip">💊 Vascepa</a>
-        <a href="/drugs/entresto/" class="chip">💊 Entresto</a>
-        <a href="/drugs/eliquis/" class="chip">💊 Eliquis</a>
-        <a href="/drugs/xarelto/" class="chip">💊 Xarelto</a>
-        <a href="/drugs/brilinta/" class="chip">💊 Brilinta</a>
-        <a href="/drugs/pradaxa/" class="chip">💊 Pradaxa</a>
-        <a href="/drugs/savaysa/" class="chip">💊 Savaysa</a>
-        <a href="/drugs/corlanor/" class="chip">💊 Corlanor</a>
-        <a href="/drugs/evkeeza/" class="chip">💉 Evkeeza</a>
-        <a href="/drugs/camzyos/" class="chip">💊 Camzyos</a>
-      </div>
+    <!-- Medications in this category -->
+  <section class="cat-drug-grid">
+    <h2>All Heart &amp; Cholesterol Medications</h2>
+    <div id="cat-skeleton" class="cat-skeletons" aria-hidden="true">
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
     </div>
+    <div id="cat-drug-cards" class="cards" role="list"></div>
+    <div id="cat-chip-fallback" class="chip-grid" style="display:none" aria-label="Medications in this category">
+      <p class="cat-fallback-label">Browse medications in this category:</p>
+      <a href="/drugs/repatha/" class="chip">💊 Repatha</a>
+      <a href="/drugs/praluent/" class="chip">💊 Praluent</a>
+      <a href="/drugs/leqvio/" class="chip">💊 Leqvio</a>
+      <a href="/drugs/nexletol/" class="chip">💊 Nexletol</a>
+      <a href="/drugs/nexlizet/" class="chip">💊 Nexlizet</a>
+      <a href="/drugs/vascepa/" class="chip">💊 Vascepa</a>
+      <a href="/drugs/entresto/" class="chip">💊 Entresto</a>
+      <a href="/drugs/eliquis/" class="chip">💊 Eliquis</a>
+      <a href="/drugs/xarelto/" class="chip">💊 Xarelto</a>
+      <a href="/drugs/brilinta/" class="chip">💊 Brilinta</a>
+      <a href="/drugs/pradaxa/" class="chip">💊 Pradaxa</a>
+      <a href="/drugs/savaysa/" class="chip">💊 Savaysa</a>
+      <a href="/drugs/corlanor/" class="chip">💊 Corlanor</a>
+      <a href="/drugs/evkeeza/" class="chip">💊 Evkeeza</a>
+      <a href="/drugs/camzyos/" class="chip">💊 Camzyos</a>
+    </div>
+  </section>
+
+  <!-- Email savings alerts -->
+  <section class="cat-email-capture">
+    <h2>Get savings alerts for Heart &amp; Cholesterol</h2>
+    <p>We'll email you when new manufacturer programs, coupons, or savings cards become available for your medications.</p>
+    <form id="catEmailForm" class="cat-signup-form" novalidate>
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="email" id="catEmail" name="email" required placeholder="your@email.com"
+             inputmode="email" autocomplete="email" aria-label="Email address">
+      <input type="hidden" name="drug" value="Heart & Cholesterol">
+      <input type="hidden" name="source" value="SaveRx Category - heart-cholesterol">
+      <button type="submit" class="cat-submit-btn">Get Savings Alerts</button>
+      <p class="form-msg" id="catFormMsg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="microcopy">No spam. Unsubscribe anytime.</p>
   </section>
 
   <section class="cat-cta-band">
     <h2>Managing cardiovascular medication costs?</h2>
     <p>Manufacturer copay programs for heart medications can save you hundreds per month. Browse all current programs and eligibility requirements.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <div class="cat-cta-band-actions">
       <a href="/drugs/" class="btn btn-primary">Browse All Heart &amp; Cholesterol Drugs</a>
     </div>
   </section>
 
-  <section style="padding:40px 24px;max-width:900px;margin:0 auto;">
-    <h2 style="font-size:22px;font-weight:700;color:#0b2a4e;margin-bottom:16px;letter-spacing:-.3px;">About Cardiovascular Savings Programs</h2>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;">
+  <section class="cat-about">
+    <h2>About Cardiovascular Savings Programs</h2>
+    <p>
       Cardiovascular medications can cost thousands per year without assistance. PCSK9 inhibitors like Repatha and Praluent have compelling manufacturer savings programs. Anticoagulants like Eliquis and Xarelto have copay assistance for commercially insured patients.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>PCSK9 Inhibitors (Repatha, Praluent, Leqvio):</strong> These high-cost cholesterol medications — often $500–$700/month — have robust manufacturer savings programs. Eligibility typically requires commercial insurance and failure on statins.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>Anticoagulants (Eliquis, Xarelto, Pradaxa, Savaysa):</strong> These stroke prevention medications often have $10–$15/month copay programs for commercially insured patients, and patient assistance programs for those who qualify based on income.
     </p>
   </section>
 
-  <section class="cat-faq" aria-labelledby="faqTitle">
+  <section class="cat-faq cat-faq-accordion" aria-labelledby="faqTitle">
     <h2 id="faqTitle">Frequently Asked Questions</h2>
-    <div class="faq-item">
-      <p class="faq-q">Does Repatha have a savings program?</p>
-      <p class="faq-a">Yes. Amgen provides a savings card for Repatha (evolocumab) that can reduce costs to as low as $5/month for eligible commercially insured patients. Uninsured patients may qualify for the Amgen SupportPlus patient assistance program for free medication.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">How much does Eliquis cost with a savings card?</p>
-      <p class="faq-a">With the Bristol-Myers Squibb / Pfizer Eliquis savings program, eligible commercially insured patients may pay as little as $10/month. Uninsured patients may qualify for patient assistance through the Bristol-Myers Squibb Patient Assistance Foundation.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">Is there an Entresto savings card?</p>
-      <p class="faq-a">Yes. Novartis offers the Entresto $10 copay program for eligible commercially insured patients, and the Novartis Patient Assistance Now Entresto program provides free medication for qualifying uninsured patients.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">What is Leqvio and does it cost much without insurance?</p>
-      <p class="faq-a">Leqvio (inclisiran) is a twice-yearly injectable PCSK9 inhibitor by Novartis for lowering LDL cholesterol. Retail cost can exceed $3,500 per injection. Novartis offers a savings program for commercially insured patients and patient assistance for qualifying uninsured patients.</p>
+        <details>
+      <summary>Does Repatha have a savings program?</summary>
+      <p>Yes. Amgen provides a savings card for Repatha (evolocumab) that can reduce costs to as low as $5/month for eligible commercially insured patients. Uninsured patients may qualify for the Amgen SupportPlus patient assistance program for free medication.</p>
+    </details>
+        <details>
+      <summary>How much does Eliquis cost with a savings card?</summary>
+      <p>With the Bristol-Myers Squibb / Pfizer Eliquis savings program, eligible commercially insured patients may pay as little as $10/month. Uninsured patients may qualify for patient assistance through the Bristol-Myers Squibb Patient Assistance Foundation.</p>
+    </details>
+        <details>
+      <summary>Is there an Entresto savings card?</summary>
+      <p>Yes. Novartis offers the Entresto $10 copay program for eligible commercially insured patients, and the Novartis Patient Assistance Now Entresto program provides free medication for qualifying uninsured patients.</p>
+    </details>
+        <details>
+      <summary>What is Leqvio and does it cost much without insurance?</summary>
+      <p>Leqvio (inclisiran) is a twice-yearly injectable PCSK9 inhibitor by Novartis for lowering LDL cholesterol. Retail cost can exceed $3,500 per injection. Novartis offers a savings program for commercially insured patients and patient assistance for qualifying uninsured patients.</p>
+    </details>
+  </section>
+
+  <!-- Related categories -->
+  <section class="cat-related">
+    <h2>Explore other savings categories</h2>
+    <div class="cat-related-strip">
+      <a class="cat-related-item" href="/categories/weight-loss/" style="--item-accent-color:#10b981;--item-accent-bg:#ecfdf5">
+        <span class="cat-related-icon">⚖️</span>
+        <span class="cat-related-name">Weight Loss &amp; GLP-1</span>
+        <span class="cat-related-count">8 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/diabetes/" style="--item-accent-color:#3b82f6;--item-accent-bg:#eff6ff">
+        <span class="cat-related-icon">💉</span>
+        <span class="cat-related-name">Diabetes</span>
+        <span class="cat-related-count">32 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/autoimmune/" style="--item-accent-color:#8b5cf6;--item-accent-bg:#f5f3ff">
+        <span class="cat-related-icon">🛡️</span>
+        <span class="cat-related-name">Autoimmune &amp; Inflammation</span>
+        <span class="cat-related-count">25 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/migraine/" style="--item-accent-color:#f59e0b;--item-accent-bg:#fffbeb">
+        <span class="cat-related-icon">⚡</span>
+        <span class="cat-related-name">Migraine</span>
+        <span class="cat-related-count">9 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/respiratory/" style="--item-accent-color:#06b6d4;--item-accent-bg:#ecfeff">
+        <span class="cat-related-icon">🫁</span>
+        <span class="cat-related-name">Asthma &amp; Respiratory</span>
+        <span class="cat-related-count">12 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/mental-health/" style="--item-accent-color:#ec4899;--item-accent-bg:#fdf2f8">
+        <span class="cat-related-icon">🧠</span>
+        <span class="cat-related-name">Mental Health</span>
+        <span class="cat-related-count">13 medications</span>
+      </a>
     </div>
   </section>
 
@@ -201,7 +269,7 @@
     <div class="container grid">
       <div>
         <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
-        <p class="muted" style="color:#cbd5e1;max-width:52ch;margin-top:var(--s-4)">
+        <p class="muted">
           SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
         </p>
       </div>
@@ -240,6 +308,111 @@
     </div>
   </footer>
 
+  <script>
+  /* ---- view_category GA4 ---- */
+  if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'heart-cholesterol'});
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'heart-cholesterol'});
+  });
+
+  /* ---- Nav dropdown ---- */
+  (function(){
+    var dd = document.getElementById('catDropdown');
+    if (!dd) return;
+    var btn = dd.querySelector('.nav-dropdown-toggle');
+    var menu = dd.querySelector('.nav-dropdown-menu');
+    function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
+    function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
+    document.addEventListener('click', close);
+    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+  })();
+
+  /* ---- Drug card grid fetch ---- */
+  (function(){
+    var SLUGS = ['repatha','praluent','leqvio','nexletol','nexlizet','vascepa','entresto','eliquis','xarelto','brilinta','pradaxa','savaysa','corlanor','evkeeza','camzyos'];
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec';
+    var skeleton = document.getElementById('cat-skeleton');
+    var cardsEl = document.getElementById('cat-drug-cards');
+    var fallback = document.getElementById('cat-chip-fallback');
+    function esc(s) { return String(s||'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+    fetch(SCRIPT_URL + '?mode=featured', {cache:'no-cache'})
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var items = Array.isArray(data) ? data : (data.items || []);
+        var matched = items.filter(function(item){
+          var slug = (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,'');
+          return SLUGS.indexOf(slug) !== -1;
+        });
+        if (skeleton) skeleton.remove();
+        if (!matched.length) { if (fallback) fallback.style.display = ''; return; }
+        cardsEl.innerHTML = matched.map(function(item){
+          var brand = esc(item.name||'');
+          var generic = esc(item.generic||'');
+          var url = item.url || '#';
+          var cashPrice = (item.cash_price != null && !isNaN(+item.cash_price)) ? '?v=2025-10-03"></script>
+</body>
+</html>
++Number(item.cash_price).toLocaleString() : '';
+          var asLow = (item.as_low_as != null && !isNaN(+item.as_low_as)) ? 'As low as ?v=2025-10-03"></script>
+</body>
+</html>
++Number(item.as_low_as).toLocaleString() : '';
+          return '<article class="card" role="listitem" style="text-align:left">'
+            +'<div style="padding:20px">'
+            +'<h3 style="margin:0 0 4px;font-size:18px">'+brand+'</h3>'
+            +(generic ? '<p style="margin:0 0 8px;font-size:13px;color:#64748b">'+generic+'</p>' : '')
+            +(cashPrice||asLow ? '<p style="margin:0 0 12px;font-size:14px">'+(cashPrice?'Cash price: <strong>'+cashPrice+'</strong>':'')+( cashPrice&&asLow?' &middot; ':'')+( asLow?'<strong style=\'color:#16a34a\'>'+asLow+'</strong>':'')+'</p>' : '')
+            +'<a class="btn btn-primary" href="'+url+'">View savings &rarr;</a>'
+            +'</div></article>';
+        }).join('');
+        var matchedSlugs = matched.map(function(item){ return (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,''); });
+        var unmatched = SLUGS.filter(function(s){ return matchedSlugs.indexOf(s) === -1; });
+        if (unmatched.length && fallback) {
+          var chipHtml = unmatched.map(function(s){
+            var label = s.charAt(0).toUpperCase()+s.slice(1).replace(/-/g,' ');
+            return '<a href="/drugs/'+s+'/" class="chip">💊 '+label+'</a>';
+          }).join('');
+          fallback.innerHTML = '<p class="cat-fallback-label">Also in this category:</p>' + chipHtml;
+          fallback.style.display = '';
+        }
+      })
+      .catch(function(){
+        if (skeleton) skeleton.remove();
+        if (fallback) fallback.style.display = '';
+      });
+  })();
+
+  /* ---- Email capture ---- */
+  (function(){
+    var form = document.getElementById('catEmailForm');
+    var msg = document.getElementById('catFormMsg');
+    if (!form) return;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (form.querySelector('[name="website"]').value) return;
+      var email = form.querySelector('[name="email"]').value.trim();
+      if (!email) return;
+      var submitBtn = form.querySelector('.cat-submit-btn');
+      var orig = submitBtn.textContent;
+      submitBtn.disabled = true; submitBtn.textContent = 'Sending…';
+      fetch('https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ email: email,
+          drug: form.querySelector('[name="drug"]').value,
+          source: form.querySelector('[name="source"]').value })
+      })
+      .then(function(){
+        msg.textContent = '✓ Got it! Check your inbox.';
+        form.reset();
+        if (typeof gtag !== 'undefined') gtag('event','email_signup',{category:'heart-cholesterol',source:'category-page-form'});
+      })
+      .catch(function(){ msg.textContent = 'Something went wrong. Please try again.'; })
+      .finally(function(){ submitBtn.disabled = false; submitBtn.textContent = orig; });
+    });
+  })();
+  </script>
   <script defer src="/assets/scripts.js?v=2025-10-03"></script>
 </body>
 </html>

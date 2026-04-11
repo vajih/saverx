@@ -253,7 +253,20 @@
       <nav class="nav">
         <a href="/">Home</a>
         <a href="/drugs/" aria-current="page">Drugs</a>
-        <a href="/categories/">Categories</a>
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
         <a href="/comparisons.html">Comparisons</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
@@ -445,6 +458,9 @@
   <!-- =======================
        NEW v2 Footer (added)
        ======================= -->
+  <!-- Related category -->
+  <p class="drug-category-link">Part of <a href="/categories/weight-loss/">Weight Loss &amp; GLP-1</a> — see all 8 medications</p>
+
   <footer class="footer">
     <div class="container grid">
       <div>
@@ -856,6 +872,25 @@
       wireModalTriggers();
       load();
     })();
+  </script>
+
+  <script>
+  /* ---- Nav dropdown ---- */
+  (function(){
+    var dd = document.getElementById('catDropdown');
+    if (!dd) return;
+    var btn = dd.querySelector('.nav-dropdown-toggle');
+    var menu = dd.querySelector('.nav-dropdown-menu');
+    function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
+    function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
+    document.addEventListener('click', close);
+    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+    btn.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') { close(); btn.focus(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); open(); menu.querySelector('[role="menuitem"]').focus(); }
+    });
+  })();
   </script>
 </body>
 </html>

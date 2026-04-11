@@ -18,13 +18,7 @@
   <link rel="stylesheet" href="/assets/styles.css">
   <link rel="stylesheet" href="/assets/css/components.css">
 
-  <style>
-    :root {
-      --cat-accent: #3b82f6;
-      --cat-accent-bg: #eff6ff;
-      --cat-hero-bg: #eff6ff;
-    }
-  </style>
+  
 
   <script type="application/ld+json">
   {
@@ -83,7 +77,7 @@
   }
   </script>
 </head>
-<body class="design-v2 theme-light">
+<body class="design-v2 theme-light cat-page-diabetes">
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <header class="header">
@@ -94,7 +88,20 @@
       <nav class="nav">
         <a href="/">Home</a>
         <a href="/drugs/">Drugs</a>
-        <a href="/categories/" aria-current="page">Categories</a>
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
         <a href="/comparisons.html">Comparisons</a>
         <a href="/about.html">About</a>
         <a href="/contact.html">Contact</a>
@@ -129,89 +136,150 @@
     <div class="cat-hero-icon">💉</div>
     <h1>Diabetes Medications</h1>
     <p>Insulin, CGMs, and oral medications for Type 1 and Type 2 diabetes, including Jardiance, Farxiga, FreeStyle Libre, and more. Find every current savings program in one place.</p>
-    <div class="cat-hero-meta">
-      <strong>32 medications</strong> · Copay cards, patient assistance &amp; insulin programs
+        <div class="cat-stats-bar">
+      <div class="cat-stat"><span class="cat-stat-label">Medications</span><span class="cat-stat-value">32</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">Avg savings up to</span><span class="cat-stat-value">$600/mo</span></div>
+      <div class="cat-stat"><span class="cat-stat-label">Insulin caps at</span><span class="cat-stat-value">$35/mo</span></div>
     </div>
   </section>
 
-  <section class="drug-chips">
-    <div class="drug-chips-inner">
-      <h2>All Diabetes Medications</h2>
-      <div class="chip-grid">
-        <a href="/drugs/jardiance/" class="chip">💊 Jardiance</a>
-        <a href="/drugs/farxiga/" class="chip">💊 Farxiga</a>
-        <a href="/drugs/freestylelibre/" class="chip">🩺 FreeStyle Libre</a>
-        <a href="/drugs/januvia/" class="chip">💊 Januvia</a>
-        <a href="/drugs/basaglar/" class="chip">💉 Basaglar</a>
-        <a href="/drugs/lantus/" class="chip">💉 Lantus</a>
-        <a href="/drugs/humalog/" class="chip">💉 Humalog</a>
-        <a href="/drugs/tresiba/" class="chip">💉 Tresiba</a>
-        <a href="/drugs/toujeo/" class="chip">💉 Toujeo</a>
-        <a href="/drugs/tradjenta/" class="chip">💊 Tradjenta</a>
-        <a href="/drugs/invokana/" class="chip">💊 Invokana</a>
-        <a href="/drugs/glyxambi/" class="chip">💊 Glyxambi</a>
-        <a href="/drugs/synjardy/" class="chip">💊 Synjardy</a>
-        <a href="/drugs/xigduo-xr/" class="chip">💊 Xigduo XR</a>
-        <a href="/drugs/invokamet-xr/" class="chip">💊 Invokamet XR</a>
-        <a href="/drugs/trijardy-xr/" class="chip">💊 Trijardy XR</a>
-        <a href="/drugs/janumet-xr/" class="chip">💊 Janumet XR</a>
-        <a href="/drugs/xultophy/" class="chip">💉 Xultophy</a>
-        <a href="/drugs/steglujan/" class="chip">💊 Steglujan</a>
-        <a href="/drugs/segluromet/" class="chip">💊 Segluromet</a>
-        <a href="/drugs/onglyza/" class="chip">💊 Onglyza</a>
-        <a href="/drugs/qternmet-xr/" class="chip">💊 Qternmet XR</a>
-        <a href="/drugs/nesina/" class="chip">💊 Nesina</a>
-        <a href="/drugs/oseni/" class="chip">💊 Oseni</a>
-        <a href="/drugs/kazano/" class="chip">💊 Kazano</a>
-        <a href="/drugs/novolog/" class="chip">💉 NovoLog</a>
-        <a href="/drugs/fiasp/" class="chip">💉 Fiasp</a>
-        <a href="/drugs/apidra/" class="chip">💉 Apidra</a>
-        <a href="/drugs/lyumjev/" class="chip">💉 Lyumjev</a>
-        <a href="/drugs/afrezza/" class="chip">🌬️ Afrezza</a>
-        <a href="/drugs/ryzodeg-70-30/" class="chip">💉 Ryzodeg 70/30</a>
-        <a href="/drugs/baqsimi/" class="chip">🌬️ Baqsimi</a>
-      </div>
+    <!-- Medications in this category -->
+  <section class="cat-drug-grid">
+    <h2>All Diabetes Medications</h2>
+    <div id="cat-skeleton" class="cat-skeletons" aria-hidden="true">
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
+      <div class="card-skeleton"></div>
     </div>
+    <div id="cat-drug-cards" class="cards" role="list"></div>
+    <div id="cat-chip-fallback" class="chip-grid" style="display:none" aria-label="Medications in this category">
+      <p class="cat-fallback-label">Browse medications in this category:</p>
+      <a href="/drugs/jardiance/" class="chip">💊 Jardiance</a>
+      <a href="/drugs/farxiga/" class="chip">💊 Farxiga</a>
+      <a href="/drugs/freestylelibre/" class="chip">💊 Freestylelibre</a>
+      <a href="/drugs/januvia/" class="chip">💊 Januvia</a>
+      <a href="/drugs/basaglar/" class="chip">💊 Basaglar</a>
+      <a href="/drugs/lantus/" class="chip">💊 Lantus</a>
+      <a href="/drugs/humalog/" class="chip">💊 Humalog</a>
+      <a href="/drugs/tresiba/" class="chip">💊 Tresiba</a>
+      <a href="/drugs/toujeo/" class="chip">💊 Toujeo</a>
+      <a href="/drugs/tradjenta/" class="chip">💊 Tradjenta</a>
+      <a href="/drugs/invokana/" class="chip">💊 Invokana</a>
+      <a href="/drugs/glyxambi/" class="chip">💊 Glyxambi</a>
+      <a href="/drugs/synjardy/" class="chip">💊 Synjardy</a>
+      <a href="/drugs/xigduo-xr/" class="chip">💊 Xigduo Xr</a>
+      <a href="/drugs/invokamet-xr/" class="chip">💊 Invokamet Xr</a>
+      <a href="/drugs/trijardy-xr/" class="chip">💊 Trijardy Xr</a>
+      <a href="/drugs/janumet-xr/" class="chip">💊 Janumet Xr</a>
+      <a href="/drugs/xultophy/" class="chip">💊 Xultophy</a>
+      <a href="/drugs/steglujan/" class="chip">💊 Steglujan</a>
+      <a href="/drugs/segluromet/" class="chip">💊 Segluromet</a>
+      <a href="/drugs/onglyza/" class="chip">💊 Onglyza</a>
+      <a href="/drugs/qternmet-xr/" class="chip">💊 Qternmet Xr</a>
+      <a href="/drugs/nesina/" class="chip">💊 Nesina</a>
+      <a href="/drugs/oseni/" class="chip">💊 Oseni</a>
+      <a href="/drugs/kazano/" class="chip">💊 Kazano</a>
+      <a href="/drugs/novolog/" class="chip">💊 Novolog</a>
+      <a href="/drugs/fiasp/" class="chip">💊 Fiasp</a>
+      <a href="/drugs/apidra/" class="chip">💊 Apidra</a>
+      <a href="/drugs/lyumjev/" class="chip">💊 Lyumjev</a>
+      <a href="/drugs/afrezza/" class="chip">💊 Afrezza</a>
+      <a href="/drugs/ryzodeg-70-30/" class="chip">💊 Ryzodeg 70 30</a>
+      <a href="/drugs/baqsimi/" class="chip">💊 Baqsimi</a>
+    </div>
+  </section>
+
+  <!-- Email savings alerts -->
+  <section class="cat-email-capture">
+    <h2>Get savings alerts for Diabetes</h2>
+    <p>We'll email you when new manufacturer programs, coupons, or savings cards become available for your medications.</p>
+    <form id="catEmailForm" class="cat-signup-form" novalidate>
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="email" id="catEmail" name="email" required placeholder="your@email.com"
+             inputmode="email" autocomplete="email" aria-label="Email address">
+      <input type="hidden" name="drug" value="Diabetes">
+      <input type="hidden" name="source" value="SaveRx Category - diabetes">
+      <button type="submit" class="cat-submit-btn">Get Savings Alerts</button>
+      <p class="form-msg" id="catFormMsg" role="status" aria-live="polite"></p>
+    </form>
+    <p class="microcopy">No spam. Unsubscribe anytime.</p>
   </section>
 
   <section class="cat-cta-band">
     <h2>Need help covering diabetes medication costs?</h2>
     <p>Many manufacturer patient assistance programs provide diabetes medications at no cost for qualifying patients. We can help you find and apply.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+    <div class="cat-cta-band-actions">
       <a href="/drugs/" class="btn btn-primary">Browse All Diabetes Drugs</a>
     </div>
   </section>
 
-  <section style="padding:40px 24px;max-width:900px;margin:0 auto;">
-    <h2 style="font-size:22px;font-weight:700;color:#0b2a4e;margin-bottom:16px;letter-spacing:-.3px;">About Diabetes Savings Programs</h2>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;">
+  <section class="cat-about">
+    <h2>About Diabetes Savings Programs</h2>
+    <p>
       Managing diabetes costs involves insulin, oral medications, and monitoring devices. Manufacturer savings programs can dramatically reduce costs — some programs offer $0 copay for sensors and meters, while insulin assistance programs can provide medication free of charge for qualifying patients.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>Insulin programs:</strong> Eli Lilly's Insulin Value Program caps Humalog and Basaglar at $35/month. Novo Nordisk and Sanofi have similar programs for their insulin brands. These programs are typically available regardless of insurance status.
     </p>
-    <p style="color:#64748b;font-size:16px;line-height:1.7;margin-top:12px;">
+    <p>
       <strong>SGLT2 inhibitors &amp; DPP-4s:</strong> Jardiance, Farxiga, Januvia, and Tradjenta all have manufacturer copay cards for commercially insured patients, often capping monthly costs at $10–$25.
     </p>
   </section>
 
-  <section class="cat-faq" aria-labelledby="faqTitle">
+  <section class="cat-faq cat-faq-accordion" aria-labelledby="faqTitle">
     <h2 id="faqTitle">Frequently Asked Questions</h2>
-    <div class="faq-item">
-      <p class="faq-q">Is there a savings program for Jardiance?</p>
-      <p class="faq-a">Yes. Boehringer Ingelheim and Eli Lilly offer a savings card for Jardiance. Eligible commercially insured patients may pay as little as $10/month. Uninsured patients may qualify for the patient assistance program for Jardiance at no cost.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">How can I get insulin for free or low cost?</p>
-      <p class="faq-a">Eli Lilly offers Humalog and Basaglar for $35/month via their Insulin Value Program. Novo Nordisk offers patient assistance for Tresiba, Toujeo, and Ryzodeg. Sanofi has the Insulins Valyou Savings Program for Lantus and Apidra. Many programs provide free medication to uninsured patients who meet income requirements.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">Does FreeStyle Libre have a savings program?</p>
-      <p class="faq-a">Yes. Abbott's myFreeStyle program offers sensor discounts for commercially insured patients. Additional assistance may be available through the Abbott Patient Assistance Foundation for qualifying uninsured patients.</p>
-    </div>
-    <div class="faq-item">
-      <p class="faq-q">What diabetes medications have the best savings programs?</p>
-      <p class="faq-a">Jardiance, Farxiga, and Januvia all have strong copay programs, often capping costs at $10–$25/month for commercially insured patients. Insulin from Eli Lilly can be obtained for $35/month. Browse all diabetes medications above to see current programs.</p>
+        <details>
+      <summary>Is there a savings program for Jardiance?</summary>
+      <p>Yes. Boehringer Ingelheim and Eli Lilly offer a savings card for Jardiance. Eligible commercially insured patients may pay as little as $10/month. Uninsured patients may qualify for the patient assistance program for Jardiance at no cost.</p>
+    </details>
+        <details>
+      <summary>How can I get insulin for free or low cost?</summary>
+      <p>Eli Lilly offers Humalog and Basaglar for $35/month via their Insulin Value Program. Novo Nordisk offers patient assistance for Tresiba, Toujeo, and Ryzodeg. Sanofi has the Insulins Valyou Savings Program for Lantus and Apidra. Many programs provide free medication to uninsured patients who meet income requirements.</p>
+    </details>
+        <details>
+      <summary>Does FreeStyle Libre have a savings program?</summary>
+      <p>Yes. Abbott's myFreeStyle program offers sensor discounts for commercially insured patients. Additional assistance may be available through the Abbott Patient Assistance Foundation for qualifying uninsured patients.</p>
+    </details>
+        <details>
+      <summary>What diabetes medications have the best savings programs?</summary>
+      <p>Jardiance, Farxiga, and Januvia all have strong copay programs, often capping costs at $10–$25/month for commercially insured patients. Insulin from Eli Lilly can be obtained for $35/month. Browse all diabetes medications above to see current programs.</p>
+    </details>
+  </section>
+
+  <!-- Related categories -->
+  <section class="cat-related">
+    <h2>Explore other savings categories</h2>
+    <div class="cat-related-strip">
+      <a class="cat-related-item" href="/categories/weight-loss/" style="--item-accent-color:#10b981;--item-accent-bg:#ecfdf5">
+        <span class="cat-related-icon">⚖️</span>
+        <span class="cat-related-name">Weight Loss &amp; GLP-1</span>
+        <span class="cat-related-count">8 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/heart-cholesterol/" style="--item-accent-color:#ef4444;--item-accent-bg:#fef2f2">
+        <span class="cat-related-icon">❤️</span>
+        <span class="cat-related-name">Heart &amp; Cholesterol</span>
+        <span class="cat-related-count">15 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/autoimmune/" style="--item-accent-color:#8b5cf6;--item-accent-bg:#f5f3ff">
+        <span class="cat-related-icon">🛡️</span>
+        <span class="cat-related-name">Autoimmune &amp; Inflammation</span>
+        <span class="cat-related-count">25 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/migraine/" style="--item-accent-color:#f59e0b;--item-accent-bg:#fffbeb">
+        <span class="cat-related-icon">⚡</span>
+        <span class="cat-related-name">Migraine</span>
+        <span class="cat-related-count">9 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/respiratory/" style="--item-accent-color:#06b6d4;--item-accent-bg:#ecfeff">
+        <span class="cat-related-icon">🫁</span>
+        <span class="cat-related-name">Asthma &amp; Respiratory</span>
+        <span class="cat-related-count">12 medications</span>
+      </a>
+      <a class="cat-related-item" href="/categories/mental-health/" style="--item-accent-color:#ec4899;--item-accent-bg:#fdf2f8">
+        <span class="cat-related-icon">🧠</span>
+        <span class="cat-related-name">Mental Health</span>
+        <span class="cat-related-count">13 medications</span>
+      </a>
     </div>
   </section>
 
@@ -219,7 +287,7 @@
     <div class="container grid">
       <div>
         <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
-        <p class="muted" style="color:#cbd5e1;max-width:52ch;margin-top:var(--s-4)">
+        <p class="muted">
           SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
         </p>
       </div>
@@ -258,6 +326,111 @@
     </div>
   </footer>
 
+  <script>
+  /* ---- view_category GA4 ---- */
+  if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'diabetes'});
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gtag !== 'undefined') gtag('event','view_category',{category:'diabetes'});
+  });
+
+  /* ---- Nav dropdown ---- */
+  (function(){
+    var dd = document.getElementById('catDropdown');
+    if (!dd) return;
+    var btn = dd.querySelector('.nav-dropdown-toggle');
+    var menu = dd.querySelector('.nav-dropdown-menu');
+    function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
+    function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
+    document.addEventListener('click', close);
+    menu.addEventListener('click', function(e){ e.stopPropagation(); });
+  })();
+
+  /* ---- Drug card grid fetch ---- */
+  (function(){
+    var SLUGS = ['jardiance','farxiga','freestylelibre','januvia','basaglar','lantus','humalog','tresiba','toujeo','tradjenta','invokana','glyxambi','synjardy','xigduo-xr','invokamet-xr','trijardy-xr','janumet-xr','xultophy','steglujan','segluromet','onglyza','qternmet-xr','nesina','oseni','kazano','novolog','fiasp','apidra','lyumjev','afrezza','ryzodeg-70-30','baqsimi'];
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec';
+    var skeleton = document.getElementById('cat-skeleton');
+    var cardsEl = document.getElementById('cat-drug-cards');
+    var fallback = document.getElementById('cat-chip-fallback');
+    function esc(s) { return String(s||'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+    fetch(SCRIPT_URL + '?mode=featured', {cache:'no-cache'})
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var items = Array.isArray(data) ? data : (data.items || []);
+        var matched = items.filter(function(item){
+          var slug = (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,'');
+          return SLUGS.indexOf(slug) !== -1;
+        });
+        if (skeleton) skeleton.remove();
+        if (!matched.length) { if (fallback) fallback.style.display = ''; return; }
+        cardsEl.innerHTML = matched.map(function(item){
+          var brand = esc(item.name||'');
+          var generic = esc(item.generic||'');
+          var url = item.url || '#';
+          var cashPrice = (item.cash_price != null && !isNaN(+item.cash_price)) ? '?v=2025-10-03"></script>
+</body>
+</html>
++Number(item.cash_price).toLocaleString() : '';
+          var asLow = (item.as_low_as != null && !isNaN(+item.as_low_as)) ? 'As low as ?v=2025-10-03"></script>
+</body>
+</html>
++Number(item.as_low_as).toLocaleString() : '';
+          return '<article class="card" role="listitem" style="text-align:left">'
+            +'<div style="padding:20px">'
+            +'<h3 style="margin:0 0 4px;font-size:18px">'+brand+'</h3>'
+            +(generic ? '<p style="margin:0 0 8px;font-size:13px;color:#64748b">'+generic+'</p>' : '')
+            +(cashPrice||asLow ? '<p style="margin:0 0 12px;font-size:14px">'+(cashPrice?'Cash price: <strong>'+cashPrice+'</strong>':'')+( cashPrice&&asLow?' &middot; ':'')+( asLow?'<strong style=\'color:#16a34a\'>'+asLow+'</strong>':'')+'</p>' : '')
+            +'<a class="btn btn-primary" href="'+url+'">View savings &rarr;</a>'
+            +'</div></article>';
+        }).join('');
+        var matchedSlugs = matched.map(function(item){ return (item.url||'').replace(/^\/drugs\//,'').replace(/\/$/,''); });
+        var unmatched = SLUGS.filter(function(s){ return matchedSlugs.indexOf(s) === -1; });
+        if (unmatched.length && fallback) {
+          var chipHtml = unmatched.map(function(s){
+            var label = s.charAt(0).toUpperCase()+s.slice(1).replace(/-/g,' ');
+            return '<a href="/drugs/'+s+'/" class="chip">💊 '+label+'</a>';
+          }).join('');
+          fallback.innerHTML = '<p class="cat-fallback-label">Also in this category:</p>' + chipHtml;
+          fallback.style.display = '';
+        }
+      })
+      .catch(function(){
+        if (skeleton) skeleton.remove();
+        if (fallback) fallback.style.display = '';
+      });
+  })();
+
+  /* ---- Email capture ---- */
+  (function(){
+    var form = document.getElementById('catEmailForm');
+    var msg = document.getElementById('catFormMsg');
+    if (!form) return;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (form.querySelector('[name="website"]').value) return;
+      var email = form.querySelector('[name="email"]').value.trim();
+      if (!email) return;
+      var submitBtn = form.querySelector('.cat-submit-btn');
+      var orig = submitBtn.textContent;
+      submitBtn.disabled = true; submitBtn.textContent = 'Sending…';
+      fetch('https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ email: email,
+          drug: form.querySelector('[name="drug"]').value,
+          source: form.querySelector('[name="source"]').value })
+      })
+      .then(function(){
+        msg.textContent = '✓ Got it! Check your inbox.';
+        form.reset();
+        if (typeof gtag !== 'undefined') gtag('event','email_signup',{category:'diabetes',source:'category-page-form'});
+      })
+      .catch(function(){ msg.textContent = 'Something went wrong. Please try again.'; })
+      .finally(function(){ submitBtn.disabled = false; submitBtn.textContent = orig; });
+    });
+  })();
+  </script>
   <script defer src="/assets/scripts.js?v=2025-10-03"></script>
 </body>
 </html>

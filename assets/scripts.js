@@ -130,10 +130,19 @@
   // Featured cards rendering
   // Exposed as window.renderFeaturedDrugs(urlOrObject)
   // -----------------------------
+  // Known exceptions where folder slug differs from name-derived slug
+  const SLUG_OVERRIDES = {
+    'freestyle libre': 'freestylelibre',
+    'freestylelibre': 'freestylelibre',
+  };
+
   function cardHTML(d) {
     const name = escapeHTML(d.name);
     const generic = d.generic ? `(${escapeHTML(d.generic)})` : "";
     const manufacturer = d.manufacturer ? ` - ${escapeHTML(d.manufacturer)}` : "";
+    const nameLower = (d.name || "").toLowerCase();
+    const pageSlug = SLUG_OVERRIDES[nameLower] || nameLower.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const pageUrl = `/drugs/${pageSlug}/`;
 
     const cash = Number(d.cash_price);
     const copay = Number(d.as_low_as);
@@ -152,7 +161,7 @@
     return `
     <article class="drug-card deal-card" role="listitem" aria-label="${name} savings card">
       <div class="hdr">
-        <h3 class="title">${d.name}</h3>
+        <h3 class="title"><a href="${pageUrl}">${d.name}</a></h3>
         <span class="badge-verified" title="Official program link">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M9 12l2 2 4-4" stroke="#065f46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -211,13 +220,17 @@
       let items = Array.isArray(data) ? data : (data && data.items) ? data.items : [];
       // Filter inactive rows
       items = items.filter((x) => String(x.active).toLowerCase() !== "false");
-      // Sort by priority then name
+      // Store full spreadsheet count before slicing
+      const totalInSheet = items.length;
+      // Sort by priority then name, then keep top 30
       items.sort(
         (a, b) =>
           (a.priority ?? 999) - (b.priority ?? 999) ||
           String(a.name).localeCompare(String(b.name))
       );
+      items = items.slice(0, 30);
 
+      grid.dataset.total = totalInSheet;
       grid.innerHTML = items.map(cardHTML).join("");
 
     } catch (err) {
