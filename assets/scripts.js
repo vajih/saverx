@@ -602,6 +602,38 @@
   })();
 
   // -----------------------------
+  // Drug hero image fallback
+  // The inline page JS sets img.src to /assets/img/{slug}-hero.png which may
+  // not exist for every drug. If the image 404s, try the /assets/img/drugs/
+  // subfolder, then a generic fallback.
+  // -----------------------------
+  document.addEventListener("DOMContentLoaded", function () {
+    const heroImg = document.querySelector('.rx-hero img[data-src="hero_landscape"]');
+    if (!heroImg) return;
+
+    heroImg.addEventListener("error", function onHeroError() {
+      const pathBits = location.pathname.replace(/\/+$/, "").split("/");
+      const drugsIdx = pathBits.indexOf("drugs");
+      const slug = (drugsIdx !== -1 ? pathBits[drugsIdx + 1] : pathBits.filter(Boolean).pop()) || "";
+      if (!slug) { heroImg.removeEventListener("error", onHeroError); return; }
+
+      if (!heroImg._heroFallback) {
+        heroImg._heroFallback = 1;
+        heroImg.src = `/assets/img/drugs/${slug}.jpg`;
+        return;
+      }
+      if (heroImg._heroFallback === 1) {
+        heroImg._heroFallback = 2;
+        heroImg.src = `/assets/img/drugs/${slug}.png`;
+        return;
+      }
+      // Final catch-all — stop looping
+      heroImg.removeEventListener("error", onHeroError);
+      heroImg.src = "/assets/img/hero-1200.jpg";
+    });
+  });
+
+  // -----------------------------
   // (Optional) Preload Featured here (you already trigger from HTML)
   // -----------------------------
   // document.addEventListener("DOMContentLoaded", () => {
