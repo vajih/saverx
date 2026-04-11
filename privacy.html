@@ -1,6 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Google Consent Mode v2 — defaults (before GTM) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      analytics_storage:     'denied',
+      ad_storage:            'denied',
+      ad_user_data:          'denied',
+      ad_personalization:    'denied',
+      personalization_storage: 'denied',
+      wait_for_update:       500
+    });
+  </script>
+  <!-- Consent manager (updates defaults above after user choice) -->
+  <script src="/assets/js/consent.js"></script>
+  <!-- End Consent Mode setup -->
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -175,10 +191,35 @@
     </section>
 
     <!-- Cookies -->
-    <section class="card prose stack-md">
-      <h2>Cookies & analytics</h2>
-      <p>We use lightweight analytics and essential cookies to keep the site reliable, measure usage, and detect abuse.
-         You can control cookies via your browser settings. We avoid intrusive tracking.</p>
+    <section id="cookies" class="card prose stack-md">
+      <h2>Cookies &amp; consent</h2>
+      <p>We use Google Consent Mode v2 to respect your choices before any tracking begins. When you first visit SaveRx.ai, all non-essential cookies are <strong>denied by default</strong> until you make a selection.</p>
+
+      <h3>Cookie categories</h3>
+      <ul>
+        <li><strong>Essential</strong> — Strictly necessary for page functionality (e.g., form security tokens). These cannot be disabled.</li>
+        <li><strong>Analytics</strong> — Google Analytics 4 (GA4, tag <code>G-FCKENS1BWB</code>) measures page visits and interactions so we can improve content. Denied until you accept.</li>
+        <li><strong>Advertising</strong> — Google AdSense (<code>ca-pub-2243579953209623</code>) and future ad partners. Denied until you accept.</li>
+        <li><strong>Personalization</strong> — Remembers your UI preferences across visits. Denied until you accept.</li>
+      </ul>
+
+      <h3>Your choices</h3>
+      <p>A consent banner appears on first visit. You can accept all, reject all, or set granular preferences. Your choice is stored in <code>localStorage</code> for 365 days. You can change it at any time by clicking <a href="#" data-consent-toggle>Cookie settings</a> in the site footer.</p>
+
+      <h3>Global Privacy Control (GPC)</h3>
+      <p>If your browser or device signals <a href="https://globalprivacycontrol.org/" rel="noopener noreferrer" target="_blank">Global Privacy Control</a> (<code>navigator.globalPrivacyControl = true</code>), we automatically reject all non-essential cookies without showing a banner, and log a <code>consent_gpc_honored</code> event.</p>
+
+      <h3>Third-party processors</h3>
+      <ul>
+        <li><strong>Google Tag Manager</strong> (GTM-MVZBBF7R) — tag management; only fires analytics/ad tags after consent is granted.</li>
+        <li><strong>Google Analytics 4</strong> — usage analytics under Google's <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">Privacy Policy</a>.</li>
+        <li><strong>Google AdSense</strong> — display advertising under Google's Privacy Policy.</li>
+        <li><strong>Resend.com</strong> — transactional and automated email delivery.</li>
+        <li><strong>Cloudflare</strong> — CDN, DDoS protection, and Pages hosting. Cloudflare may set essential security cookies.</li>
+      </ul>
+
+      <h3>Browser controls</h3>
+      <p>You can also manage or delete cookies directly in your browser settings. Consult your browser's help documentation for instructions.</p>
     </section>
 
     <!-- Retention & Security -->
@@ -288,6 +329,7 @@
         <h4 style="margin-top:0;color:#fff">Legal</h4>
         <div><a href="/privacy.html" aria-current="page">Privacy Policy</a></div>
         <div><a href="/terms.html">Terms of Service</a></div>
+        <div><a href="#" data-consent-toggle>Cookie settings</a></div>
       </div>
       <div>
         <h4 style="margin-top:0;color:#fff">Newsletter</h4>
