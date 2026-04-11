@@ -1,4 +1,5 @@
 # SaveRx.ai — Developer Handoff Brief
+
 > Written: April 7, 2026. Use this to onboard a new chat session immediately.
 > Also read: `CLAUDE.md` (auto-loaded), `ROADMAP.md`, `docs/REVENUE_SPEC.md`
 
@@ -7,22 +8,28 @@
 ## What Was Accomplished This Session
 
 ### 1. Migrated email delivery: MailerLite → Resend.com
+
 MailerLite had a critical bug: it stripped `{$subscriber.fields.drug}` merge tags from outgoing emails, resulting in blank drug names. Switched entirely to Resend.com for all transactional email delivery.
 
 ### 2. Rewrote `scripts/Code.gs` from scratch
+
 Full replacement of the Apps Script backend. New architecture:
+
 - `doPost` → logs to Google Sheet + sends welcome email via Resend + queues day 3/7 follow-ups
 - `processEmailQueue` → hourly trigger sends queued follow-ups
 - `doGet` → handles unsubscribe clicks, logs to Unsubscribes sheet, returns HTML confirmation page
 - All template merge tags (`{$subscriber.fields.drug}`, `{$unsubscribe}`) replaced server-side before sending
 
 ### 3. Updated all 361 drug pages to new Apps Script URL
+
 The old script deployment (`AKfycbyPArH...`) was replaced with a new one (`AKfycbxC1tT...`). Used `sed` to update all 361 HTML files. Committed and pushed.
 
 ### 4. Fixed FROM_EMAIL domain
+
 Resend only allows sending from verified domains. `saverx.ai` is NOT verified — only `newsletter.saverx.ai` is. Fixed `FROM_EMAIL` to `SaveRx.ai <hello@newsletter.saverx.ai>`.
 
 ### 5. Implemented full unsubscribe system (CAN-SPAM compliant)
+
 - Every email footer has a working unsubscribe link
 - Clicking it hits the Apps Script `doGet` endpoint
 - Email is written to `Unsubscribes` tab in Google Sheet
@@ -30,6 +37,7 @@ Resend only allows sending from verified domains. `saverx.ai` is NOT verified �
 - HTML confirmation page served on unsubscribe
 
 ### 6. E2E tested and confirmed working
+
 Tested Repatha (cardiovascular), Ozempic (GLP-1), FreeStyleLibre (diabetes) — all 3 emails delivered with correct drug names in subject and body.
 
 ---
@@ -65,28 +73,32 @@ User clicks Unsubscribe link in email
 ## Key Credentials & Config
 
 ### Apps Script
-| Variable | Value |
-|---|---|
+
+| Variable                | Value                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Live deployment URL** | `https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec` |
-| **Old URLs (retired)** | `AKfycbx94hvo...` and `AKfycbyPArHul...` — no longer used |
-| **Google Sheet ID** | `19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE` |
-| **Script Property** | `RESEND_API_KEY = re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` |
+| **Old URLs (retired)**  | `AKfycbx94hvo...` and `AKfycbyPArHul...` — no longer used                                                            |
+| **Google Sheet ID**     | `19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE`                                                                       |
+| **Script Property**     | `RESEND_API_KEY = re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d`                                                              |
 
 ### Resend
-| Variable | Value |
-|---|---|
-| **API key** | `re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` (send-only restricted key) |
-| **Verified domain** | `newsletter.saverx.ai` ONLY — `saverx.ai` is NOT verified |
-| **FROM_EMAIL** | `SaveRx.ai <hello@newsletter.saverx.ai>` |
+
+| Variable            | Value                                                             |
+| ------------------- | ----------------------------------------------------------------- |
+| **API key**         | `re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` (send-only restricted key) |
+| **Verified domain** | `newsletter.saverx.ai` ONLY — `saverx.ai` is NOT verified         |
+| **FROM_EMAIL**      | `SaveRx.ai <hello@newsletter.saverx.ai>`                          |
 
 ### Google Sheet tabs (all in sheet ID above)
-| Tab | Purpose |
-|---|---|
-| `CopayEnrollments` | All form submissions (audit log) |
-| `EmailQueue` | Follow-up email queue (day 3, day 7) |
-| `Unsubscribes` | Opt-out list — emails suppressed automatically |
+
+| Tab                | Purpose                                        |
+| ------------------ | ---------------------------------------------- |
+| `CopayEnrollments` | All form submissions (audit log)               |
+| `EmailQueue`       | Follow-up email queue (day 3, day 7)           |
+| `Unsubscribes`     | Opt-out list — emails suppressed automatically |
 
 ### Hosting
+
 - **Static site**: Cloudflare Pages → `wrangler pages deploy . --project-name saverx`
 - **Worker (AI chat)**: `cd saverx-chat-proxy && wrangler deploy`
 
@@ -95,14 +107,17 @@ User clicks Unsubscribe link in email
 ## Google Sheet Columns
 
 ### CopayEnrollments
+
 `timestamp | email | drug | source | user-agent`
 
 ### EmailQueue
+
 `email | drug | category | type | send_at | sent_at | status`
 
 Status values: `pending` → `sent` / `failed` / `unsubscribed`
 
 ### Unsubscribes
+
 `email | unsubscribed_at`
 
 ---
@@ -111,79 +126,109 @@ Status values: `pending` → `sent` / `failed` / `unsubscribed`
 
 All 12 HTML files live in `emails/` → deployed to `https://saverx.ai/emails/`
 
-| File | Sent when | Trigger |
-|---|---|---|
-| `glp1-welcome.html` | Ozempic, Wegovy, Mounjaro, Zepbound, Trulicity, Victoza, Saxenda, Rybelsus | Immediately on signup |
-| `glp1-follow-up-1.html` | GLP-1 drugs | Day 3 |
-| `glp1-follow-up-2.html` | GLP-1 drugs | Day 7 |
-| `glp1-follow-up-3.html` | GLP-1 drugs | Day 14 — online prescription angle (new) |
-| `cardiovascular-welcome.html` | Repatha, Eliquis, Entresto, Jardiance, Brilinta, Xarelto, Farxiga, etc. | Immediately |
-| `cardiovascular-follow-up-1.html` | Cardiovascular | Day 3 |
-| `cardiovascular-follow-up-2.html` | Cardiovascular | Day 7 |
-| `diabetes-cgm-welcome.html` | FreeStyleLibre, Dexcom, Toujeo, Tresiba, Januvia, Metformin, etc. | Immediately |
-| `diabetes-cgm-follow-up-1.html` | Diabetes/CGM | Day 3 |
-| `diabetes-cgm-follow-up-2.html` | Diabetes/CGM | Day 7 |
-| `welcome.html` | Everything else (general) | Immediately |
-| `follow-up-1.html` | General | Day 3 |
-| `follow-up-2.html` | General | Day 7 |
+| File                              | Sent when                                                                  | Trigger                                  |
+| --------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------- |
+| `glp1-welcome.html`               | Ozempic, Wegovy, Mounjaro, Zepbound, Trulicity, Victoza, Saxenda, Rybelsus | Immediately on signup                    |
+| `glp1-follow-up-1.html`           | GLP-1 drugs                                                                | Day 3                                    |
+| `glp1-follow-up-2.html`           | GLP-1 drugs                                                                | Day 7                                    |
+| `glp1-follow-up-3.html`           | GLP-1 drugs                                                                | Day 14 — online prescription angle (new) |
+| `cardiovascular-welcome.html`     | Repatha, Eliquis, Entresto, Jardiance, Brilinta, Xarelto, Farxiga, etc.    | Immediately                              |
+| `cardiovascular-follow-up-1.html` | Cardiovascular                                                             | Day 3                                    |
+| `cardiovascular-follow-up-2.html` | Cardiovascular                                                             | Day 7                                    |
+| `diabetes-cgm-welcome.html`       | FreeStyleLibre, Dexcom, Toujeo, Tresiba, Januvia, Metformin, etc.          | Immediately                              |
+| `diabetes-cgm-follow-up-1.html`   | Diabetes/CGM                                                               | Day 3                                    |
+| `diabetes-cgm-follow-up-2.html`   | Diabetes/CGM                                                               | Day 7                                    |
+| `welcome.html`                    | Everything else (general)                                                  | Immediately                              |
+| `follow-up-1.html`                | General                                                                    | Day 3                                    |
+| `follow-up-2.html`                | General                                                                    | Day 7                                    |
 
 ### Template merge tags (handled by `applyMergeTags()` in Code.gs)
-| Tag | Replaced with |
-|---|---|
-| `{$subscriber.fields.drug}` | Drug name (e.g. "Ozempic") |
-| `{$subscriber.fields.drug\|slugify}` | URL slug (e.g. "ozempic") |
-| `{$unsubscribe}` | Full Apps Script unsubscribe URL with encoded email |
+
+| Tag                                  | Replaced with                                       |
+| ------------------------------------ | --------------------------------------------------- |
+| `{$subscriber.fields.drug}`          | Drug name (e.g. "Ozempic")                          |
+| `{$subscriber.fields.drug\|slugify}` | URL slug (e.g. "ozempic")                           |
+| `{$unsubscribe}`                     | Full Apps Script unsubscribe URL with encoded email |
 
 ---
 
 ## Code.gs Functions Reference
 
-| Function | Purpose |
-|---|---|
-| `doPost(e)` | Main entry point for form submissions |
-| `doGet(e)` | Serves unsubscribe confirmation page |
-| `sendResendEmail(toEmail, drug, category, type)` | Sends one email via Resend API |
-| `queueFollowUps(email, drug, category)` | Adds day 3 + day 7 rows to EmailQueue |
-| `processEmailQueue()` | Hourly trigger — sends due follow-ups |
-| `isUnsubscribed(email)` | Checks Unsubscribes sheet, returns bool |
-| `getDrugCategory(drug)` | Returns `"glp1"` / `"cardiovascular"` / `"diabetes"` / `"general"` |
-| `applyMergeTags(html, drug, toEmail)` | Replaces all template placeholders |
-| `slugify(str)` | Lowercase, hyphens only |
-| `createHourlyTrigger()` | One-time setup — installs hourly trigger for processEmailQueue |
+| Function                                         | Purpose                                                            |
+| ------------------------------------------------ | ------------------------------------------------------------------ |
+| `doPost(e)`                                      | Main entry point for form submissions                              |
+| `doGet(e)`                                       | Serves unsubscribe confirmation page                               |
+| `sendResendEmail(toEmail, drug, category, type)` | Sends one email via Resend API                                     |
+| `queueFollowUps(email, drug, category)`          | Adds day 3 + day 7 rows to EmailQueue                              |
+| `processEmailQueue()`                            | Hourly trigger — sends due follow-ups                              |
+| `isUnsubscribed(email)`                          | Checks Unsubscribes sheet, returns bool                            |
+| `getDrugCategory(drug)`                          | Returns `"glp1"` / `"cardiovascular"` / `"diabetes"` / `"general"` |
+| `applyMergeTags(html, drug, toEmail)`            | Replaces all template placeholders                                 |
+| `slugify(str)`                                   | Lowercase, hyphens only                                            |
+| `createHourlyTrigger()`                          | One-time setup — installs hourly trigger for processEmailQueue     |
 
 ---
 
 ## Outstanding Tasks (Must Do Before Production Traffic)
 
 ### Critical
+
 - [ ] **Redeploy Code.gs** — paste current `scripts/Code.gs` into Apps Script editor, create a **new deployment** (not update existing) since `doGet` signature changed. Update `SCRIPT_URL` var in Code.gs if new deployment URL differs.
 - [ ] **Run `createHourlyTrigger()`** — in Apps Script editor, select `createHourlyTrigger` from dropdown → Run. Installs the hourly trigger for follow-up emails.
 
 ### Day 14 GLP-1 Email — Apps Script Change Required
+
 `glp1-follow-up-3.html` is deployed but won't send until you add a Day 14 queue entry in `queueFollowUps()` inside Apps Script. Find the `queueFollowUps` function and add this line alongside the existing day 3/7 entries:
 
 ```javascript
 // Existing lines (already there):
-sheet.appendRow([email, drug, category, 'follow-up-1', new Date(now.getTime() + 3*24*60*60*1000), '', 'pending']);
-sheet.appendRow([email, drug, category, 'follow-up-2', new Date(now.getTime() + 7*24*60*60*1000), '', 'pending']);
+sheet.appendRow([
+  email,
+  drug,
+  category,
+  "follow-up-1",
+  new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+  "",
+  "pending",
+]);
+sheet.appendRow([
+  email,
+  drug,
+  category,
+  "follow-up-2",
+  new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+  "",
+  "pending",
+]);
 
 // ADD THIS LINE — Day 14 follow-up (GLP-1 only, online prescription angle):
-if (category === 'glp1') {
-  sheet.appendRow([email, drug, category, 'follow-up-3', new Date(now.getTime() + 14*24*60*60*1000), '', 'pending']);
+if (category === "glp1") {
+  sheet.appendRow([
+    email,
+    drug,
+    category,
+    "follow-up-3",
+    new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
+    "",
+    "pending",
+  ]);
 }
 ```
 
 Also ensure `sendResendEmail()` maps `'follow-up-3'` to the correct template file. Look for the template filename lookup and add:
+
 ```javascript
 // In the template map / switch statement:
 'follow-up-3': category + '-follow-up-3.html'  // resolves to glp1-follow-up-3.html
 ```
 
 ### Important
+
 - [ ] **Test unsubscribe flow** — send a test email, click the unsubscribe link, confirm the Unsubscribes sheet gets an entry and a re-submission doesn't send email.
 - [ ] **Verify existing queue** — the EmailQueue sheet has entries from test submissions (Repatha/Ozempic/FreeStyleLibre for test emails). These are all pending day 3/7 sends. Fine to leave or manually mark as `sent` to clear them.
 
 ### Nice to have
+
 - [ ] Commit `HANDOFF.md` to git after reviewing
 
 ---
@@ -191,9 +236,11 @@ Also ensure `sendResendEmail()` maps `'follow-up-3'` to the correct template fil
 ## Next Development Priorities (from ROADMAP.md)
 
 ### Phase 1 — GLP-1 Affiliate CTAs (highest priority revenue)
+
 Add a styled CTA card to 8 GLP-1 drug pages linking to telehealth affiliate partners (Hims & Hers, Ro, Calibrate, Noom Med, Found). Full HTML/CSS spec in `docs/REVENUE_SPEC.md` Feature 1.
 
 Affected pages:
+
 - `drugs/ozempic/index.html`
 - `drugs/wegovy/index.html`
 - `drugs/mounjaro/index.html`
@@ -206,33 +253,37 @@ Affected pages:
 Need to apply for affiliate programs: hims.com/partners, ro.co/affiliates, joincalibrate.com, noom.com/affiliate, joinfound.com/affiliate
 
 ### Phase 2 — GLP-1 comparison page `/drugs/glp1-online.html`
+
 High-intent SEO page comparing telehealth GLP-1 providers. Full spec in `docs/REVENUE_SPEC.md` Feature 2.
 
 ### Phase 3 — Email sequence CTAs
+
 Add affiliate links into the follow-up email templates. Currently they drive back to the drug page only.
 
 ### Phase 4 — AI chat upgrade
+
 Make the Cloudflare Worker chat revenue-aware — surface relevant affiliate offers contextually. Spec in `docs/REVENUE_SPEC.md` Feature 4.
 
 ### Phase 5 — Insurance coverage tool `/coverage-check.html`
+
 Lead gen tool. Spec in `docs/REVENUE_SPEC.md` Feature 5.
 
 ---
 
 ## File Map (Most Important)
 
-| File | Purpose |
-|---|---|
-| `scripts/Code.gs` | **The entire email backend** — Apps Script, Resend, unsubscribe |
-| `emails/*.html` | 12 email templates (served from Cloudflare Pages) |
-| `drugs/*/index.html` | 357 static drug pages |
-| `templates/index.html` | Master drug page template (used by generator) |
-| `assets/css/tokens.css` | Design tokens — use existing vars, don't add new colors |
-| `assets/css/components.css` | Shared CSS components |
-| `saverx-chat-proxy/src/index.js` | Cloudflare Worker — AI chat proxy |
-| `docs/REVENUE_SPEC.md` | Full HTML/CSS/JS specs for all 5 revenue features |
-| `ROADMAP.md` | Strategic roadmap + master to-do |
-| `.env` | API keys (never commit) |
+| File                             | Purpose                                                         |
+| -------------------------------- | --------------------------------------------------------------- |
+| `scripts/Code.gs`                | **The entire email backend** — Apps Script, Resend, unsubscribe |
+| `emails/*.html`                  | 12 email templates (served from Cloudflare Pages)               |
+| `drugs/*/index.html`             | 357 static drug pages                                           |
+| `templates/index.html`           | Master drug page template (used by generator)                   |
+| `assets/css/tokens.css`          | Design tokens — use existing vars, don't add new colors         |
+| `assets/css/components.css`      | Shared CSS components                                           |
+| `saverx-chat-proxy/src/index.js` | Cloudflare Worker — AI chat proxy                               |
+| `docs/REVENUE_SPEC.md`           | Full HTML/CSS/JS specs for all 5 revenue features               |
+| `ROADMAP.md`                     | Strategic roadmap + master to-do                                |
+| `.env`                           | API keys (never commit)                                         |
 
 ---
 

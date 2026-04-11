@@ -18,10 +18,10 @@ REPO = Path(__file__).resolve().parent.parent
 DRUGS_DIR = REPO / "drugs"
 
 # ── Patch markers (used to detect already-patched files) ─────────────────────
-CSS_MARKER       = "/* ── Pharmacy Price Comparison (GoodRx-powered)"
-HTML_MARKER      = '<section class="rx-compare"'
-JS_MARKER        = "// ── GoodRx price comparison section"
-SCRIPT_MARKER    = "goodrx-publisher-widget"
+CSS_MARKER = "/* ── Pharmacy Price Comparison (GoodRx-powered)"
+HTML_MARKER = '<section class="rx-compare"'
+JS_MARKER = "// ── GoodRx price comparison section"
+SCRIPT_MARKER = "goodrx-publisher-widget"
 
 # ── CSS to inject (before </style>) ──────────────────────────────────────────
 CSS_SNIPPET = """
@@ -49,7 +49,9 @@ CSS_SNIPPET = """
     }
 """
 
-CSS_ANCHOR = "    /* Minimal modal visibility guarantees in case external CSS differs */"
+CSS_ANCHOR = (
+    "    /* Minimal modal visibility guarantees in case external CSS differs */"
+)
 
 # ── HTML section to inject (before <!-- Footer email capture -->) ─────────────
 HTML_SNIPPET = """  <!-- ── Pharmacy Price Comparison (GoodRx-powered) ───────────────────────────
@@ -180,7 +182,9 @@ def patch_file(path: Path) -> str:
     if JS_ANCHOR in content and JS_MARKER not in content:
         content = content.replace(
             JS_ANCHOR,
-            "          if (modalDrug) modalDrug.value = window.__drugName;" + JS_SNIPPET + "        } catch(err){"
+            "          if (modalDrug) modalDrug.value = window.__drugName;"
+            + JS_SNIPPET
+            + "        } catch(err){",
         )
 
     # 4. Inject widget script before </body>

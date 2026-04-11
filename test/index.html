@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Navigation Demo | SaveRx.ai</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
+  <!-- End Google Tag Manager -->
+
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <style>
+    .test-banner {
+      background: #fef3c7;
+      border-bottom: 2px solid #f59e0b;
+      padding: 8px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400e;
+      text-align: center;
+    }
+    .test-banner strong { color: #78350f; }
+    .test-section { padding: 24px; max-width: 900px; margin: 0 auto; }
+    .test-section h2 { font-size: 20px; font-weight: 700; color: #0b2a4e; margin-bottom: 8px; border-top: 2px solid #e2e8f0; padding-top: 16px; }
+    .test-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .test-links a { padding: 6px 14px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e3a5f; text-decoration: none; }
+    .test-links a:hover { background: #dbeafe; }
+  </style>
+</head>
+<body class="design-v2 theme-light">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <div class="test-banner">
+    ⚠️ <strong>TEST PAGE</strong> — Category navigation system demo. Not indexed. <a href="/">← Back to homepage</a>
+  </div>
+
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="logo" aria-label="SaveRx.ai">
+        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
+      </a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/drugs/">Drugs</a>
+        <a href="/categories/">Categories</a>
+        <a href="/comparisons.html">Comparisons</a>
+        <a href="/about.html">About</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="test-section">
+    <h2>Phase 16 — Category Navigation System</h2>
+    <p style="color:#64748b;font-size:15px;">All 7 category landing pages + hub + homepage update. Test all links below.</p>
+
+    <h2>Category Hub</h2>
+    <div class="test-links">
+      <a href="/categories/">/categories/ (hub)</a>
+    </div>
+
+    <h2>Category Landing Pages</h2>
+    <div class="test-links">
+      <a href="/categories/weight-loss/">⚖️ Weight Loss & GLP-1</a>
+      <a href="/categories/diabetes/">💉 Diabetes</a>
+      <a href="/categories/heart-cholesterol/">❤️ Heart & Cholesterol</a>
+      <a href="/categories/autoimmune/">🛡️ Autoimmune</a>
+      <a href="/categories/migraine/">⚡ Migraine</a>
+      <a href="/categories/respiratory/">🫁 Respiratory</a>
+      <a href="/categories/mental-health/">🧠 Mental Health</a>
+    </div>
+
+    <h2>Updated Homepage (tile section)</h2>
+    <div class="test-links">
+      <a href="/">Homepage (now has tile grid)</a>
+    </div>
+
+    <h2>Nav Update Script (run to add Categories link to all drug pages)</h2>
+    <p style="color:#64748b;font-size:14px;">First dry-run to verify, then run live:</p>
+    <pre style="background:#f1f5f9;padding:12px;border-radius:8px;font-size:13px;overflow:auto;">
+# Dry run (no writes)
+node scripts/_add-categories-nav.mjs --dry-run
+
+# Apply changes to all drug pages
+node scripts/_add-categories-nav.mjs
+    </pre>
+
+    <h2>Sitemap</h2>
+    <div class="test-links">
+      <a href="/sitemap.xml">sitemap.xml (8 new URLs added)</a>
+    </div>
+  </div>
+
+  <!-- Category Tile Grid Demo -->
+  <section class="categories" aria-label="Category tiles demo">
+    <div class="categories-inner">
+      <div class="section-heading">
+        <span class="eyebrow">Demo</span>
+        <h1>Category Tile Grid</h1>
+        <p>These tiles appear on the homepage and at /categories/. Each links to a dedicated landing page with drug chips + FAQ + savings info.</p>
+      </div>
+
+      <div class="tiles">
+        <a href="/categories/weight-loss/" class="tile weight-loss">
+          <div class="tile-badge">Most Popular</div>
+          <div class="tile-icon">⚖️</div>
+          <div class="tile-title">Weight Loss &amp; GLP-1</div>
+          <div class="tile-description">Ozempic, Wegovy, Mounjaro, Zepbound and other GLP-1 medications for weight management.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>8</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/diabetes/" class="tile diabetes">
+          <div class="tile-icon">💉</div>
+          <div class="tile-title">Diabetes</div>
+          <div class="tile-description">Jardiance, Farxiga, FreeStyle Libre, insulin and other diabetes medications.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>32</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/heart-cholesterol/" class="tile heart-cholesterol">
+          <div class="tile-icon">❤️</div>
+          <div class="tile-title">Heart &amp; Cholesterol</div>
+          <div class="tile-description">Repatha, Praluent, Entresto, Eliquis, Xarelto and other cardiovascular medications.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>15</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/autoimmune/" class="tile autoimmune">
+          <div class="tile-icon">🛡️</div>
+          <div class="tile-title">Autoimmune &amp; Inflammation</div>
+          <div class="tile-description">Enbrel, Dupixent, Rinvoq, Tremfya and other biologics for psoriasis, RA, Crohn's, and MS.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>25</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/migraine/" class="tile migraine">
+          <div class="tile-icon">⚡</div>
+          <div class="tile-title">Migraine</div>
+          <div class="tile-description">Nurtec, Aimovig, Emgality, Vyepti and other CGRP migraine prevention &amp; acute treatments.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>9</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/respiratory/" class="tile respiratory">
+          <div class="tile-icon">🫁</div>
+          <div class="tile-title">Asthma &amp; Respiratory</div>
+          <div class="tile-description">Symbicort, Advair Diskus, Breo Ellipta, Trelegy and other inhalers and respiratory biologics.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>12</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="/categories/mental-health/" class="tile mental-health">
+          <div class="tile-icon">🧠</div>
+          <div class="tile-title">Mental Health</div>
+          <div class="tile-description">Vyvanse, Trintellix, Rexulti, Auvelity, Spravato and other ADHD, depression &amp; anxiety medications.</div>
+          <div class="tile-meta">
+            <span class="tile-count"><strong>13</strong> medications</span>
+            <span class="tile-arrow">→</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="view-all">
+        <a href="/drugs/">Browse all 350+ medications A–Z &nbsp;→</a>
+      </div>
+    </div>
+  </section>
+
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+</body>
+</html>

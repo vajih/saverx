@@ -58,8 +58,8 @@ saverx.ai (Cloudflare Pages)
 
 ### In Progress 🔄
 
-- [ ] Redeploy `scripts/Code.gs` as new Web App deployment (current URL is returning 404 — see SETUP_GUIDE.md Part 5)
-- [ ] Run `createHourlyTrigger()` in Apps Script editor (installs hourly follow-up processor)
+- [x] ~~Redeploy `scripts/Code.gs`~~ — URL mismatch resolved (docs referenced old URL; actual drug pages use correct URL `AKfycbxFzCPGB...`)
+- [ ] Run `createHourlyTrigger()` in Apps Script editor (installs hourly follow-up processor) — verify this has been done
 - [ ] Apply for affiliate programs: Hims & Hers, Ro, Calibrate, Noom, Found (see SETUP_GUIDE.md Part 1)
 - [ ] Apply for Google AdSense, GoodRx Publisher API
 - [ ] Replace placeholder affiliate URLs once programs approve (see SETUP_GUIDE.md Part 2)
@@ -141,7 +141,7 @@ Each drug page follows this pattern:
 The Google Apps Script endpoint:
 
 ```
-https://script.google.com/macros/s/AKfycbx94hvoMsW63Cll1adLwUQaMG2IJ3qgO2S0x7vhYR_UfUtK0J8YCHX8O-6S4sng0nHuNQ/exec
+https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec
 ```
 
 POST body: `{ email, drug, source }`
