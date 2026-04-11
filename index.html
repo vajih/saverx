@@ -164,7 +164,54 @@ body.design-v2 #featured .search-bar{   /* shrink inner gap a touch */
 /* General: prevent headings from adding extra top gap when a section begins */
 body.design-v2 section > :first-child{ margin-top: 0; }
 
-/* Condition tab CSS removed — replaced by category tiles */
+/* ===== Category Condition Tabs ===== */
+#condition-tabs { padding: 1.25rem 0 0.5rem; }
+#condition-tabs .section-title { margin-bottom: 0.75rem; }
+.cat-tab-list {
+  display: flex; flex-wrap: wrap; gap: 0.45rem;
+  padding-bottom: 0.85rem; border-bottom: 1px solid #e6eaf2; margin-bottom: 0;
+}
+.cat-tab {
+  padding: 0.45rem 1.1rem; border-radius: 999px;
+  border: 1.5px solid #e6eaf2; background: #f8fafc;
+  font-size: 0.87rem; font-weight: 500; color: #475569;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s;
+  line-height: 1.4;
+}
+.cat-tab:hover { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+.cat-tab[aria-selected="true"] {
+  border-color: #1d4ed8; background: #1d4ed8; color: #fff; font-weight: 600;
+}
+.cat-panel { display: none; padding: 1rem 0 0.5rem; }
+.cat-panel.active { display: block; }
+.cat-desc { color: #475569; font-size: 0.9rem; margin: 0 0 0.85rem; max-width: 62ch; }
+.cat-drug-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.cat-drug-chips a {
+  display: inline-block; padding: 0.35rem 0.9rem; border-radius: 8px;
+  border: 1px solid #dbe3f1; background: #f1f5f9; color: #1e3a5f;
+  font-size: 0.84rem; font-weight: 600; text-decoration: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+.cat-drug-chips a:hover { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+.cat-affiliate-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.7rem;
+  padding: 0.8rem 1.1rem; background: #f0fdf4;
+  border: 1.5px solid #16a34a; border-radius: 10px; margin-bottom: 0.75rem;
+}
+.cat-affiliate-banner strong { color: #14532d; font-size: 0.87rem; display: block; }
+.cat-affiliate-banner span { color: #374151; font-size: 0.83rem; }
+.cat-affiliate-banner a {
+  background: #16a34a; color: #fff; font-weight: 700; font-size: 0.85rem;
+  padding: 0.45rem 1.05rem; border-radius: 7px; text-decoration: none; white-space: nowrap;
+  flex-shrink: 0;
+}
+.cat-affiliate-banner a:hover { background: #15803d; }
+.cat-see-all {
+  display: inline-block; font-size: 0.84rem; font-weight: 600;
+  color: #1d4ed8; text-decoration: none;
+}
+.cat-see-all:hover { text-decoration: underline; }
 
   </style>
 
@@ -264,67 +311,7 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   <!-- =======================
        Browse by Condition
        ======================= -->
-  <!-- =======================
-       Browse by Condition — Category Tiles
-       ======================= -->
-  <section class="categories" id="browse-conditions" aria-label="Browse savings by condition">
-    <div class="categories-inner">
-      <div class="section-heading">
-        <span class="eyebrow">Savings by Health Condition</span>
-        <h2>Find Your Medication Category</h2>
-        <p>Select your health condition to see manufacturer copay programs, savings cards, and patient assistance for every medication in that category.</p>
-      </div>
-      <div class="tiles">
-        <a href="/categories/weight-loss/" class="tile weight-loss">
-          <div class="tile-badge">Most Popular</div>
-          <div class="tile-icon">⚖️</div>
-          <div class="tile-title">Weight Loss &amp; GLP-1</div>
-          <div class="tile-description">Ozempic, Wegovy, Mounjaro, Zepbound and other GLP-1 medications for weight management.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>8</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/diabetes/" class="tile diabetes">
-          <div class="tile-icon">💉</div>
-          <div class="tile-title">Diabetes</div>
-          <div class="tile-description">Jardiance, Farxiga, FreeStyle Libre, insulin and other diabetes medications.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>32</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/heart-cholesterol/" class="tile heart-cholesterol">
-          <div class="tile-icon">❤️</div>
-          <div class="tile-title">Heart &amp; Cholesterol</div>
-          <div class="tile-description">Repatha, Praluent, Entresto, Eliquis, Xarelto and other cardiovascular medications.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>15</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/autoimmune/" class="tile autoimmune">
-          <div class="tile-icon">🛡️</div>
-          <div class="tile-title">Autoimmune &amp; Inflammation</div>
-          <div class="tile-description">Enbrel, Dupixent, Rinvoq, Tremfya and other biologics for psoriasis, RA, Crohn's, and MS.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>25</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/migraine/" class="tile migraine">
-          <div class="tile-icon">⚡</div>
-          <div class="tile-title">Migraine</div>
-          <div class="tile-description">Nurtec, Aimovig, Emgality, Vyepti and other CGRP migraine prevention &amp; acute treatments.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>9</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/respiratory/" class="tile respiratory">
-          <div class="tile-icon">🫁</div>
-          <div class="tile-title">Asthma &amp; Respiratory</div>
-          <div class="tile-description">Symbicort, Advair Diskus, Breo Ellipta, Trelegy and other inhalers and respiratory biologics.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>12</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-        <a href="/categories/mental-health/" class="tile mental-health">
-          <div class="tile-icon">🧠</div>
-          <div class="tile-title">Mental Health</div>
-          <div class="tile-description">Vyvanse, Trintellix, Rexulti, Auvelity, Spravato and other ADHD, depression &amp; anxiety medications.</div>
-          <div class="tile-meta"><span class="tile-count"><strong>13</strong> medications</span><span class="tile-arrow">→</span></div>
-        </a>
-      </div>
-      <div class="view-all"><a href="/drugs/">Browse all 350+ medications A–Z &nbsp;→</a></div>
-    </div>
-  </section>
-
-  <!-- UNUSED SECTION BELOW THIS COMMENT (old condition-tabs markup preserved as reference, collapsed) -->
-  <section style="display:none" id="condition-tabs" aria-hidden="true">
+  <section class="container" id="condition-tabs" aria-label="Browse savings by condition">
     <h2 class="section-title">Browse by Condition</h2>
 
     <div class="cat-tab-list" role="tablist" aria-label="Drug categories">
