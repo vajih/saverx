@@ -193,16 +193,26 @@
   <!-- =======================
        NEW v2 Header (replaces old .site-header)
        ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
   <header class="header">
     <div class="container inner">
-      <a href="/" class="logo" aria-label="SaveRx.ai">
-        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
-      </a>
-      <nav class="nav">
-        <a href="/">Home</a>
-        <a href="/drugs/" aria-current="page">Drugs</a>
+
+      <!-- Two-tone text logo -->
+      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
+
+      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
+      <nav id="primary-nav" class="nav" aria-label="Main navigation">
+        <a href="/drugs/" class="nav-link">Drugs</a>
+
         <div class="nav-dropdown" id="catDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
+            Categories <span class="caret" aria-hidden="true">▾</span>
+          </button>
           <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
             <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
             <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
@@ -215,24 +225,22 @@
             <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
           </div>
         </div>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
+
+        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
       </nav>
+
+      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
     </div>
   </header>
 
-  <!-- Mobile drawer (kept as-is) -->
-  <aside id="mobile-drawer" class="mobile-drawer" hidden>
-    <div class="drawer-backdrop" data-close></div>
-    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-      <nav class="drawer-nav">
-        <a href="/">Home</a>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
-      </nav>
-    </div>
-  </aside>
 
   <!-- =======================
        ORIGINAL MAIN CONTENT (unchanged)
@@ -818,23 +826,6 @@
       load();
     })();
   </script>
-  <script>
-  /* ---- Nav dropdown ---- */
-  (function(){
-    var dd = document.getElementById('catDropdown');
-    if (!dd) return;
-    var btn = dd.querySelector('.nav-dropdown-toggle');
-    var menu = dd.querySelector('.nav-dropdown-menu');
-    function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
-    function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
-    btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
-    document.addEventListener('click', close);
-    menu.addEventListener('click', function(e){ e.stopPropagation(); });
-    btn.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') { close(); btn.focus(); }
-      if (e.key === 'ArrowDown') { e.preventDefault(); open(); menu.querySelector('[role="menuitem"]').focus(); }
-    });
-  })();
-  </script>
+  <script src="/assets/js/nav.js"></script>
 </body>
 </html>

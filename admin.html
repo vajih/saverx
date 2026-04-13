@@ -35,7 +35,54 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
   <!-- ── Login Overlay ─────────────────────────────────────────────── -->
-  <div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
+    <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <header class="header">
+    <div class="container inner">
+
+      <!-- Two-tone text logo -->
+      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
+
+      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
+      <nav id="primary-nav" class="nav" aria-label="Main navigation">
+        <a href="/drugs/" class="nav-link">Drugs</a>
+
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
+            Categories <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
+
+        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+      </nav>
+
+      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
+    </div>
+  </header>
+<div id="login-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
     <div class="w-full max-w-sm mx-4">
       <div class="flex items-center gap-3 justify-center mb-8">
         <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center font-bold text-slate-900">Rx</div>
@@ -631,5 +678,6 @@
     setInterval(() => loadData(), 60_000);
     setInterval(() => loadKatalysData(), 60_000);
   </script>
+  <script src="/assets/js/nav.js"></script>
 </body>
 </html>

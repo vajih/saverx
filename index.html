@@ -114,42 +114,9 @@
     .modal[aria-hidden="true"]{ display:none; }
     .modal[aria-hidden="false"]{ display:block; }
 
-/* ===== Mobile nav (hamburger) ===== */
-.nav-toggle{display:none;}
-.nav-toggle .bar{
-  display:block;width:20px;height:2px;background:currentColor;margin:3px 0;
-  transition:transform .2s ease, opacity .2s ease;
-}
-
-@media (max-width: 960px){
-  .header .container{position:relative;}
-  .nav-toggle{
-    display:inline-grid;place-items:center;width:44px;height:44px;cursor:pointer;
-    background:transparent;border:1px solid var(--border-weak, #e6eaf2);border-radius:10px;
-  }
-  .header .nav{
-    position:absolute;top:calc(100% + 8px);right:0;
-    background:var(--surface, #fff);
-    border:1px solid var(--border-weak, #e6eaf2);border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-    padding:12px;width:min(84vw,320px);
-    display:none;flex-direction:column;gap:8px;
-  }
-  .header .nav.open{display:flex;}
-  /* Animate icon to X when open */
-  body.nav-open .nav-toggle .bar:nth-child(1){transform:translateY(5px) rotate(45deg)}
-  body.nav-open .nav-toggle .bar:nth-child(2){opacity:0}
-  body.nav-open .nav-toggle .bar:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
-}
-
-@media (min-width: 961px){
-  .header .nav{display:flex;}
-}
-
 /* Hide page scroll while an overlay is open = only one scrollbar */
-/* Put this at the very end of your CSS */
-html { overflow: hidden; height: 100%; }   /* hide the outer scrollbar */
-body { overflow-y: auto; height: 100%; }   /* keep a single scrollbar on body */
+html { overflow: hidden; height: 100%; }
+body { overflow-y: auto; height: 100%; }
 
 
 /* ==== Home-only spacing (tight) ==== */
@@ -224,22 +191,26 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   <!-- =======================
        Header / Primary Nav
        ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
   <header class="header">
     <div class="container inner">
-      <a href="/" class="logo" aria-label="SaveRx.ai">
-        <img src="assets/img/logo.svg" alt="SaveRx.ai" height="28">
-      </a>
 
-      <!-- NEW: Hamburger button -->
-      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-      </button>
+      <!-- Two-tone text logo -->
+      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
 
-      <!-- UPDATED: give the nav an id -->
-      <nav id="primary-nav" class="nav">
-        <a href="/drugs/">Drugs</a>
+      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
+      <nav id="primary-nav" class="nav" aria-label="Main navigation">
+        <a href="/drugs/" class="nav-link">Drugs</a>
+
         <div class="nav-dropdown" id="catDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
+            Categories <span class="caret" aria-hidden="true">▾</span>
+          </button>
           <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
             <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
             <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
@@ -252,25 +223,23 @@ body.design-v2 section > :first-child{ margin-top: 0; }
             <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
           </div>
         </div>
-        <a href="/comparisons.html">Comparisons</a>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
+
+        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
       </nav>
+
+      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
     </div>
   </header>
 
 
-  <!-- Mobile drawer (kept for future use) -->
-  <aside id="mobile-drawer" class="mobile-drawer" hidden>
-    <div class="drawer-backdrop" data-close></div>
-    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-      <nav class="drawer-nav">
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-    </div>
-  </aside>
 
   <!-- =======================
        Hero
@@ -744,24 +713,6 @@ body.design-v2 section > :first-child{ margin-top: 0; }
       <a class="btn btn-primary" href="#featured">Find savings</a>
     </div>
   </div>
-  <script>
-  (function(){
-    const btn = document.querySelector('.nav-toggle');
-    const nav = document.getElementById('primary-nav');
-    if(!btn || !nav) return;
-    function setOpen(isOpen){
-      nav.classList.toggle('open', isOpen);
-      document.body.classList.toggle('nav-open', isOpen);
-      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    }
-    btn.addEventListener('click', ()=> setOpen(!nav.classList.contains('open')));
-    document.addEventListener('click', (e)=>{
-      if(!nav.classList.contains('open')) return;
-      if(!nav.contains(e.target) && !btn.contains(e.target)) setOpen(false);
-    });
-    window.addEventListener('resize', ()=>{ if(window.innerWidth >= 961) setOpen(false); });
-  })();
-</script>
 
 <!-- Ask SaveRx widget -->
 <div id="srx-overlay"></div>
@@ -922,39 +873,6 @@ form.addEventListener("submit", async (e) => {
   }
 });
 </script>
-
-
-
-
-<script>
-/* ---- Nav dropdown ---- */
-(function(){
-  var dd = document.getElementById('catDropdown');
-  if (!dd) return;
-  var btn = dd.querySelector('.nav-dropdown-toggle');
-  var menu = dd.querySelector('.nav-dropdown-menu');
-  function open() { dd.setAttribute('data-open',''); btn.setAttribute('aria-expanded','true'); }
-  function close() { dd.removeAttribute('data-open'); btn.setAttribute('aria-expanded','false'); }
-  btn.addEventListener('click', function(e){ e.stopPropagation(); dd.hasAttribute('data-open') ? close() : open(); });
-  document.addEventListener('click', close);
-  menu.addEventListener('click', function(e){ e.stopPropagation(); });
-  btn.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') { close(); btn.focus(); }
-    if (e.key === 'ArrowDown') { e.preventDefault(); open(); menu.querySelector('[role="menuitem"]').focus(); }
-  });
-  var items = menu.querySelectorAll('[role="menuitem"]');
-  items.forEach(function(item, i){
-    item.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') { close(); btn.focus(); }
-      if (e.key === 'ArrowDown') { e.preventDefault(); if (items[i+1]) items[i+1].focus(); }
-      if (e.key === 'ArrowUp') { e.preventDefault(); i === 0 ? btn.focus() : items[i-1].focus(); }
-    });
-    item.addEventListener('click', function(){
-      var slug = (item.pathname||'').replace(/.*\/categories\//,'').replace('/','');
-      if (slug && typeof gtag !== 'undefined') gtag('event','category_click',{category:slug,source:'nav-dropdown'});
-    });
-  });
-})();
-</script>
+  <script src="/assets/js/nav.js"></script>
 </body>
 </html>

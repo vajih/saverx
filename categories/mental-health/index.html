@@ -97,16 +97,26 @@
 <body class="design-v2 theme-light cat-page-mental-health">
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
   <header class="header">
     <div class="container inner">
-      <a href="/" class="logo" aria-label="SaveRx.ai">
-        <img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28">
-      </a>
-      <nav class="nav">
-        <a href="/">Home</a>
-        <a href="/drugs/">Drugs</a>
+
+      <!-- Two-tone text logo -->
+      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
+
+      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
+      <nav id="primary-nav" class="nav" aria-label="Main navigation">
+        <a href="/drugs/" class="nav-link">Drugs</a>
+
         <div class="nav-dropdown" id="catDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">Categories <span class="caret">▾</span></button>
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
+            Categories <span class="caret" aria-hidden="true">▾</span>
+          </button>
           <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
             <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
             <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
@@ -119,26 +129,23 @@
             <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
           </div>
         </div>
-        <a href="/comparisons.html">Comparisons</a>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
+
+        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
       </nav>
+
+      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+
     </div>
   </header>
 
-  <aside id="mobile-drawer" class="mobile-drawer" hidden>
-    <div class="drawer-backdrop" data-close></div>
-    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-      <button class="drawer-close" type="button" aria-label="Close" data-close>&times;</button>
-      <nav class="drawer-nav">
-        <a href="/">Home</a>
-        <a href="/drugs/">Drugs</a>
-        <a href="/categories/">Categories</a>
-        <a href="/about.html">About</a>
-        <a href="/contact.html">Contact</a>
-      </nav>
-    </div>
-  </aside>
+
 
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="/">Home</a>
@@ -364,6 +371,7 @@
           var generic = esc(item.generic||'');
           var url = item.url || '#';
           var cashPrice = (item.cash_price != null && !isNaN(+item.cash_price)) ? '?v=2025-10-03"></script>
+  <script src="/assets/js/nav.js"></script>
 </body>
 </html>
 +Number(item.cash_price).toLocaleString() : '';

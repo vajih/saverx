@@ -19,12 +19,97 @@
   background:var(--brand-50); color:var(--brand-700); font-weight:600; border:1px solid var(--brand-100);
 }
 
-/* Header / nav */
-.design-v2 .header{ position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(12px); background:rgba(255,255,255,.7); border-bottom:1px solid rgba(0,0,0,.06) }
-.design-v2 .header .inner{ display:flex; align-items:center; justify-content:space-between; height:64px }
-.design-v2 .nav{ display:flex; gap:var(--s-6) }
-.design-v2 .nav a{ text-decoration:none; color:var(--text); font-weight:600; padding:6px 0; border-bottom:2px solid transparent }
-.design-v2 .nav a[aria-current="page"]{ border-color:var(--brand-600); color:var(--brand-700) }
+/* ── Header / Nav ──────────────────────────────────────────────────────────── */
+
+/* Sticky frosted-glass header */
+.design-v2 .header {
+  position: sticky; top: 0; z-index: 100;
+  height: 56px;
+  background: rgba(250,250,250,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+}
+.design-v2 .header .inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; padding-inline: min(5vw, 24px);
+}
+
+/* Two-tone text logo: "Save" teal, "Rx.ai" dark */
+.design-v2 .nav-logo {
+  font-size: 20px; font-weight: 500; letter-spacing: -0.4px;
+  text-decoration: none; color: #1d4ed8; flex-shrink: 0;
+}
+.design-v2 .nav-logo span { color: var(--text); }
+
+/* Desktop nav container */
+.design-v2 .nav { display: flex; align-items: center; gap: 2px; }
+
+/* Pill-shaped links — shared by <a> and dropdown toggle */
+.design-v2 .nav > a,
+.design-v2 .nav .nav-dropdown-toggle {
+  font-size: 14px; font-weight: 500; color: var(--text-muted);
+  text-decoration: none; padding: 6px 12px; border-radius: 999px;
+  line-height: 1; white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+/* Hover: border fills, text darkens */
+.design-v2 .nav > a:hover,
+.design-v2 .nav .nav-dropdown-toggle:hover {
+  background: var(--border); color: var(--text);
+}
+/* Active page: light-blue pill */
+.design-v2 .nav > a[aria-current="page"] {
+  background: var(--brand-100); color: var(--brand-700);
+}
+
+/* Hamburger — hidden on desktop */
+.design-v2 .nav-toggle {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  width: 40px; height: 40px; cursor: pointer;
+  background: transparent; border: none; border-radius: 8px; padding: 0;
+  color: var(--text); -webkit-appearance: none; appearance: none;
+}
+.design-v2 .nav-toggle .bar {
+  display: block; width: 20px; height: 2px;
+  background: currentColor; flex-shrink: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* ── Mobile (≤640px) ───────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .design-v2 .nav-toggle { display: flex; }
+
+  /* Nav collapses into a dropdown panel below the header */
+  .design-v2 .nav {
+    position: absolute; top: 57px; left: 0; right: 0; z-index: 99;
+    background: rgba(250,250,250,0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+    flex-direction: column; align-items: stretch;
+    padding: 8px 16px 12px; gap: 2px;
+    display: none;
+  }
+  .design-v2 .nav.open { display: flex; }
+
+  /* Bigger tap targets on mobile */
+  .design-v2 .nav > a,
+  .design-v2 .nav .nav-dropdown-toggle {
+    padding: 10px 14px; font-size: 15px; border-radius: 10px;
+  }
+
+  /* X animation */
+  body.nav-open .nav-toggle .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  body.nav-open .nav-toggle .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  body.nav-open .nav-toggle .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+}
+
+/* Force nav visible on desktop (overrides any .open state) */
+@media (min-width: 641px) {
+  .design-v2 .nav { display: flex !important; }
+}
 
 /* Hero */
 .design-v2 .hero{ position:relative; isolation:isolate; background:linear-gradient(180deg, var(--brand-50), #fff) }
@@ -708,20 +793,23 @@
   .cat-related-strip { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* =========================================================
-   NAV DROPDOWN
-   ========================================================= */
+/* ── Nav Dropdown (positioning + menu panel) ──────────────────────────────── */
 .nav-dropdown { position: relative; }
-.nav-dropdown-toggle {
-  background: none; border: none; padding: 0; font: inherit;
-  font-size: 15px; font-weight: 500; color: inherit; cursor: pointer;
-  display: flex; align-items: center; gap: 4px; line-height: 1;
+
+/* Toggle button: reset browser defaults; pill styles come from .nav > a rule */
+.design-v2 .nav .nav-dropdown-toggle {
+  background: none; border: none; cursor: pointer; font: inherit;
+  display: inline-flex; align-items: center; gap: 4px;
 }
-.nav-dropdown-toggle:hover { color: var(--brand-600, #1d4ed8); }
-.nav-dropdown-toggle .caret { font-size: 11px; opacity: .7; transition: transform .2s; display: inline-block; }
+.nav-dropdown-toggle .caret {
+  font-size: 11px; opacity: .7;
+  transition: transform 0.2s; display: inline-block;
+}
 .nav-dropdown[data-open] .caret { transform: rotate(180deg); }
+
 .nav-dropdown-menu {
-  position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+  position: absolute; top: calc(100% + 10px); left: 50%;
+  transform: translateX(-50%);
   min-width: 220px; background: #fff;
   border: 1px solid var(--border, #e2e8f0);
   border-radius: var(--radius, 12px);
@@ -735,7 +823,8 @@
 }
 .nav-dropdown-menu a:hover { background: var(--brand-50, #eff6ff); color: var(--brand-600, #1d4ed8); }
 .nav-dropdown-menu hr { margin: 4px 12px; border: none; border-top: 1px solid var(--border, #e2e8f0); }
-@media (max-width: 768px) {
+
+@media (max-width: 640px) {
   .nav-dropdown-menu {
     position: static; transform: none; box-shadow: none;
     border: none; padding: 0 0 0 12px; display: none;
