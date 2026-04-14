@@ -2,7 +2,7 @@
     "providers": [{
             "id": "embody-glp1",
             "name": "Embody GLP1",
-            "glp1_url": "https://track.katalys.com/aff_c?offer_id=1548&aff_id=12122",
+            "glp1_url": "https://track.revoffers.com/aff_c?offer_id=1548&aff_id=12122",
             "logo": "/assets/img/affiliates/embody-logo.png",
             "monthly_from": null,
             "monthly_to": null,
@@ -14,7 +14,24 @@
             "commission": "$400 CPA (Katalys — approved)",
             "katalys_offer_id": "1548",
             "katalys_aff_id": "12122",
-            "notes": "Approved Katalys affiliate. $400 CPA. Tracked via track.katalys.com."
+            "notes": "Approved Katalys/RevOffers affiliate. $400 CPA. Tracked via track.revoffers.com."
+        },
+        {
+            "id": "novi-weight-loss",
+            "name": "Novi Weight Loss",
+            "glp1_url": "https://track.revoffers.com/aff_c?offer_id=1550&aff_id=12122",
+            "logo": "/assets/img/affiliates/novi-logo.png",
+            "monthly_from": null,
+            "monthly_to": null,
+            "drugs": ["semaglutide", "tirzepatide", "glp1"],
+            "insurance_required": false,
+            "turnaround_days": "2–5",
+            "rating": 5,
+            "rating_max": 5,
+            "commission": "CPA (RevOffers — approved)",
+            "katalys_offer_id": "1550",
+            "katalys_aff_id": "12122",
+            "notes": "Approved RevOffers affiliate. Tracked via track.revoffers.com."
         },
         {
             "id": "hims",
