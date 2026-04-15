@@ -271,8 +271,6 @@ body.design-v2 section > :first-child{ margin-top: 0; }
         <li>Verified manufacturer programs</li>
         <li>No insurance info required</li>
         <li>Updated regularly</li>
-        <li>Not affiliated with any manufacturer</li>
-        <li>Brand-name medications only</li>
         <li>Instant access</li>
         <li>No income requirements</li>
       </ul>
@@ -280,55 +278,70 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   </div>
 
   <!-- =======================
-       How it works
+       Featured (Loader + Skeletons + Cards)
+       Rendered live from Google Sheet via Apps Script
        ======================= -->
-  <section class="how-it-works" aria-labelledby="how-heading">
-    <div class="container">
-      <h2 id="how-heading">How it works</h2>
-      <div class="steps">
-        <div class="step">
-          <span class="step-num" aria-hidden="true">1</span>
-          <h3>Search your medication</h3>
-          <p>Enter your drug name to instantly see which savings programs, copay cards, and patient assistance programs are available.</p>
-        </div>
-        <div class="step">
-          <span class="step-num" aria-hidden="true">2</span>
-          <h3>See your savings</h3>
-          <p>We compare verified manufacturer copay cards and assistance programs side by side — no sign-up required to browse.</p>
-        </div>
-        <div class="step">
-          <span class="step-num" aria-hidden="true">3</span>
-          <h3>Activate your card</h3>
-          <p>Click through to the official manufacturer program. No middleman. Instant access. Start saving on your next fill.</p>
-        </div>
+  <section id="featured" class="container section-pad loading" aria-busy="true" aria-labelledby="savings-heading">
+    <div class="section-heading">
+        <h2>Browse by Featured Savings</h2>
+        <p>Find manufacturer savings, copay cards, and patient assistance by the condition you're treating.</p>
       </div>
+    <div class="featured-header">
+      <h2 id="savings-heading" class="section-title">Featured</h2>
+      <span class="chip">Showing <span id="home-resultCount" class="count">…</span></span>
     </div>
-  </section>
 
-  <!-- =======================
-       Testimonials
-       ======================= -->
-  <section class="testimonials" aria-labelledby="testimonials-heading">
-    <div class="container">
-      <p class="testimonials__eyebrow">Real patients. Real savings.</p>
-      <div class="testimonials__grid" role="list" aria-label="Patient testimonials">
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;I was paying $450/month for Repatha. SaveRx showed me the Amgen copay card &mdash; now I pay $0. I had no idea this existed.&rdquo;</p>
-          <footer>Maria L., Texas</footer>
-        </blockquote>
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;Found the Dupixent MyWay program in two minutes. Went from $3,800 to $5 a month. This site is a lifesaver.&rdquo;</p>
-          <footer>James K., Ohio</footer>
-        </blockquote>
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;My doctor prescribed Ozempic but didn&rsquo;t mention any savings programs. SaveRx found the Novo Nordisk card instantly.&rdquo;</p>
-          <footer>Priya S., California</footer>
-        </blockquote>
+    <!-- In-place search -->
+    <div class="home-search" role="search" aria-label="Search featured medications">
+      <div class="search-bar">
+        <input id="home-q" type="search" placeholder="Search medications…" autocomplete="off" aria-label="Search drugs">
+        <button id="home-clearBtn" class="clear-x" type="button" aria-label="Clear search" hidden>✕</button>
+      </div>
+      <div id="home-no-results" class="no-results" aria-hidden="true">No matches. Try a shorter name or <a href="/drugs/">browse all drugs</a>.</div>
+    </div>
+
+    <!-- Scrollable cards container -->
+    <div class="featured-scroll-wrap-outer" id="featured-scroll-wrap-outer">
+    <div class="featured-scroll-wrap" id="featured-scroll-wrap">
+      <!-- AI scanning loader banner -->
+      <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
+        <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
+        <strong>Finding current prices & programs…</strong>
+        <small>Checking coupons, copay cards, and manufacturer offers</small>
+      </div>
+
+      <!-- Skeleton placeholders (visible while data loads) -->
+      <div class="cards" id="skeleton-cards">
+        <article class="card skeleton" aria-hidden="true">
+          <div class="sk-line sk-title"></div>
+          <div class="sk-line"></div>
+          <div class="sk-pill"></div>
+        </article>
+        <article class="card skeleton" aria-hidden="true">
+          <div class="sk-line sk-title"></div>
+          <div class="sk-line"></div>
+          <div class="sk-pill"></div>
+        </article>
+        <article class="card skeleton" aria-hidden="true">
+          <div class="sk-line sk-title"></div>
+          <div class="sk-line"></div>
+          <div class="sk-pill"></div>
+        </article>
+      </div>
+
+      <!-- Real cards injected here -->
+      <div id="featured-cards" class="cards" role="list" aria-live="polite"></div>
+
+      <!-- Fallback text loader -->
+      <div id="cards-loading" class="text-center muted small" aria-live="polite">
+        Loading savings
       </div>
     </div>
+    </div><!-- /.featured-scroll-wrap-outer -->
+
+    <noscript>
+      <p class="muted small">JavaScript is required to load the latest Featured savings.</p>
+    </noscript>
   </section>
 
   <!-- =======================
@@ -426,61 +439,58 @@ body.design-v2 section > :first-child{ margin-top: 0; }
   </section>
 
   <!-- =======================
-       Featured (Loader + Skeletons + Cards)
-       Rendered live from Google Sheet via Apps Script
+       How it works
        ======================= -->
-  <section id="featured" class="container section-pad loading" aria-busy="true" aria-labelledby="savings-heading">
-    <div class="featured-header">
-      <h2 id="savings-heading" class="section-title">Featured</h2>
-      <span class="chip">Showing <span id="home-resultCount" class="count">…</span></span>
-    </div>
-
-    <!-- In-place search -->
-    <div class="home-search" role="search" aria-label="Search featured medications">
-      <div class="search-bar">
-        <input id="home-q" type="search" placeholder="Search medications…" autocomplete="off" aria-label="Search drugs">
-        <button id="home-clearBtn" class="clear-x" type="button" aria-label="Clear search" hidden>✕</button>
+  <section class="how-it-works" aria-labelledby="how-heading">
+    <div class="container">
+      <h2 id="how-heading">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num" aria-hidden="true">1</span>
+          <h3>Search your medication</h3>
+          <p>Enter your drug name to instantly see which savings programs, copay cards, and patient assistance programs are available.</p>
+        </div>
+        <div class="step-arrow" aria-hidden="true">→</div>
+        <div class="step">
+          <span class="step-num" aria-hidden="true">2</span>
+          <h3>See your savings</h3>
+          <p>We compare verified manufacturer copay cards and assistance programs side by side — no sign-up required to browse.</p>
+        </div>
+        <div class="step-arrow" aria-hidden="true">→</div>
+        <div class="step">
+          <span class="step-num" aria-hidden="true">3</span>
+          <h3>Activate your card</h3>
+          <p>Click through to the official manufacturer program. No middleman. Instant access. Start saving on your next fill.</p>
+        </div>
       </div>
-      <div id="home-no-results" class="no-results" aria-hidden="true">No matches. Try a shorter name or <a href="/drugs/">browse all drugs</a>.</div>
     </div>
+  </section>
 
-    <!-- AI scanning loader banner -->
-    <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
-      <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
-      <strong>Finding current prices & programs…</strong>
-      <small>Checking coupons, copay cards, and manufacturer offers</small>
+  <!-- =======================
+       Testimonials
+       ======================= -->
+  <section class="testimonials" aria-labelledby="testimonials-heading">
+    <div class="container">
+      <p class="testimonials__eyebrow">Real patients. Real savings.</p>
+      <h2 id="testimonials-heading">People are finally paying less for their medications</h2>
+      <div class="testimonials__grid" role="list" aria-label="Patient testimonials">
+        <blockquote class="testimonial" role="listitem">
+          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p>&ldquo;I was paying $450/month for Repatha. SaveRx showed me the Amgen copay card &mdash; now I pay $0. I had no idea this existed.&rdquo;</p>
+          <footer>Maria L., Texas</footer>
+        </blockquote>
+        <blockquote class="testimonial" role="listitem">
+          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p>&ldquo;Found the Dupixent MyWay program in two minutes. Went from $3,800 to $5 a month. This site is a lifesaver.&rdquo;</p>
+          <footer>James K., Ohio</footer>
+        </blockquote>
+        <blockquote class="testimonial" role="listitem">
+          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
+          <p>&ldquo;My doctor prescribed Ozempic but didn&rsquo;t mention any savings programs. SaveRx found the Novo Nordisk card instantly.&rdquo;</p>
+          <footer>Priya S., California</footer>
+        </blockquote>
+      </div>
     </div>
-
-    <!-- Skeleton placeholders (visible while data loads) -->
-    <div class="cards" id="skeleton-cards">
-      <article class="card skeleton" aria-hidden="true">
-        <div class="sk-line sk-title"></div>
-        <div class="sk-line"></div>
-        <div class="sk-pill"></div>
-      </article>
-      <article class="card skeleton" aria-hidden="true">
-        <div class="sk-line sk-title"></div>
-        <div class="sk-line"></div>
-        <div class="sk-pill"></div>
-      </article>
-      <article class="card skeleton" aria-hidden="true">
-        <div class="sk-line sk-title"></div>
-        <div class="sk-line"></div>
-        <div class="sk-pill"></div>
-      </article>
-    </div>
-
-    <!-- Real cards injected here -->
-    <div id="featured-cards" class="cards" role="list" aria-live="polite"></div>
-
-    <!-- Fallback text loader -->
-    <div id="cards-loading" class="text-center muted small" aria-live="polite">
-      Loading savings
-    </div>
-
-    <noscript>
-      <p class="muted small">JavaScript is required to load the latest Featured savings.</p>
-    </noscript>
   </section>
 
   <!-- =======================
@@ -781,6 +791,20 @@ body.design-v2 section > :first-child{ margin-top: 0; }
       // First pass (in case cards already present)
       buildIndex();
       applyFilter(qEl.value);
+
+      // Scroll-to-bottom fade toggle for featured-scroll-wrap
+      const scrollWrap = document.getElementById('featured-scroll-wrap');
+      const scrollOuter = document.getElementById('featured-scroll-wrap-outer');
+      if (scrollWrap && scrollOuter) {
+        const checkBottom = () => {
+          const atBottom = scrollWrap.scrollTop + scrollWrap.clientHeight >= scrollWrap.scrollHeight - 10;
+          scrollOuter.classList.toggle('at-bottom', atBottom);
+        };
+        scrollWrap.addEventListener('scroll', checkBottom, { passive: true });
+        const scrollObs = new MutationObserver(checkBottom);
+        scrollObs.observe(scrollWrap, { childList: true, subtree: true });
+        checkBottom();
+      }
     })();
   </script>
 

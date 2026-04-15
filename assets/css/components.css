@@ -176,6 +176,43 @@
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
+/* Scrollable featured cards container */
+.design-v2 .featured-scroll-wrap {
+  position: relative;
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-4);
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+.design-v2 .featured-scroll-wrap-outer {
+  position: relative;
+}
+.design-v2 .featured-scroll-wrap-outer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  transition: opacity 0.2s;
+}
+.design-v2 .featured-scroll-wrap-outer.at-bottom::after {
+  opacity: 0;
+}
+.design-v2 .featured-scroll-wrap::-webkit-scrollbar { width: 6px; }
+.design-v2 .featured-scroll-wrap::-webkit-scrollbar-track { background: transparent; }
+.design-v2 .featured-scroll-wrap::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
 .design-v2 .card.skeleton{
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -864,19 +901,24 @@
   background: var(--surface);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 11px 0; overflow: hidden;
+  padding: 12px 0;
 }
 .design-v2 .trust-bar .container {
-  display: flex; align-items: center; justify-content: center;
+  display: flex; justify-content: center;
 }
 .design-v2 .trust-bar__list {
-  display: flex; flex-wrap: wrap; gap: 8px 24px;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 4px 0;
   list-style: none; margin: 0; padding: 0;
-  align-items: center; justify-content: center;
+  align-items: center;
 }
 .design-v2 .trust-bar__list li {
   font-size: 12px; font-weight: 500; color: var(--text-2);
   white-space: nowrap; display: flex; align-items: center; gap: 5px;
+  padding: 0 20px;
+}
+.design-v2 .trust-bar__list li + li {
+  border-left: 1px solid var(--border);
 }
 .design-v2 .trust-bar__list li::before {
   content: '✓'; color: var(--teal); font-weight: 700; font-size: 11px;
@@ -884,14 +926,30 @@
 
 /* ─── How it works ────────────────────────────────────────── */
 .design-v2 .how-it-works { background: var(--bg); padding: 60px 0; }
+.design-v2 .cta-band { background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .design-v2 .how-it-works > .container > h2 { text-align: center; margin: 0 0 40px; }
 .design-v2 .steps {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0;
 }
-@media (max-width: 640px) {
-  .design-v2 .steps { grid-template-columns: 1fr; gap: 24px; }
+.design-v2 .step-arrow {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 8px; color: #94a3b8; font-size: 22px; flex-shrink: 0;
 }
-.design-v2 .step { display: flex; flex-direction: column; gap: 12px; }
+.design-v2 .step {
+  display: flex; flex-direction: column; gap: 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+@media (max-width: 768px) {
+  .design-v2 .steps { grid-template-columns: 1fr; gap: 12px; }
+  .design-v2 .step-arrow { display: none; }
+}
 .design-v2 .step-num {
   display: inline-flex; align-items: center; justify-content: center;
   width: 40px; height: 40px; border-radius: var(--radius-pill);
@@ -906,7 +964,10 @@
 .design-v2 .testimonials__eyebrow {
   text-align: center; font-size: 11px; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--teal); margin: 0 0 32px;
+  color: var(--teal); margin: 0 0 12px;
+}
+.design-v2 .testimonials > .container > h2 {
+  text-align: center; margin: 0 0 40px;
 }
 .design-v2 .testimonials__grid {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
