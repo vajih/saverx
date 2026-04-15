@@ -839,3 +839,105 @@
 .drug-category-link a { color: var(--brand-600, #1d4ed8); font-weight: 600; text-decoration: none; }
 .drug-category-link a:hover { text-decoration: underline; }
 
+/* =========================================================
+   PHASE 2 — STRUCTURAL COMPONENTS (Asma's design adoption)
+   ========================================================= */
+
+/* ─── Hide emoji category icons (clean text-only tiles) ─── */
+.design-v2 .tile-icon { display: none; }
+
+/* ─── Primary pill CTA button ────────────────────────────── */
+.design-v2 .btn-primary-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal-dark); color: #ffffff;
+  border: none; border-radius: var(--radius-pill);
+  padding: 14px 20px; font-size: 15px;
+  font-weight: var(--fw-medium); line-height: 1;
+  cursor: pointer; text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.design-v2 .btn-primary-pill:hover { background: var(--teal); transform: translateY(-1px); }
+.design-v2 .btn-primary-pill:active { transform: none; }
+
+/* ─── Trust bar ───────────────────────────────────────────── */
+.design-v2 .trust-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 11px 0; overflow: hidden;
+}
+.design-v2 .trust-bar .container {
+  display: flex; align-items: center; justify-content: center;
+}
+.design-v2 .trust-bar__list {
+  display: flex; flex-wrap: wrap; gap: 8px 24px;
+  list-style: none; margin: 0; padding: 0;
+  align-items: center; justify-content: center;
+}
+.design-v2 .trust-bar__list li {
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  white-space: nowrap; display: flex; align-items: center; gap: 5px;
+}
+.design-v2 .trust-bar__list li::before {
+  content: '✓'; color: var(--teal); font-weight: 700; font-size: 11px;
+}
+
+/* ─── How it works ────────────────────────────────────────── */
+.design-v2 .how-it-works { background: var(--bg); padding: 60px 0; }
+.design-v2 .how-it-works > .container > h2 { text-align: center; margin: 0 0 40px; }
+.design-v2 .steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+@media (max-width: 640px) {
+  .design-v2 .steps { grid-template-columns: 1fr; gap: 24px; }
+}
+.design-v2 .step { display: flex; flex-direction: column; gap: 12px; }
+.design-v2 .step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: var(--radius-pill);
+  background: var(--teal-light); color: var(--teal-dark);
+  font-size: 17px; font-weight: 600; flex-shrink: 0;
+}
+.design-v2 .step h3 { font-size: 17px; font-weight: var(--fw-semibold); margin: 0; color: var(--text); }
+.design-v2 .step p { font-size: 15px; color: var(--text-2); margin: 0; line-height: 1.55; }
+
+/* ─── Testimonials ───────────────────────────────────────── */
+.design-v2 .testimonials { background: var(--surface); padding: 60px 0; }
+.design-v2 .testimonials__eyebrow {
+  text-align: center; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--teal); margin: 0 0 32px;
+}
+.design-v2 .testimonials__grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+@media (max-width: 768px) {
+  .design-v2 .testimonials__grid { grid-template-columns: 1fr; }
+}
+.design-v2 .testimonial {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; margin: 0;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.design-v2 .testimonial__stars { color: #d4943a; font-size: 14px; letter-spacing: 2px; }
+.design-v2 .testimonial p {
+  flex: 1; font-size: 15px; color: var(--text);
+  line-height: 1.65; margin: 0; font-style: italic;
+}
+.design-v2 .testimonial footer {
+  font-size: 13px; color: var(--text-2);
+  font-weight: var(--fw-medium); font-style: normal;
+}
+
+/* ─── "Not insurance" disclaimer band ───────────────────── */
+.design-v2 .not-insurance-band {
+  background: var(--teal-light);
+  border-top: 1px solid rgba(11, 110, 92, 0.18);
+  border-bottom: 1px solid rgba(11, 110, 92, 0.18);
+  padding: 18px 0;
+}
+.design-v2 .not-insurance-band p {
+  font-size: 13px; color: var(--teal-dark); text-align: center;
+  margin: 0; line-height: 1.5; font-weight: var(--fw-medium);
+}
+
