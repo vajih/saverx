@@ -152,6 +152,190 @@ body.design-v2 #featured .search-bar{   /* shrink inner gap a touch */
 /* General: prevent headings from adding extra top gap when a section begins */
 body.design-v2 section > :first-child{ margin-top: 0; }
 
+/* ── CTA Band Redesign (homepage-only) ────────────────────── */
+body.design-v2 .cta-band {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 52px 0 40px;
+}
+.cta-band__primary {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.cta-band__heading {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 700;
+  color: var(--brand-900, #0b2a4e);
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+.cta-band__sub {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+.cta-band__form {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.cta-band__form .cta-input {
+  flex: 1 1 180px;
+  min-width: 0;
+  height: 46px;
+  border: 1px solid var(--border, #e6eaf2);
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 15px;
+  background: #fff;
+  color: var(--text);
+  transition: border-color .15s, box-shadow .15s;
+}
+.cta-band__form .cta-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(11,110,92,.10);
+}
+.cta-band__form .cta-btn-primary {
+  height: 46px;
+  padding: 0 22px;
+  background: var(--teal, #0b6e5c);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.cta-band__form .cta-btn-primary:hover { background: #0a5c4c; }
+.cta-band__msg {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--teal);
+  min-height: 18px;
+}
+/* Newsletter strip */
+.cta-band__newsletter {
+  max-width: 420px;
+  margin: 28px auto 0;
+  border-top: 1px solid var(--border, #e6eaf2);
+  padding-top: 24px;
+  text-align: center;
+}
+.cta-band__newsletter h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #1e293b);
+  margin: 0 0 12px;
+}
+.cta-band__news-row {
+  display: flex;
+  gap: 8px;
+}
+.cta-band__newsletter .cta-input {
+  flex: 1;
+  height: 40px;
+  border: 1px solid var(--border, #e6eaf2);
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text);
+  transition: border-color .15s, box-shadow .15s;
+}
+.cta-band__newsletter .cta-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(11,110,92,.10);
+}
+.cta-band__newsletter .cta-btn-secondary {
+  height: 40px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--teal);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--teal);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.cta-band__newsletter .cta-btn-secondary:hover { background: var(--teal); color: #fff; }
+.cta-band__news-msg {
+  font-size: 13px;
+  color: var(--teal);
+  margin-top: 8px;
+  min-height: 18px;
+}
+.cta-band__newsletter .form-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 6px 0 0;
+}
+@media (max-width: 640px) {
+  .cta-band__form { flex-direction: column; }
+  .cta-band__form .cta-input,
+  .cta-band__form .cta-btn-primary { width: 100%; flex: none; }
+}
+/* Footer newsletter form */
+.footer-newsletter { margin-top: 20px; }
+.footer-newsletter__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--teal-light, #5eead4);
+  margin: 0 0 10px;
+}
+.footer-newsletter__form {
+  display: flex;
+  gap: 6px;
+}
+.footer-newsletter__form input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #fff;
+  transition: border-color .15s;
+}
+.footer-newsletter__form input[type="email"]::placeholder { color: rgba(255,255,255,0.4); }
+.footer-newsletter__form input[type="email"]:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.4);
+}
+.footer-newsletter__form button {
+  height: 38px;
+  padding: 0 14px;
+  background: var(--teal, #0b6e5c);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.footer-newsletter__form button:hover { background: #0a5c4c; }
+.footer-newsletter__msg {
+  font-size: 12px;
+  color: var(--teal-light, #5eead4);
+  margin: 6px 0 0;
+  min-height: 16px;
+}
   </style>
 
   <!-- JSON-LD: Organization -->
@@ -497,44 +681,25 @@ body.design-v2 section > :first-child{ margin-top: 0; }
        Request a medication + Newsletter CTA
        ======================= -->
   <section class="cta-band" aria-labelledby="ctaTitle">
-    <div class="cta-wrap">
-      <!-- Left: Medication alert -->
-      <div class="cta-card">
-        <h2 id="ctaTitle" class="cta-title">Don’t see your medication?</h2>
-        <p class="cta-sub">Tell us the drug and your email — we’ll alert you when we add it.</p>
+    <div class="container">
 
-        <form class="form" id="med-alert-form">
-          <div class="form-row">
+      <!-- Primary: Drug Alert -->
+      <div class="cta-band__primary">
+        <h2 id="ctaTitle" class="cta-band__heading">Missing a medication?</h2>
+        <p class="cta-band__sub">Tell us the drug &mdash; we&rsquo;ll alert you when official savings go live.</p>
+        <form id="med-alert-form">
+          <div class="cta-band__form">
             <label class="sr-only" for="drugName">Medication name</label>
-            <input id="drugName" name="drug" class="input" type="text" placeholder="Medication name (e.g., Repatha)" required autocomplete="off">
-          </div>
-          <div class="form-row">
+            <input id="drugName" name="drug" class="cta-input" type="text" placeholder="Drug name (e.g., Humira)" required autocomplete="off">
             <label class="sr-only" for="alertEmail">Email address</label>
-            <input id="alertEmail" name="email" class="input" type="email" placeholder="you@example.com" required autocomplete="email">
+            <input id="alertEmail" name="email" class="cta-input" type="email" placeholder="you@example.com" required autocomplete="email">
+            <button class="cta-btn-primary" type="submit">Notify me</button>
           </div>
-          <button class="btn" type="submit">Notify me</button>
-          <p class="form-hint">We’ll email only when this medication goes live.</p>
-          <p class="form-msg" id="alertMsg" role="status" aria-live="polite"></p>
+          <p class="cta-band__msg" id="alertMsg" role="status" aria-live="polite"></p>
         </form>
       </div>
 
-      <!-- Right: Newsletter -->
-      <div class="cta-card">
-        <h3 class="cta-title">Good news for your inbox</h3>
-        <p class="cta-sub">Savings tips and new programs as we add them.</p>
-
-        <form class="form" id="newsletter-form">
-          <div class="form-row">
-            <label class="sr-only" for="newsEmail">Email address</label>
-            <input id="newsEmail" name="email" class="input" type="email" placeholder="Email address" required autocomplete="email">
-          </div>
-          <button class="btn" type="submit">Subscribe</button>
-          <p class="form-hint">1–2 emails/month. Unsubscribe anytime.</p>
-          <p class="form-msg" id="newsMsg" role="status" aria-live="polite"></p>
-        </form>
-      </div>
     </div>
-
   </section>
 
   <!-- =======================
@@ -554,6 +719,15 @@ body.design-v2 section > :first-child{ margin-top: 0; }
       <div>
         <a href="/" class="nav-logo footer-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
         <p class="footer-tagline">Official manufacturer savings for 350+ brand-name medications.<br> We are not a pharmacy.</p>
+        <div class="footer-newsletter">
+          <p class="footer-newsletter__label">Savings tips in your inbox</p>
+          <form id="newsletter-form" class="footer-newsletter__form">
+            <label class="sr-only" for="newsEmail">Email address</label>
+            <input id="newsEmail" name="email" type="email" placeholder="your@email.com" required autocomplete="email">
+            <button type="submit">Subscribe</button>
+          </form>
+          <p id="newsMsg" class="footer-newsletter__msg" role="status" aria-live="polite"></p>
+        </div>
       </div>
       <div>
         <h4 class="footer-col-heading">Quick Links</h4>
