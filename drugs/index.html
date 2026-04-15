@@ -49,7 +49,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SaveRx.ai" />
   <meta property="og:url" content="" />
-  <meta property="og:image" content="/assets/img/hero-1200.jpg" />
+  <meta property="og:image" content="/assets/img/og-image.png" />
 
   <!-- Canonical (set via JS) -->
   <link rel="canonical" href="" />
@@ -455,7 +455,7 @@
           const manufacturer = read(it, ["manufacturer","maker","company"]);
           let slug = read(it, ["slug"]);
           if (!slug) slug = (brand || generic || "").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
-          const hero_landscape = read(it, ["hero_landscape","hero","image","thumb"]) || "/assets/img/hero-1200.jpg";
+          const hero_landscape = read(it, ["hero_landscape","hero","image","thumb"]) || "/assets/img/og-image.png";
           const manufacturerUrl = read(it, ["manufacturerUrl","savingsurl","url"]);
 
           return {
