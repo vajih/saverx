@@ -1,54 +1,98 @@
-:root{
-  /* Brand colors */
-  --brand-50:#eff6ff;
-  --brand-100:#dbeafe;
-  --brand-200:#bfdbfe;
-  --brand-300:#93c5fd;
-  --brand-400:#60a5fa;
-  --brand-500:#3b82f6;
-  --brand-600:#1d4ed8; /* primary */
-  --brand-700:#1e40af;
-  --brand-800:#1e3a8a;
-  --brand-900:#172554;
+:root {
+  /* === Canvas (Asma's paper palette) === */
+  --bg: #f1efe8;                /* warm cream body background */
+  --surface: #fdfcfa;           /* card/panel background */
+  --surface-2: #ffffff;         /* elevated surface when needed */
+  --bg-soft: #fdfcfa;           /* alias for legacy components */
 
-  /* Accent (CTA) — pick one; keep emerald for now */
-  --accent:#10b981;
+  /* === Text === */
+  --text: #2c2c2a;              /* primary text, warm near-black */
+  --text-2: #5f5e5a;            /* secondary text */
+  --text-3: #9a9a92;            /* tertiary / metadata */
+  --text-muted: #5f5e5a;        /* alias for legacy components */
 
-  /* Neutral / UI */
-  --bg:#ffffff;
-  --bg-soft:#fafafa;
-  --text:#0f172a;       /* slate-900 */
-  --text-muted:#475569; /* slate-600 */
-  --border:#e5e7eb;     /* gray-200 */
-  --shadow:0 8px 24px rgba(0,0,0,.08);
+  /* === Borders === */
+  --border: rgba(44, 44, 42, 0.12);
+  --border-strong: rgba(44, 44, 42, 0.20);
 
-  /* Typography */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+  /* === Primary (teal) === */
+  --teal: #0b6e5c;
+  --teal-dark: #084d3f;
+  --teal-mid: #1a9478;
+  --teal-light: #e1f5ee;
+
+  /* === Semantic colors === */
+  --savings: #3b6d11;
+  --savings-bg: #eaf3de;
+  --info: #185fa5;
+  --info-bg: #e6f1fb;
+  --warn: #ba7517;
+  --warn-bg: #faeeda;
+
+  /* === Legacy aliases (keep existing CSS working) === */
+  --brand-50: #e1f5ee;
+  --brand-100: #c3ead9;
+  --brand-200: #9dd5bf;
+  --brand-300: #6dbfa3;
+  --brand-400: #3aa888;
+  --brand-500: #0b6e5c;
+  --brand-600: #0b6e5c;         /* was blue #1d4ed8 → now teal */
+  --brand-700: #084d3f;
+  --brand-800: #063830;
+  --brand-900: #042620;
+  --accent: #0b6e5c;            /* was emerald #10b981 → now teal */
+  --brand: #0b6e5c;
+  --shadow: 0 4px 12px rgba(44, 44, 42, 0.06);
+  --shadow-sm: 0 1px 2px rgba(44, 44, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(44, 44, 42, 0.06);
+  --shadow-lg: 0 12px 32px rgba(44, 44, 42, 0.08);
+
+  /* === Shape === */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  /* === Typography === */
+  --font-sans: -apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif;
   --fs-hero: clamp(28px, 5vw, 48px);
   --fs-h1: 32px;
   --fs-h2: 24px;
   --fs-body: 16px;
   --lh: 1.5;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
 
-  /* Layout */
+  /* === Layout === */
   --container: 1200px;
-  --radius: 12px;
 
-  /* Spacing */
-  --s-0:0;
-  --s-1:4px;
-  --s-2:8px;
-  --s-3:12px;
-  --s-4:16px;
-  --s-5:20px;
-  --s-6:24px;
-  --s-8:32px;
-  --s-10:40px;
-  --s-12:48px;
-  --s-16:64px;
-  --s-20:80px;
-  --s-24:96px;
-  --s-28:112px;
+  /* === Spacing === */
+  --s-0: 0;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-28: 112px;
   --section-y: clamp(18px, 4vw, 48px);
+}
 
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+}
+
+h1, h2, h3, h4 {
+  font-weight: var(--fw-medium);
+  color: var(--text);
+  line-height: 1.15;
 }
