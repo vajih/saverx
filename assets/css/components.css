@@ -157,13 +157,35 @@
 .design-v2 .modal-close{ position:absolute; top:12px; right:12px; background:#fff; border:1px solid var(--border); border-radius:999px; width:36px; height:36px; display:grid; place-items:center; cursor:pointer }
 
 /* Footer */
-.design-v2 .footer{ background:var(--brand-900); color:#cbd5e1; padding-block:var(--s-16) }
-.design-v2 .footer a{ color:#e2e8f0; text-decoration:none }
-.design-v2 .footer .grid{ display:grid; gap:var(--s-10); grid-template-columns:2fr 1fr 1fr 2fr }
+.design-v2 .footer{ background:var(--brand-900); color:#cbd5e1; padding: 48px 0 0; border-top: 3px solid var(--teal); }
+.design-v2 .footer a{ color:#e2e8f0; text-decoration:none; transition: color 0.15s; }
+.design-v2 .footer a:hover{ color:#fff; }
+.design-v2 .footer .grid{ display:grid; gap:var(--s-10); grid-template-columns:2fr 1fr 1fr 1fr; align-items: start; }
 @media (max-width:900px){ .design-v2 .footer .grid{ grid-template-columns:1fr 1fr } }
 @media (max-width:560px){ .design-v2 .footer .grid{ grid-template-columns:1fr } }
 .design-v2 .footer .logo img{ filter:none }
 .design-v2 .footer small{ color:#94a3b8 }
+.design-v2 .footer-col-heading{
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--teal-light, #5eead4);
+  margin: 0 0 14px;
+}
+.design-v2 .footer-col-heading ~ div,
+.design-v2 .footer-col-heading ~ div a{
+  font-size: 14px; line-height: 2; color: #cbd5e1;
+}
+.design-v2 .footer-bottom{
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 40px; padding: 16px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+  font-size: 12px; color: #9ca3af;
+}
+.design-v2 .footer-bottom a{ color: #9ca3af; text-decoration: none; }
+.design-v2 .footer-bottom a:hover{ color: #d1d5db; }
+@media (max-width: 640px){
+  .design-v2 .footer-bottom{ flex-direction: column; text-align: center; }
+}
 
 /* =========================================================
    SaveRx.ai — Step 3: Featured Section (your IDs)
@@ -266,13 +288,11 @@
   line-height: 1.6;
 }
 
-/* Center footer logo + text */
-.design-v2 .footer .logo,
-.design-v2 .footer .logo img,
-.design-v2 .footer .logo + p {
-  display: block;
-  margin-inline: auto;
-  text-align: center;
+/* Footer logo */
+.design-v2 .footer-logo { display: block; margin-bottom: var(--s-4); font-size: 22px; text-align: left; }
+.design-v2 .footer-logo span { color: #fff; }
+.design-v2 .footer-tagline {
+  font-size: 14px; line-height: 1.65; color: #9ca3af; max-width: 30ch; margin: 0; text-align: left;
 }
 
 /* v2 modal support for your markup */
@@ -993,7 +1013,7 @@
 /* ─── "Not insurance" disclaimer band ───────────────────── */
 .design-v2 .not-insurance-band {
   background: var(--teal-light);
-  border-top: 1px solid rgba(11, 110, 92, 0.18);
+  border-top: 3px solid var(--teal);
   border-bottom: 1px solid rgba(11, 110, 92, 0.18);
   padding: 18px 0;
 }
