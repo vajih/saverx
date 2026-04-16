@@ -373,9 +373,6 @@
         <h2 class="rx-title"><span data-bind="brand"></span> Savings</h2>
         <p class="rx-sub"><b><span data-bind="generic"></span> by <span data-bind="manufacturer"></span></b></p>
 
-        <!-- Drug description (populated by JS from API, hidden if empty) -->
-        <p class="rx-description" id="rx-description" style="display:none"></p>
-
         <ul class="rx-bullets" id="rx-bullets"><!-- Bullets inserted here --></ul>
 
         <div class="rx-testimonial">
@@ -407,6 +404,19 @@
       </div>
     </section>
   </main>
+
+  <!-- ── About This Medication ──────────────────────────────────────────────── -->
+  <section class="rx-about" id="rx-about" aria-labelledby="rxAboutTitle" style="display:none">
+    <div class="container rx-about-inner">
+      <h2 class="rx-about-heading" id="rxAboutTitle">About <span data-bind="brand"></span></h2>
+      <div class="rx-about-tags">
+        <span class="rx-tag rx-tag--class" id="rx-about-class"></span>
+        <span class="rx-tag rx-tag--indication" id="rx-about-indication"></span>
+      </div>
+      <p class="rx-about-desc" id="rx-about-desc"></p>
+    </div>
+  </section>
+  <!-- End About This Medication -->
 
   <!-- ── Pharmacy Price Comparison (GoodRx-powered) ──────────────────────────────
        White-labeled: SaveRx branding is primary. GoodRx attribution is small.
@@ -715,14 +725,20 @@
           if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
 
           // drug_class, indication, description from Featured sheet
-          const rxTagClass = document.getElementById('rx-tag-class');
-          const rxTagInd   = document.getElementById('rx-tag-indication');
-          const rxMetaTags = document.getElementById('rx-meta-tags');
-          const rxDesc     = document.getElementById('rx-description');
-          if (rxTagClass && d.drug_class)  rxTagClass.textContent  = d.drug_class;
-          if (rxTagInd   && d.indication)  rxTagInd.textContent    = d.indication;
+          const rxTagClass   = document.getElementById('rx-tag-class');
+          const rxTagInd     = document.getElementById('rx-tag-indication');
+          const rxMetaTags   = document.getElementById('rx-meta-tags');
+          const rxAbout      = document.getElementById('rx-about');
+          const rxAboutClass = document.getElementById('rx-about-class');
+          const rxAboutInd   = document.getElementById('rx-about-indication');
+          const rxAboutDesc  = document.getElementById('rx-about-desc');
+          if (rxTagClass && d.drug_class)   rxTagClass.textContent   = d.drug_class;
+          if (rxTagInd   && d.indication)   rxTagInd.textContent     = d.indication;
           if (rxMetaTags && (d.drug_class || d.indication)) rxMetaTags.style.display = '';
-          if (rxDesc && d.description) { rxDesc.textContent = d.description; rxDesc.style.display = ''; }
+          if (rxAboutClass && d.drug_class)  rxAboutClass.textContent = d.drug_class;
+          if (rxAboutInd   && d.indication)  rxAboutInd.textContent   = d.indication;
+          if (rxAboutDesc  && d.description) rxAboutDesc.textContent  = d.description;
+          if (rxAbout && (d.drug_class || d.indication || d.description)) rxAbout.style.display = '';
 
           window.__manufacturerUrl = d.manufacturerUrl || '/';
           window.__drugName = model.brand || slug;
