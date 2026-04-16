@@ -46,6 +46,12 @@ function walk(dir) {
       );
     }
 
+    // Fix 5: static picture placeholders should be neutral, not Repatha
+    if (html.includes('/assets/img/repatha-hero.png') || html.includes('/assets/img/repatha-hero-vertical.png')) {
+      html = html.replaceAll('/assets/img/repatha-hero.png', '/assets/img/hero-1200.jpg');
+      html = html.replaceAll('/assets/img/repatha-hero-vertical.png', '/assets/img/hero-1200.jpg');
+    }
+
     writeFileSync(full, html, 'utf8');
     fixed++;
   }
