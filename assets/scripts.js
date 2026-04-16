@@ -617,11 +617,14 @@
   // -----------------------------
   // Drug hero image fallback
   // The inline page JS sets img.src to /assets/img/{slug}-hero.png which may
-  // not exist for every drug. If the image 404s, try the /assets/img/drugs/
-  // subfolder, then a generic fallback.
+  // not exist for every drug. Mobile pages may also request
+  // /assets/img/{slug}-hero-vertical.png even when only a portrait alias exists.
+  // If the selected image 404s, walk portrait aliases first, then the
+  // /assets/img/drugs/ subfolder, then a generic fallback.
   // -----------------------------
   document.addEventListener("DOMContentLoaded", function () {
     const heroImg = document.querySelector('.rx-hero img[data-src="hero_landscape"]');
+    const heroSource = document.querySelector('.rx-hero source[data-src="hero_portrait"]');
     if (!heroImg) return;
 
     heroImg.addEventListener("error", function onHeroError() {
@@ -630,19 +633,29 @@
       const slug = (drugsIdx !== -1 ? pathBits[drugsIdx + 1] : pathBits.filter(Boolean).pop()) || "";
       if (!slug) { heroImg.removeEventListener("error", onHeroError); return; }
 
-      if (!heroImg._heroFallback) {
-        heroImg._heroFallback = 1;
-        heroImg.src = `/assets/img/drugs/${slug}.jpg`;
+      const imageCandidates = [
+        `/assets/img/${slug}-portrait.png`,
+        `/assets/img/${slug}-portrait1.png`,
+        `/assets/img/${slug}-portrait.jpg`,
+        `/assets/img/${slug}-hero.png`,
+        `/assets/img/drugs/${slug}.jpg`,
+        `/assets/img/drugs/${slug}.png`,
+        "/assets/img/hero-1200.jpg"
+      ];
+
+      if (!heroImg._heroFallback) heroImg._heroFallback = 0;
+      const nextSrc = imageCandidates[heroImg._heroFallback];
+      heroImg._heroFallback += 1;
+
+      if (!nextSrc) {
+        heroImg.removeEventListener("error", onHeroError);
+        heroImg.src = "/assets/img/hero-1200.jpg";
         return;
       }
-      if (heroImg._heroFallback === 1) {
-        heroImg._heroFallback = 2;
-        heroImg.src = `/assets/img/drugs/${slug}.png`;
-        return;
-      }
-      // Final catch-all — stop looping
-      heroImg.removeEventListener("error", onHeroError);
-      heroImg.src = "/assets/img/hero-1200.jpg";
+
+      if (heroSource) heroSource.srcset = nextSrc;
+      heroImg.src = nextSrc;
+      if (nextSrc === "/assets/img/hero-1200.jpg") heroImg.removeEventListener("error", onHeroError);
     });
   });
 
