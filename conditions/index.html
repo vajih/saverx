@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Medications by Condition | SaveRx.ai</title>
+  <meta name="description" content="Find manufacturer savings programs and copay cards for 44 medical conditions. Browse by diagnosis to find savings for your specific medication.">
+  <link rel="canonical" href="https://saverx.ai/conditions/">
+  <meta name="theme-color" content="#0b6e5c">
+
+  <!-- Google Consent Mode v2 -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      analytics_storage: 'denied', ad_storage: 'denied',
+      ad_user_data: 'denied', ad_personalization: 'denied',
+      personalization_storage: 'denied', wait_for_update: 500
+    });
+  </script>
+  <script src="/assets/js/consent.js"></script>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCKENS1BWB"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-FCKENS1BWB');</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2243579953209623" crossorigin="anonymous"></script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+
+  <style>
+    .cond-hub-hero { background: linear-gradient(180deg, var(--brand-50,#e1f5ee) 0%, var(--bg,#f1efe8) 100%); border-bottom: 1px solid var(--border); padding: 48px 0 36px; text-align: center; }
+    .cond-hub-hero h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; color: var(--text); margin: 0 0 10px; }
+    .cond-hub-hero p { font-size: 1.05rem; color: var(--text-2); max-width: 56ch; margin: 0 auto; }
+    .cond-hub-inner { max-width: 1000px; margin: 0 auto; padding: 40px 16px; }
+    .cond-hub-inner h2 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 0 0 20px; }
+    .cond-hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .cond-hub-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px 14px; text-decoration: none; transition: border-color .12s, box-shadow .12s; }
+    .cond-hub-card:hover { border-color: var(--card-accent, var(--teal,#0b6e5c)); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    .cond-hub-icon { font-size: 1.6rem; display: block; }
+    .cond-hub-name { font-size: 0.92rem; font-weight: 700; color: var(--text); }
+    .cond-hub-count { font-size: 0.78rem; color: var(--text-3, #94a3b8); }
+    .cond-breadcrumb { max-width: 1000px; margin: 0 auto; padding: 12px 16px; font-size: 0.85rem; color: var(--text-3,#94a3b8); }
+    .cond-breadcrumb a { color: var(--text-2); text-decoration: none; }
+    .cond-breadcrumb-sep { margin: 0 6px; }
+    @media (max-width: 640px) {
+      .cond-hub-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body class="design-v2 theme-light">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header class="header">
+    <div class="container inner">
+      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
+      <nav id="primary-nav" class="nav" aria-label="Main navigation">
+        <a href="/drugs/" class="nav-link">Drugs</a>
+        <div class="nav-dropdown" id="catDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
+            Categories <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
+            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <hr>
+            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+          </div>
+        </div>
+        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <a href="/contact.html" class="nav-link">Contact</a>
+      </nav>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="cond-breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="cond-breadcrumb-sep">›</span>
+    <span>Browse by Condition</span>
+  </nav>
+
+  <section class="cond-hub-hero">
+    <h1>Browse Medications by Condition</h1>
+    <p>Find official manufacturer savings programs for your specific diagnosis. Select your condition to see all available medications with copay assistance.</p>
+  </section>
+
+  <div class="cond-hub-inner">
+    <h2>All Conditions (44)</h2>
+    <div class="cond-hub-grid">
+  <a class="cond-hub-card" href="/conditions/diabetes/" style="--card-accent:#3b82f6;--card-accent-bg:#eff6ff">
+  <span class="cond-hub-icon">💉</span>
+  <span class="cond-hub-name">Diabetes</span>
+  <span class="cond-hub-count">43 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/psoriasis/" style="--card-accent:#7c3aed;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🛡️</span>
+  <span class="cond-hub-name">Psoriasis</span>
+  <span class="cond-hub-count">18 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/asthma/" style="--card-accent:#06b6d4;--card-accent-bg:#ecfeff">
+  <span class="cond-hub-icon">💨</span>
+  <span class="cond-hub-name">Asthma</span>
+  <span class="cond-hub-count">15 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/multiple-sclerosis/" style="--card-accent:#6366f1;--card-accent-bg:#eef2ff">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">Multiple Sclerosis</span>
+  <span class="cond-hub-count">14 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/hiv/" style="--card-accent:#dc2626;--card-accent-bg:#fef2f2">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">HIV</span>
+  <span class="cond-hub-count">13 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/copd/" style="--card-accent:#0ea5e9;--card-accent-bg:#f0f9ff">
+  <span class="cond-hub-icon">🫁</span>
+  <span class="cond-hub-name">COPD</span>
+  <span class="cond-hub-count">13 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/migraine/" style="--card-accent:#f59e0b;--card-accent-bg:#fffbeb">
+  <span class="cond-hub-icon">⚡</span>
+  <span class="cond-hub-name">Migraine</span>
+  <span class="cond-hub-count">13 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/epilepsy-seizures/" style="--card-accent:#f59e0b;--card-accent-bg:#fffbeb">
+  <span class="cond-hub-icon">⚡</span>
+  <span class="cond-hub-name">Epilepsy &amp; Seizures</span>
+  <span class="cond-hub-count">13 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/rheumatoid-arthritis/" style="--card-accent:#8b5cf6;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🦴</span>
+  <span class="cond-hub-name">Rheumatoid Arthritis</span>
+  <span class="cond-hub-count">9 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/schizophrenia/" style="--card-accent:#ec4899;--card-accent-bg:#fdf2f8">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">Schizophrenia</span>
+  <span class="cond-hub-count">9 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/atopic-dermatitis/" style="--card-accent:#a78bfa;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🧴</span>
+  <span class="cond-hub-name">Atopic Dermatitis / Eczema</span>
+  <span class="cond-hub-count">8 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/acne/" style="--card-accent:#f97316;--card-accent-bg:#fff7ed">
+  <span class="cond-hub-icon">🧴</span>
+  <span class="cond-hub-name">Acne</span>
+  <span class="cond-hub-count">8 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/depression/" style="--card-accent:#8b5cf6;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">Depression (MDD)</span>
+  <span class="cond-hub-count">7 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/ibs-constipation/" style="--card-accent:#10b981;--card-accent-bg:#ecfdf5">
+  <span class="cond-hub-icon">🫃</span>
+  <span class="cond-hub-name">IBS &amp; Constipation</span>
+  <span class="cond-hub-count">7 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/blood-cancers/" style="--card-accent:#dc2626;--card-accent-bg:#fef2f2">
+  <span class="cond-hub-icon">🩸</span>
+  <span class="cond-hub-name">Blood Cancers</span>
+  <span class="cond-hub-count">7 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/breast-cancer/" style="--card-accent:#ec4899;--card-accent-bg:#fdf2f8">
+  <span class="cond-hub-icon">🎗️</span>
+  <span class="cond-hub-name">Breast Cancer</span>
+  <span class="cond-hub-count">7 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/high-cholesterol/" style="--card-accent:#f59e0b;--card-accent-bg:#fffbeb">
+  <span class="cond-hub-icon">🫀</span>
+  <span class="cond-hub-name">High Cholesterol</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/obesity/" style="--card-accent:#10b981;--card-accent-bg:#ecfdf5">
+  <span class="cond-hub-icon">⚖️</span>
+  <span class="cond-hub-name">Obesity &amp; Weight Loss</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/ulcerative-colitis/" style="--card-accent:#10b981;--card-accent-bg:#ecfdf5">
+  <span class="cond-hub-icon">🛡️</span>
+  <span class="cond-hub-name">Ulcerative Colitis</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/psoriatic-arthritis/" style="--card-accent:#7c3aed;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🦴</span>
+  <span class="cond-hub-name">Psoriatic Arthritis</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/dry-eye-disease/" style="--card-accent:#06b6d4;--card-accent-bg:#ecfeff">
+  <span class="cond-hub-icon">👁️</span>
+  <span class="cond-hub-name">Dry Eye Disease</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/parkinsons-disease/" style="--card-accent:#6366f1;--card-accent-bg:#eef2ff">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">Parkinson&#39;s Disease</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/pulmonary-hypertension/" style="--card-accent:#06b6d4;--card-accent-bg:#ecfeff">
+  <span class="cond-hub-icon">🫁</span>
+  <span class="cond-hub-name">Pulmonary Arterial Hypertension</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/lung-cancer/" style="--card-accent:#64748b;--card-accent-bg:#f8fafc">
+  <span class="cond-hub-icon">🫁</span>
+  <span class="cond-hub-name">Lung Cancer (NSCLC)</span>
+  <span class="cond-hub-count">6 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/bipolar-disorder/" style="--card-accent:#ec4899;--card-accent-bg:#fdf2f8">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">Bipolar Disorder</span>
+  <span class="cond-hub-count">5 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/overactive-bladder/" style="--card-accent:#06b6d4;--card-accent-bg:#ecfeff">
+  <span class="cond-hub-icon">🚿</span>
+  <span class="cond-hub-name">Overactive Bladder</span>
+  <span class="cond-hub-count">5 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/glaucoma/" style="--card-accent:#64748b;--card-accent-bg:#f8fafc">
+  <span class="cond-hub-icon">👁️</span>
+  <span class="cond-hub-name">Glaucoma</span>
+  <span class="cond-hub-count">5 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/crohns-disease/" style="--card-accent:#10b981;--card-accent-bg:#ecfdf5">
+  <span class="cond-hub-icon">🛡️</span>
+  <span class="cond-hub-name">Crohn&#39;s Disease</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/heart-failure/" style="--card-accent:#ef4444;--card-accent-bg:#fef2f2">
+  <span class="cond-hub-icon">❤️</span>
+  <span class="cond-hub-name">Heart Failure</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/atrial-fibrillation/" style="--card-accent:#f97316;--card-accent-bg:#fff7ed">
+  <span class="cond-hub-icon">💓</span>
+  <span class="cond-hub-name">Atrial Fibrillation</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/blood-clots/" style="--card-accent:#dc2626;--card-accent-bg:#fef2f2">
+  <span class="cond-hub-icon">🩸</span>
+  <span class="cond-hub-name">Blood Clots (DVT/PE)</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/osteoporosis/" style="--card-accent:#64748b;--card-accent-bg:#f8fafc">
+  <span class="cond-hub-icon">🦷</span>
+  <span class="cond-hub-name">Osteoporosis</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/cystic-fibrosis/" style="--card-accent:#8b5cf6;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">Cystic Fibrosis</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/adhd/" style="--card-accent:#f59e0b;--card-accent-bg:#fffbeb">
+  <span class="cond-hub-icon">🧠</span>
+  <span class="cond-hub-name">ADHD</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/rosacea/" style="--card-accent:#f97316;--card-accent-bg:#fff7ed">
+  <span class="cond-hub-icon">🧴</span>
+  <span class="cond-hub-name">Rosacea</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/hereditary-angioedema/" style="--card-accent:#8b5cf6;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">Hereditary Angioedema</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/prostate-cancer/" style="--card-accent:#3b82f6;--card-accent-bg:#eff6ff">
+  <span class="cond-hub-icon">🩺</span>
+  <span class="cond-hub-name">Prostate Cancer</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/blood-disorders/" style="--card-accent:#ef4444;--card-accent-bg:#fef2f2">
+  <span class="cond-hub-icon">🩸</span>
+  <span class="cond-hub-name">Blood Disorders</span>
+  <span class="cond-hub-count">4 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/contraception/" style="--card-accent:#6366f1;--card-accent-bg:#eef2ff">
+  <span class="cond-hub-icon">💊</span>
+  <span class="cond-hub-name">Contraception</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/retinal-disease/" style="--card-accent:#3b82f6;--card-accent-bg:#eff6ff">
+  <span class="cond-hub-icon">👁️</span>
+  <span class="cond-hub-name">Retinal Disease</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/hepatitis-c/" style="--card-accent:#f97316;--card-accent-bg:#fff7ed">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">Hepatitis C</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/spinal-muscular-atrophy/" style="--card-accent:#8b5cf6;--card-accent-bg:#f5f3ff">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">Spinal Muscular Atrophy</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/infertility/" style="--card-accent:#ec4899;--card-accent-bg:#fdf2f8">
+  <span class="cond-hub-icon">🧬</span>
+  <span class="cond-hub-name">Infertility</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+  <a class="cond-hub-card" href="/conditions/growth-hormone-deficiency/" style="--card-accent:#3b82f6;--card-accent-bg:#eff6ff">
+  <span class="cond-hub-icon">📏</span>
+  <span class="cond-hub-name">Growth Hormone Deficiency</span>
+  <span class="cond-hub-count">3 medications</span>
+</a>
+    </div>
+  </div>
+
+  <div class="not-insurance-band">
+    <div class="container">
+      <p>SaveRx is not insurance. We help commercially insured patients find official manufacturer savings programs for brand-name medications. Eligibility and savings vary by program.</p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container grid">
+      <div>
+        <a href="/" class="nav-logo footer-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
+        <p class="footer-tagline">Official manufacturer savings for 350+ brand-name medications.<br>We are not a pharmacy.</p>
+      </div>
+      <div>
+        <h4 class="footer-col-heading">Quick Links</h4>
+        <div><a href="/">Home</a></div>
+        <div><a href="/drugs/">Drugs</a></div>
+        <div><a href="/conditions/">All Conditions</a></div>
+        <div><a href="/about.html">About</a></div>
+        <div><a href="/contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4 class="footer-col-heading">Legal</h4>
+        <div><a href="/privacy.html">Privacy Policy</a></div>
+        <div><a href="/terms.html">Terms of Service</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%;">
+        <span>© 2026 SaveRx.ai — All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script defer src="/assets/scripts.js?v=2025-10-03"></script>
+  <script>
+  (function(){
+    var dd=document.getElementById('catDropdown');if(!dd)return;
+    var btn=dd.querySelector('.nav-dropdown-toggle');var menu=dd.querySelector('.nav-dropdown-menu');
+    function open(){dd.setAttribute('data-open','');btn.setAttribute('aria-expanded','true');}
+    function close(){dd.removeAttribute('data-open');btn.setAttribute('aria-expanded','false');}
+    btn.addEventListener('click',function(e){e.stopPropagation();dd.hasAttribute('data-open')?close():open();});
+    document.addEventListener('click',close);menu.addEventListener('click',function(e){e.stopPropagation();});
+  })();
+  </script>
+</body>
+</html>
