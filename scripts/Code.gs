@@ -1,316 +1,414 @@
 /**
- * SaveRx.ai — Google Apps Script (Code.gs)
+ * SaveRx.ai - Google Apps Script Backend (Code.gs)
  *
- * Handles:
- *  1. doGet  — Drug data API  (?mode=featured | ?mode=drug&slug=x | ?mode=slugs)
- *  2. doPost — Email capture  → writes to Leads sheet + sends Resend welcome email
+ * Handles form POST from drug pages:
+ *   1. Logs to Google Sheet (audit log)
+ *   2. Sends welcome email via Resend.com immediately
+ *   3. Queues follow-up emails (day 3, day 7) in EmailQueue sheet
  *
- * Sheet IDs / names:
- *  - Spreadsheet ID : 19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE
- *  - Drug data      : "Featured"   (columns: name, generic, manufacturer, cash_price,
- *                                   as_low_as, url, priority, active,
- *                                   drug_class, indication, description)
- *  - Email leads    : "Leads"
- *  - Unsubscribes   : "Unsubscribes"
- *  - Follow-up queue: "FollowUpQueue"
+ * Time-triggered: processEmailQueue() runs hourly to send due follow-ups.
+ *
+ * GET ?mode=featured              — full drug list incl. drug_class / indication / description
+ * GET ?mode=drug&slug=x           — single drug by slug
+ * GET ?action=unsubscribe&email=x — unsubscribe handler
+ *
+ * Setup - Script Properties (Project Settings > Script Properties):
+ *   RESEND_API_KEY = re_...
+ *
+ * After deploying, create a time trigger:
+ *   Triggers > Add Trigger > processEmailQueue > Time-driven > Hour timer > Every hour
  */
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────────────────────────────────────
-var SPREADSHEET_ID  = '19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE';
-var FEATURED_SHEET  = 'Featured';
-var LEADS_SHEET     = 'Leads';
-var UNSUB_SHEET     = 'Unsubscribes';
-var QUEUE_SHEET     = 'FollowUpQueue';
-var FROM_EMAIL      = 'hello@saverx.ai';
-var FROM_NAME       = 'SaveRx.ai';
-var RESEND_BASE_URL = 'https://api.resend.com/emails';
+// --- Config ---
 
-// ─────────────────────────────────────────────────────────────────────────────
-// doGet — Drug data API
-// ─────────────────────────────────────────────────────────────────────────────
-function doGet(e) {
-  var params = e ? (e.parameter || {}) : {};
-  var mode   = params.mode || 'featured';
-  var slug   = params.slug || '';
+var SHEET_ID = "19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE";
+var SHEET_NAME = "CopayEnrollments";
+var QUEUE_SHEET = "EmailQueue";
+var HONEYPOT = "website";
+var FROM_EMAIL = "SaveRx.ai <hello@newsletter.saverx.ai>";
+var EMAIL_BASE_URL = "https://saverx.ai/emails/";
+var SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
+var UNSUB_SHEET = "Unsubscribes";
 
-  var output;
-  try {
-    if (mode === 'featured') {
-      output = getFeaturedDrugs();
-    } else if (mode === 'drug') {
-      output = getDrugBySlug(slug);
-    } else if (mode === 'slugs') {
-      output = getSlugs(params.source || '');
-    } else {
-      output = { error: 'Unknown mode: ' + mode };
-    }
-  } catch (err) {
-    output = { error: err.message };
-  }
+// --- Drug category mapping ---
 
-  return ContentService
-    .createTextOutput(JSON.stringify(output))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+var DRUG_CATEGORY_MAP = {
+  glp1: [
+    "ozempic", "wegovy", "mounjaro", "zepbound", "trulicity",
+    "victoza", "saxenda", "rybelsus", "semaglutide", "tirzepatide", "liraglutide",
+  ],
+  cardiovascular: [
+    "repatha", "eliquis", "entresto", "jardiance", "brilinta",
+    "xarelto", "farxiga", "corlanor", "camzyos", "baqsimi", "kevzara",
+  ],
+  diabetes: [
+    "freestylelibre", "freestyle libre", "dexcom", "toujeo", "tresiba",
+    "basaglar", "lantus", "levemir", "januvia", "invokana",
+    "metformin", "glyxambi", "janumet", "xultophy",
+  ],
+};
 
-/**
- * Returns all active drugs from the Featured sheet as { items: [...] }.
- * Includes the 3 new columns: drug_class, indication, description.
- */
-function getFeaturedDrugs() {
-  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(FEATURED_SHEET);
-  if (!sheet) return { items: [], error: 'Featured sheet not found' };
+// --- Email file + subject mapping ---
 
-  var data = sheet.getDataRange().getValues();
-  if (data.length < 2) return { items: [] };
+var EMAIL_FILES = {
+  "glp1-welcome": "glp1-welcome.html",
+  "glp1-follow-up-1": "glp1-follow-up-1.html",
+  "glp1-follow-up-2": "glp1-follow-up-2.html",
+  "cardiovascular-welcome": "cardiovascular-welcome.html",
+  "cardiovascular-follow-up-1": "cardiovascular-follow-up-1.html",
+  "cardiovascular-follow-up-2": "cardiovascular-follow-up-2.html",
+  "diabetes-welcome": "diabetes-cgm-welcome.html",
+  "diabetes-follow-up-1": "diabetes-cgm-follow-up-1.html",
+  "diabetes-follow-up-2": "diabetes-cgm-follow-up-2.html",
+  "general-welcome": "welcome.html",
+  "general-follow-up-1": "follow-up-1.html",
+  "general-follow-up-2": "follow-up-2.html",
+};
 
-  // Build a header→index map (case-insensitive, trimmed)
-  var headers = data[0].map(function(h) { return String(h).trim().toLowerCase(); });
-  var col = function(name) { return headers.indexOf(name.toLowerCase()); };
+var EMAIL_SUBJECTS = {
+  welcome: "Your {drug} savings are waiting - SaveRx.ai",
+  "follow-up-1": "Have you enrolled in your {drug} savings yet?",
+  "follow-up-2": "Last reminder: your {drug} savings program",
+};
 
-  var items = [];
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var active = row[col('active')];
-    // Skip inactive rows (FALSE, 'false', 0, empty)
-    if (active !== undefined && active !== '' && String(active).toLowerCase() === 'false') continue;
-
-    var name = String(row[col('name')] || '').trim();
-    if (!name) continue;
-
-    items.push({
-      name:        name,
-      generic:     String(row[col('generic')]      || '').trim(),
-      manufacturer:String(row[col('manufacturer')] || '').trim(),
-      cash_price:  parseCurrency(row[col('cash_price')]),
-      as_low_as:   parseCurrency(row[col('as_low_as')]),
-      url:         String(row[col('url')]          || '').trim(),
-      priority:    Number(row[col('priority')])    || 99,
-      slug:        toSlug(name),
-      // ── New columns ───────────────────────────────────────────
-      drug_class:  String(row[col('drug_class')]   || '').trim(),
-      indication:  String(row[col('indication')]   || '').trim(),
-      description: String(row[col('description')]  || '').trim()
-    });
-  }
-
-  // Sort by priority ascending
-  items.sort(function(a, b) { return a.priority - b.priority; });
-
-  return { items: items };
-}
-
-/**
- * Returns a single drug item by slug as { item: {...} }.
- */
-function getDrugBySlug(slug) {
-  if (!slug) return { item: null };
-  var result = getFeaturedDrugs();
-  var match = (result.items || []).filter(function(i) { return i.slug === slug; })[0] || null;
-  return { item: match };
-}
-
-/**
- * Returns just slugs (for sitemap / page generation) as { slugs: [...] }.
- */
-function getSlugs(source) {
-  var result = getFeaturedDrugs();
-  var slugs = (result.items || []).map(function(i) { return i.slug; });
-  return { slugs: slugs, source: source };
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// doPost — Email capture
-// ─────────────────────────────────────────────────────────────────────────────
-function doPost(e) {
-  var params = {};
-  try {
-    if (e.postData && e.postData.type === 'application/json') {
-      params = JSON.parse(e.postData.contents);
-    } else {
-      params = e.parameter || {};
-    }
-  } catch (err) {
-    params = e.parameter || {};
-  }
-
-  var email    = String(params.email    || '').trim().toLowerCase();
-  var drug     = String(params.drug     || 'N/A').trim();
-  var source   = String(params.source   || 'Unknown').trim();
-  var useragent= String(params.useragent|| '').trim();
-  var referrer = String(params.referrer || '').trim();
-
-  // Basic validation
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return jsonResponse({ ok: false, error: 'Invalid email' });
-  }
-
-  var ss        = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var leadsSheet= ss.getSheetByName(LEADS_SHEET);
-  var timestamp = new Date().toISOString();
-
-  // Write lead (silently; this must always succeed)
-  try {
-    if (leadsSheet) {
-      leadsSheet.appendRow([timestamp, email, drug, source, useragent, referrer]);
-    }
-  } catch (err) { /* silent — never block the user */ }
-
-  // Send welcome email via Resend (silent on failure)
-  try {
-    var category = getDrugCategory(drug);
-    var template = getEmailTemplate(category, 'welcome');
-    if (template && !isUnsubscribed(email, ss)) {
-      sendResendEmail(email, template.subject, template.html);
-      queueFollowUps(email, drug, category, timestamp, ss);
-    }
-  } catch (err) { /* silent */ }
-
-  return jsonResponse({ ok: true });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Email helpers
-// ─────────────────────────────────────────────────────────────────────────────
-function isUnsubscribed(email, ss) {
-  try {
-    var sheet = ss.getSheetByName(UNSUB_SHEET);
-    if (!sheet) return false;
-    var emails = sheet.getRange(2, 1, Math.max(sheet.getLastRow() - 1, 1), 1).getValues()
-      .map(function(r) { return String(r[0]).trim().toLowerCase(); });
-    return emails.indexOf(email) !== -1;
-  } catch (e) { return false; }
-}
-
-function queueFollowUps(email, drug, category, baseTimestamp, ss) {
-  var sheet = ss.getSheetByName(QUEUE_SHEET);
-  if (!sheet) return;
-  var base = new Date(baseTimestamp);
-  var delays = [3, 7]; // days
-  delays.forEach(function(days) {
-    var sendAt = new Date(base.getTime() + days * 24 * 60 * 60 * 1000).toISOString();
-    sheet.appendRow([email, drug, category, 'follow-up-' + days, sendAt, 'pending']);
-  });
-}
-
-function sendResendEmail(to, subject, html) {
-  var key = PropertiesService.getScriptProperties().getProperty('RESEND_API_KEY');
-  if (!key) return;
-  UrlFetchApp.fetch(RESEND_BASE_URL, {
-    method: 'post',
-    contentType: 'application/json',
-    muteHttpExceptions: true,
-    payload: JSON.stringify({
-      from: FROM_NAME + ' <' + FROM_EMAIL + '>',
-      to: [to],
-      subject: subject,
-      html: html
-    }),
-    headers: { Authorization: 'Bearer ' + key }
-  });
-}
+// --- Helpers ---
 
 function getDrugCategory(drug) {
-  var d = String(drug || '').toLowerCase();
-  var glp1 = ['ozempic','wegovy','mounjaro','zepbound','saxenda','victoza','rybelsus',
-               'trulicity','semaglutide','tirzepatide','liraglutide'];
-  var cardio = ['repatha','entresto','eliquis','xarelto','brilinta','plavix','leqvio',
-                'praluent','corlanor'];
-  var diabetes = ['jardiance','farxiga','freestylelibre','dexcom','metformin','januvia',
-                  'victoza','basaglar','apidra','afrezza','baqsimi'];
-  if (glp1.some(function(k){ return d.indexOf(k) !== -1; }))      return 'glp1';
-  if (cardio.some(function(k){ return d.indexOf(k) !== -1; }))    return 'cardiovascular';
-  if (diabetes.some(function(k){ return d.indexOf(k) !== -1; }))  return 'diabetes';
-  return 'general';
+  if (!drug || drug === "N/A" || drug.trim() === "") return "general";
+  var lower = drug.toLowerCase().replace(/[^a-z0-9 ]+/g, "").trim();
+  var cats = Object.keys(DRUG_CATEGORY_MAP);
+  for (var i = 0; i < cats.length; i++) {
+    var list = DRUG_CATEGORY_MAP[cats[i]];
+    for (var j = 0; j < list.length; j++) {
+      if (lower.indexOf(list[j]) !== -1) return cats[i];
+    }
+  }
+  return "general";
 }
 
-function getEmailTemplate(category, type) {
-  // Templates are served from saverx.ai/emails/ — subject lines only needed here
-  var subjects = {
-    'glp1-welcome':             'Your Ozempic/GLP-1 savings card is ready',
-    'cardiovascular-welcome':   'Your heart medication savings — next steps',
-    'diabetes-welcome':         'Your diabetes medication savings card',
-    'general-welcome':          'Your SaveRx.ai savings card is ready'
-  };
-  var key = category + '-' + type;
-  var subject = subjects[key] || subjects['general-welcome'];
-  var htmlUrl = 'https://saverx.ai/emails/' + category + '-' + type + '.html';
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function applyMergeTags(html, drug, toEmail) {
+  var slug = slugify(drug);
+  html = html.replace(/\{\$subscriber\.fields\.drug\|slugify\}/g, slug);
+  html = html.replace(/\{\$subscriber\.fields\.drug\}/g, drug);
+  var unsubUrl = SCRIPT_URL + "?action=unsubscribe&email=" + encodeURIComponent(toEmail);
+  html = html.replace(/\{\$unsubscribe\}/g, unsubUrl);
+  return html;
+}
+
+function isUnsubscribed(email) {
   try {
-    var resp = UrlFetchApp.fetch(htmlUrl, { muteHttpExceptions: true });
-    if (resp.getResponseCode() === 200) {
-      return { subject: subject, html: resp.getContentText() };
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName(UNSUB_SHEET);
+    if (!sheet) return false;
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === email) return true;
     }
-  } catch(e) {}
-  return null;
+    return false;
+  } catch (e) {
+    return false;
+  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Scheduled follow-up processor  (run via hourly trigger)
-// ─────────────────────────────────────────────────────────────────────────────
-function processFollowUps() {
-  var ss    = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(QUEUE_SHEET);
-  if (!sheet || sheet.getLastRow() < 2) return;
+// --- Resend ---
 
-  var data = sheet.getDataRange().getValues();
-  var now  = new Date();
+function sendResendEmail(toEmail, drug, category, type) {
+  try {
+    var apiKey = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+    if (!apiKey) { Logger.log("Resend: No RESEND_API_KEY in Script Properties"); return false; }
 
-  for (var i = 1; i < data.length; i++) {
-    var row      = data[i];
-    var email    = String(row[0] || '').trim();
-    var drug     = String(row[1] || '');
-    var category = String(row[2] || '');
-    var seqType  = String(row[3] || '');
-    var sendAt   = new Date(row[4]);
-    var status   = String(row[5] || '').toLowerCase();
+    var fileKey = category + "-" + type;
+    var filename = EMAIL_FILES[fileKey];
+    if (!filename) { Logger.log("Resend: Unknown email key: " + fileKey); return false; }
 
-    if (status !== 'pending') continue;
-    if (sendAt > now) continue;
-    if (isUnsubscribed(email, ss)) {
-      sheet.getRange(i + 1, 6).setValue('unsubscribed');
-      continue;
+    var templateUrl = EMAIL_BASE_URL + filename;
+    var tmplRes = UrlFetchApp.fetch(templateUrl, { muteHttpExceptions: true });
+    if (tmplRes.getResponseCode() !== 200) {
+      Logger.log("Resend: Template fetch failed " + templateUrl + " (" + tmplRes.getResponseCode() + ")");
+      return false;
     }
 
-    try {
-      var template = getEmailTemplate(category, seqType);
-      if (template) sendResendEmail(email, template.subject, template.html);
-      sheet.getRange(i + 1, 6).setValue('sent');
-    } catch(err) {
-      sheet.getRange(i + 1, 6).setValue('error: ' + err.message);
+    var html = applyMergeTags(tmplRes.getContentText(), drug, toEmail);
+    var subject = EMAIL_SUBJECTS[type].replace(/\{drug\}/g, drug);
+
+    var res = UrlFetchApp.fetch("https://api.resend.com/emails", {
+      method: "post",
+      contentType: "application/json",
+      headers: { Authorization: "Bearer " + apiKey },
+      payload: JSON.stringify({ from: FROM_EMAIL, to: [toEmail], subject: subject, html: html }),
+      muteHttpExceptions: true,
+    });
+
+    var code = res.getResponseCode();
+    if (code === 200 || code === 201) {
+      Logger.log("Resend: OK " + type + " -> " + toEmail + " [" + drug + "]");
+      return true;
+    } else {
+      Logger.log("Resend: Error " + code + " for " + toEmail + " -- " + res.getContentText());
+      return false;
     }
+  } catch (e) {
+    Logger.log("Resend: Exception -- " + e.toString());
+    return false;
+  }
+}
+
+// --- Follow-up queue ---
+
+function queueFollowUps(email, drug, category) {
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName(QUEUE_SHEET);
+    if (!sheet) {
+      sheet = ss.insertSheet(QUEUE_SHEET);
+      sheet.appendRow(["email", "drug", "category", "type", "send_at", "sent_at", "status"]);
+      sheet.setFrozenRows(1);
+    }
+    var now = new Date();
+    var d3 = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    var d7 = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    sheet.appendRow([email, drug, category, "follow-up-1", d3.toISOString(), "", "pending"]);
+    sheet.appendRow([email, drug, category, "follow-up-2", d7.toISOString(), "", "pending"]);
+  } catch (e) {
+    Logger.log("queueFollowUps error: " + e.toString());
   }
 }
 
 /**
- * Run once in the Apps Script editor to install the hourly trigger.
+ * Runs on an hourly time trigger.
+ * Sends follow-up emails that are due and marks them sent/failed.
+ */
+function processEmailQueue() {
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName(QUEUE_SHEET);
+    if (!sheet) return;
+
+    var now = new Date();
+    var data = sheet.getDataRange().getValues();
+
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      var email = row[0];
+      var drug = row[1];
+      var category = row[2];
+      var type = row[3];
+      var sendAt = new Date(row[4]);
+      var status = row[6];
+
+      if (status !== "pending") continue;
+      if (sendAt > now) continue;
+      if (isUnsubscribed(email)) { sheet.getRange(i + 1, 7).setValue("unsubscribed"); continue; }
+
+      var sent = sendResendEmail(email, drug, category, type);
+      sheet.getRange(i + 1, 6).setValue(new Date().toISOString());
+      sheet.getRange(i + 1, 7).setValue(sent ? "sent" : "failed");
+    }
+  } catch (e) {
+    Logger.log("processEmailQueue error: " + e.toString());
+  }
+}
+
+// --- One-time setup ---
+
+/**
+ * Run ONCE from the Apps Script editor to install the hourly trigger.
+ * Safe to re-run — skips if trigger already exists.
  */
 function createHourlyTrigger() {
-  ScriptApp.getProjectTriggers().forEach(function(t) {
-    if (t.getHandlerFunction() === 'processFollowUps') ScriptApp.deleteTrigger(t);
-  });
-  ScriptApp.newTrigger('processFollowUps')
-    .timeBased().everyHours(1).create();
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "processEmailQueue") {
+      Logger.log("Trigger already exists — skipping.");
+      return;
+    }
+  }
+  ScriptApp.newTrigger("processEmailQueue").timeBased().everyHours(1).create();
+  Logger.log("Hourly trigger created for processEmailQueue.");
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Utilities
-// ─────────────────────────────────────────────────────────────────────────────
-function parseCurrency(val) {
-  if (val === '' || val === null || val === undefined) return null;
-  var n = Number(String(val).replace(/[$,]/g, ''));
-  return Number.isFinite(n) ? n : null;
+// --- Core handlers ---
+
+function doGet(e) {
+  // -- Individual drug lookup
+  if (e && e.parameter && e.parameter.mode === "drug") {
+    try {
+      var slug = String(e.parameter.slug || "").trim().toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/, "");
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName("Featured");
+      var item = null;
+      if (sheet && slug) {
+        var rows = sheet.getDataRange().getValues();
+        var headers = rows[0].map(function(h) { return String(h).trim().toLowerCase(); });
+        for (var i = 1; i < rows.length; i++) {
+          var row = rows[i];
+          var rec = {};
+          headers.forEach(function(h, idx) { rec[h] = row[idx]; });
+          var nameSlug = String(rec["name"] || "").toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/, "");
+          if (nameSlug === slug) {
+            item = {
+              brand:           String(rec["name"]          || "").trim(),
+              generic:         String(rec["generic"]        || "").trim(),
+              manufacturer:    String(rec["manufacturer"]   || "").trim(),
+              cash_price:      rec["cash_price"] !== "" ? Number(rec["cash_price"]) : null,
+              copay_price:     rec["as_low_as"]  !== "" ? Number(rec["as_low_as"])  : null,
+              manufacturerUrl: String(rec["url"]            || "").trim(),
+              drug_class:      String(rec["drug_class"]     || "").trim(),
+              indication:      String(rec["indication"]     || "").trim(),
+              description:     String(rec["description"]    || "").trim(),
+            };
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ item: item }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ item: null, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // -- Featured drugs feed
+  if (e && e.parameter && e.parameter.mode === "featured") {
+    try {
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName("Featured");
+      if (!sheet) throw new Error("Featured sheet not found");
+      var rows = sheet.getDataRange().getValues();
+      var headers = rows[0].map(function(h) { return String(h).trim().toLowerCase(); });
+      var items = [];
+      for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        var rec = {};
+        headers.forEach(function(h, idx) { rec[h] = row[idx]; });
+        var activeVal = String(rec["active"]).trim().toUpperCase();
+        if (activeVal === "FALSE" || activeVal === "0") continue;
+        items.push({
+          name:         String(rec["name"]         || "").trim(),
+          generic:      String(rec["generic"]       || "").trim(),
+          manufacturer: String(rec["manufacturer"]  || "").trim(),
+          cash_price:   rec["cash_price"] !== "" ? Number(rec["cash_price"]) : null,
+          as_low_as:    rec["as_low_as"]  !== "" ? Number(rec["as_low_as"])  : null,
+          url:          String(rec["url"]           || "").trim(),
+          priority:     rec["priority"]   !== "" ? Number(rec["priority"])   : 999,
+          active:       true,
+          drug_class:   String(rec["drug_class"]    || "").trim(),
+          indication:   String(rec["indication"]    || "").trim(),
+          description:  String(rec["description"]   || "").trim(),
+        });
+      }
+      items.sort(function(a, b) { return a.priority - b.priority; });
+      return ContentService.createTextOutput(JSON.stringify({ items: items }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ error: err.toString(), items: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // -- Unsubscribe
+  if (e && e.parameter && e.parameter.action === "unsubscribe") {
+    var email = (e.parameter.email || "").trim().toLowerCase();
+    if (email && email.indexOf("@") !== -1) {
+      try {
+        var ss = SpreadsheetApp.openById(SHEET_ID);
+        var sheet = ss.getSheetByName(UNSUB_SHEET);
+        if (!sheet) {
+          sheet = ss.insertSheet(UNSUB_SHEET);
+          sheet.appendRow(["email", "unsubscribed_at"]);
+          sheet.setFrozenRows(1);
+        }
+        if (!isUnsubscribed(email)) { sheet.appendRow([email, new Date().toISOString()]); }
+        Logger.log("Unsubscribed: " + email);
+      } catch (err) {
+        Logger.log("Unsubscribe error: " + err.toString());
+      }
+      return HtmlService.createHtmlOutput(
+        "<html><head><meta charset=\"utf-8\"><title>Unsubscribed - SaveRx.ai</title>" +
+        "<style>body{font-family:sans-serif;text-align:center;padding:80px 20px;color:#333;}" +
+        "h1{color:#0b2a4e;font-size:28px;}p{color:#64748b;font-size:16px;margin:12px 0;}" +
+        "a{color:#3b82f6;}</style></head><body>" +
+        "<h1>You've been unsubscribed</h1>" +
+        "<p>You won't receive any more emails from SaveRx.ai.</p>" +
+        "<p><a href=\"https://saverx.ai\">Return to SaveRx.ai</a></p>" +
+        "</body></html>"
+      );
+    }
+  }
+  return ContentService.createTextOutput("OK");
 }
 
-function toSlug(name) {
-  return String(name).toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+function doPost(e) {
+  var sheetErr = null;
+  var emailResult = null;
+  try {
+    if (!e || !e.parameter) return ContentService.createTextOutput("No payload");
+
+    var p = e.parameter;
+    if (p[HONEYPOT] && p[HONEYPOT].trim() !== "") return ContentService.createTextOutput("Ignored");
+
+    var email = (p.email || "").trim().toLowerCase();
+    var drug = (p.drug || p.medication || "N/A").trim();
+    var source = (p.source || "unknown").trim();
+    var ts = new Date().toISOString();
+
+    if (!email || email.indexOf("@") === -1) return ContentService.createTextOutput("Invalid email");
+
+    try {
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+      sheet.appendRow([ts, email, drug, source, p["user-agent"] || ""]);
+    } catch (err) {
+      sheetErr = err.toString();
+      Logger.log("Sheet error: " + sheetErr);
+    }
+
+    var category = getDrugCategory(drug);
+    if (!isUnsubscribed(email)) {
+      emailResult = sendResendEmail(email, drug, category, "welcome");
+    }
+    queueFollowUps(email, drug, category);
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "ok", sheetError: sheetErr, emailSent: emailResult })
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    Logger.log("doPost error: " + err.toString());
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "error", message: err.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
-function jsonResponse(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+// --- Diagnostics ---
+
+function testConnection() {
+  var result = { sheet: null, sheetError: null, resendKey: null, tabs: [] };
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    result.sheet = ss.getName();
+    result.tabs = ss.getSheets().map(function(s) { return s.getName(); });
+  } catch (e) {
+    result.sheetError = e.toString();
+  }
+  var key = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+  result.resendKey = key ? "SET (length " + key.length + ")" : "NOT SET";
+  Logger.log("testConnection result: " + JSON.stringify(result));
+  return result;
+}
+
+function testPostSimulation() {
+  var fakeEvent = {
+    parameter: { email: "test-simulation@saverx.ai", drug: "Ozempic", source: "Editor Test Simulation" },
+  };
+  var result = doPost(fakeEvent);
+  Logger.log("testPostSimulation result: " + result.getContent());
 }
