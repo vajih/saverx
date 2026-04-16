@@ -765,7 +765,10 @@
                 manufacturer: match.manufacturer || '',
                 manufacturerUrl: match.url || '',
                 cash_price: match.cash_price,
-                copay_price: match.as_low_as
+                copay_price: match.as_low_as,
+                drug_class: match.drug_class || '',
+                indication: match.indication || '',
+                description: match.description || ''
               };
             } catch (e) { /* silent */ }
           }
