@@ -53,7 +53,7 @@
   <link rel="canonical" href="https://saverx.ai/comparisons.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="theme-color" content="#0b6e5c" />
   
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
   <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
@@ -63,20 +63,21 @@
   <style>
     .comparisons-hero {
       text-align: center;
-      padding: 3rem 1rem;
-      background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
-      color: white;
+      padding: 3.5rem 1rem;
+      background: linear-gradient(180deg, var(--brand-50) 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
       margin-bottom: 3rem;
     }
     .comparisons-hero h1 {
       font-size: clamp(32px, 5vw, 48px);
       margin: 0 0 1rem;
-      color: white;
+      color: var(--text);
     }
     .comparisons-hero p {
-      font-size: 1.25rem;
-      margin: 0;
-      opacity: 0.95;
+      font-size: 1.125rem;
+      margin: 0 auto;
+      max-width: 60ch;
+      color: var(--text-2);
     }
     .comparison-grid {
       display: grid;
@@ -96,8 +97,8 @@
       flex-direction: column;
     }
     .comparison-card:hover {
-      border-color: #7c3aed;
-      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15);
+      border-color: var(--teal);
+      box-shadow: 0 10px 30px rgba(11, 110, 92, 0.12);
       transform: translateY(-2px);
     }
     .comparison-card h2 {
@@ -136,7 +137,7 @@
       border-bottom: none;
     }
     .comparison-card .highlights strong {
-      color: #7c3aed;
+      color: var(--teal);
     }
     .comparison-card .btn {
       margin-top: 1rem;
