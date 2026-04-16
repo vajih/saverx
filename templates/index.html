@@ -326,8 +326,11 @@
         <b>(<span data-bind="generic"></span>) •  <span data-bind="manufacturer"></span></b><br>
         Lower your out-of-pocket cost on <span data-bind="brand"></span>.
         Eligible patients may qualify for a manufacturer copay program.
-      </p>
-    </section>
+      </p>      <!-- Drug class + indication badges (populated by JS from API) -->
+      <div class="rx-meta-tags" id="rx-meta-tags" style="display:none">
+        <span class="rx-tag rx-tag--class" id="rx-tag-class"></span>
+        <span class="rx-tag rx-tag--indication" id="rx-tag-indication"></span>
+      </div>    </section>
 
     <!-- Hero: image + overlay price card -->
     <section class="rx-hero">
@@ -369,6 +372,9 @@
       <div class="rx-left">
         <h2 class="rx-title"><span data-bind="brand"></span> Savings</h2>
         <p class="rx-sub"><b><span data-bind="generic"></span> by <span data-bind="manufacturer"></span></b></p>
+
+        <!-- Drug description (populated by JS from API, hidden if empty) -->
+        <p class="rx-description" id="rx-description" style="display:none"></p>
 
         <ul class="rx-bullets" id="rx-bullets"><!-- Bullets inserted here --></ul>
 
@@ -707,6 +713,16 @@
           const bulletsWrap = $("#rx-bullets");
           const bullets = (d.bullets || "").split("|").map(s=>s.trim()).filter(Boolean);
           if (bulletsWrap) bulletsWrap.innerHTML = bullets.map(b=>`<li>${b}</li>`).join("");
+
+          // drug_class, indication, description from Featured sheet
+          const rxTagClass = document.getElementById('rx-tag-class');
+          const rxTagInd   = document.getElementById('rx-tag-indication');
+          const rxMetaTags = document.getElementById('rx-meta-tags');
+          const rxDesc     = document.getElementById('rx-description');
+          if (rxTagClass && d.drug_class)  rxTagClass.textContent  = d.drug_class;
+          if (rxTagInd   && d.indication)  rxTagInd.textContent    = d.indication;
+          if (rxMetaTags && (d.drug_class || d.indication)) rxMetaTags.style.display = '';
+          if (rxDesc && d.description) { rxDesc.textContent = d.description; rxDesc.style.display = ''; }
 
           window.__manufacturerUrl = d.manufacturerUrl || '/';
           window.__drugName = model.brand || slug;
