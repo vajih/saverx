@@ -52,48 +52,52 @@
     });
   }
 
-  /* ── 3. Categories dropdown ───────────────────────────────────────────── */
-  var dd = document.getElementById('catDropdown');
-  if (!dd) return;
+  /* ── 3. Nav dropdowns (Categories, Learn, etc.) ────────────────────── */
+  var dropdowns = document.querySelectorAll('.nav-dropdown');
+  if (!dropdowns.length) return;
 
-  var ddBtn  = dd.querySelector('.nav-dropdown-toggle');
-  var ddMenu = dd.querySelector('.nav-dropdown-menu');
-  if (!ddBtn || !ddMenu) return;
-
-  function openDD()  { dd.setAttribute('data-open', '');  ddBtn.setAttribute('aria-expanded', 'true'); }
-  function closeDD() { dd.removeAttribute('data-open');    ddBtn.setAttribute('aria-expanded', 'false'); }
-
-  // Toggle on button click
-  ddBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    dd.hasAttribute('data-open') ? closeDD() : openDD();
-  });
-
-  // Close on outside click
-  document.addEventListener('click', closeDD);
-  // Don't close when clicking inside the menu
-  ddMenu.addEventListener('click', function (e) { e.stopPropagation(); });
-
-  // Keyboard: dropdown toggle
-  ddBtn.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape')    { closeDD(); ddBtn.focus(); }
-    if (e.key === 'ArrowDown') { e.preventDefault(); openDD(); ddMenu.querySelector('[role="menuitem"]').focus(); }
-  });
-
-  // Keyboard: menu items
-  var items = ddMenu.querySelectorAll('[role="menuitem"]');
-  items.forEach(function (item, i) {
-    item.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape')    { closeDD(); ddBtn.focus(); }
-      if (e.key === 'ArrowDown') { e.preventDefault(); if (items[i + 1]) items[i + 1].focus(); }
-      if (e.key === 'ArrowUp')   { e.preventDefault(); if (i === 0) ddBtn.focus(); else items[i - 1].focus(); }
+  function closeAll() {
+    dropdowns.forEach(function (d) {
+      d.removeAttribute('data-open');
+      var b = d.querySelector('.nav-dropdown-toggle');
+      if (b) b.setAttribute('aria-expanded', 'false');
     });
-    // GA4 event on category click
-    item.addEventListener('click', function () {
-      var slug = (item.pathname || '').replace(/.*\/categories\//, '').replace(/\/$/, '');
-      if (slug && typeof gtag !== 'undefined') {
-        gtag('event', 'category_click', { category: slug, source: 'nav-dropdown' });
-      }
+  }
+
+  // Close all on outside click
+  document.addEventListener('click', closeAll);
+
+  dropdowns.forEach(function (dd) {
+    var ddBtn  = dd.querySelector('.nav-dropdown-toggle');
+    var ddMenu = dd.querySelector('.nav-dropdown-menu');
+    if (!ddBtn || !ddMenu) return;
+
+    function openDD()  { closeAll(); dd.setAttribute('data-open', ''); ddBtn.setAttribute('aria-expanded', 'true'); }
+    function closeDD() { dd.removeAttribute('data-open'); ddBtn.setAttribute('aria-expanded', 'false'); }
+
+    // Toggle on button click
+    ddBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      dd.hasAttribute('data-open') ? closeDD() : openDD();
+    });
+
+    // Don't close when clicking inside the menu
+    ddMenu.addEventListener('click', function (e) { e.stopPropagation(); });
+
+    // Keyboard: dropdown toggle
+    ddBtn.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape')    { closeDD(); ddBtn.focus(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); openDD(); var first = ddMenu.querySelector('[role="menuitem"]'); if (first) first.focus(); }
+    });
+
+    // Keyboard: menu items
+    var items = ddMenu.querySelectorAll('[role="menuitem"]');
+    items.forEach(function (item, i) {
+      item.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape')    { closeDD(); ddBtn.focus(); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); if (items[i + 1]) items[i + 1].focus(); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); if (i === 0) ddBtn.focus(); else items[i - 1].focus(); }
+      });
     });
   });
 })();

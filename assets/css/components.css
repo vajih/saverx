@@ -59,7 +59,8 @@
   background: var(--border); color: var(--text);
 }
 /* Active page: light-blue pill */
-.design-v2 .nav > a[aria-current="page"] {
+.design-v2 .nav > a[aria-current="page"],
+.design-v2 .nav .nav-dropdown-toggle[aria-current="page"] {
   background: var(--brand-100); color: var(--brand-700);
 }
 
