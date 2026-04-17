@@ -238,6 +238,9 @@
   <!-- =======================
        Header / Primary Nav
        ======================= -->
+  <!-- =======================
+       Header / Primary Nav
+       ======================= -->
   <header class="header">
     <div class="container inner">
 
@@ -246,28 +249,37 @@
 
       <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
       <nav id="primary-nav" class="nav" aria-label="Main navigation">
-        <a href="/drugs/" class="nav-link">Drugs</a>
-
         <div class="nav-dropdown" id="catDropdown">
           <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
             Categories <span class="caret" aria-hidden="true">▾</span>
           </button>
           <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
-            <a href="/categories/weight-loss/" role="menuitem">⚖️ Weight Loss &amp; GLP-1</a>
-            <a href="/categories/diabetes/" role="menuitem">💉 Diabetes</a>
-            <a href="/categories/heart-cholesterol/" role="menuitem">❤️ Heart &amp; Cholesterol</a>
-            <a href="/categories/autoimmune/" role="menuitem">🛡️ Autoimmune &amp; Inflammation</a>
-            <a href="/categories/migraine/" role="menuitem">⚡ Migraine</a>
-            <a href="/categories/respiratory/" role="menuitem">🫁 Asthma &amp; Respiratory</a>
-            <a href="/categories/mental-health/" role="menuitem">🧠 Mental Health</a>
+            <a href="/categories/weight-loss/" role="menuitem">Weight Loss &amp; GLP-1</a>
+            <a href="/categories/diabetes/" role="menuitem">Diabetes</a>
+            <a href="/categories/heart-cholesterol/" role="menuitem">Heart &amp; Cholesterol</a>
+            <a href="/categories/autoimmune/" role="menuitem">Autoimmune &amp; Inflammation</a>
+            <a href="/categories/migraine/" role="menuitem">Migraine</a>
+            <a href="/categories/respiratory/" role="menuitem">Asthma &amp; Respiratory</a>
+            <a href="/categories/mental-health/" role="menuitem">Mental Health</a>
             <hr>
             <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
           </div>
         </div>
 
-        <a href="/comparisons.html" class="nav-link">Comparisons</a>
+        <div class="nav-dropdown" id="learnDropdown">
+          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="learnDropdownMenu">
+            Learn <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="nav-dropdown-menu" id="learnDropdownMenu" role="menu">
+            <a href="/learn/how-copay-cards-work.html" role="menuitem">💳 How Copay Cards Work</a>
+            <a href="/learn/copay-cards-vs-patient-assistance-programs.html" role="menuitem">⚖️ Copay Cards vs. PAPs</a>
+            <a href="/learn/how-to-reduce-prescription-costs.html" role="menuitem">💰 Reduce Prescription Costs</a>
+            <a href="/learn/what-to-do-if-insurance-denies-medication.html" role="menuitem">🚫 Insurance Denied Your Drug?</a>
+            <a href="/learn/medicare-vs-commercial-insurance-drug-costs.html" role="menuitem">🏥 Medicare vs. Commercial</a>
+          </div>
+        </div>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/contact.html" class="nav-link">Contact</a>
+        <a href="/drugs/" class="nav-link" style="background: var(--brand-600, #0b6e5c); color: #fff;">Find medication →</a>
       </nav>
 
       <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
