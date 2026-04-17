@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drug Hero Placeholder Preview</title>
+<style>
+  :root {
+    --bg: #f3efe6;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --brand: #0b6e5c;
+    --brand-2: #dff3ec;
+    --brand-3: #edf8f4;
+    --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(11, 110, 92, 0.09), transparent 30%),
+      linear-gradient(180deg, #fbf8f2 0%, var(--bg) 100%);
+    color: var(--text);
+  }
+
+  .banner {
+    padding: 12px 18px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+  }
+
+  .intro {
+    margin-bottom: 24px;
+  }
+
+  .intro h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 760px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  .panel {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(6px);
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0f172a;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+  }
+
+  .label--proposed {
+    color: #065f46;
+    background: #ecfdf5;
+    border-color: #b7ebd3;
+  }
+
+  .note {
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .phone {
+    width: min(100%, 390px);
+    margin: 0 auto;
+    background: #f3efe6;
+    border: 10px solid #18212f;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .phone-top {
+    height: 24px;
+    background: #18212f;
+  }
+
+  .screen {
+    padding: 14px 14px 22px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    color: #0b6e5c;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .menu {
+    width: 18px;
+    height: 13px;
+    position: relative;
+  }
+
+  .menu::before,
+  .menu::after,
+  .menu span {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #475569;
+    border-radius: 999px;
+  }
+
+  .menu::before { top: 0; }
+  .menu span { top: 5px; }
+  .menu::after { bottom: 0; }
+
+  .drug-title {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .drug-sub {
+    margin: 6px 0 0;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .hero {
+    margin-top: 14px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .hero-media {
+    min-height: 175px;
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid #edf2f7;
+    position: relative;
+  }
+
+  .hero-media img {
+    display: block;
+    max-width: 100%;
+  }
+
+  .hero-media--current {
+    background:
+      linear-gradient(160deg, rgba(255,255,255,0.96), rgba(241,245,249,0.9)),
+      linear-gradient(135deg, #d9e4ee 0%, #b8c9d8 100%);
+  }
+
+  .hero-media--current img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-media--proposed {
+    background:
+      radial-gradient(circle at top left, rgba(11, 110, 92, 0.18), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(11, 110, 92, 0.12), transparent 32%),
+      linear-gradient(180deg, #ffffff 0%, var(--brand-3) 100%);
+    padding: 18px;
+  }
+
+  .hero-media--proposed::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(11, 110, 92, 0.12);
+    pointer-events: none;
+  }
+
+  .hero-media--proposed img {
+    width: min(84%, 290px);
+    height: auto;
+    object-fit: contain;
+    filter: saturate(0.96) contrast(1.02);
+  }
+
+  .hero-chip {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(11, 110, 92, 0.14);
+    color: #0b6e5c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .card {
+    margin: 10px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 14px 12px;
+  }
+
+  .card h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 1px dashed #dbe4ee;
+    font-size: 13px;
+  }
+
+  .row:first-of-type { border-top: 0; }
+  .row b { font-size: 15px; }
+
+  .btn {
+    margin-top: 10px;
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    background: #0b7a64;
+    color: #fff;
+    font-weight: 800;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .summary {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .summary strong {
+    color: var(--text);
+  }
+
+  @media (max-width: 920px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="banner">Local preview only. No production files changed by this mockup.</div>
+  <div class="wrap">
+    <div class="intro">
+      <h1>Drug Hero Placeholder Preview</h1>
+      <p>This compares the current neutral placeholder against a branded SaveRx loading treatment using the existing logo asset with a contained, card-like layout designed for mobile drug pages.</p>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="label">Current</div>
+        <p class="note">Neutral hero image placeholder. Safe, but visually generic and not obviously intentional during the brief pre-load state.</p>
+        <div class="phone">
+          <div class="phone-top"></div>
+          <div class="screen">
+            <div class="header">
+              <div>SaveRx.ai</div>
+              <div class="menu"><span></span></div>
+            </div>
+            <h2 class="drug-title">Ozempic</h2>
+            <p class="drug-sub">(Semaglutide) • Novo Nordisk<br>Lower your out-of-pocket cost on Ozempic.</p>
+
+            <section class="hero">
+              <div class="hero-media hero-media--current">
+                <img src="/assets/img/hero-1200.jpg" alt="Current neutral placeholder">
+              </div>
+              <div class="card">
+                <h3>Prescription Cost</h3>
+                <div class="row"><span>Without copay card</span><b>$499</b></div>
+                <div class="row"><span>With copay card</span><b>$25</b></div>
+                <div class="row"><span>Savings per prescription</span><b>$474</b></div>
+                <button class="btn">Check savings</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="label label--proposed">Proposed</div>
+        <p class="note">Branded placeholder with logo containment, subtle brand gradients, and an explicit loading chip. This reads as an intentional SaveRx state instead of a random medication image.</p>
+        <div class="phone">
+          <div class="phone-top"></div>
+          <div class="screen">
+            <div class="header">
+              <div>SaveRx.ai</div>
+              <div class="menu"><span></span></div>
+            </div>
+            <h2 class="drug-title">Ozempic</h2>
+            <p class="drug-sub">(Semaglutide) • Novo Nordisk<br>Lower your out-of-pocket cost on Ozempic.</p>
+
+            <section class="hero">
+              <div class="hero-media hero-media--proposed">
+                <div class="hero-chip">SaveRx loading</div>
+                <img src="/assets/img/saverax-logo1.png" alt="SaveRx branded placeholder">
+              </div>
+              <div class="card">
+                <h3>Prescription Cost</h3>
+                <div class="row"><span>Without copay card</span><b>$499</b></div>
+                <div class="row"><span>With copay card</span><b>$25</b></div>
+                <div class="row"><span>Savings per prescription</span><b>$474</b></div>
+                <button class="btn">Check savings</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="summary">
+      <strong>What would ship if you approve:</strong> the initial drug hero placeholder would swap from the current generic image to a contained SaveRx brand card treatment, while the real per-drug hero would still replace it once data loads. I would also rename or duplicate the current asset to a clean filename so the implementation does not depend on the existing typo.
+    </div>
+  </div>
+</body>
+</html>
