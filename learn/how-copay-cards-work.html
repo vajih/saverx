@@ -189,9 +189,17 @@
       grid-template-columns: 1fr 260px;
       gap: 48px;
       max-width: 1120px;
+      width: 100%;
       margin: 0 auto;
       padding: 52px 16px 72px;
       align-items: start;
+      box-sizing: border-box;
+    }
+    /* Prevent grid columns from expanding beyond their cell */
+    .article-body,
+    .article-sidebar {
+      min-width: 0;
+      overflow: hidden;
     }
     .article-body section {
       margin-bottom: 52px;
@@ -214,6 +222,8 @@
       line-height: 1.75;
       color: var(--text-2);
       margin: 0 0 16px;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .article-body ul,
     .article-body ol {
