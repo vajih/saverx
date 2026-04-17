@@ -460,10 +460,58 @@
       margin-top: 16px;
     }
 
+    /* ── Mobile ──────────────────────────────────────────────────────────── */
     @media (max-width: 700px) {
+      /* Hero */
+      .page-hero { padding: 24px 0 20px; }
       .hero-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 26px; }
+      .hero-sub { font-size: 16px; }
+      .hero-intro { font-size: 15px; }
       .savings-snapshot { min-width: 0; }
+      .snap-val { white-space: normal; }
+
+      /* Content */
+      .content-wrap { padding: 32px 16px 48px; }
+      .content-section { margin-bottom: 36px; }
+      .content-section h2 { font-size: 21px; }
+      .content-section h3 { font-size: 17px; }
+      .content-section p,
+      .content-section li { font-size: 15px; overflow-wrap: break-word; word-break: break-word; }
+
+      /* Cost table: make scrollable instead of overflowing */
+      .cost-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        font-size: 14px;
+      }
+      .cost-table th,
+      .cost-table td { padding: 8px 10px; }
+
+      /* Step list: tighter circle on narrow screens */
+      .step-list li { grid-template-columns: 30px 1fr; gap: 10px; }
+      .step-list li::before { width: 30px; height: 30px; font-size: 13px; }
+
+      /* Callout text */
+      .callout p { font-size: 14px; }
+
+      /* FAQ: allow long question text to wrap */
+      .faq-list summary { font-size: 15px; padding: 14px 14px; }
+      .faq-list .faq-body { padding: 0 14px 14px; font-size: 14px; }
+
+      /* Related link cards: prevent arrow from pushing text off-screen */
+      .related-link-card { align-items: flex-start; }
+      .related-link-card > div { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+      .related-link-card .rl-arrow { flex-shrink: 0; }
+
+      /* CTA band */
       .cta-content-band { padding: 28px 20px; }
+      .cta-content-band h2 { font-size: 22px; }
+
+      /* Disclaimer */
+      .disclaimer-box { font-size: 12px; }
     }
   </style>
 
