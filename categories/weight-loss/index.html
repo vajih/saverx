@@ -215,6 +215,138 @@
     </div>
   </section>
 
+  <!-- Drug comparisons info box -->
+  <section class="cat-comparisons-box">
+    <style>
+      .cat-comparisons-box {
+        max-width: 860px;
+        margin: 0 auto var(--s-16, 64px);
+        padding: 0 var(--s-4, 16px);
+      }
+      .cat-comparisons-box__inner {
+        background: var(--teal-light, #e1f5ee);
+        border: 1px solid rgba(11, 110, 92, 0.18);
+        border-radius: var(--radius, 12px);
+        padding: var(--s-8, 32px);
+      }
+      .cat-comparisons-box__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: var(--s-6, 24px);
+      }
+      .cat-comparisons-box__header h2 {
+        margin: 0;
+        font-size: var(--fs-h2, 20px);
+        color: var(--teal-dark, #084d3f);
+      }
+      .cat-comparisons-box__header p {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: var(--text-2, #5f5e5a);
+      }
+      .cat-comparisons-box__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        padding: 9px 18px;
+        background: var(--teal, #0b6e5c);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--radius-pill, 999px);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .15s;
+      }
+      .cat-comparisons-box__btn:hover { background: var(--teal-dark, #084d3f); }
+      .cat-comparisons-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+      .cat-comp-card {
+        background: var(--surface-2, #ffffff);
+        border: 1px solid var(--border, rgba(44,44,42,0.12));
+        border-radius: var(--radius, 12px);
+        padding: 18px 20px;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: box-shadow .15s, transform .15s;
+      }
+      .cat-comp-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(0,0,0,0.10));
+        transform: translateY(-2px);
+      }
+      .cat-comp-card__vs {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal, #0b6e5c);
+        background: var(--brand-50, #e1f5ee);
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: var(--radius-pill, 999px);
+        width: fit-content;
+      }
+      .cat-comp-card__title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text, #2c2c2a);
+        margin: 2px 0;
+      }
+      .cat-comp-card__desc {
+        font-size: 13px;
+        color: var(--text-2, #5f5e5a);
+        line-height: 1.45;
+      }
+      .cat-comp-card__link {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--teal, #0b6e5c);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    </style>
+    <div class="cat-comparisons-box__inner">
+      <div class="cat-comparisons-box__header">
+        <div>
+          <h2>Compare GLP-1 Medications Side by Side</h2>
+          <p>Not sure which drug is right for you? See how the top GLP-1s stack up on cost, weight loss, and coverage.</p>
+        </div>
+        <a class="cat-comparisons-box__btn" href="/comparisons.html">See All Comparisons &rarr;</a>
+      </div>
+      <div class="cat-comparisons-cards">
+        <a class="cat-comp-card" href="/ozempic-vs-wegovy.html">
+          <span class="cat-comp-card__vs">vs</span>
+          <div class="cat-comp-card__title">Ozempic vs Wegovy</div>
+          <div class="cat-comp-card__desc">Same active ingredient (semaglutide), but different FDA approvals and price tiers. Wegovy ~$500/mo vs Ozempic ~$150/mo with savings cards.</div>
+          <span class="cat-comp-card__link">Compare &rarr;</span>
+        </a>
+        <a class="cat-comp-card" href="/mounjaro-vs-ozempic.html">
+          <span class="cat-comp-card__vs">vs</span>
+          <div class="cat-comp-card__title">Mounjaro vs Ozempic</div>
+          <div class="cat-comp-card__desc">Mounjaro's dual GIP/GLP-1 mechanism shows higher average weight loss. Mounjaro ~$650/mo vs Ozempic ~$150/mo with savings cards.</div>
+          <span class="cat-comp-card__link">Compare &rarr;</span>
+        </a>
+        <a class="cat-comp-card" href="/wegovy-vs-mounjaro.html">
+          <span class="cat-comp-card__vs">vs</span>
+          <div class="cat-comp-card__title">Wegovy vs Mounjaro</div>
+          <div class="cat-comp-card__desc">The two leading FDA-approved weight loss injections compared head-to-head on efficacy, cost, and insurance coverage.</div>
+          <span class="cat-comp-card__link">Compare &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- Email savings alerts -->
   <section class="cat-email-capture">
     <h2>Get savings alerts for Weight Loss &amp; GLP-1</h2>
