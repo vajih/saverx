@@ -423,13 +423,13 @@
           if (status) status.textContent = "Opening the official savings site…";
           await sleep(1200);
 
-          // Add UTM tagging to the outbound manufacturer URL
+          // Add UTM tagging to the outbound manufacturer URL (use page-derived campaign)
           let outbound = redirectUrl || "/";
           try {
             const u = new URL(redirectUrl, location.href);
-            u.searchParams.set("utm_source", "saverx.ai");
+            u.searchParams.set("utm_source", "saverx");
             u.searchParams.set("utm_medium", "referral");
-            u.searchParams.set("utm_campaign", "manufacturer_savings");
+            u.searchParams.set("utm_campaign", derivePageCampaign());
             outbound = u.toString();
           } catch { /* keep fallback */ }
 
@@ -666,5 +666,120 @@
   //   const url = SCRIPT_URL ? `${SCRIPT_URL}?mode=featured` : "";
   //   if (url) renderFeaturedDrugs(url);
   // });
+
+  // =====================================================
+  // UTM Tracking — SaveRx.ai
+  // Applies utm_source / utm_medium / utm_campaign to
+  // all outbound <a> links at DOMContentLoaded.
+  //
+  // Rules (UTM_TRACKING_RULES.md):
+  //  - Only external links (not saverx.ai or relative)
+  //  - Preserve existing query params
+  //  - Never overwrite an existing utm_source=saverx
+  //  - Campaign derived from page path (not hardcoded)
+  //  - Central function; no inline UTM strings in HTML
+  // =====================================================
+
+  /**
+   * Derive a UTM campaign slug from the current page path.
+   *
+   * Examples:
+   *   /                                      → "homepage"
+   *   /about.html                            → "about"
+   *   /drugs/repatha-copay-card/             → "repatha-copay-card"
+   *   /categories/weight-loss/              → "weight-loss"
+   *   /learn/how-copay-cards-work.html      → "how-copay-cards-work"
+   *
+   * @returns {string}
+   */
+  function derivePageCampaign() {
+    try {
+      const path = location.pathname
+        .replace(/\/+$/, "")   // strip trailing slash
+        .split("/")
+        .filter(Boolean);       // remove empty segments
+
+      if (!path.length) return "homepage";
+
+      // Take the last meaningful path segment; strip extension
+      const last = path[path.length - 1].replace(/\.[a-z]{2,5}$/, "");
+
+      // Normalise to lowercase, replace non-alphanumeric runs with hyphens
+      return last.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "homepage";
+    } catch (_) {
+      return "saverx";
+    }
+  }
+
+  /**
+   * Append UTM parameters to an external URL, preserving existing params.
+   * Returns the original URL unchanged on any parse error.
+   *
+   * @param {string} href      - Destination URL
+   * @param {string} campaign  - utm_campaign value
+   * @returns {string}
+   */
+  function buildUtmUrl(href, campaign) {
+    try {
+      const url = new URL(href);
+
+      // Only process http/https links
+      if (url.protocol !== "http:" && url.protocol !== "https:") return href;
+
+      // Don't apply UTMs to saverx.ai itself
+      if (url.hostname.includes("saverx.ai")) return href;
+
+      // Don't double-tag: if utm_source is already ours, leave as-is
+      if (url.searchParams.get("utm_source") === "saverx") return href;
+
+      url.searchParams.set("utm_source", "saverx");
+      url.searchParams.set("utm_medium", "referral");
+      url.searchParams.set("utm_campaign", campaign);
+
+      return url.toString();
+    } catch (_) {
+      // Rule 6: safe fallback — return original unchanged
+      return href;
+    }
+  }
+
+  /**
+   * Walk all <a> elements in the document and apply UTM params to external links.
+   * Skips:
+   *  - Internal / relative links
+   *  - mailto: / tel: / javascript: schemes
+   *  - Links with [data-no-utm] attribute (opt-out escape hatch)
+   *  - Links already tagged with utm_source=saverx
+   */
+  function applyUtmToOutboundLinks() {
+    const campaign = derivePageCampaign();
+
+    document.querySelectorAll("a[href]").forEach(function (a) {
+      // Escape hatch: author can set data-no-utm to opt out
+      if (a.hasAttribute("data-no-utm")) return;
+
+      const href = a.getAttribute("href") || "";
+
+      // Skip non-http schemes and relative links
+      if (!href.startsWith("http://") && !href.startsWith("https://")) return;
+
+      const newHref = buildUtmUrl(href, campaign);
+      if (newHref !== href) {
+        a.setAttribute("href", newHref);
+      }
+    });
+  }
+
+  // Run once the DOM is ready (works whether script is deferred or not)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyUtmToOutboundLinks, { once: true });
+  } else {
+    applyUtmToOutboundLinks();
+  }
+
+  // Expose utilities for use in inline page scripts and future modules
+  window.SaveRx = window.SaveRx || {};
+  window.SaveRx.buildUtmUrl = buildUtmUrl;
+  window.SaveRx.derivePageCampaign = derivePageCampaign;
 
 })(); // end IIFE
