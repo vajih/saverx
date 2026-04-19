@@ -41,11 +41,11 @@
   <!-- End Google AdSense -->
 
   <meta charset="utf-8" />
-  <title>About SaveRx.ai — Transparent, official ways to lower your prescription costs</title>
+  <title>About SaveRx.ai — Prescription savings shouldn't require a PhD</title>
 
   <!-- Open Graph -->
-  <meta property="og:title" content="About SaveRx.ai — Transparent, official ways to lower your prescription costs" />
-  <meta property="og:description" content="We connect you to manufacturer-run savings programs and give you a simple checklist so you can use them at the pharmacy—no gimmicks, no runaround." />
+  <meta property="og:title" content="About SaveRx.ai — Prescription savings shouldn't require a PhD" />
+  <meta property="og:description" content="SaveRx.ai connects you to official manufacturer savings programs — copay cards, patient assistance, and enrollment steps — so you can pay less at the pharmacy." />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SaveRx.ai" />
   <meta property="og:url" content="" />
@@ -55,10 +55,10 @@
   <link rel="canonical" href="" />
 
   <!-- SEO -->
-  <meta name="description" content="SaveRx.ai links you directly to official manufacturer copay cards and assistance programs, with clear steps to use them at the pharmacy." />
+  <meta name="description" content="SaveRx.ai connects you to official manufacturer copay cards and assistance programs for 350+ brand-name medications. Free, transparent, and built by a father-daughter team." />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="index,follow,max-image-preview:large" />
-  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="theme-color" content="#0b6e5c" />
 
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
@@ -68,6 +68,154 @@
   <link rel="stylesheet" href="/assets/styles.css?v=2025-10-03" />
   <link rel="stylesheet" href="/assets/css/tokens.css" />
   <link rel="stylesheet" href="/assets/css/components.css" />
+
+  <!-- About page styles -->
+  <style>
+    .about-hero {
+      text-align: center;
+      padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 6vw, 64px);
+    }
+    .about-hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin: 0 0 16px;
+      line-height: 1.15;
+    }
+    .about-hero .lead {
+      font-size: clamp(17px, 2.2vw, 20px);
+      color: var(--text-2);
+      max-width: 600px;
+      margin: 0 auto 20px;
+      line-height: 1.6;
+    }
+    .about-hero .trust-line {
+      font-size: 14px;
+      color: var(--text-3);
+      letter-spacing: 0.3px;
+    }
+
+    .about-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: clamp(32px, 5vw, 56px) 0;
+    }
+    .about-section + .about-section {
+      border-top: 1px solid var(--border);
+    }
+    .about-section h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 600;
+      margin: 0 0 20px;
+      letter-spacing: -0.3px;
+    }
+    .about-section p {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin: 0 0 16px;
+    }
+    .about-section p:last-child { margin-bottom: 0; }
+    .about-section strong { color: var(--text); }
+
+    .about-section .section-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .about-section .section-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+    .icon-problem { background: #fef2f2; color: #b91c1c; }
+    .icon-insight { background: #fefce8; color: #a16207; }
+    .icon-solution { background: var(--teal-light); color: var(--teal); }
+    .icon-founder { background: #f0f4ff; color: #3b5bdb; }
+    .icon-trust { background: #f0fdf4; color: #15803d; }
+    .icon-transparency { background: #faf5ff; color: #7c3aed; }
+    .icon-philosophy { background: #f0f9ff; color: #0369a1; }
+    .icon-vision { background: #fff7ed; color: #c2410c; }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .trust-grid .trust-col h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .trust-col-yes h3 { color: var(--teal); }
+    .trust-col-no h3 { color: var(--text-3); }
+    .trust-grid ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .trust-grid li {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-2);
+      padding: 4px 0;
+    }
+    .trust-grid li::before {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 14px;
+    }
+    .trust-col-yes li::before { content: "\2713"; color: var(--teal); font-weight: 600; }
+    .trust-col-no li::before { content: "\2715"; color: var(--text-3); font-weight: 600; }
+
+    @media (max-width: 600px) {
+      .trust-grid { grid-template-columns: 1fr; gap: 20px; }
+    }
+
+    .about-cta {
+      text-align: center;
+      padding: clamp(40px, 6vw, 72px) 0;
+      border-top: 1px solid var(--border);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .about-cta h2 {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 600;
+      margin: 0 0 12px;
+    }
+    .about-cta p {
+      color: var(--text-2);
+      margin: 0 0 24px;
+      font-size: 16px;
+    }
+    .about-cta .cta-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .founder-sig {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 15px;
+      color: var(--text-3);
+    }
+    .founder-sig strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+    }
+  </style>
 
   <script>
     // Match index: set canonical + og:url to current location
@@ -96,12 +244,6 @@
   <!-- =======================
        Header / Primary Nav
        ======================= -->
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
   <header class="header">
     <div class="container inner">
 
@@ -112,7 +254,7 @@
       <nav id="primary-nav" class="nav" aria-label="Main navigation">
         <div class="nav-dropdown" id="catDropdown">
           <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
-            Categories <span class="caret" aria-hidden="true">▾</span>
+            Categories <span class="caret" aria-hidden="true">&#9662;</span>
           </button>
           <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
             <a href="/categories/weight-loss/" role="menuitem">Weight Loss &amp; GLP-1</a>
@@ -123,27 +265,27 @@
             <a href="/categories/respiratory/" role="menuitem">Asthma &amp; Respiratory</a>
             <a href="/categories/mental-health/" role="menuitem">Mental Health</a>
             <hr>
-            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
+            <a href="/categories/" role="menuitem"><strong>View all categories &rarr;</strong></a>
           </div>
         </div>
 
         <div class="nav-dropdown" id="learnDropdown">
           <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="learnDropdownMenu">
-            Learn <span class="caret" aria-hidden="true">▾</span>
+            Learn <span class="caret" aria-hidden="true">&#9662;</span>
           </button>
           <div class="nav-dropdown-menu" id="learnDropdownMenu" role="menu">
-            <a href="/learn/how-copay-cards-work.html" role="menuitem">💳 How Copay Cards Work</a>
-            <a href="/learn/copay-cards-vs-patient-assistance-programs.html" role="menuitem">⚖️ Copay Cards vs. PAPs</a>
-            <a href="/learn/how-to-reduce-prescription-costs.html" role="menuitem">💰 Reduce Prescription Costs</a>
-            <a href="/learn/what-to-do-if-insurance-denies-medication.html" role="menuitem">🚫 Insurance Denied Your Drug?</a>
-            <a href="/learn/medicare-vs-commercial-insurance-drug-costs.html" role="menuitem">🏥 Medicare vs. Commercial</a>
+            <a href="/learn/how-copay-cards-work.html" role="menuitem">&#x1F4B3; How Copay Cards Work</a>
+            <a href="/learn/copay-cards-vs-patient-assistance-programs.html" role="menuitem">&#x2696;&#xFE0F; Copay Cards vs. PAPs</a>
+            <a href="/learn/how-to-reduce-prescription-costs.html" role="menuitem">&#x1F4B0; Reduce Prescription Costs</a>
+            <a href="/learn/what-to-do-if-insurance-denies-medication.html" role="menuitem">&#x1F6AB; Insurance Denied Your Drug?</a>
+            <a href="/learn/medicare-vs-commercial-insurance-drug-costs.html" role="menuitem">&#x1F3E5; Medicare vs. Commercial</a>
           </div>
         </div>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/drugs/" class="nav-link" style="background: var(--brand-600, #0b6e5c); color: #fff;">Find medication →</a>
+        <a href="/drugs/" class="nav-link" style="background: var(--brand-600, #0b6e5c); color: #fff;">Find medication &rarr;</a>
       </nav>
 
-      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
+      <!-- Hamburger (mobile only — shown via CSS at <=640px) -->
       <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
         <span class="bar"></span>
         <span class="bar"></span>
@@ -156,69 +298,183 @@
 
   <!-- ===== Main ===== -->
   <main class="container">
-    <!-- Hero (same card look & spacing as index) -->
-    <section class="card stack-lg">
-      <p class="eyebrow">About SaveRx</p>
-      <h1 class="h1">Transparent, official ways to lower your prescription costs.</h1>
-      <p class="lead maxw-60">
-        We connect you to <strong>manufacturer-run savings programs</strong> (copay cards, assistance) and give you
-        a simple checklist so you can use them at the pharmacy—no gimmicks, no runaround.
+
+    <!-- SECTION 1: HERO -->
+    <section class="about-hero">
+      <h1>Saving on prescriptions shouldn't be this hard.</h1>
+      <p class="lead">
+        SaveRx.ai is a free resource that connects patients to official manufacturer savings programs &mdash; copay cards, patient assistance, and step-by-step enrollment &mdash; for 350+ brand-name medications.
       </p>
-      <div class="row gap-sm wrap">
-        <a class="btn btn-primary" href="/drugs/">Browse medications</a>
-        <a class="btn" href="/contact.html">Contact us</a>
+      <p class="trust-line">No signup required &middot; No data sold &middot; Always free</p>
+    </section>
+
+    <!-- SECTION 2: THE PROBLEM -->
+    <section class="about-section">
+      <div class="section-icon icon-problem">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+      </div>
+      <h2>The problem</h2>
+      <p>
+        In the United States, prescription drug costs are rising faster than almost any other healthcare expense. Patients are routinely quoted $800, $1,200, or more &mdash; for medications their doctors said they need.
+      </p>
+      <p>
+        Many people abandon their prescriptions. Others pay the full price, not knowing that a manufacturer program could have brought their cost down to $25 or even $0.
+      </p>
+      <p>
+        The information is out there. But it's scattered across dozens of manufacturer websites, each with different eligibility requirements, enrollment processes, and fine print. <strong>The system isn't broken because the programs don't exist. It's broken because patients can't find them.</strong>
+      </p>
+    </section>
+
+    <!-- SECTION 3: THE INSIGHT -->
+    <section class="about-section">
+      <div class="section-icon icon-insight">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>
+      </div>
+      <h2>The insight</h2>
+      <p>
+        Here's what surprised us: <strong>most of the savings programs patients need already exist.</strong> Manufacturer copay cards, patient assistance programs, bridge programs &mdash; pharmaceutical companies spend billions creating them. They <em>want</em> patients to use them.
+      </p>
+      <p>
+        But there is no single, trustworthy place to find them all. No clear eligibility explanations. No step-by-step guidance. Patients are left to navigate a maze of PDFs, phone trees, and conflicting Google results.
+      </p>
+      <p>
+        The gap isn't in the programs. <strong>The gap is in access to clear, organized information about them.</strong> That's the problem we set out to solve.
+      </p>
+    </section>
+
+    <!-- SECTION 4: THE SOLUTION -->
+    <section class="about-section">
+      <div class="section-icon icon-solution">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+      </div>
+      <h2>What SaveRx does</h2>
+      <p>
+        We catalog official manufacturer savings programs for 350+ brand-name medications. For each drug, we provide the direct program link, eligibility details in plain language, and step-by-step enrollment instructions.
+      </p>
+      <p>
+        Search your medication. See what's available. Follow the steps. Use the savings at your pharmacy.
+      </p>
+      <p>
+        <strong>No accounts required. No middlemen. No markup.</strong>
+      </p>
+    </section>
+
+    <!-- SECTION 5: FOUNDER STORY -->
+    <section class="about-section">
+      <div class="section-icon icon-founder">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+      </div>
+      <h2>Why we built this</h2>
+      <p>
+        SaveRx started with a personal experience. My father &mdash; a physician &mdash; was prescribed Repatha for high cholesterol. The pharmacy quoted over $700 a month.
+      </p>
+      <p>
+        We spent weeks navigating phone calls, confusing eligibility forms, and conflicting advice before we finally found the official manufacturer copay card. His cost dropped to under $5. The program had existed the entire time &mdash; we just couldn't find it.
+      </p>
+      <p>
+        That experience stayed with us. Standing in line at the pharmacy, we watched other patients &mdash; many of them older, many on fixed incomes &mdash; pay full price for medications that had savings programs they simply didn't know about.
+      </p>
+      <p>
+        My father said something that stuck: <em>&ldquo;If I'm a doctor and I couldn't figure this out easily, what chance does a regular patient have?&rdquo;</em>
+      </p>
+      <p>
+        That question became SaveRx. I'm a software engineer; my daughter Asma helped design the experience. Together with my father's clinical perspective, we set out to build the resource we wished had existed: one place where any patient can find official savings, understand eligibility, and know exactly what to do at the pharmacy.
+      </p>
+      <div class="founder-sig">
+        <strong>Vajih &amp; Asma Khan</strong>
+        Founders, SaveRx.ai
       </div>
     </section>
 
-    <!-- Our story -->
-    <section class="card prose stack-md">
-      <h2>Our story</h2>
+    <!-- SECTION 6: TRUST POSITIONING -->
+    <section class="about-section">
+      <div class="section-icon icon-trust">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+      </div>
+      <h2>What we are &mdash; and what we're not</h2>
+      <div class="trust-grid">
+        <div class="trust-col trust-col-yes">
+          <h3>We are</h3>
+          <ul>
+            <li>A free patient guidance resource</li>
+            <li>A directory of official manufacturer programs</li>
+            <li>An educational tool with clear next steps</li>
+            <li>Compliant with CAN-SPAM and CCPA</li>
+          </ul>
+        </div>
+        <div class="trust-col trust-col-no">
+          <h3>We are not</h3>
+          <ul>
+            <li>A pharmacy or drug seller</li>
+            <li>An insurance company or PBM</li>
+            <li>A prescriber or medical advisor</li>
+            <li>A company that sells your data</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: MONETIZATION TRANSPARENCY -->
+    <section class="about-section">
+      <div class="section-icon icon-transparency">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+      </div>
+      <h2>How we sustain this</h2>
       <p>
-        This started with something personal. After being prescribed <em>Repatha</em>, the first pharmacy price was a shock.
-        Weeks of calls and forms later, we finally found the official copay program—and the price dropped dramatically.
-        It shouldn’t be that hard.
+        SaveRx.ai is free to use. We believe that access to savings information should never have a price tag.
       </p>
       <p>
-        At the counter, we saw people—especially older patients—pay full price simply because they didn’t know where to look.
-        We built SaveRx.ai so anyone can quickly find the <strong>real, official</strong> savings and understand how to activate them.
+        We may earn revenue through contextual advertising and affiliate partnerships with vetted telehealth providers. When we do, we disclose it clearly.
       </p>
-      <p>— Founder, SaveRx.ai</p>
-    </section>
-
-    <!-- What we do + what we are/aren’t -->
-    <section class="card prose stack-md">
-      <h2>What we do</h2>
-      <ul>
-        <li>Curate up-to-date links to official manufacturer savings (copay cards, support, assistance).</li>
-        <li>Explain eligibility in plain language and outline the exact steps to enroll.</li>
-        <li>Help patients, caregivers, and clinics save time and reduce costs at checkout.</li>
-      </ul>
-
-      <h3>What we are (and aren’t)</h3>
-      <p><strong>We are</strong> a free guidance service. <strong>We are not</strong> a pharmacy, PBM, insurer, or prescriber.</p>
-      <p><strong>We don’t sell data.</strong> We collect only what’s needed to assist you, with your consent.</p>
-    </section>
-
-    <!-- Simple checklist -->
-    <section class="card prose stack-md">
-      <h2>Simple</h2>
-      <p>Clear steps. Official links. Results you can use at the pharmacy counter.</p>
-      <ol class="simple-steps">
-        <li><strong>Search</strong> for your medication.</li>
-        <li><strong>Open</strong> the official manufacturer program.</li>
-        <li><strong>Use</strong> our checkout checklist at the pharmacy.</li>
-      </ol>
-    </section>
-
-    <!-- Compliance -->
-    <section class="card prose stack-md">
-      <h2>Compliance & privacy</h2>
       <p>
-        SaveRx.ai provides educational guidance and links to official manufacturer programs. We do not provide medical advice
-        and cannot intervene with insurers. Eligibility and terms are determined by the manufacturer and may change.
-        See our <a href="/privacy.html">Privacy Policy</a>.
+        <strong>Our editorial independence is non-negotiable.</strong> Commercial relationships never influence which savings programs we show or how we rank them. Official manufacturer programs are always presented first &mdash; they're the most direct way to save.
+      </p>
+      <p>
+        We don't sell your personal data. Full details are in our <a href="/privacy.html" style="color:var(--teal);text-decoration:underline;">Privacy Policy</a>.
       </p>
     </section>
+
+    <!-- SECTION 8: PHILOSOPHY -->
+    <section class="about-section">
+      <div class="section-icon icon-philosophy">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" /></svg>
+      </div>
+      <h2>What we believe</h2>
+      <p>
+        Access to clear, trustworthy healthcare cost information should not require a medical degree, a benefits specialist, or hours on hold.
+      </p>
+      <p>
+        Every patient deserves to know what savings are available for their medication, whether they qualify, and how to use them &mdash; explained simply, in one place.
+      </p>
+      <p>
+        <strong>If we can save one person from abandoning a prescription they need because of cost confusion, this project is worth it.</strong>
+      </p>
+    </section>
+
+    <!-- SECTION 9: FUTURE VISION -->
+    <section class="about-section">
+      <div class="section-icon icon-vision">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" /></svg>
+      </div>
+      <h2>Where we're going</h2>
+      <p>
+        SaveRx is growing. We're working toward smarter, more personalized tools: insurance coverage checks, savings alerts for your specific medications, and an AI-powered assistant that can answer questions about your coverage and options.
+      </p>
+      <p>
+        But we're building carefully. Every feature starts with the same question: <strong>does this help the patient pay less and understand more?</strong> If the answer isn't clearly yes, we don't ship it.
+      </p>
+    </section>
+
+    <!-- SECTION 10: CTA -->
+    <section class="about-cta">
+      <h2>See what savings are available for your medication</h2>
+      <p>Search by drug name. Find official programs. Follow the steps. Pay less at the pharmacy.</p>
+      <div class="cta-buttons">
+        <a class="btn btn-primary" href="/drugs/">Browse medications</a>
+        <a class="btn btn-outline" href="/contact.html">Get in touch</a>
+      </div>
+    </section>
+
   </main>
 
   <!-- ===== Footer (identical to index.html) ===== -->
@@ -262,7 +518,7 @@
 
     <div class="footer-bottom">
       <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%;">
-        <span>© 2026 SaveRx.ai — All rights reserved.</span>
+        <span>&copy; 2026 SaveRx.ai &mdash; All rights reserved.</span>
         <span>SaveRx is not insurance. All trademarks are property of their respective owners. Savings vary by program.</span>
       </div>
     </div>
@@ -282,7 +538,7 @@
         e.preventDefault();
         const email = (new FormData(form).get("email")||"").toString().trim();
         if (!/^\S+@\S+\.\S+$/.test(email)){ msg && (msg.textContent="Please enter a valid email."); return; }
-        msg && (msg.textContent="Thanks! Subscribing…");
+        msg && (msg.textContent="Thanks! Subscribing\u2026");
         try{
           const body = new URLSearchParams({
             email,
