@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Consent Mode v2 — defaults (before GTM) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      analytics_storage:     'denied',
+      ad_storage:            'denied',
+      ad_user_data:          'denied',
+      ad_personalization:    'denied',
+      personalization_storage: 'denied',
+      wait_for_update:       500
+    });
+  </script>
+  <script src="/assets/js/consent.js"></script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCKENS1BWB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCKENS1BWB');
+  </script>
+
+  <meta charset="utf-8" />
+  <title>Get Help Enrolling in Your Savings Program | SaveRx.ai</title>
+  <meta name="description" content="Early access: a SaveRx guide helps you find the right manufacturer savings program and walks you through the official enrollment." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- noindex during the demand test — keeps cohorts limited to on-site traffic -->
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#0b6e5c" />
+
+  <link rel="canonical" href="https://saverx.ai/get-help/" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      background: #f8fafc;
+      color: var(--text, #0f172a);
+      line-height: 1.55;
+    }
+    a { color: var(--brand-600, #0b6e5c); }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; background: #fff; border-bottom: 1px solid #e2e8f0;
+    }
+    .topbar .logo { font-weight: 800; font-size: 20px; text-decoration: none; color: #0f172a; }
+    .topbar .logo span { color: var(--brand-600, #0b6e5c); }
+    .topbar a.exit { font-size: 14px; text-decoration: none; color: #64748b; }
+
+    .wrap { max-width: 640px; margin: 0 auto; padding: 24px 16px 64px; }
+
+    .progress { height: 6px; background: #e2e8f0; border-radius: 999px; margin: 4px 0 24px; overflow: hidden; }
+    .progress > div { height: 100%; width: 0%; background: var(--brand-600, #0b6e5c); border-radius: 999px; transition: width .3s ease; }
+
+    .card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+      padding: 28px 24px; box-shadow: 0 1px 3px rgba(15,23,42,.06);
+    }
+    .step-kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brand-600, #0b6e5c); margin: 0 0 6px; }
+    h1.q { font-size: 22px; margin: 0 0 6px; }
+    p.sub { margin: 0 0 20px; color: #475569; font-size: 15px; }
+
+    .opt {
+      display: block; width: 100%; text-align: left; cursor: pointer;
+      background: #fff; border: 2px solid #e2e8f0; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px; font-size: 15.5px; font-family: inherit;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .opt:hover { border-color: #94a3b8; }
+    .opt.selected { border-color: var(--brand-600, #0b6e5c); background: #f0fdf9; }
+    .opt b { display: block; }
+    .opt small { color: #64748b; }
+    .opt .price { float: right; font-weight: 800; color: var(--brand-600, #0b6e5c); }
+
+    .notice {
+      border-left: 4px solid #d97706; background: #fffbeb; border-radius: 8px;
+      padding: 12px 14px; font-size: 14px; margin: 0 0 16px; color: #78350f;
+    }
+    .notice a { color: #92400e; }
+
+    .field { display: block; margin-bottom: 14px; }
+    .field span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    input[type=email], input[type=tel], input[type=text], textarea {
+      width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+      font-size: 16px; font-family: inherit; background: #fff;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--brand-600, #0b6e5c); }
+    textarea { resize: vertical; min-height: 72px; }
+
+    .consent-row { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: #475569; margin: 14px 0; }
+    .consent-row input { margin-top: 3px; }
+
+    .btn {
+      display: inline-block; cursor: pointer; border: 0; border-radius: 999px;
+      background: var(--brand-600, #0b6e5c); color: #fff; font-weight: 700;
+      font-size: 16px; padding: 13px 28px; font-family: inherit;
+    }
+    .btn:hover { filter: brightness(1.08); }
+    .btn-ghost { background: transparent; color: #64748b; font-weight: 600; font-size: 14px; padding: 10px 12px; border: 0; cursor: pointer; font-family: inherit; }
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+
+    .msg { color: #b91c1c; font-size: 14px; min-height: 20px; margin: 8px 0 0; }
+    .hp { position: absolute; left: -9999px; opacity: 0; }
+
+    .trust { margin-top: 20px; font-size: 12.5px; color: #94a3b8; text-align: center; }
+    .done-icon { font-size: 42px; }
+
+    .early-badge {
+      display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .04em;
+      background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;
+      padding: 3px 10px; border-radius: 999px; margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <header class="topbar">
+    <a class="logo" href="/">Save<span>Rx.ai</span></a>
+    <a class="exit" href="javascript:history.back()">← Back to medication page</a>
+  </header>
+
+  <main class="wrap">
+    <div class="progress" role="progressbar" aria-label="Intake progress"><div id="progressBar"></div></div>
+
+    <!-- Step 0 — medication (only when not arriving from a drug page) -->
+    <section class="card" data-step="drug" hidden>
+      <p class="step-kicker">Enrollment help · Early access</p>
+      <h1 class="q">Which medication do you need savings help with?</h1>
+      <p class="sub">We'll check which official manufacturer program may fit your situation.</p>
+      <label class="field">
+        <span>Medication name</span>
+        <input id="drugInput" type="text" list="drugList" placeholder="e.g. Repatha, Dupixent, Stelara" autocomplete="off">
+        <datalist id="drugList"></datalist>
+      </label>
+      <p class="msg" id="drugMsg"></p>
+      <div class="actions">
+        <span></span>
+        <button class="btn" id="drugContinue" type="button">Continue →</button>
+      </div>
+    </section>
+
+    <!-- Step 1 — insurance -->
+    <section class="card" data-step="insurance" hidden>
+      <p class="step-kicker">Step 1 · Insurance</p>
+      <h1 class="q">What kind of insurance do you have?</h1>
+      <p class="sub">This decides which savings programs you can legally use for <b data-drug-name>your medication</b>.</p>
+      <button class="opt" data-value="commercial" type="button"><b>Private / commercial insurance</b><small>Through an employer or the marketplace</small></button>
+      <button class="opt" data-value="medicare" type="button"><b>Medicare</b><small>Including Part D and Medicare Advantage</small></button>
+      <button class="opt" data-value="medicaid" type="button"><b>Medicaid / CHIP</b></button>
+      <button class="opt" data-value="uninsured" type="button"><b>No insurance</b><small>Paying cash</small></button>
+      <button class="opt" data-value="unsure" type="button"><b>Not sure</b></button>
+      <div class="notice" id="govNotice" hidden>
+        <b>Heads up:</b> manufacturer copay cards can't legally be used with Medicare or Medicaid.
+        You may still qualify for the manufacturer's <b>Patient Assistance Program</b> (income-based, often free medication) —
+        we can help with that instead, so please continue.
+      </div>
+      <div class="actions"><button class="btn-ghost" data-back type="button">← Back</button><span></span></div>
+    </section>
+
+    <!-- Step 2 — prescription -->
+    <section class="card" data-step="prescription" hidden>
+      <p class="step-kicker">Step 2 · Prescription</p>
+      <h1 class="q">Do you have a prescription for <span data-drug-name>this medication</span>?</h1>
+      <p class="sub">Savings programs require a valid prescription from your doctor.</p>
+      <button class="opt" data-value="yes" type="button"><b>Yes, I have it</b></button>
+      <button class="opt" data-value="pending" type="button"><b>Doctor visit scheduled</b><small>Prescription expected soon</small></button>
+      <button class="opt" data-value="no" type="button"><b>Not yet</b></button>
+      <div class="actions"><button class="btn-ghost" data-back type="button">← Back</button><span></span></div>
+    </section>
+
+    <!-- Step 3 — difficulty -->
+    <section class="card" data-step="difficulty" hidden>
+      <p class="step-kicker">Step 3 · Your situation</p>
+      <h1 class="q">What's the main problem you're running into?</h1>
+      <p class="sub">Pick the closest one — this is how we prepare before helping you.</p>
+      <button class="opt" data-value="which_program" type="button"><b>I don't know which program I qualify for</b></button>
+      <button class="opt" data-value="application_confusing" type="button"><b>The application is confusing</b><small>Not sure what to enter or attest to</small></button>
+      <button class="opt" data-value="denied_pa" type="button"><b>I was denied, or stuck on prior authorization</b></button>
+      <button class="opt" data-value="renewal" type="button"><b>My card stopped working / needs renewal</b></button>
+      <button class="opt" data-value="pharmacy_issue" type="button"><b>Pharmacy or specialty-pharmacy problem</b><small>Card won't apply at the counter</small></button>
+      <button class="opt" data-value="still_too_expensive" type="button"><b>Even with savings it costs too much</b></button>
+      <label class="field" style="margin-top:6px">
+        <span>Anything else we should know? (optional)</span>
+        <textarea id="difficultyText" maxlength="500" placeholder="Optional — a sentence or two"></textarea>
+      </label>
+      <div class="actions"><button class="btn-ghost" data-back type="button">← Back</button><span></span></div>
+    </section>
+
+    <!-- Step 4 — service preference -->
+    <section class="card" data-step="preference" hidden>
+      <p class="step-kicker">Step 4 · How can we help</p>
+      <span class="early-badge">EARLY ACCESS — LIMITED SPOTS</span>
+      <h1 class="q">How would you like SaveRx to help?</h1>
+      <p class="sub">A real person reviews your situation and guides you through the manufacturer's <b>official</b> enrollment. We never submit on your behalf without you.</p>
+      <button class="opt" data-value="free_self" type="button"><span class="price">Free</span><b>Self-service checklist</b><small>We email you a step-by-step checklist for <span data-drug-name>your medication</span>'s program</small></button>
+      <button class="opt" data-value="paid_999" type="button"><span class="price">$9.99</span><b>Guided enrollment</b><small>A SaveRx guide checks your fit and walks you through enrollment 1-on-1</small></button>
+      <button class="opt" data-value="paid_1999" type="button"><span class="price">$19.99</span><b>Guided enrollment + follow-up</b><small>Everything above, plus renewal reminders and help if the card is denied or stops working</small></button>
+      <button class="opt" data-value="free_only" type="button"><b>I'd only use this if it's free</b></button>
+      <div class="actions"><button class="btn-ghost" data-back type="button">← Back</button><span></span></div>
+    </section>
+
+    <!-- Step 5 — contact -->
+    <section class="card" data-step="contact" hidden>
+      <p class="step-kicker">Step 5 · Contact</p>
+      <h1 class="q">Where should your guide reach you?</h1>
+      <p class="sub">You'll hear from a real person at SaveRx within 1 business day.</p>
+      <form id="contactForm" novalidate>
+        <input type="text" id="hp" name="website" class="hp" tabindex="-1" aria-hidden="true">
+        <label class="field">
+          <span>Email (required)</span>
+          <input id="emailInput" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com">
+        </label>
+        <label class="field">
+          <span>Mobile number (optional)</span>
+          <input id="phoneInput" type="tel" inputmode="tel" autocomplete="tel" placeholder="(555) 555-5555">
+        </label>
+        <div class="consent-row" id="smsConsentRow" hidden>
+          <input type="checkbox" id="smsConsent">
+          <label for="smsConsent">I agree to receive text messages from SaveRx about my enrollment help. Message/data rates may apply. Reply STOP to opt out.</label>
+        </div>
+        <div class="consent-row">
+          <input type="checkbox" id="consentCheck" required>
+          <label for="consentCheck">I agree that SaveRx may store the information I provided and contact me about savings-program enrollment help. See our <a href="/privacy.html" target="_blank">Privacy Policy</a>.</label>
+        </div>
+        <p class="msg" id="contactMsg"></p>
+        <div class="actions">
+          <button class="btn-ghost" data-back type="button">← Back</button>
+          <button class="btn" type="submit">Get my enrollment help →</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Step 6 — checkout (paid tiers only) -->
+    <section class="card" data-step="checkout" hidden>
+      <p class="step-kicker">Reserve your spot</p>
+      <h1 class="q">Lock in early-access pricing</h1>
+      <p class="sub">You chose: <b data-tier-label></b></p>
+
+      <div id="checkoutPay" hidden>
+        <p class="sub"><b>You won't be charged until we complete your first enrollment.</b> If we can't help you, you pay nothing.</p>
+        <button class="btn" id="checkoutBtn" type="button">Reserve with card →</button>
+        <div class="actions"><a href="#" id="checkoutSkip" class="btn-ghost">Skip for now — contact me first</a><span></span></div>
+      </div>
+
+      <div id="checkoutReserve">
+        <p class="sub">Your spot is reserved — <b>no payment is needed today</b>. Your SaveRx guide will email you within 1 business day to get started, and pricing is only confirmed after we've actually helped you.</p>
+        <button class="btn" id="reserveContinue" type="button">Done →</button>
+      </div>
+    </section>
+
+    <!-- Done -->
+    <section class="card" data-step="done" hidden style="text-align:center">
+      <div class="done-icon">✅</div>
+      <h1 class="q">You're in — check your inbox</h1>
+      <p class="sub" id="doneCheckoutMsg" hidden><b>Payment reserved — thank you.</b></p>
+      <p class="sub">We've emailed you a confirmation. A SaveRx guide will follow up within <b>1 business day</b>.</p>
+      <p class="sub">Don't want to wait? You can always go straight to the manufacturer's official program site — that path is free and always available:</p>
+      <p><a href="/drugs/" id="doneOfficialLink">Find your medication's official program →</a></p>
+    </section>
+
+    <p class="trust">
+      SaveRx.ai is an independent service and is <b>not affiliated with, endorsed by, or sponsored by</b> any pharmaceutical manufacturer.
+      All enrollment happens through the manufacturer's official program on their website. We are not a pharmacy, insurer, or healthcare provider,
+      and we do not provide medical advice. Enrollment help is in early access; guidance is provided by a person, not an automated system.
+      All trademarks are property of their respective owners.
+    </p>
+  </main>
+
+  <script defer src="/assets/js/track.js"></script>
+  <script defer src="/assets/js/enroll.js"></script>
+</body>
+</html>
