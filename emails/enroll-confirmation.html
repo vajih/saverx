@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>We got your {$subscriber.fields.drug} enrollment help request — SaveRx.ai</title>
+  <style>
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f6f8fb; }
+    @media only screen and (max-width: 600px) {
+      .email-container { width: 100% !important; }
+      .padding-sm { padding: 24px 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f6f8fb; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+
+  <!-- Preheader -->
+  <div style="display:none; font-size:1px; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden; mso-hide:all;">
+    A SaveRx guide will follow up about your {$subscriber.fields.drug} savings within 1 business day.
+  </div>
+
+  <center style="width: 100%; background-color: #f6f8fb;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="email-container" style="margin: 0 auto; max-width: 600px;">
+
+      <!-- Header -->
+      <tr>
+        <td style="padding: 28px 40px 16px; text-align: left;">
+          <span style="font-size: 22px; font-weight: 800; color: #0f172a;">Save<span style="color: #0b6e5c;">Rx.ai</span></span>
+        </td>
+      </tr>
+
+      <!-- Card -->
+      <tr>
+        <td style="padding: 0 20px;">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <tr>
+              <td class="padding-sm" style="padding: 36px 40px;">
+                <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #0b6e5c;">Enrollment help — early access</p>
+                <h1 style="margin: 0 0 16px; font-size: 24px; line-height: 1.3; color: #0f172a;">We got your request — here's what happens next</h1>
+                <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #475569;">
+                  Thanks for asking SaveRx for help with your <strong>{$subscriber.fields.drug}</strong> savings enrollment.
+                </p>
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0 0 16px;">
+                  <tr>
+                    <td style="padding: 14px 16px; background: #f0fdf9; border-left: 4px solid #0b6e5c; border-radius: 8px; font-size: 15px; line-height: 1.6; color: #0f172a;">
+                      <strong>A SaveRx guide — a real person — will email you within 1 business day</strong> to review your situation and walk you through the official enrollment.
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #475569;">
+                  In the meantime, two things worth knowing:
+                </p>
+                <p style="margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: #475569;">
+                  <strong>1. The official program is always open to you.</strong> You never need SaveRx to enroll — you can go directly to the manufacturer's official savings page any time:
+                  <a href="https://saverx.ai/drugs/{$subscriber.fields.drug|slugify}/?utm_source=saverx&utm_medium=email&utm_campaign=enroll_confirmation" style="color: #0b6e5c; font-weight: 600;">your {$subscriber.fields.drug} savings page →</a>
+                </p>
+                <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #475569;">
+                  <strong>2. Have your basics handy.</strong> Most programs ask for your prescription details and your insurance card (if you have one). Nothing to send us now — your guide will tell you exactly what's needed.
+                </p>
+                <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #475569;">
+                  Talk soon,<br /><strong style="color: #0f172a;">The SaveRx team</strong>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding: 24px 40px 36px; text-align: center;">
+          <p style="margin: 0 0 8px; font-size: 12px; line-height: 1.6; color: #94a3b8;">
+            SaveRx.ai is an independent service and is not affiliated with, endorsed by, or sponsored by any pharmaceutical manufacturer.
+            All enrollment happens on the manufacturer's official website. We are not a pharmacy, insurer, or healthcare provider. Eligibility and savings vary by program.
+          </p>
+          <p style="margin: 0; font-size: 12px; color: #94a3b8;">
+            <a href="{$unsubscribe}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
+            &nbsp;·&nbsp; SaveRx.ai
+          </p>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>

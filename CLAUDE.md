@@ -56,6 +56,8 @@ saverx.ai (Cloudflare Pages)
 - **`SETUP_GUIDE.md`** — step-by-step affiliate setup and deployment guide
 - `sitemap.xml` updated with glp1-online.html at priority 0.9
 
+- **Enrollment Copilot demand test (July 2026)** — `/get-help/` intake, two-pathway CTA on 5 pilot pages (repatha, dupixent, stelara, ozempic, wegovy), `official_site_click` outbound tracking site-wide, `EnrollmentInterest` sheet tab + confirmation email. See `docs/ENROLLMENT_TEST_DEPLOY.md` for deploy order, Stripe links, GA4 setup, and decision thresholds.
+
 ### In Progress 🔄
 
 - [x] ~~Redeploy `scripts/Code.gs`~~ — URL mismatch resolved (docs referenced old URL; actual drug pages use correct URL `AKfycbxFzCPGB...`)

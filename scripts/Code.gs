@@ -30,6 +30,7 @@ var EMAIL_BASE_URL = "https://saverx.ai/emails/";
 var SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
 var UNSUB_SHEET = "Unsubscribes";
+var ENROLL_SHEET = "EnrollmentInterest"; // Enrollment Copilot demand test (form_type=enroll_intake)
 
 // --- Drug category mapping ---
 
@@ -355,6 +356,9 @@ function doPost(e) {
     var p = e.parameter;
     if (p[HONEYPOT] && p[HONEYPOT].trim() !== "") return ContentService.createTextOutput("Ignored");
 
+    // --- Enrollment Copilot demand test: separate intake pipeline ---
+    if ((p.form_type || "") === "enroll_intake") return handleEnrollIntake(p);
+
     var email = (p.email || "").trim().toLowerCase();
     var drug = (p.drug || p.medication || "N/A").trim();
     var source = (p.source || "unknown").trim();
@@ -385,6 +389,133 @@ function doPost(e) {
     return ContentService.createTextOutput(
       JSON.stringify({ status: "error", message: err.toString() })
     ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// --- Enrollment Copilot demand test (form_type=enroll_intake) ---
+
+var ENROLL_HEADERS = [
+  "timestamp", "intake_id", "email", "phone", "drug", "drug_slug",
+  "insurance_category", "prescription_status", "primary_difficulty", "difficulty_text",
+  "service_preference", "checkout_result", "consent_contact", "consent_sms",
+  "visitor_id", "source_page", "utm_source", "utm_medium", "utm_campaign", "user_agent",
+];
+
+/**
+ * Handles POSTs from /get-help/ (assets/js/enroll.js).
+ * Rules (same discipline as the lead flow):
+ *   - The sheet write must always be attempted; email errors are silent.
+ *   - The same intake_id may POST twice (checkout_result update) — the second
+ *     POST updates the existing row instead of appending, and sends no email.
+ */
+function handleEnrollIntake(p) {
+  var sheetErr = null;
+  var emailResult = null;
+  try {
+    var email = (p.email || "").trim().toLowerCase();
+    if (!email || email.indexOf("@") === -1) return ContentService.createTextOutput("Invalid email");
+
+    var intakeId = (p.intake_id || "").trim();
+    var isUpdate = false;
+
+    try {
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName(ENROLL_SHEET);
+      if (!sheet) {
+        sheet = ss.insertSheet(ENROLL_SHEET);
+        sheet.appendRow(ENROLL_HEADERS);
+        sheet.setFrozenRows(1);
+      }
+
+      // Dedup by intake_id: update checkout_result on re-post
+      if (intakeId) {
+        var data = sheet.getDataRange().getValues();
+        for (var i = 1; i < data.length; i++) {
+          if (String(data[i][1]) === intakeId) {
+            isUpdate = true;
+            sheet.getRange(i + 1, ENROLL_HEADERS.indexOf("checkout_result") + 1)
+              .setValue((p.checkout_result || "").trim());
+            break;
+          }
+        }
+      }
+
+      if (!isUpdate) {
+        sheet.appendRow([
+          new Date().toISOString(),
+          intakeId,
+          email,
+          (p.phone || "").trim(),
+          (p.drug || "N/A").trim(),
+          (p.drug_slug || "").trim(),
+          (p.insurance_category || "").trim(),
+          (p.prescription_status || "").trim(),
+          (p.primary_difficulty || "").trim(),
+          (p.difficulty_text || "").trim().slice(0, 500),
+          (p.service_preference || "").trim(),
+          (p.checkout_result || "").trim(),
+          (p.consent_contact || "").trim(),
+          (p.consent_sms || "").trim(),
+          (p.visitor_id || "").trim(),
+          (p.source_page || "").trim(),
+          (p.utm_source || "").trim(),
+          (p.utm_medium || "").trim(),
+          (p.utm_campaign || "").trim(),
+          (p.useragent || "").trim(),
+        ]);
+      }
+    } catch (err) {
+      sheetErr = err.toString();
+      Logger.log("EnrollIntake sheet error: " + sheetErr);
+    }
+
+    if (!isUpdate && !isUnsubscribed(email)) {
+      emailResult = sendEnrollConfirmation(email, (p.drug || "your medication").trim());
+    }
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "ok", sheetError: sheetErr, emailSent: emailResult, updated: isUpdate })
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    Logger.log("handleEnrollIntake error: " + err.toString());
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "error", message: err.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/** Sends the enrollment-intake confirmation email. Silent failure by design. */
+function sendEnrollConfirmation(toEmail, drug) {
+  try {
+    var apiKey = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+    if (!apiKey) { Logger.log("EnrollConfirm: No RESEND_API_KEY"); return false; }
+
+    var tmplRes = UrlFetchApp.fetch(EMAIL_BASE_URL + "enroll-confirmation.html", { muteHttpExceptions: true });
+    if (tmplRes.getResponseCode() !== 200) {
+      Logger.log("EnrollConfirm: template fetch failed (" + tmplRes.getResponseCode() + ")");
+      return false;
+    }
+
+    var html = applyMergeTags(tmplRes.getContentText(), drug, toEmail);
+    var res = UrlFetchApp.fetch("https://api.resend.com/emails", {
+      method: "post",
+      contentType: "application/json",
+      headers: { Authorization: "Bearer " + apiKey },
+      payload: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [toEmail],
+        subject: "We got your request - your " + drug + " enrollment help | SaveRx.ai",
+        html: html,
+      }),
+      muteHttpExceptions: true,
+    });
+    var code = res.getResponseCode();
+    if (code === 200 || code === 201) { Logger.log("EnrollConfirm: OK -> " + toEmail); return true; }
+    Logger.log("EnrollConfirm: Error " + code + " -- " + res.getContentText());
+    return false;
+  } catch (e) {
+    Logger.log("EnrollConfirm: Exception -- " + e.toString());
+    return false;
   }
 }
 
