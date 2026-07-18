@@ -31,6 +31,8 @@ var SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
 var UNSUB_SHEET = "Unsubscribes";
 var ENROLL_SHEET = "EnrollmentInterest"; // Enrollment Copilot demand test (form_type=enroll_intake)
+var EVENTLOG_SHEET = "EventLog";         // PII-free funnel beacons from pilot pages + /get-help/
+var TRACKED_EVENTS = ["assist_cta_view", "assist_cta_click", "official_site_click", "enroll_view", "intake_start", "checkout_started"];
 
 // --- Drug category mapping ---
 
@@ -236,6 +238,40 @@ function createHourlyTrigger() {
 // --- Core handlers ---
 
 function doGet(e) {
+  // -- Funnel event beacon (PII-free; called via <img> ping from pilot pages / get-help)
+  if (e && e.parameter && e.parameter.mode === "track") {
+    try {
+      var ev = String(e.parameter.ev || "").trim();
+      if (TRACKED_EVENTS.indexOf(ev) !== -1) {
+        var ss0 = SpreadsheetApp.openById(SHEET_ID);
+        var log = ss0.getSheetByName(EVENTLOG_SHEET);
+        if (!log) {
+          log = ss0.insertSheet(EVENTLOG_SHEET);
+          log.appendRow(["timestamp", "event", "slug", "extra"]);
+          log.setFrozenRows(1);
+        }
+        log.appendRow([
+          new Date().toISOString(),
+          ev,
+          String(e.parameter.slug || "").trim().toLowerCase().slice(0, 60),
+          String(e.parameter.x || "").trim().slice(0, 60),
+        ]);
+      }
+    } catch (err) { Logger.log("track error: " + err.toString()); }
+    return ContentService.createTextOutput("1");
+  }
+
+  // -- Aggregated demand-test metrics (JSON; aggregates only, never PII)
+  if (e && e.parameter && e.parameter.mode === "metrics") {
+    try {
+      return ContentService.createTextOutput(JSON.stringify(computeEnrollMetrics()))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // -- Individual drug lookup
   if (e && e.parameter && e.parameter.mode === "drug") {
     try {
@@ -517,6 +553,184 @@ function sendEnrollConfirmation(toEmail, drug) {
     Logger.log("EnrollConfirm: Exception -- " + e.toString());
     return false;
   }
+}
+
+// --- Demand-test metrics + daily report ---
+
+/**
+ * Aggregates the EventLog + EnrollmentInterest tabs into decision metrics.
+ * Aggregate counts only — no emails, phones, or free text ever leave here.
+ * Thresholds per docs/SAVERX_ENROLLMENT_COPILOT_VALIDATION_PLAN.md §6.
+ */
+function computeEnrollMetrics() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var now = new Date();
+  var d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  var d1 = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  function bump(obj, key) { if (key) obj[key] = (obj[key] || 0) + 1; }
+
+  // -- EventLog (funnel top)
+  var ev = { total: {}, last7: {}, last24: {}, by_drug: {} };
+  var log = ss.getSheetByName(EVENTLOG_SHEET);
+  if (log) {
+    var rows = log.getDataRange().getValues();
+    for (var i = 1; i < rows.length; i++) {
+      var t = new Date(rows[i][0]);
+      var name = String(rows[i][1]);
+      var slug = String(rows[i][2] || "");
+      bump(ev.total, name);
+      if (t >= d7) bump(ev.last7, name);
+      if (t >= d1) bump(ev.last24, name);
+      if (slug) {
+        ev.by_drug[slug] = ev.by_drug[slug] || {};
+        bump(ev.by_drug[slug], name);
+      }
+    }
+  }
+
+  // -- EnrollmentInterest (funnel bottom)
+  var it = {
+    total: 0, last7: 0, last24: 0,
+    by_drug: {}, by_insurance: {}, by_difficulty: {}, by_tier: {},
+    paid_pref: 0, checkout: { started: 0, completed: 0, abandoned: 0 },
+  };
+  var enroll = ss.getSheetByName(ENROLL_SHEET);
+  if (enroll) {
+    var er = enroll.getDataRange().getValues();
+    for (var j = 1; j < er.length; j++) {
+      var ts = new Date(er[j][0]);
+      var dslug = String(er[j][5] || "unknown");
+      var ins = String(er[j][6] || "unknown");
+      var diff = String(er[j][8] || "unknown");
+      var tier = String(er[j][10] || "unknown");
+      var chk = String(er[j][11] || "");
+      it.total++;
+      if (ts >= d7) it.last7++;
+      if (ts >= d1) it.last24++;
+      bump(it.by_drug, dslug);
+      bump(it.by_insurance, ins);
+      bump(it.by_difficulty, diff);
+      bump(it.by_tier, tier);
+      if (tier === "paid_999" || tier === "paid_1999") it.paid_pref++;
+      if (chk === "started") it.checkout.started++;
+      if (chk === "completed") it.checkout.completed++;
+      if (chk === "abandoned") it.checkout.abandoned++;
+    }
+  }
+
+  // -- Threshold evaluation (green/yellow/red)
+  function rate(n, d) { return d > 0 ? Math.round((n / d) * 1000) / 10 : null; } // percent, 1dp
+  function status(val, green, yellow) {
+    if (val === null) return "no-data";
+    if (val >= green) return "green";
+    if (val >= yellow) return "yellow";
+    return "red";
+  }
+  var views = ev.total.assist_cta_view || 0;
+  var clicks = ev.total.assist_cta_click || 0;
+  var starts = ev.total.intake_start || 0;
+  var ctaRate = rate(clicks, views);
+  var completionRate = rate(it.total, starts);
+  var paidRate = rate(it.paid_pref, it.total);
+  var checkoutRate = rate(it.checkout.started, it.paid_pref);
+
+  var thresholds = [
+    { name: "CTA click rate (clicks / card views)", value: ctaRate, unit: "%", target: ">=6% (proxy: views, not sessions)", status: status(ctaRate, 6, 3) },
+    { name: "Intake completion (completes / starts)", value: completionRate, unit: "%", target: ">=40%", status: status(completionRate, 40, 25) },
+    { name: "Paid-tier preference (paid / completes)", value: paidRate, unit: "%", target: ">=25%", status: status(paidRate, 25, 15) },
+    { name: "Checkout started (/ paid selections)", value: checkoutRate, unit: "%", target: ">=30%", status: status(checkoutRate, 30, 15) },
+    { name: "Real card entries (checkout completed)", value: it.checkout.completed, unit: "", target: ">=10", status: it.checkout.completed >= 10 ? "green" : (it.checkout.completed >= 3 ? "yellow" : (it.total > 0 ? "red" : "no-data")) },
+  ];
+
+  return {
+    generated_at: now.toISOString(),
+    events: ev,
+    intakes: it,
+    funnel: { cta_views: views, cta_clicks: clicks, intake_starts: starts, intake_completes: it.total, paid_pref: it.paid_pref, checkout_started: it.checkout.started, checkout_completed: it.checkout.completed },
+    thresholds: thresholds,
+    note: "Aggregate counts only. Top-of-funnel from EventLog beacons (pilot pages); GA4 remains the source of truth for sessions.",
+  };
+}
+
+/**
+ * Daily scorecard email → REPORT_RECIPIENTS Script Property
+ * (comma-separated, e.g. "vajihkhan@gmail.com,asma@example.com"),
+ * falls back to vajihkhan@gmail.com.
+ * Install with createDailyReportTrigger() — runs daily at 6pm script time.
+ */
+function dailyEnrollmentReport() {
+  try {
+    var apiKey = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
+    if (!apiKey) { Logger.log("dailyReport: no RESEND_API_KEY"); return; }
+    var toRaw = PropertiesService.getScriptProperties().getProperty("REPORT_RECIPIENTS") || "vajihkhan@gmail.com";
+    var to = toRaw.split(",").map(function (s) { return s.trim(); }).filter(String);
+
+    var m = computeEnrollMetrics();
+    var dot = { green: "🟢", yellow: "🟡", red: "🔴", "no-data": "⚪" };
+    var f = m.funnel;
+
+    var rowsHtml = m.thresholds.map(function (t) {
+      var v = t.value === null ? "—" : (t.value + (t.unit || ""));
+      return "<tr><td style='padding:6px 10px;border-bottom:1px solid #e2e8f0;'>" + dot[t.status] + " " + t.name +
+        "</td><td style='padding:6px 10px;border-bottom:1px solid #e2e8f0;text-align:right;'><b>" + v +
+        "</b></td><td style='padding:6px 10px;border-bottom:1px solid #e2e8f0;color:#64748b;'>" + t.target + "</td></tr>";
+    }).join("");
+
+    function topOf(obj, n) {
+      return Object.keys(obj).sort(function (a, b) { return obj[b] - obj[a]; }).slice(0, n)
+        .map(function (k) { return k + " (" + obj[k] + ")"; }).join(", ") || "—";
+    }
+
+    var html =
+      "<div style='font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:640px;margin:0 auto;color:#0f172a;'>" +
+      "<h2 style='margin:16px 0 4px;'>SaveRx demand test — daily scorecard</h2>" +
+      "<p style='color:#64748b;margin:0 0 16px;'>" + new Date().toDateString() + " · last 24h: " +
+      (m.events.last24.assist_cta_click || 0) + " CTA clicks · " + m.intakes.last24 + " intakes</p>" +
+      "<p style='font-size:15px;margin:0 0 6px;'><b>Funnel (all-time):</b> " +
+      f.cta_views + " card views → " + f.cta_clicks + " clicks → " + f.intake_starts + " intake starts → " +
+      f.intake_completes + " completes → " + f.paid_pref + " paid-tier picks → " +
+      f.checkout_started + " checkouts started → " + f.checkout_completed + " completed</p>" +
+      "<table style='border-collapse:collapse;width:100%;font-size:14px;margin:12px 0;'>" +
+      "<tr style='text-align:left;color:#64748b;'><th style='padding:6px 10px;'>Decision threshold</th><th style='padding:6px 10px;text-align:right;'>Now</th><th style='padding:6px 10px;'>Target</th></tr>" +
+      rowsHtml + "</table>" +
+      "<p style='font-size:14px;margin:8px 0;'><b>Top drugs:</b> " + topOf(m.intakes.by_drug, 5) + "<br>" +
+      "<b>Insurance mix:</b> " + topOf(m.intakes.by_insurance, 5) + "<br>" +
+      "<b>Top difficulties:</b> " + topOf(m.intakes.by_difficulty, 3) + "</p>" +
+      "<p style='font-size:14px;'><a href='https://saverx.ai/dashboard/enrollment.html' style='color:#0b6e5c;font-weight:600;'>Open the live dashboard →</a></p>" +
+      "<p style='font-size:12px;color:#94a3b8;'>Aggregate counts only — no patient data in this email. Thresholds: docs/SAVERX_ENROLLMENT_COPILOT_VALIDATION_PLAN.md §6. Sessions live in GA4; card views are the proxy denominator here.</p>" +
+      "</div>";
+
+    UrlFetchApp.fetch("https://api.resend.com/emails", {
+      method: "post",
+      contentType: "application/json",
+      headers: { Authorization: "Bearer " + apiKey },
+      payload: JSON.stringify({
+        from: FROM_EMAIL,
+        to: to,
+        subject: "SaveRx demand test " + dot[(m.thresholds[0] || {}).status || "no-data"] + " — " +
+          m.intakes.last24 + " intakes today, " + f.intake_completes + " total",
+        html: html,
+      }),
+      muteHttpExceptions: true,
+    });
+    Logger.log("dailyReport sent to: " + to.join(", "));
+  } catch (e) {
+    Logger.log("dailyEnrollmentReport error: " + e.toString());
+  }
+}
+
+/** Run ONCE from the editor — installs the daily 6pm report trigger. Safe to re-run. */
+function createDailyReportTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "dailyEnrollmentReport") {
+      Logger.log("Daily report trigger already exists — skipping.");
+      return;
+    }
+  }
+  ScriptApp.newTrigger("dailyEnrollmentReport").timeBased().everyDays(1).atHour(18).create();
+  Logger.log("Daily trigger created: dailyEnrollmentReport at ~6pm (script timezone).");
 }
 
 // --- Diagnostics ---

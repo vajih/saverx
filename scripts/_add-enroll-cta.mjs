@@ -60,7 +60,12 @@ const cardHtml = (slug) => `${MARKER}
       var card = document.getElementById('enroll-help');
       if (!card) return;
       var slug = '${slug}';
-      function ev(n,p){ try{ if (typeof gtag==='function') gtag('event', n, p||{}); }catch(_){} }
+      // PII-free funnel beacon -> EventLog tab (event name + slug only)
+      function px(n){ try{ new Image().src = (window.SAVERX_FORM_API||'') + '?mode=track&ev=' + encodeURIComponent(n) + '&slug=' + slug + '&t=' + Date.now(); }catch(_){} }
+      function ev(n,p){
+        try{ if (typeof gtag==='function') gtag('event', n, p||{}); }catch(_){}
+        px(n);
+      }
       // Impression
       try {
         var seen = false;
@@ -83,7 +88,8 @@ const cardHtml = (slug) => `${MARKER}
           u.searchParams.set('utm_campaign','assist_card_' + slug);
           href = u.toString();
         } catch(_){}
-        window.__trackOfficialClick && window.__trackOfficialClick(slug, 'assist_card');
+        window.__trackOfficialClick && window.__trackOfficialClick(slug, 'assist_card'); // gtag
+        px('official_site_click'); // beacon only — gtag already fired above
         window.open(href, '_blank');
       });
       // Pathway B — guided help

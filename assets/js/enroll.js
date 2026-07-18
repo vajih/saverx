@@ -29,6 +29,16 @@
     try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {}
   }
 
+  // PII-free funnel beacon → EventLog tab (works even when analytics consent is denied,
+  // because it carries no identifiers — event name + drug slug only)
+  function beacon(ev, extra) {
+    try {
+      new Image().src = FORM_API + "?mode=track&ev=" + encodeURIComponent(ev) +
+        "&slug=" + encodeURIComponent(state.drug_slug || "none") +
+        (extra ? "&x=" + encodeURIComponent(extra) : "") + "&t=" + Date.now();
+    } catch (_) {}
+  }
+
   function uuid() {
     try { return crypto.randomUUID(); }
     catch (_) {
@@ -110,6 +120,7 @@
     if (state.started) return;
     state.started = true;
     track("intake_start", { drug_slug: state.drug_slug || "none" });
+    beacon("intake_start");
   }
 
   function stepComplete(id) {
@@ -188,6 +199,7 @@
       btn.addEventListener("click", function () {
         state.checkout_result = "started";
         track("checkout_started", { tier: state.service_preference, drug_slug: state.drug_slug || "none" });
+        beacon("checkout_started", state.service_preference);
         postIntake(); // re-post with updated checkout_result
         window.open(link + (link.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + state.intake_id, "_blank");
       });
@@ -207,6 +219,7 @@
   function init() {
     resolveDrugName();
     track("enroll_intake_view", { drug_slug: state.drug_slug || "none" });
+    beacon("enroll_view");
 
     // Returning from a Stripe success redirect
     if (qs.get("checkout") === "success") {
