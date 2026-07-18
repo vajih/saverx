@@ -1007,7 +1007,7 @@
         const base = String(window.__manufacturerUrl || "");
         try {
           const u = base.match(/^https?:/i) ? new URL(base) : new URL(base || "/", location.origin);
-          u.searchParams.set("utm_source","saverx.ai");
+          u.searchParams.set("utm_source","saverx");
           u.searchParams.set("utm_medium","referral");
           u.searchParams.set("utm_campaign", `manufacturer_savings_${sl || "unknown"}`);
           return u.toString();
@@ -1028,6 +1028,7 @@
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
+        window.__trackOfficialClick && window.__trackOfficialClick(slug, "drug_page_form");
         // Show thank-you state with Embody CTA
         (function showThankYou() {
           const modalForm = document.getElementById('modal-lead-form');
@@ -1083,6 +1084,7 @@
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
+        window.__trackOfficialClick && window.__trackOfficialClick(slug, "drug_page_form");
         msg && (msg.textContent = "Opening the official savings site…");
         $("#footerSubmit")?.setAttribute("disabled","true");
 
@@ -1158,6 +1160,7 @@
       load();
     })();
   </script>
+  <script defer src="/assets/js/track.js"></script>
   <script src="/assets/js/nav.js"></script>
 
   <!-- Accordion CTA wiring (Phase 3) -->
@@ -1168,11 +1171,13 @@
       if (url && url !== '/') {
         try {
           var u = new URL(url);
-          u.searchParams.set('utm_source', 'saverx.ai');
+          u.searchParams.set('utm_source', 'saverx');
           u.searchParams.set('utm_medium', 'referral');
           u.searchParams.set('utm_campaign', 'insurance_accordion');
           window.open(u.toString(), '_blank');
-        } catch (_) { window.open(url, '_blank'); }
+          window.__trackOfficialClick && window.__trackOfficialClick(null, 'insurance_accordion');
+        } catch (_) { window.open(url, '_blank');
+          window.__trackOfficialClick && window.__trackOfficialClick(null, 'insurance_accordion'); }
       }
       return false;
     };

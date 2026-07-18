@@ -820,7 +820,7 @@
         const base = String(window.__manufacturerUrl || "");
         try {
           const u = base.match(/^https?:/i) ? new URL(base) : new URL(base || "/", location.origin);
-          u.searchParams.set("utm_source","saverx.ai");
+          u.searchParams.set("utm_source","saverx");
           u.searchParams.set("utm_medium","referral");
           u.searchParams.set("utm_campaign", `manufacturer_savings_${sl || "unknown"}`);
           return u.toString();
@@ -841,6 +841,7 @@
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
+        window.__trackOfficialClick && window.__trackOfficialClick(slug, "drug_page_form");
         closeModal();
         status && (status.textContent = "Opening the official savings site…");
 
@@ -881,6 +882,7 @@
 
         const href = goToManufacturer(slug);
         window.open(href, "_blank");
+        window.__trackOfficialClick && window.__trackOfficialClick(slug, "drug_page_form");
         msg && (msg.textContent = "Opening the official savings site…");
         $("#footerSubmit")?.setAttribute("disabled","true");
 
@@ -962,6 +964,7 @@
        Apply at: https://www.goodrx.com/business/solutions/publisher-products
        Once approved, set data-publisher-id="YOUR_PUBLISHER_ID" on the #goodrx-publisher-widget div. -->
   <script async src="https://www.goodrx.com/widget/js/widget.js"></script>
+  <script defer src="/assets/js/track.js"></script>
   <script src="/assets/js/nav.js"></script>
 </body>
 </html>

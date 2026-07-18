@@ -79,13 +79,13 @@ User clicks Unsubscribe link in email
 | **Live deployment URL** | `https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec` |
 | **Old URLs (retired)**  | `AKfycbx94hvo...` and `AKfycbyPArHul...` — no longer used                                                            |
 | **Google Sheet ID**     | `19AJUSoi_q-IYMWahKJ9EsIW8vRRW1fZQOiL3X7J_hAE`                                                                       |
-| **Script Property**     | `RESEND_API_KEY = re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d`                                                              |
+| **Script Property**     | `RESEND_API_KEY` — set in Apps Script Project Settings → Script Properties (never commit the value)                  |
 
 ### Resend
 
 | Variable            | Value                                                             |
 | ------------------- | ----------------------------------------------------------------- |
-| **API key**         | `re_R4NahWa8_7fzxQmtGepKYfvCYVXD7uZ8d` (send-only restricted key) |
+| **API key**         | Stored in `.env` (local) and Apps Script Script Properties — **never commit**. ⚠️ A previous key was committed to git history and must be rotated in the Resend dashboard. |
 | **Verified domain** | `newsletter.saverx.ai` ONLY — `saverx.ai` is NOT verified         |
 | **FROM_EMAIL**      | `SaveRx.ai <hello@newsletter.saverx.ai>`                          |
 
