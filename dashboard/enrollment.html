@@ -43,6 +43,7 @@
     <div id="error" class="err" hidden></div>
 
     <div class="grid" id="kpis" hidden>
+      <div class="kpi"><b id="k-sessions">–</b><small>Pilot sessions (GA4)</small></div>
       <div class="kpi"><b id="k-views">–</b><small>CTA card views</small></div>
       <div class="kpi"><b id="k-clicks">–</b><small>CTA clicks</small></div>
       <div class="kpi"><b id="k-intakes">–</b><small>Intakes completed</small></div>
@@ -91,6 +92,7 @@
           $("stamp").textContent = "Generated " + new Date(m.generated_at).toLocaleString() +
             " · last 24h: " + ((m.events.last24 || {}).assist_cta_click || 0) + " CTA clicks, " +
             (m.intakes.last24 || 0) + " intakes";
+          $("k-sessions").textContent = (m.ga4 && !m.ga4.error) ? n(f.pilot_sessions) : "n/a";
           $("k-views").textContent = n(f.cta_views);
           $("k-clicks").textContent = n(f.cta_clicks);
           $("k-intakes").textContent = n(f.intake_completes);
@@ -98,7 +100,7 @@
           $("k-checkout").textContent = n(f.checkout_started) + " / " + n(f.checkout_completed);
           $("kpis").hidden = false;
 
-          var seq = [["Card views", f.cta_views], ["CTA clicks", f.cta_clicks], ["Intake starts", f.intake_starts],
+          var seq = [["Pilot sessions", f.pilot_sessions], ["Card views", f.cta_views], ["CTA clicks", f.cta_clicks], ["Intake starts", f.intake_starts],
                      ["Completes", f.intake_completes], ["Paid picks", f.paid_pref],
                      ["Checkout started", f.checkout_started], ["Checkout done", f.checkout_completed]];
           $("funnel").innerHTML = seq.map(function (s) { return "<span>" + s[0] + ": <b>" + n(s[1]) + "</b></span>"; }).join("<i>→</i>");
@@ -111,11 +113,15 @@
           }).join("");
           $("thCard").hidden = false;
 
+          var ga4Ok = m.ga4 && !m.ga4.error;
           $("mixBody").innerHTML =
             topRows("Intakes by drug", m.intakes.by_drug) +
             topRows("Insurance mix", m.intakes.by_insurance) +
             topRows("Primary difficulty", m.intakes.by_difficulty) +
             topRows("Tier preference", m.intakes.by_tier) +
+            topRows("Intakes by source", m.intakes.by_source) +
+            (ga4Ok ? topRows("Sessions by source (GA4)", m.ga4.by_source) + topRows("Sessions by page (GA4)", m.ga4.by_page)
+                   : "<tr><td style='width:170px;color:#64748b;'>GA4</td><td style='color:#94a3b8;'>not connected — " + ((m.ga4||{}).error || "") + "</td></tr>") +
             topRows("CTA clicks by drug", Object.keys(m.events.by_drug || {}).reduce(function (acc, k) {
               var c = (m.events.by_drug[k] || {}).assist_cta_click; if (c) acc[k] = c; return acc;
             }, {}));

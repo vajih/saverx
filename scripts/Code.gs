@@ -32,6 +32,9 @@ var SCRIPT_URL =
 var UNSUB_SHEET = "Unsubscribes";
 var ENROLL_SHEET = "EnrollmentInterest"; // Enrollment Copilot demand test (form_type=enroll_intake)
 var EVENTLOG_SHEET = "EventLog";         // PII-free funnel beacons from pilot pages + /get-help/
+var GA4_PROPERTY_ID = "521819447";       // GA4 Admin > Property settings > Property ID (verify with testGa4Connection)
+var TEST_START = "2026-07-18";           // Enrollment demand-test launch date (GA4 report window start)
+var PILOT_SLUGS = ["repatha", "dupixent", "stelara", "ozempic", "wegovy"]; // keep in sync with scripts/_add-enroll-cta.mjs
 var TRACKED_EVENTS = ["assist_cta_view", "assist_cta_click", "official_site_click", "enroll_view", "intake_start", "checkout_started"];
 
 // --- Drug category mapping ---
@@ -558,6 +561,76 @@ function sendEnrollConfirmation(toEmail, drug) {
 // --- Demand-test metrics + daily report ---
 
 /**
+ * Pulls pilot-page sessions from GA4 via the Analytics Data advanced service.
+ * Setup (one-time, in the Apps Script editor): Services (+) -> "Google Analytics
+ * Data API" -> Add. The script owner's Google account must have access to the
+ * GA4 property. Fails soft: metrics still work without GA4.
+ */
+function fetchGa4PilotStats() {
+  var out = { total_sessions: 0, by_page: {}, by_source: {}, error: null };
+  try {
+    if (typeof AnalyticsData === "undefined") {
+      out.error = "AnalyticsData service not enabled (Editor > Services > + > Google Analytics Data API)";
+      return out;
+    }
+    var pilotFilter = {
+      orGroup: {
+        expressions: PILOT_SLUGS.map(function (s) {
+          return { filter: { fieldName: "pagePath", stringFilter: { matchType: "CONTAINS", value: "/drugs/" + s } } };
+        }),
+      },
+    };
+    var dates = [{ startDate: TEST_START, endDate: "today" }];
+    var prop = "properties/" + GA4_PROPERTY_ID;
+
+    // Sessions by pilot page
+    var byPage = AnalyticsData.Properties.runReport({
+      dimensions: [{ name: "pagePath" }],
+      metrics: [{ name: "sessions" }],
+      dateRanges: dates,
+      dimensionFilter: pilotFilter,
+    }, prop);
+    (byPage.rows || []).forEach(function (r) {
+      var path = r.dimensionValues[0].value || "";
+      var m = path.match(/\/drugs\/([^\/]+)/);
+      var slug = m ? m[1] : path;
+      var n = Number(r.metricValues[0].value) || 0;
+      out.by_page[slug] = (out.by_page[slug] || 0) + n;
+      out.total_sessions += n;
+    });
+
+    // Sessions by traffic source (pilot pages only) — separates facebook/paid from organic
+    var bySource = AnalyticsData.Properties.runReport({
+      dimensions: [{ name: "sessionSource" }],
+      metrics: [{ name: "sessions" }],
+      dateRanges: dates,
+      dimensionFilter: pilotFilter,
+    }, prop);
+    (bySource.rows || []).forEach(function (r) {
+      var src = r.dimensionValues[0].value || "(direct)";
+      out.by_source[src] = (out.by_source[src] || 0) + (Number(r.metricValues[0].value) || 0);
+    });
+  } catch (e) {
+    out.error = e.toString();
+  }
+  return out;
+}
+
+/** Run from the editor to verify GA4_PROPERTY_ID + service access. */
+function testGa4Connection() {
+  var r = fetchGa4PilotStats();
+  Logger.log(JSON.stringify(r));
+  if (r.error) {
+    Logger.log("GA4 NOT CONNECTED — check: (1) Services > Google Analytics Data API added, " +
+      "(2) property ID " + GA4_PROPERTY_ID + " matches GA4 Admin > Property settings, " +
+      "(3) this Google account has access to that property.");
+  } else {
+    Logger.log("GA4 OK — " + r.total_sessions + " pilot-page sessions since " + TEST_START);
+  }
+  return r;
+}
+
+/**
  * Aggregates the EventLog + EnrollmentInterest tabs into decision metrics.
  * Aggregate counts only — no emails, phones, or free text ever leave here.
  * Thresholds per docs/SAVERX_ENROLLMENT_COPILOT_VALIDATION_PLAN.md §6.
@@ -592,7 +665,7 @@ function computeEnrollMetrics() {
   // -- EnrollmentInterest (funnel bottom)
   var it = {
     total: 0, last7: 0, last24: 0,
-    by_drug: {}, by_insurance: {}, by_difficulty: {}, by_tier: {},
+    by_drug: {}, by_insurance: {}, by_difficulty: {}, by_tier: {}, by_source: {},
     paid_pref: 0, checkout: { started: 0, completed: 0, abandoned: 0 },
   };
   var enroll = ss.getSheetByName(ENROLL_SHEET);
@@ -605,6 +678,7 @@ function computeEnrollMetrics() {
       var diff = String(er[j][8] || "unknown");
       var tier = String(er[j][10] || "unknown");
       var chk = String(er[j][11] || "");
+      var src = String(er[j][16] || "").trim() || "organic/direct";
       it.total++;
       if (ts >= d7) it.last7++;
       if (ts >= d1) it.last24++;
@@ -612,6 +686,7 @@ function computeEnrollMetrics() {
       bump(it.by_insurance, ins);
       bump(it.by_difficulty, diff);
       bump(it.by_tier, tier);
+      bump(it.by_source, src);
       if (tier === "paid_999" || tier === "paid_1999") it.paid_pref++;
       if (chk === "started") it.checkout.started++;
       if (chk === "completed") it.checkout.completed++;
@@ -627,16 +702,22 @@ function computeEnrollMetrics() {
     if (val >= yellow) return "yellow";
     return "red";
   }
+  var ga4 = fetchGa4PilotStats();
+
   var views = ev.total.assist_cta_view || 0;
   var clicks = ev.total.assist_cta_click || 0;
   var starts = ev.total.intake_start || 0;
-  var ctaRate = rate(clicks, views);
+  // Prefer real GA4 sessions as the CTA denominator; fall back to card views
+  var hasSessions = !ga4.error && ga4.total_sessions > 0;
+  var ctaRate = hasSessions ? rate(clicks, ga4.total_sessions) : rate(clicks, views);
+  var ctaName = hasSessions ? "CTA click rate (clicks / pilot sessions, GA4)" : "CTA click rate (clicks / card views)";
+  var ctaTarget = hasSessions ? ">=6% of sessions" : ">=6% (proxy: views, not sessions)";
   var completionRate = rate(it.total, starts);
   var paidRate = rate(it.paid_pref, it.total);
   var checkoutRate = rate(it.checkout.started, it.paid_pref);
 
   var thresholds = [
-    { name: "CTA click rate (clicks / card views)", value: ctaRate, unit: "%", target: ">=6% (proxy: views, not sessions)", status: status(ctaRate, 6, 3) },
+    { name: ctaName, value: ctaRate, unit: "%", target: ctaTarget, status: status(ctaRate, 6, 3) },
     { name: "Intake completion (completes / starts)", value: completionRate, unit: "%", target: ">=40%", status: status(completionRate, 40, 25) },
     { name: "Paid-tier preference (paid / completes)", value: paidRate, unit: "%", target: ">=25%", status: status(paidRate, 25, 15) },
     { name: "Checkout started (/ paid selections)", value: checkoutRate, unit: "%", target: ">=30%", status: status(checkoutRate, 30, 15) },
@@ -647,9 +728,10 @@ function computeEnrollMetrics() {
     generated_at: now.toISOString(),
     events: ev,
     intakes: it,
-    funnel: { cta_views: views, cta_clicks: clicks, intake_starts: starts, intake_completes: it.total, paid_pref: it.paid_pref, checkout_started: it.checkout.started, checkout_completed: it.checkout.completed },
+    ga4: ga4,
+    funnel: { pilot_sessions: hasSessions ? ga4.total_sessions : null, cta_views: views, cta_clicks: clicks, intake_starts: starts, intake_completes: it.total, paid_pref: it.paid_pref, checkout_started: it.checkout.started, checkout_completed: it.checkout.completed },
     thresholds: thresholds,
-    note: "Aggregate counts only. Top-of-funnel from EventLog beacons (pilot pages); GA4 remains the source of truth for sessions.",
+    note: "Aggregate counts only. Sessions from GA4 (since " + TEST_START + ", pilot pages); funnel top from EventLog beacons.",
   };
 }
 
@@ -688,6 +770,7 @@ function dailyEnrollmentReport() {
       "<p style='color:#64748b;margin:0 0 16px;'>" + new Date().toDateString() + " · last 24h: " +
       (m.events.last24.assist_cta_click || 0) + " CTA clicks · " + m.intakes.last24 + " intakes</p>" +
       "<p style='font-size:15px;margin:0 0 6px;'><b>Funnel (all-time):</b> " +
+      (f.pilot_sessions !== null ? f.pilot_sessions + " pilot sessions (GA4) → " : "") +
       f.cta_views + " card views → " + f.cta_clicks + " clicks → " + f.intake_starts + " intake starts → " +
       f.intake_completes + " completes → " + f.paid_pref + " paid-tier picks → " +
       f.checkout_started + " checkouts started → " + f.checkout_completed + " completed</p>" +
@@ -696,7 +779,13 @@ function dailyEnrollmentReport() {
       rowsHtml + "</table>" +
       "<p style='font-size:14px;margin:8px 0;'><b>Top drugs:</b> " + topOf(m.intakes.by_drug, 5) + "<br>" +
       "<b>Insurance mix:</b> " + topOf(m.intakes.by_insurance, 5) + "<br>" +
-      "<b>Top difficulties:</b> " + topOf(m.intakes.by_difficulty, 3) + "</p>" +
+      "<b>Top difficulties:</b> " + topOf(m.intakes.by_difficulty, 3) + "<br>" +
+      "<b>Intakes by source:</b> " + topOf(m.intakes.by_source, 4) +
+      (m.ga4 && !m.ga4.error
+        ? "<br><b>Pilot sessions by source (GA4):</b> " + topOf(m.ga4.by_source, 4) +
+          "<br><b>Pilot sessions by page (GA4):</b> " + topOf(m.ga4.by_page, 5)
+        : "<br><i style='color:#94a3b8'>GA4 not connected: " + ((m.ga4 || {}).error || "unknown") + "</i>") +
+      "</p>" +
       "<p style='font-size:14px;'><a href='https://saverx.ai/dashboard/enrollment.html' style='color:#0b6e5c;font-weight:600;'>Open the live dashboard →</a></p>" +
       "<p style='font-size:12px;color:#94a3b8;'>Aggregate counts only — no patient data in this email. Thresholds: docs/SAVERX_ENROLLMENT_COPILOT_VALIDATION_PLAN.md §6. Sessions live in GA4; card views are the proxy denominator here.</p>" +
       "</div>";

@@ -58,6 +58,20 @@ In GA4 Admin → Events: mark `intake_complete` and `checkout_started` as key ev
   `EventLog` tab, so the funnel top (card views/clicks, intake starts) is reportable without the GA4 API.
   GA4 remains the source of truth for sessions/traffic.
 
+## GA4 integration + paid traffic (added)
+
+- Code.gs pulls pilot-page **sessions** from GA4 (property `521819447`, since 2026-07-18) via the
+  **Google Analytics Data** advanced service. One-time setup in the **Copay Enrollment** project:
+  Editor → Services (+) → "Google Analytics Data API" → Add → run `testGa4Connection()` → expect
+  "GA4 OK — N pilot-page sessions". If it errors, verify the property ID (GA4 Admin → Property settings)
+  and account access. Then redeploy (pencil on the `AKfycbxFzCPGB…` deployment → New version).
+- With GA4 connected, the CTA threshold uses **real sessions** as denominator (≥6% of sessions) instead
+  of the card-view proxy; dashboard + daily email gain source splits (facebook vs organic).
+- **Facebook ads rules:** every ad link must carry `utm_source=facebook&utm_medium=paid_social&utm_campaign=<name>`;
+  do NOT install the Meta Pixel during the test (health-data risk + consent rework); point ads at
+  high-friction drugs (repatha/dupixent/stelara); analyze paid and organic cohorts separately —
+  thresholds were calibrated for organic intent.
+
 ## Weekly readout (during the 4–6 week window)
 
 Track in a `Readout` tab or GA4 exploration, per drug cohort:
