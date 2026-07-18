@@ -663,7 +663,7 @@ function dailyEnrollmentReport() {
   try {
     var apiKey = PropertiesService.getScriptProperties().getProperty("RESEND_API_KEY");
     if (!apiKey) { Logger.log("dailyReport: no RESEND_API_KEY"); return; }
-    var toRaw = PropertiesService.getScriptProperties().getProperty("REPORT_RECIPIENTS") || "vajihkhan@gmail.com";
+    var toRaw = PropertiesService.getScriptProperties().getProperty("REPORT_RECIPIENTS") || "vajihkhan@gmail.com,asmavkhan@gmail.com";
     var to = toRaw.split(",").map(function (s) { return s.trim(); }).filter(String);
 
     var m = computeEnrollMetrics();

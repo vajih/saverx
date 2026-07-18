@@ -52,8 +52,8 @@ In GA4 Admin → Events: mark `intake_complete` and `checkout_started` as key ev
 - **Live dashboard:** `https://saverx.ai/dashboard/enrollment.html` — funnel KPIs, decision thresholds
   (green/yellow/red), cohort mixes. Aggregates only, noindex, unlinked. Reads `?mode=metrics` from Apps Script.
 - **Daily scorecard email:** `dailyEnrollmentReport()` in Code.gs sends a threshold scorecard via Resend at ~6pm daily.
-  Setup (part of step 2b): set Script Property `REPORT_RECIPIENTS` = `vajihkhan@gmail.com,<asma's email>`,
-  then run `createDailyReportTrigger()` once from the editor.
+  Setup (part of step 2b): set Script Property `REPORT_RECIPIENTS` = `vajihkhan@gmail.com,asmavkhan@gmail.com`
+  (also the code fallback if the property is absent), then run `createDailyReportTrigger()` once from the editor.
 - **EventLog beacons:** pilot CTA cards and /get-help/ send PII-free pings (`?mode=track&ev=…&slug=…`) to a new
   `EventLog` tab, so the funnel top (card views/clicks, intake starts) is reportable without the GA4 API.
   GA4 remains the source of truth for sessions/traffic.
