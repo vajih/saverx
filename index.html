@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <!-- Google Consent Mode v2 — defaults (before GTM) -->
+<html lang="en"><head><!-- Google Consent Mode v2 — defaults (before GTM) -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -24,7 +22,6 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
   <!-- End Google Tag Manager -->
-
   <!-- Google Analytics 4 - Direct Implementation -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCKENS1BWB"></script>
   <script>
@@ -34,22 +31,18 @@
     gtag('config', 'G-FCKENS1BWB');
   </script>
   <!-- End Google Analytics 4 -->
-
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2243579953209623"
        crossorigin="anonymous"></script>
   <!-- End Google AdSense -->
-
   <!-- =========================================================
        SaveRx.ai — Homepage (v2 preview)
        SEO + Social optimized head
        ========================================================= -->
   <meta charset="utf-8" />
   <title>SaveRx.ai — Lower your out-of-pocket on prescriptions (Repatha, Ozempic, Wegovy, Mounjaro, Stelara, Trulicity, Otexla, Entresto)</title>
-
   <!-- Primary description (keep a single meta description) -->
   <meta name="description" content="Find official manufacturer savings (copay cards, coupons, assistance) for medications like Repatha, Ozempic, Wegovy, Mounjaro, and Stelara.">
-
   <!-- Open Graph -->
   <meta property="og:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
   <meta property="og:description" content="Find official savings and copay programs for top medications." />
@@ -61,283 +54,26 @@
   <meta property="og:image:alt" content="Lower Your Prescription Costs — SaveRx.ai" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="SaveRx.ai — Lower Your Out-of-Pocket" />
   <meta name="twitter:description" content="Find official savings and copay programs for top medications." />
   <meta name="twitter:image" content="https://saverx.ai/assets/img/og-image.png" />
-
   <!-- Robots + theme -->
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b6e5c" />
-
   <!-- Canonical -->
-  <link rel="canonical" href="https://saverx.ai/" />
-
   <!-- i18n -->
   <link rel="alternate" href="https://saverx.ai/" hreflang="en-us" />
   <link rel="alternate" href="https://saverx.ai/" hreflang="x-default" />
-
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
-
   <!-- Preconnects -->
   <link rel="preconnect" href="https://script.google.com" crossorigin>
-
   <!-- CSS (existing site CSS first, then v2 scoped CSS) -->
-  <link rel="stylesheet" href="assets/styles.css?v=2025-10-03">
-  <link rel="stylesheet" href="assets/css/tokens.css">
-  <link rel="stylesheet" href="assets/css/components.css">
-
   <!-- Page-local styles for homepage search (mirrors /drugs) -->
-  <style>
-    .home-search { margin-top: 8px; }
-    .home-search .search-bar {
-      display:flex; align-items:center; gap:0;
-      margin-top: 12px; background:#fff; border:1px solid #e6eaf2; border-radius:14px;
-      padding:6px 6px 6px 14px;
-    }
-    .home-search input[type="search"]{ flex:1; padding:10px 8px 10px 0; border:none; outline:none; font-size:16px; background:transparent; min-width:0; }
-    .home-search input[type="search"]::-webkit-search-cancel-button{ display:none; } /* hide native X */
-    .clear-x{ flex-shrink:0; width:32px; height:32px; border:none; border-radius:50%; background:#f1f5f9; color:#64748b; font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
-    .clear-x:hover{ background:#e2e8f0; }
-    .featured-header{ display:flex; align-items:center; justify-content:space-between; margin-top:0; margin-bottom:4px; }
-    .featured-header .section-title{ margin:0; }
-    .chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid #e6eaf2; border-radius:999px; background:#f8fafc; font-size:12px; color:#64748b; }
-    .chip .count{ font-weight:700; color:#334155; }
-    .no-results{ display:none; margin-top:14px; padding:14px; border:1px dashed #e6eaf2; border-radius:12px; color:#64748b; }
-    .no-results[aria-hidden="false"]{ display:block; }
-    /* Guard: modal visibility (safe no-op if your CSS already covers it) */
-    .modal[aria-hidden="true"]{ display:none; }
-    .modal[aria-hidden="false"]{ display:block; }
-
-/* Hide page scroll while an overlay is open = only one scrollbar */
-html { overflow: hidden; height: 100%; }
-body { overflow-y: auto; height: 100%; }
-
-
-/* ==== Home-only spacing (tight) ==== */
-body.design-v2 .hero.section{
-  padding-top: clamp(2px, 1vw, 6px);
-  padding-bottom: clamp(4px, 1vw, 8px);
-}
-body.design-v2 .hero.section h1{
-  margin-bottom: 4px;
-  line-height: 1.10;
-}
-body.design-v2 .hero.section p{        /* “lower your out-of-pocket” line */
-  margin-top: 6px;
-  margin-bottom: 8px;
-}
-
-/* Featured block */
-body.design-v2 #featured.section-pad{
-  padding-top: clamp(8px, 1vw, 16px);
-  padding-bottom: clamp(10px, 1vw, 20px);
-}
-body.design-v2 #featured .section-title{
-  margin-top: 0;
-  margin-bottom: 6px;
-}
-body.design-v2 #featured .home-search{  /* search area inside Featured */
-  margin-top: 8px;
-}
-body.design-v2 #featured .search-bar{   /* shrink inner gap a touch */
-  margin-top: 6px;
-}
-
-/* General: prevent headings from adding extra top gap when a section begins */
-body.design-v2 section > :first-child{ margin-top: 0; }
-
-/* ── CTA Band Redesign (homepage-only) ────────────────────── */
-body.design-v2 .cta-band {
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 52px 0 40px;
-}
-.cta-band__primary {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-}
-.cta-band__heading {
-  font-size: clamp(20px, 2.5vw, 26px);
-  font-weight: 700;
-  color: var(--brand-900, #0b2a4e);
-  margin: 0 0 8px;
-  line-height: 1.25;
-}
-.cta-band__sub {
-  font-size: 15px;
-  color: #6b7280;
-  margin: 0 0 20px;
-  line-height: 1.6;
-}
-.cta-band__form {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-  flex-wrap: wrap;
-}
-.cta-band__form .cta-input {
-  flex: 1 1 180px;
-  min-width: 0;
-  height: 46px;
-  border: 1px solid var(--border, #e6eaf2);
-  border-radius: 10px;
-  padding: 0 14px;
-  font-size: 15px;
-  background: #fff;
-  color: var(--text);
-  transition: border-color .15s, box-shadow .15s;
-}
-.cta-band__form .cta-input:focus {
-  outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(11,110,92,.10);
-}
-.cta-band__form .cta-btn-primary {
-  height: 46px;
-  padding: 0 22px;
-  background: var(--teal, #0b6e5c);
-  color: #fff;
-  font-weight: 600;
-  font-size: 15px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .15s;
-}
-.cta-band__form .cta-btn-primary:hover { background: #0a5c4c; }
-.cta-band__msg {
-  text-align: center;
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--teal);
-  min-height: 18px;
-}
-/* Newsletter strip */
-.cta-band__newsletter {
-  max-width: 420px;
-  margin: 28px auto 0;
-  border-top: 1px solid var(--border, #e6eaf2);
-  padding-top: 24px;
-  text-align: center;
-}
-.cta-band__newsletter h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text, #1e293b);
-  margin: 0 0 12px;
-}
-.cta-band__news-row {
-  display: flex;
-  gap: 8px;
-}
-.cta-band__newsletter .cta-input {
-  flex: 1;
-  height: 40px;
-  border: 1px solid var(--border, #e6eaf2);
-  border-radius: 8px;
-  padding: 0 12px;
-  font-size: 14px;
-  background: #fff;
-  color: var(--text);
-  transition: border-color .15s, box-shadow .15s;
-}
-.cta-band__newsletter .cta-input:focus {
-  outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(11,110,92,.10);
-}
-.cta-band__newsletter .cta-btn-secondary {
-  height: 40px;
-  padding: 0 16px;
-  background: transparent;
-  color: var(--teal);
-  font-weight: 600;
-  font-size: 14px;
-  border: 1px solid var(--teal);
-  border-radius: 8px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .15s, color .15s;
-}
-.cta-band__newsletter .cta-btn-secondary:hover { background: var(--teal); color: #fff; }
-.cta-band__news-msg {
-  font-size: 13px;
-  color: var(--teal);
-  margin-top: 8px;
-  min-height: 18px;
-}
-.cta-band__newsletter .form-hint {
-  font-size: 12px;
-  color: #9ca3af;
-  margin: 6px 0 0;
-}
-@media (max-width: 640px) {
-  .cta-band__form { flex-direction: column; }
-  .cta-band__form .cta-input,
-  .cta-band__form .cta-btn-primary { width: 100%; flex: none; }
-}
-/* Footer newsletter form */
-.footer-newsletter { margin-top: 20px; }
-.footer-newsletter__label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--teal-light, #5eead4);
-  margin: 0 0 10px;
-}
-.footer-newsletter__form {
-  display: flex;
-  gap: 6px;
-}
-.footer-newsletter__form input[type="email"] {
-  flex: 1;
-  min-width: 0;
-  height: 38px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 8px;
-  padding: 0 12px;
-  font-size: 13px;
-  color: #fff;
-  transition: border-color .15s;
-}
-.footer-newsletter__form input[type="email"]::placeholder { color: rgba(255,255,255,0.4); }
-.footer-newsletter__form input[type="email"]:focus {
-  outline: none;
-  border-color: rgba(255,255,255,0.4);
-}
-.footer-newsletter__form button {
-  height: 38px;
-  padding: 0 14px;
-  background: var(--teal, #0b6e5c);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .15s;
-}
-.footer-newsletter__form button:hover { background: #0a5c4c; }
-.footer-newsletter__msg {
-  font-size: 12px;
-  color: var(--teal-light, #5eead4);
-  margin: 6px 0 0;
-  min-height: 16px;
-}
-  </style>
-
   <!-- JSON-LD: Organization -->
   <script type="application/ld+json">
   {
@@ -354,7 +90,6 @@ body.design-v2 .cta-band {
     }]
   }
   </script>
-
   <!-- JSON-LD: Website -->
   <script type="application/ld+json">
   {
@@ -364,626 +99,17 @@ body.design-v2 .cta-band {
     "url": "https://saverx.ai/"
   }
   </script>
-</head>
-
-<body class="design-v2">
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <!-- =======================
-       Header / Primary Nav
-       ======================= -->
-  <header class="header">
-    <div class="container inner">
-
-      <!-- Two-tone text logo -->
-      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
-
-      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
-      <nav id="primary-nav" class="nav" aria-label="Main navigation">
-        <div class="nav-dropdown" id="catDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
-            Categories <span class="caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
-            <a href="/categories/weight-loss/" role="menuitem">Weight Loss &amp; GLP-1</a>
-            <a href="/categories/diabetes/" role="menuitem">Diabetes</a>
-            <a href="/categories/heart-cholesterol/" role="menuitem">Heart &amp; Cholesterol</a>
-            <a href="/categories/autoimmune/" role="menuitem">Autoimmune &amp; Inflammation</a>
-            <a href="/categories/migraine/" role="menuitem">Migraine</a>
-            <a href="/categories/respiratory/" role="menuitem">Asthma &amp; Respiratory</a>
-            <a href="/categories/mental-health/" role="menuitem">Mental Health</a>
-            <hr>
-            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown" id="learnDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="learnDropdownMenu">
-            Learn <span class="caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="nav-dropdown-menu" id="learnDropdownMenu" role="menu">
-            <a href="/learn/how-copay-cards-work.html" role="menuitem">💳 How Copay Cards Work</a>
-            <a href="/learn/copay-cards-vs-patient-assistance-programs.html" role="menuitem">⚖️ Copay Cards vs. PAPs</a>
-            <a href="/learn/how-to-reduce-prescription-costs.html" role="menuitem">💰 Reduce Prescription Costs</a>
-            <a href="/learn/what-to-do-if-insurance-denies-medication.html" role="menuitem">🚫 Insurance Denied Your Drug?</a>
-            <a href="/learn/medicare-vs-commercial-insurance-drug-costs.html" role="menuitem">🏥 Medicare vs. Commercial</a>
-          </div>
-        </div>
-        <a href="/about.html" class="nav-link">About</a>
-        <a href="/drugs/" class="nav-link" style="background: var(--brand-600, #0b6e5c); color: #fff;">Find medication →</a>
-      </nav>
-
-      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
-      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-
-    </div>
-  </header>
-
-
-
-  <!-- =======================
-       Hero
-       ======================= -->
-  <section class="hero section">
-    <div class="container hero-grid">
-      <div>
-        <span class="badge eyebrow">Lower your out-of-pocket</span>
-        <h1>Find official <span style="color:var(--brand-700)">manufacturer savings</span> for your prescriptions</h1>
-        <p>SaveRx.ai connects you directly to copay cards, coupons, and patient assistance for drugs like Repatha, Ozempic, Wegovy, Mounjaro, and more.</p>
-        <div>
-          <a href="#featured" class="btn btn-primary">Find savings</a>
-          <a href="about.html" class="btn btn-outline">How it works</a>
-        </div>
-      </div>
-
-      <figure class="hero-media">
-        <img src="assets/img/hero-1200.jpg" alt="Patients saving on prescription costs">
-      </figure>
-    </div>
-  </section>
-
-  <!-- =======================
-       Trust bar
-       ======================= -->
-  <div class="trust-bar" role="complementary" aria-label="Trust indicators">
-    <div class="container">
-      <ul class="trust-bar__list" role="list">
-        <li>Verified manufacturer programs</li>
-        <li>No insurance info required</li>
-        <li>Updated regularly</li>
-        <li>Instant access</li>
-        <li>No income requirements</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- =======================
-       Featured (Loader + Skeletons + Cards)
-       Rendered live from Google Sheet via Apps Script
-       ======================= -->
-  <section id="featured" class="container section-pad loading" aria-busy="true" aria-labelledby="savings-heading">
-    <div class="section-heading">
-        <h2>Browse by Featured Savings</h2>
-        <p>Find manufacturer savings, copay cards, and patient assistance by the condition you're treating.</p>
-      </div>
-    <div class="featured-header">
-      <h2 id="savings-heading" class="section-title">Featured</h2>
-      <span class="chip">Showing <span id="home-resultCount" class="count">…</span></span>
-    </div>
-
-    <!-- In-place search -->
-    <div class="home-search" role="search" aria-label="Search featured medications">
-      <div class="search-bar">
-        <input id="home-q" type="search" placeholder="Search medications…" autocomplete="off" aria-label="Search drugs">
-        <button id="home-clearBtn" class="clear-x" type="button" aria-label="Clear search" hidden>✕</button>
-      </div>
-      <div id="home-no-results" class="no-results" aria-hidden="true">No matches. Try a shorter name or <a href="/drugs/">browse all drugs</a>.</div>
-    </div>
-
-    <!-- Scrollable cards container -->
-    <div class="featured-scroll-wrap-outer" id="featured-scroll-wrap-outer">
-    <div class="featured-scroll-wrap" id="featured-scroll-wrap">
-      <!-- AI scanning loader banner -->
-      <div class="ai-loader" id="ai-loader" role="status" aria-live="polite">
-        <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
-        <strong>Finding current prices & programs…</strong>
-        <small>Checking coupons, copay cards, and manufacturer offers</small>
-      </div>
-
-      <!-- Skeleton placeholders (visible while data loads) -->
-      <div class="cards" id="skeleton-cards">
-        <article class="card skeleton" aria-hidden="true">
-          <div class="sk-line sk-title"></div>
-          <div class="sk-line"></div>
-          <div class="sk-pill"></div>
-        </article>
-        <article class="card skeleton" aria-hidden="true">
-          <div class="sk-line sk-title"></div>
-          <div class="sk-line"></div>
-          <div class="sk-pill"></div>
-        </article>
-        <article class="card skeleton" aria-hidden="true">
-          <div class="sk-line sk-title"></div>
-          <div class="sk-line"></div>
-          <div class="sk-pill"></div>
-        </article>
-      </div>
-
-      <!-- Real cards injected here -->
-      <div id="featured-cards" class="cards" role="list" aria-live="polite"></div>
-
-      <!-- Fallback text loader -->
-      <div id="cards-loading" class="text-center muted small" aria-live="polite">
-        Loading savings
-      </div>
-    </div>
-    </div><!-- /.featured-scroll-wrap-outer -->
-
-    <noscript>
-      <p class="muted small">JavaScript is required to load the latest Featured savings.</p>
-    </noscript>
-  </section>
-
-  <!-- =======================
-       Browse by Health Condition
-       ======================= -->
-  <section class="categories" id="browse-by-condition" aria-label="Browse savings by health condition">
-    <div class="categories-inner">
-      <div class="section-heading">
-        <h2>Browse by Health Condition</h2>
-        <p>Find manufacturer savings, copay cards, and patient assistance by the condition you're treating.</p>
-      </div>
-      <div class="tiles">
-
-        <a href="/categories/weight-loss/" class="tile weight-loss"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'weight-loss',source:'homepage-tile-grid'})">
-          <div class="tile-badge">Most Popular</div>
-          <div class="tile-icon">⚖️</div>
-          <h3 class="tile-title">Weight Loss &amp; GLP-1</h3>
-          <p class="tile-description">Ozempic, Wegovy, Mounjaro, Zepbound and other GLP-1 medications for weight management.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>8</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/diabetes/" class="tile diabetes"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'diabetes',source:'homepage-tile-grid'})">
-          <div class="tile-icon">💉</div>
-          <h3 class="tile-title">Diabetes</h3>
-          <p class="tile-description">Insulin, CGMs, and oral medications including Jardiance, Farxiga, FreeStyle Libre, and more.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>32</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/heart-cholesterol/" class="tile heart-cholesterol"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'heart-cholesterol',source:'homepage-tile-grid'})">
-          <div class="tile-icon">❤️</div>
-          <h3 class="tile-title">Heart &amp; Cholesterol</h3>
-          <p class="tile-description">Repatha, Praluent, Entresto, Eliquis, Xarelto and other cardiovascular medications.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>15</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/autoimmune/" class="tile autoimmune"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'autoimmune',source:'homepage-tile-grid'})">
-          <div class="tile-icon">🛡️</div>
-          <h3 class="tile-title">Autoimmune &amp; Inflammation</h3>
-          <p class="tile-description">Enbrel, Dupixent, Rinvoq, Tremfya and other biologics for psoriasis, RA, and Crohn's.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>25</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/migraine/" class="tile migraine"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'migraine',source:'homepage-tile-grid'})">
-          <div class="tile-icon">⚡</div>
-          <h3 class="tile-title">Migraine</h3>
-          <p class="tile-description">Nurtec, Aimovig, Emgality, Vyepti and other CGRP migraine prevention and treatment medications.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>9</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/respiratory/" class="tile respiratory"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'respiratory',source:'homepage-tile-grid'})">
-          <div class="tile-icon">🫁</div>
-          <h3 class="tile-title">Asthma &amp; Respiratory</h3>
-          <p class="tile-description">Symbicort, Advair, Breo Ellipta, Trelegy and other inhalers and respiratory biologics.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>12</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-        <a href="/categories/mental-health/" class="tile mental-health"
-           onclick="typeof gtag!=='undefined'&&gtag('event','category_click',{category:'mental-health',source:'homepage-tile-grid'})">
-          <div class="tile-icon">🧠</div>
-          <h3 class="tile-title">Mental Health</h3>
-          <p class="tile-description">Vyvanse, Trintellix, Rexulti, Auvelity, Spravato and other ADHD, depression, and anxiety medications.</p>
-          <div class="tile-meta">
-            <span class="tile-count"><strong>13</strong> medications</span>
-            <span class="tile-cta">See savings →</span>
-          </div>
-        </a>
-
-      </div>
-      <div class="view-all"><a href="/categories/">View all categories →</a></div>
-    </div>
-  </section>
-
-  <!-- =======================
-       How it works
-       ======================= -->
-  <section class="how-it-works" aria-labelledby="how-heading">
-    <div class="container">
-      <h2 id="how-heading">How it works</h2>
-      <div class="steps">
-        <div class="step">
-          <span class="step-num" aria-hidden="true">1</span>
-          <h3>Search your medication</h3>
-          <p>Enter your drug name to instantly see which savings programs, copay cards, and patient assistance programs are available.</p>
-        </div>
-        <div class="step-arrow" aria-hidden="true">→</div>
-        <div class="step">
-          <span class="step-num" aria-hidden="true">2</span>
-          <h3>See your savings</h3>
-          <p>We compare verified manufacturer copay cards and assistance programs side by side — no sign-up required to browse.</p>
-        </div>
-        <div class="step-arrow" aria-hidden="true">→</div>
-        <div class="step">
-          <span class="step-num" aria-hidden="true">3</span>
-          <h3>Activate your card</h3>
-          <p>Click through to the official manufacturer program. No middleman. Instant access. Start saving on your next fill.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =======================
-       Testimonials
-       ======================= -->
-  <section class="testimonials" aria-labelledby="testimonials-heading">
-    <div class="container">
-      <p class="testimonials__eyebrow">Real patients. Real savings.</p>
-      <h2 id="testimonials-heading">People are finally paying less for their medications</h2>
-      <div class="testimonials__grid" role="list" aria-label="Patient testimonials">
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;I was paying $450/month for Repatha. SaveRx showed me the Amgen copay card &mdash; now I pay $0. I had no idea this existed.&rdquo;</p>
-          <footer>Maria L., Texas</footer>
-        </blockquote>
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;Found the Dupixent MyWay program in two minutes. Went from $3,800 to $5 a month. This site is a lifesaver.&rdquo;</p>
-          <footer>James K., Ohio</footer>
-        </blockquote>
-        <blockquote class="testimonial" role="listitem">
-          <div class="testimonial__stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <p>&ldquo;My doctor prescribed Ozempic but didn&rsquo;t mention any savings programs. SaveRx found the Novo Nordisk card instantly.&rdquo;</p>
-          <footer>Priya S., California</footer>
-        </blockquote>
-      </div>
-    </div>
-  </section>
-
-  <!-- =======================
-       Request a medication + Newsletter CTA
-       ======================= -->
-  <section class="cta-band" aria-labelledby="ctaTitle">
-    <div class="container">
-
-      <!-- Primary: Drug Alert -->
-      <div class="cta-band__primary">
-        <h2 id="ctaTitle" class="cta-band__heading">Missing a medication?</h2>
-        <p class="cta-band__sub">Tell us the drug &mdash; we&rsquo;ll alert you when official savings go live.</p>
-        <form id="med-alert-form">
-          <div class="cta-band__form">
-            <label class="sr-only" for="drugName">Medication name</label>
-            <input id="drugName" name="drug" class="cta-input" type="text" placeholder="Drug name (e.g., Humira)" required autocomplete="off">
-            <label class="sr-only" for="alertEmail">Email address</label>
-            <input id="alertEmail" name="email" class="cta-input" type="email" placeholder="you@example.com" required autocomplete="email">
-            <button class="cta-btn-primary" type="submit">Notify me</button>
-          </div>
-          <p class="cta-band__msg" id="alertMsg" role="status" aria-live="polite"></p>
-        </form>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- =======================
-      
-       ======================= -->
-  <div class="not-insurance-band">
-    <div class="container">
-      <p>SaveRx is not insurance. We help commercially insured patients find official manufacturer savings programs for brand-name medications. Eligibility and savings vary by program.</p>
-    </div>
-  </div>
-
-  <!-- =======================
-       Footer
-       ======================= -->
-  <footer class="footer">
-    <div class="container grid">
-      <div>
-        <a href="/" class="nav-logo footer-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
-        <p class="footer-tagline">Official manufacturer savings for 350+ brand-name medications.<br> We are not a pharmacy.</p>
-        <div class="footer-newsletter">
-          <p class="footer-newsletter__label">Savings tips in your inbox</p>
-          <form id="newsletter-form" class="footer-newsletter__form">
+<link rel="canonical" href="https://saverx.ai/"><script id="relief-api">window.SAVERX_FORM_API = window.SAVERX_FORM_API || "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";</script>
+<link rel="stylesheet" href="/assets/css/tokens.css"><link rel="stylesheet" href="/assets/css/relief.css"><link rel="stylesheet" href="/assets/css/relief-chrome.css"></head><body class="relief"><a class="relief-skip" href="#main-content">Skip to content</a><header class="relief-header"><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true">✳</span>SaveRx<small>.ai</small></a><nav class="relief-nav" id="relief-navigation" aria-label="Main navigation"><a href="/drugs/">Explore savings</a><a href="/categories/">Conditions</a><a href="/learn/">A little guidance</a><a href="/about.html">Our story</a><a href="/drugs/" class="relief-nav-cta">Find my medication ↗</a></nav><button type="button" class="relief-menu" aria-expanded="false" aria-controls="relief-navigation">Menu</button></header><main id="main-content"><section class="hero"><div class="eyebrow"><span class="dot"></span> A healthier relationship with your wallet</div><h1>Your prescription.<br>A little less<br><em class="underline">out of pocket.</em></h1><p class="intro">There may be savings with your name on them.<br>Find official manufacturer programs for your medication, all in one little place.</p><div class="search-wrap" id="search"><form class="search" role="search" id="search-form" action="/drugs/" method="get"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></svg><input name="q" id="medication" aria-label="Search your medication" placeholder="What medication do you take?" autocomplete="off" aria-controls="results" aria-expanded="false"><button type="submit">Find savings <span aria-hidden="true">↗</span></button></form><div class="results" id="results" aria-live="polite" hidden></div><div class="popular"><span>Try a search</span><button type="button" data-med="Repatha">Repatha</button><button type="button" data-med="Ozempic">Ozempic</button><button type="button" data-med="Dupixent">Dupixent</button></div><div class="privacy"><span>✓ Free to explore</span><span>✓ No account needed to search</span><span>✓ No insurance details to search</span></div></div><div class="scene" aria-hidden="true"><div class="orbit"></div><div class="platform"></div><div class="spark">✳</div><div class="note">a little relief.</div><div class="bottle"><div class="label">a little<br>better.<small>MORE ROOM FOR LIFE</small></div></div><div class="savings-card"><strong>SaveRx</strong><span class="card-icon">✳</span><p>Good things ahead.</p><small>YOUR SAVINGS START HERE</small></div><div class="capsule"></div><span class="scene-caption">A small illustration of a bigger possibility.</span></div></section><div class="trustbar"><span><b>↗</b> Links to official manufacturer programs</span><span><b>◎</b> Eligibility varies by program</span><span><b>◇</b> You enroll directly with the program</span><span><b>♡</b> Made for people, by people</span></div><section class="section" id="browse"><div class="section-head"><div><div class="eyebrow">A good place to start</div><h2>A little help, for your kind of health.</h2><p>Explore prescription savings by health condition.</p></div><a class="text-link" href="/categories/">View all conditions ↗</a></div><div class="categories"><a class="category" href="/categories/heart-cholesterol/"><div class="tile rose"><div class="object"><div class="heart"></div></div></div><h3>Heart & cholesterol ↗</h3><p>Repatha, Eliquis & more</p></a><a class="category" href="/categories/diabetes/"><div class="tile blue"><div class="object"><div class="drop"></div></div></div><h3>Diabetes ↗</h3><p>Insulin, CGMs & more</p></a><a class="category" href="/categories/weight-loss/"><div class="tile"><div class="object"><div class="loop"></div></div></div><h3>Weight loss & GLP-1 ↗</h3><p>Wegovy, Zepbound & more</p></a><a class="category" href="/categories/migraine/"><div class="tile yellow"><div class="object"><div class="sun"></div></div></div><h3>Migraine ↗</h3><p>Nurtec, Emgality & more</p></a><a class="category" href="/categories/mental-health/"><div class="tile peach"><div class="object"><div class="cloud"></div></div></div><h3>Mental health ↗</h3><p>Vyvanse, Trintellix & more</p></a><a class="category" href="/categories/autoimmune/"><div class="tile green"><div class="object"><div class="leaf"></div></div></div><h3>Autoimmune & inflammation ↗</h3><p>Dupixent, Humira & more</p></a></div></section><section class="section how" id="how"><div><div class="eyebrow">Less digging. More living.</div><h2>From “how much?”<br>to “here’s how.”</h2><p class="intro">Savings programs can be hard to find.<br>Getting to them shouldn’t be.</p></div><div class="steps"><div class="step"><span class="num">01</span><div><h3>Start with your medication.</h3><p>Search by name or browse a condition. No paperwork to get started.</p></div></div><div class="step"><span class="num">02</span><div><h3>Get to know your options.</h3><p>Explore manufacturer copay cards and patient assistance. Check each program’s insurance and eligibility requirements.</p></div></div><div class="step"><span class="num">03</span><div><h3>Go straight to the source.</h3><p>Follow the link to the official manufacturer website to confirm the offer and enroll directly.</p></div></div></div></section><section class="section story" id="why"><div class="story-visual" aria-hidden="true"><div class="receipt"><strong>A little perspective.</strong><p>THE PRESCRIPTION SAVINGS LIST</p><div class="rule"></div><p>Know where to look. &nbsp; ✓<br>Understand the fine print. &nbsp; ✓<br>Go to the official source. &nbsp; ✓</p><div class="rule"></div><em>Keep more.<br>Worry less.</em><p>A LITTLE HELP GOES A LONG WAY.</p></div><div class="sticker">Less searching.<br>More exhaling.</div></div><div class="story-text"><div class="eyebrow">The reason we’re here</div><h2>Healthcare has enough hoops.<br>Let’s lose a few.</h2><p>Manufacturer savings exist. But finding the right program can mean a maze of websites, unfamiliar terms, and unanswered questions.</p><p>SaveRx brings those starting points together, so you can spend less time searching and more time on everything else.</p><a class="text-link" href="/about.html">Meet SaveRx ↗</a></div></section><section class="section faq"><div><div class="eyebrow">A little clarity</div><h2>Good questions.<br>Straight answers.</h2></div><div><details><summary>Is SaveRx a pharmacy or insurance?</summary><p>No. SaveRx helps you discover manufacturer prescription savings programs. The manufacturer runs the program, determines eligibility, and handles enrollment. Your pharmacy fills your prescription.</p></details><details><summary>Can I use these programs with my insurance?</summary><p>It depends on the program. Many manufacturer copay cards require commercial insurance and exclude Medicare, Medicaid, and other government insurance. Patient assistance programs have different requirements, sometimes including income limits. Always confirm the terms on the official program website.</p></details><details><summary>Are the savings guaranteed?</summary><p>No. Your cost depends on eligibility, insurance coverage, medication, and program limits. Offers can change. Check the official program’s current terms before enrolling.</p></details><details><summary>Do I need to share personal information to search?</summary><p>You can explore SaveRx without an account or entering insurance information. Enrollment on a manufacturer’s website may require personal information under that program’s privacy policy.</p></details></div></section></main><section class="section relief-alert"><div><div class="eyebrow">A little help finding it</div><h2>Missing a medication?</h2><p class="fine">Tell us what you’re looking for.</p></div><form id="med-alert-form"><label for="drugName">Medication name</label><input id="drugName" name="drug" required autocomplete="off" placeholder="Medication name"><label for="alertEmail">Email address</label><input id="alertEmail" name="email" type="email" required autocomplete="email" placeholder="you@example.com"><button type="submit" class="primary">Notify me ↗</button><p id="alertMsg" role="status" aria-live="polite"></p></form></section><footer class="relief-footer"><div class="relief-footer-top"><div><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true">✳</span>SaveRx<small>.ai</small></a><p>A little less out of pocket. A little more life.</p><div class="relief-newsletter"><p>Savings tips in your inbox</p><form id="newsletter-form" class="footer-newsletter__form">
             <label class="sr-only" for="newsEmail">Email address</label>
-            <input id="newsEmail" name="email" type="email" placeholder="your@email.com" required autocomplete="email">
+            <input aria-label="Email address" id="newsEmail" name="email" type="email" placeholder="your@email.com" required autocomplete="email">
             <button type="submit">Subscribe</button>
-          </form>
-          <p id="newsMsg" class="footer-newsletter__msg" role="status" aria-live="polite"></p>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer-col-heading">Quick Links</h4>
-        <div><a href="/">Home</a></div>
-        <div><a href="/drugs/">Drugs</a></div>
-        <div><a href="/comparisons.html">Comparisons</a></div>
-        <div><a href="/about.html">About</a></div>
-        <div><a href="/contact.html">Contact</a></div>
-      </div>
-      <div>
-        <h4 class="footer-col-heading">Categories</h4>
-        <div><a href="/categories/weight-loss/">Weight Loss &amp; GLP-1</a></div>
-        <div><a href="/categories/diabetes/">Diabetes</a></div>
-        <div><a href="/categories/heart-cholesterol/">Heart &amp; Cholesterol</a></div>
-        <div><a href="/categories/autoimmune/">Autoimmune</a></div>
-        <div><a href="/categories/migraine/">Migraine</a></div>
-        <div><a href="/categories/respiratory/">Respiratory</a></div>
-        <div><a href="/categories/mental-health/">Mental Health</a></div>
-      </div>
-      <div>
-        <h4 class="footer-col-heading">Legal</h4>
-        <div><a href="/privacy.html">Privacy Policy</a></div>
-        <div><a href="/terms.html">Terms of Service</a></div>
-        <div><a href="#" data-consent-toggle>Cookie settings</a></div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;width:100%;">
-        <span>© 2026 SaveRx.ai — All rights reserved.</span>
-        <span>SaveRx is not insurance. All trademarks are property of their respective owners. Savings vary by program.</span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- =======================
-       Config & Scripts
-       ======================= -->
-
-  <!-- Config for Apps Script -->
-  <script>
+          </form><p id="newsMsg" role="status" aria-live="polite"></p></div></div><nav aria-label="Footer navigation" class="relief-footer-nav"><a href="/categories/">Conditions</a><a href="/comparisons.html">Compare programs</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="#" data-consent-toggle>Cookie settings</a></nav></div><p class="relief-legal">SaveRx is not a pharmacy or insurance provider. Information is educational and is not medical advice. Eligibility, savings, and program availability vary; confirm current terms with the manufacturer. Medication names belong to their respective owners. © 2026 SaveRx.ai.</p></footer><script defer src="/assets/js/relief.js"></script><link rel="stylesheet" href="/assets/css/relief-chat.css"><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R" height="0" width="0" hidden title="Google Tag Manager"></iframe></noscript><script>
     window.PAGE_CONFIG = {
       scriptUrl: "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec"
     };
   </script>
-
-  <!-- Fallback: if assets/scripts.js didn't define renderFeaturedDrugs(),
-       this provides a minimal loader that expects ?mode=featured -->
-  <script>
-    window.renderFeaturedDrugs = window.renderFeaturedDrugs || (async function defaultRenderFeaturedDrugs(feedUrl){
-      const container = document.getElementById('featured-cards');
-      const loadingEl = document.getElementById('cards-loading');
-      try {
-        const res = await fetch(feedUrl, { cache: 'no-cache' });
-        const json = await res.json();
-        const items = Array.isArray(json) ? json : (json && json.items) || [];
-        if (loadingEl) loadingEl.style.display = 'none';
-
-        // Remove loader + skeletons, flip aria-busy
-        document.getElementById('skeleton-cards')?.remove();
-        document.getElementById('ai-loader')?.remove();
-        const wrapper = document.getElementById('featured');
-        if (wrapper) {
-          wrapper.classList.remove('loading');
-          wrapper.classList.add('loaded');
-          wrapper.setAttribute('aria-busy','false');
-        }
-
-        if (!container) return;
-        if (!items.length) {
-          container.innerHTML = '<p class="muted small">No Featured medications configured yet.</p>';
-          return;
-        }
-
-        const escape = s => (s||'').replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-        container.innerHTML = items.map(item => {
-          const brand = escape(item.name || '');
-          const generic = escape(item.generic || '');
-          const mfr = escape(item.manufacturer || '');
-          const url = item.url || '#';
-          const asLow = (item.as_low_as != null && !isNaN(Number(item.as_low_as)))
-            ? `As low as $${Number(item.as_low_as).toLocaleString()}`
-            : '';
-          return `
-            <article class="card drug-card" role="listitem"
-                     data-brand="${brand}" data-generic="${generic}" data-manufacturer="${mfr}">
-              <div class="card-body">
-                <h3 class="drug-title">${brand}${generic ? ' ('+generic+')' : ''}</h3>
-                <p class="drug-subtitle">${mfr}${asLow ? ' • ' + asLow : ''}</p>
-                <a class="btn btn-primary get-card"
-                   href="${url}"
-                   data-drug="${brand}"
-                   data-url="${url}">Get Savings</a>
-              </div>
-            </article>
-          `;
-        }).join('');
-      } catch (err) {
-        if (loadingEl) loadingEl.textContent = 'Could not load savings.';
-        console.error('Featured load error:', err);
-      }
-    });
-  </script>
-
-  <!-- Email modal (HTML only; behavior in assets/scripts.js) -->
-  <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel" role="document">
-      <button class="modal-close" type="button" aria-label="Close" data-close>&times;</button>
-
-      <h2 id="emailModalTitle" class="modal-title">Get your savings card</h2>
-      <p class="modal-sub">Enter your email and we’ll take you to the official savings page for <span id="modalDrugLabel">this medication</span>.</p>
-
-      <form id="modal-lead-form">
-        <!-- Honeypot (spam trap) -->
-        <input type="text" name="website" class="hp" tabindex="-1" aria-hidden="true" />
-
-        <label class="field">
-          <span>Email</span>
-          <input id="modal-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" />
-        </label>
-
-        <!-- Filled by JS when user clicks a card -->
-        <input type="hidden" name="drug" id="modal-drug" />
-        <input type="hidden" name="source" value="SaveRx Home Modal" />
-        <input type="hidden" name="useragent" id="modal-ua" />
-        <input type="hidden" name="referrer" id="modal-ref" />
-
-        <div class="modal-actions">
-          <button id="modal-submit" class="btn btn-primary" type="submit">Continue</button>
-        </div>
-
-        <div id="modal-status" class="status" role="status" aria-live="polite"></div>
-        <p class="microcopy">By continuing, you agree to our <a href="terms.html">Terms</a> & <a href="privacy.html">Privacy</a>.</p>
-      </form>
-    </div>
-  </div>
-
-  <!-- Main JS (handles modal, featured rendering, forms, etc.) -->
-  <script defer src="assets/scripts.js?v=2025-10-06a"></script>
-
-  <!-- Load featured drug cards: top 30 by priority, live from Apps Script -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (!window.renderFeaturedDrugs) return;
-      window.renderFeaturedDrugs(window.PAGE_CONFIG.scriptUrl + '?mode=featured');
-    });
-  </script>
-
-  <!-- Homepage search wiring (filters whatever cards are rendered into #featured-cards) -->
-  <script>
-    (function(){
-      "use strict";
-      const $  = (s, r=document)=> r.querySelector(s);
-      const $$ = (s, r=document)=> Array.from(r.querySelectorAll(s));
-      // Normalize + strip accents without requiring Unicode property escapes
-      const strip = s => (s||"").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const norm  = s => strip(s).toLowerCase();
-
-      const qEl = $('#home-q');
-      const clearBtn = $('#home-clearBtn');
-      const countEl = $('#home-resultCount');
-      const grid = $('#featured-cards');
-      const empty = $('#home-no-results');
-
-      if(!qEl || !grid) return;
-
-      let INDEX = [];
-
-      function buildIndex(){
-        INDEX = $$('.drug-card', grid).map(el=>{
-          const brand = el.dataset.brand || $('.drug-title', el)?.textContent || '';
-          const generic = el.dataset.generic || '';
-          const mfr = el.dataset.manufacturer || $('.drug-subtitle', el)?.textContent || '';
-          const hay = norm([brand, generic, mfr, el.textContent].join(' '));
-          el.dataset.search = hay;
-          return el;
-        });
-        updateCount();
-      }
-
-      function updateCount(){
-        const visible = INDEX.filter(el=>!el.hidden).length;
-        const total = grid?.dataset.total;
-        if(countEl) countEl.textContent = total ? `Top 30 of ${total}` : (visible ? `${visible} brands` : '…');
-      }
-
-      function applyFilter(term){
-        const t = norm(term).trim();
-        clearBtn && (clearBtn.hidden = !t);
-        if(INDEX.length === 0) buildIndex();
-        let shown = 0;
-        INDEX.forEach(el=>{
-          const hay = el.dataset.search || '';
-          const match = t ? t.split(/\s+/).every(w=>hay.includes(w)) : true;
-          el.hidden = !match;
-          if(match) shown++;
-        });
-        const total = grid?.dataset.total;
-        if(countEl) countEl.textContent = total
-          ? (t ? `${shown} of top 30 shown` : `Top 30 of ${total}`)
-          : `${shown} brands`;
-        if(empty) empty.setAttribute('aria-hidden', String(shown>0));
-      }
-
-      // Observe async card injection (works with your external renderer)
-      const obs = new MutationObserver(()=>{ buildIndex(); applyFilter(qEl.value); });
-      obs.observe(grid, { childList: true });
-
-      // Events
-      qEl.addEventListener('input', ()=> applyFilter(qEl.value));
-      clearBtn?.addEventListener('click', ()=>{ qEl.value=''; applyFilter(''); qEl.focus(); });
-
-      // Hydrate from ?q=
-      try{ const u = new URL(window.location.href); const q = u.searchParams.get('q'); if(q){ qEl.value = q; } }catch{}
-
-      // First pass (in case cards already present)
-      buildIndex();
-      applyFilter(qEl.value);
-
-      // Scroll-to-bottom fade toggle for featured-scroll-wrap
-      const scrollWrap = document.getElementById('featured-scroll-wrap');
-      const scrollOuter = document.getElementById('featured-scroll-wrap-outer');
-      if (scrollWrap && scrollOuter) {
-        const checkBottom = () => {
-          const atBottom = scrollWrap.scrollTop + scrollWrap.clientHeight >= scrollWrap.scrollHeight - 10;
-          scrollOuter.classList.toggle('at-bottom', atBottom);
-        };
-        scrollWrap.addEventListener('scroll', checkBottom, { passive: true });
-        const scrollObs = new MutationObserver(checkBottom);
-        scrollObs.observe(scrollWrap, { childList: true, subtree: true });
-        checkBottom();
-      }
-    })();
-  </script>
-
-  <!-- Mobile floating CTA -->
-  <div class="mobile-cta">
-    <div class="inner container">
-      <strong>Ready to save?</strong>
-      <a class="btn btn-primary" href="#featured">Find savings</a>
-    </div>
-  </div>
-
+<script defer src="/assets/scripts.js?v=relief-1"></script>
 <!-- Ask SaveRx widget -->
 <div id="srx-overlay"></div>
 
@@ -995,7 +121,7 @@ body.design-v2 .cta-band {
     <div class="srx-header">
       <strong>Ask SaveRx</strong>
       <span class="srx-sub">Informational only — not medical advice</span>
-      <button id="srx-close" aria-label="Close" 
+      <button id="srx-close" aria-label="Close"
         style="border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer">
         ×
       </button>
@@ -1013,9 +139,6 @@ body.design-v2 .cta-band {
       <button type="button" class="srx-chip" data-q="How do I get a Repatha copay card?">Repatha copay</button>
       <button type="button" class="srx-chip" data-q="What is a patient assistance program, and who qualifies?">What is PAP?</button>
 </div> -->
-
-  </div>
-</div>
 
 <!-- Markdown rendering libs -->
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
@@ -1144,5 +267,4 @@ form.addEventListener("submit", async (e) => {
 });
 </script>
   <script src="/assets/js/nav.js"></script>
-</body>
-</html>
+</body></html>

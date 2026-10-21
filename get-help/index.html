@@ -127,17 +127,14 @@
       padding: 3px 10px; border-radius: 999px; margin-bottom: 12px;
     }
   </style>
-</head>
-<body>
+<link rel="stylesheet" href="/assets/css/relief-legacy.css"><link rel="stylesheet" href="/assets/css/relief-chrome.css"></head>
+<body class="design-relief">
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-  <header class="topbar">
-    <a class="logo" href="/">Save<span>Rx.ai</span></a>
-    <a class="exit" href="javascript:history.back()">← Back to medication page</a>
-  </header>
+  <a class="relief-skip" href="#main-content">Skip to content</a><header class="relief-header"><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true">✳</span>SaveRx<small>.ai</small></a><nav class="relief-nav" id="relief-navigation" aria-label="Main navigation"><a href="/drugs/">Explore savings</a><a href="/categories/">Conditions</a><a href="/learn/">A little guidance</a><a href="/about.html">Our story</a><a href="/drugs/" class="relief-nav-cta">Find my medication ↗</a></nav><button type="button" class="relief-menu" aria-expanded="false" aria-controls="relief-navigation">Menu</button></header>
 
-  <main class="wrap">
+  <main id="main-content" class="wrap">
     <div class="progress" role="progressbar" aria-label="Intake progress"><div id="progressBar"></div></div>
 
     <!-- Step 0 — medication (only when not arriving from a drug page) -->
@@ -286,5 +283,5 @@
 
   <script defer src="/assets/js/track.js"></script>
   <script defer src="/assets/js/enroll.js"></script>
-</body>
+<script defer src="/assets/js/relief.js"></script></body>
 </html>

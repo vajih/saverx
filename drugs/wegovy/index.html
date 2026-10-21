@@ -295,9 +295,9 @@
     window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
     window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
   </script>
-</head>
+<link rel="stylesheet" href="/assets/css/relief-legacy.css"><link rel="stylesheet" href="/assets/css/relief-chrome.css"><script src="/assets/js/drug-data.js"></script></head>
 
-<body class="design-v2 theme-light">
+<body class="design-v2 theme-light design-relief">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -315,67 +315,18 @@
   <!-- =======================
        Header / Primary Nav
        ======================= -->
-  <header class="header">
-    <div class="container inner">
-
-      <!-- Two-tone text logo -->
-      <a href="/" class="nav-logo" aria-label="SaveRx.ai home">Save<span>Rx.ai</span></a>
-
-      <!-- Primary nav (desktop: inline pills; mobile: hamburger-toggled panel) -->
-      <nav id="primary-nav" class="nav" aria-label="Main navigation">
-        <div class="nav-dropdown" id="catDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="catDropdownMenu">
-            Categories <span class="caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="nav-dropdown-menu" id="catDropdownMenu" role="menu">
-            <a href="/categories/weight-loss/" role="menuitem">Weight Loss &amp; GLP-1</a>
-            <a href="/categories/diabetes/" role="menuitem">Diabetes</a>
-            <a href="/categories/heart-cholesterol/" role="menuitem">Heart &amp; Cholesterol</a>
-            <a href="/categories/autoimmune/" role="menuitem">Autoimmune &amp; Inflammation</a>
-            <a href="/categories/migraine/" role="menuitem">Migraine</a>
-            <a href="/categories/respiratory/" role="menuitem">Asthma &amp; Respiratory</a>
-            <a href="/categories/mental-health/" role="menuitem">Mental Health</a>
-            <hr>
-            <a href="/categories/" role="menuitem"><strong>View all categories →</strong></a>
-          </div>
-        </div>
-
-        <div class="nav-dropdown" id="learnDropdown">
-          <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="learnDropdownMenu">
-            Learn <span class="caret" aria-hidden="true">▾</span>
-          </button>
-          <div class="nav-dropdown-menu" id="learnDropdownMenu" role="menu">
-            <a href="/learn/how-copay-cards-work.html" role="menuitem">💳 How Copay Cards Work</a>
-            <a href="/learn/copay-cards-vs-patient-assistance-programs.html" role="menuitem">⚖️ Copay Cards vs. PAPs</a>
-            <a href="/learn/how-to-reduce-prescription-costs.html" role="menuitem">💰 Reduce Prescription Costs</a>
-            <a href="/learn/what-to-do-if-insurance-denies-medication.html" role="menuitem">🚫 Insurance Denied Your Drug?</a>
-            <a href="/learn/medicare-vs-commercial-insurance-drug-costs.html" role="menuitem">🏥 Medicare vs. Commercial</a>
-          </div>
-        </div>
-        <a href="/about.html" class="nav-link">About</a>
-        <a href="/drugs/" class="nav-link" style="background: var(--brand-600, #0b6e5c); color: #fff;">Find medication →</a>
-      </nav>
-
-      <!-- Hamburger (mobile only — shown via CSS at ≤640px) -->
-      <button class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </button>
-
-    </div>
-  </header>
+  <a class="relief-skip" href="#main-content">Skip to content</a><header class="relief-header"><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true">✳</span>SaveRx<small>.ai</small></a><nav class="relief-nav" id="relief-navigation" aria-label="Main navigation"><a href="/drugs/">Explore savings</a><a href="/categories/">Conditions</a><a href="/learn/">A little guidance</a><a href="/about.html">Our story</a><a href="/drugs/" class="relief-nav-cta">Find my medication ↗</a></nav><button type="button" class="relief-menu" aria-expanded="false" aria-controls="relief-navigation">Menu</button></header>
 
 
   <!-- =======================
        ORIGINAL MAIN CONTENT (unchanged)
        ======================= -->
-  <main class="container section-pad">
-    <section class="rx-lede">
+  <main id="main-content" class="container section-pad">
+    <div class="relief-source-status" role="status" aria-live="polite">Loading current program information…</div><section class="rx-lede"><div class="relief-breadcrumb"><a href="/">Home</a> / <a href="/drugs/">Medications</a> / <span data-bind="brand">Wegovy</span></div>
       <h1 class="rx-title">Wegovy<span data-bind="brand" style="display:none"></span></h1>
       <p class="rx-sub">
         <b>(<span data-bind="generic"></span>) •  <span data-bind="manufacturer"></span></b><br>
-        Lower your out-of-pocket cost on <span data-bind="brand"></span>.
+        Lower your out-of-pocket cost on <span data-bind="brand">Wegovy</span>.
         Eligible patients may qualify for a manufacturer copay program.
       </p>
       <!-- Drug class + indication badges (populated by JS from API) -->
@@ -386,7 +337,98 @@
     </section>
 
     <!-- Hero: image + overlay price card -->
-    <section class="rx-hero">
+    <div class="relief-drug-layout"><section class="insurance-accordion" data-saverx-insurance-accordion aria-labelledby="ia-title">
+    <h2 class="insurance-accordion__title" id="ia-title">What will I pay?</h2>
+
+    <!-- ── Card 1: Private / Commercial Insurance (open by default) ── -->
+    <details open>
+      <summary>
+        <div class="ia-left">
+          <span class="ia-type">Private insurance</span>
+          <span class="ia-sub">Employer or marketplace plan</span>
+        </div>
+        <div class="ia-right">
+          <span class="ia-price" data-bind="copay_price_formatted">$—</span>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="ia-body">
+        <div class="ia-hero-price" data-bind="copay_price_formatted">$—</div>
+        <p class="ia-hero-label">per 30-day supply with copay card</p>
+        <p class="ia-cash-strike">Typical cash price: <s data-bind="cash_price_formatted">$—</s>/mo</p>
+        <span class="ia-savings-pill">Save up to <span data-bind="per_fill_savings">$—</span> per fill</span>
+        <div>
+          <a class="btn-primary-pill js-accordion-cta" href="#" target="_blank" rel="noopener" onclick="return window.__openAccordionCta(event)">
+            Get <span data-bind="manufacturer">Manufacturer</span> Savings Card ↗
+          </a>
+        </div>
+      </div>
+    </details>
+
+    <!-- ── Card 2: Government Insurance (collapsed by default) ── -->
+    <details>
+      <summary>
+        <div class="ia-left">
+          <span class="ia-type">Government insurance</span>
+          <span class="ia-sub">Medicare, Medicaid, CHIP, TRICARE</span>
+        </div>
+        <div class="ia-right">
+          <span class="ia-price--unavail">Unavailable</span>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="ia-body">
+        <span class="ia-warn-label">Not eligible</span>
+        <div class="ia-explanation">
+          <strong>Manufacturer copay cards cannot legally be used with Medicare, Medicaid, CHIP, or other government insurance.</strong>
+          Federal anti-kickback regulations prohibit using these programs when any portion of the drug is paid by a federal health plan.
+          <br><br>
+          <strong>Options for government beneficiaries:</strong>
+          <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 14px;">
+            <li><a href="https://www.medicare.gov/drug-coverage-part-d" target="_blank" rel="noopener">Medicare Part D Extra Help (LIS)</a> — low-income subsidy program</li>
+            <li><a href="https://www.needymeds.org/" target="_blank" rel="noopener">NeedyMeds.org</a> — patient assistance programs by drug</li>
+            <li><a href="https://www.rxassist.org/" target="_blank" rel="noopener">RxAssist.org</a> — manufacturer patient assistance programs</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <!-- ── Card 3: No Insurance / Cash Pay (collapsed by default) ── -->
+    <details>
+      <summary>
+        <div class="ia-left">
+          <span class="ia-type">No insurance / cash pay</span>
+          <span class="ia-sub">Self-pay patients</span>
+        </div>
+        <div class="ia-right">
+          <span class="ia-price" style="font-size:14px;">See options</span>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </summary>
+      <div class="ia-body">
+        <p style="font-size:15px; color:var(--text); margin:16px 0 8px;">
+          Without insurance, the manufacturer may offer a separate <strong>Patient Assistance Program (PAP)</strong>
+          for patients who qualify based on income. These programs can provide the medication at low or no cost.
+        </p>
+        <div class="ia-explanation" style="background:var(--info-bg); border-left-color:var(--info);">
+          <strong style="color:var(--info);">Manufacturer Patient Assistance:</strong><br>
+          Many patients without insurance qualify directly through the manufacturer.
+          <a class="js-accordion-cta" href="#" onclick="return window.__openAccordionCta(event)" style="color:var(--teal); font-weight:600;">
+            Check <span data-bind="manufacturer">manufacturer</span> patient assistance →
+          </a>
+        </div>
+        <p style="font-size:13px; color:var(--text-3); margin:12px 0 0;">
+          Eligibility and income limits vary by program. Visit the manufacturer's official site for current terms.
+        </p>
+      </div>
+    </details>
+  </section><section class="rx-hero">
       <div class="rx-hero-media">
         <picture>
           <source media="(max-width: 640px)" srcset="/assets/img/hero-1200.jpg" data-src="hero_portrait">
@@ -418,20 +460,17 @@
           </div>
         </div>
       </div>
-    </section>
+    <p class="relief-source-note">Manufacturer savings are subject to eligibility and program limits. Confirm the current terms on the official program website.</p></section></div>
 
     <!-- Body: titles, bullets, testimonial, table, disclaimer -->
     <section class="rx-body" style="margin-top:16px;">
       <div class="rx-left">
-        <h2 class="rx-title"><span data-bind="brand"></span> Savings</h2>
+        <h2 class="rx-title"><span data-bind="brand">Wegovy</span> Savings</h2>
         <p class="rx-sub"><b><span data-bind="generic"></span> by <span data-bind="manufacturer"></span></b></p>
 
         <ul class="rx-bullets" id="rx-bullets"><!-- Bullets inserted here --></ul>
 
-        <div class="rx-testimonial">
-          “<span data-bind="testimonial">With the copay support, I finally paid far less for my prescription.</span>”
-          <div class="rx-author">— <span data-bind="testimonial_author">John R.</span></div>
-        </div>
+
 
         <p class="rx-disclaimer" data-bind="disclaimer">*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.</p>
       </div>
@@ -461,7 +500,7 @@
   <!-- ── About This Medication ────────────────────────────────────────────── -->
   <section class="rx-about" id="rx-about" aria-labelledby="rxAboutTitle" style="display:none">
     <div class="container rx-about-inner">
-      <h2 class="rx-about-heading" id="rxAboutTitle">About <span data-bind="brand"></span></h2>
+      <h2 class="rx-about-heading" id="rxAboutTitle">About <span data-bind="brand">Wegovy</span></h2>
       <div class="rx-about-tags">
         <span class="rx-tag rx-tag--class" id="rx-about-class"></span>
         <span class="rx-tag rx-tag--indication" id="rx-about-indication"></span>
@@ -556,102 +595,11 @@
   </section>
   <!-- End Pharmacy Price Comparison -->
 
-  
+
   <!-- =====================================================
        Insurance Tier Accordion (Phase 3 — Asma's design)
        ===================================================== -->
-  <section class="insurance-accordion" data-saverx-insurance-accordion aria-labelledby="ia-title">
-    <h2 class="insurance-accordion__title" id="ia-title">What will I pay?</h2>
 
-    <!-- ── Card 1: Private / Commercial Insurance (open by default) ── -->
-    <details open>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">Private insurance</span>
-          <span class="ia-sub">Employer or marketplace plan</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price" data-bind="copay_price_formatted">$—</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <div class="ia-hero-price" data-bind="copay_price_formatted">$—</div>
-        <p class="ia-hero-label">per 30-day supply with copay card</p>
-        <p class="ia-cash-strike">Typical cash price: <s data-bind="cash_price_formatted">$—</s>/mo</p>
-        <span class="ia-savings-pill">Save up to <span data-bind="per_fill_savings">$—</span> per fill</span>
-        <div>
-          <a class="btn-primary-pill js-accordion-cta" href="#" target="_blank" rel="noopener" onclick="return window.__openAccordionCta(event)">
-            Get <span data-bind="manufacturer">Manufacturer</span> Savings Card ↗
-          </a>
-        </div>
-      </div>
-    </details>
-
-    <!-- ── Card 2: Government Insurance (collapsed by default) ── -->
-    <details>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">Government insurance</span>
-          <span class="ia-sub">Medicare, Medicaid, CHIP, TRICARE</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price--unavail">Unavailable</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <span class="ia-warn-label">Not eligible</span>
-        <div class="ia-explanation">
-          <strong>Manufacturer copay cards cannot legally be used with Medicare, Medicaid, CHIP, or other government insurance.</strong>
-          Federal anti-kickback regulations prohibit using these programs when any portion of the drug is paid by a federal health plan.
-          <br><br>
-          <strong>Options for government beneficiaries:</strong>
-          <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 14px;">
-            <li><a href="https://www.medicare.gov/drug-coverage-part-d" target="_blank" rel="noopener">Medicare Part D Extra Help (LIS)</a> — low-income subsidy program</li>
-            <li><a href="https://www.needymeds.org/" target="_blank" rel="noopener">NeedyMeds.org</a> — patient assistance programs by drug</li>
-            <li><a href="https://www.rxassist.org/" target="_blank" rel="noopener">RxAssist.org</a> — manufacturer patient assistance programs</li>
-          </ul>
-        </div>
-      </div>
-    </details>
-
-    <!-- ── Card 3: No Insurance / Cash Pay (collapsed by default) ── -->
-    <details>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">No insurance / cash pay</span>
-          <span class="ia-sub">Self-pay patients</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price" style="font-size:14px;">See options</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <p style="font-size:15px; color:var(--text); margin:16px 0 8px;">
-          Without insurance, the manufacturer may offer a separate <strong>Patient Assistance Program (PAP)</strong>
-          for patients who qualify based on income. These programs can provide the medication at low or no cost.
-        </p>
-        <div class="ia-explanation" style="background:var(--info-bg); border-left-color:var(--info);">
-          <strong style="color:var(--info);">Manufacturer Patient Assistance:</strong><br>
-          Many patients without insurance qualify directly through the manufacturer.
-          <a class="js-accordion-cta" href="#" onclick="return window.__openAccordionCta(event)" style="color:var(--teal); font-weight:600;">
-            Check <span data-bind="manufacturer">manufacturer</span> patient assistance →
-          </a>
-        </div>
-        <p style="font-size:13px; color:var(--text-3); margin:12px 0 0;">
-          Eligibility and income limits vary by program. Visit the manufacturer's official site for current terms.
-        </p>
-      </div>
-    </details>
-  </section>
   <!-- End Insurance Tier Accordion -->
 
 
@@ -734,7 +682,7 @@
   <section class="cta-band" aria-labelledby="ctaTitle">
     <div class="cta-wrap">
       <div class="cta-card">
-        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand"></span></h2>
+        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand">Wegovy</span></h2>
         <p class="cta-sub">Enter your email and we’ll take you to the official savings page.</p>
         <form class="form" id="footerForm">
           <div class="form-row">
@@ -787,31 +735,7 @@
   <!-- Related category -->
   <p class="drug-category-link">Part of <a href="/categories/weight-loss/">Weight Loss &amp; GLP-1</a> — see all 8 medications</p>
 
-  <footer class="footer">
-    <div class="container grid">
-      <div>
-        <a class="logo" href="/"><img src="/assets/img/logo.svg" alt="SaveRx.ai" height="28"></a>
-        <p class="muted" style="color:#cbd5e1; max-width:52ch; margin-top:var(--s-4)">
-          SaveRx.ai links you to official manufacturer savings programs. We are not a pharmacy.
-        </p>
-      </div>
-      <div>
-        <h4 style="margin-top:0;color:#fff">Quick Links</h4>
-        <div><a href="/">Home</a></div>
-        <div><a href="/drugs/">Drugs</a></div>
-        <div><a href="/about.html">About</a></div>
-        <div><a href="/contact.html">Contact</a></div>
-      </div>
-      <div>
-        <h4 style="margin-top:0;color:#fff">Legal</h4>
-        <div><a href="/privacy.html">Privacy Policy</a></div>
-        <div><a href="/terms.html">Terms of Service</a></div>
-        <div><a href="#" data-consent-toggle>Cookie settings</a></div>
-      </div>
-      <div>
-        <h4 style="margin-top:0;color:#fff">Newsletter</h4>
-        <!-- Footer newsletter: note data-newsletter + .form-msg -->
-        <form data-newsletter novalidate>
+  <footer class="relief-footer"><div class="relief-footer-top"><div><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true">✳</span>SaveRx<small>.ai</small></a><p>A little less out of pocket. A little more life.</p><div class="relief-newsletter"><p>Savings tips in your inbox</p><form data-newsletter novalidate>
           <input
             type="email"
             name="email"
@@ -821,22 +745,7 @@
             style="width:100%;margin-bottom:var(--s-3);padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1220;color:#e2e8f0">
           <button class="btn btn-primary" type="submit">Subscribe</button>
           <p class="form-msg" role="status" aria-live="polite"></p>
-        </form>
-        <small>By subscribing, you agree to receive emails from SaveRx.ai and partners.</small>
-      </div>
-
-    </div>
-
-    <div class="footer-disclaimer">
-      <div class="container">
-        <small>
-          SaveRx.ai is an independent educational platform that provides information about official manufacturer savings programs.
-          We do not sell, distribute, or process prescriptions. All trademarks are property of their respective owners.
-          Actual savings and eligibility vary by program.
-        </small>
-      </div>
-    </div>
-  </footer>
+        </form></div></div><nav aria-label="Footer navigation" class="relief-footer-nav"><a href="/categories/">Conditions</a><a href="/comparisons.html">Compare programs</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="#" data-consent-toggle>Cookie settings</a></nav></div><p class="relief-legal">SaveRx is not a pharmacy or insurance provider. Information is educational and is not medical advice. Eligibility, savings, and program availability vary; confirm current terms with the manufacturer. Medication names belong to their respective owners. © 2026 SaveRx.ai.</p></footer>
 
   <!-- Shared site JS -->
   <script defer src="/assets/scripts.js?v=2025-10-03"></script>
@@ -851,7 +760,7 @@
       const $  = (sel, root=document)=> root.querySelector(sel);
       const $$ = (sel, root=document)=> Array.from(root.querySelectorAll(sel));
       const money = n => {
-        const f = Number(n);
+        const f = window.SaveRxDrugData.amount(n);
         return Number.isFinite(f) ? `$${f.toLocaleString()}` : "$—";
       };
 
@@ -930,37 +839,11 @@
 
       async function load(){
         try{
-          const u = `${API}?mode=drug&slug=${encodeURIComponent(slug)}`;
-          const res = await fetch(u, { cache: "no-cache" });
-          const json = await res.json();
-          let d = (json && json.item) ? json.item : null;
-
-          // Fallback: if no per-drug data, try featured list (has all 360 drugs + manufacturer URLs)
-          if (!d) {
-            try {
-              const fr = await fetch(`${API}?mode=featured`, { cache: 'no-cache' });
-              const fj = await fr.json();
-              const match = (fj.items || []).find(i => {
-                const n = (i.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/, '');
-                return n === slug;
-              });
-              if (match) d = {
-                brand: match.name,
-                generic: match.generic || '',
-                manufacturer: match.manufacturer || '',
-                manufacturerUrl: match.url || '',
-                cash_price: match.cash_price,
-                copay_price: match.as_low_as,
-                drug_class: match.drug_class || '',
-                indication: match.indication || '',
-                description: match.description || ''
-              };
-            } catch (e) { /* silent */ }
-          }
+          let d = await window.SaveRxDrugData.load(API, slug);
           d = d || {};
 
-          const cash = Number(d.cash_price);
-          const copay = Number(d.copay_price);
+          const cash = window.SaveRxDrugData.amount(d.cash_price);
+          const copay = window.SaveRxDrugData.amount(d.copay_price);
           const perFill = (Number.isFinite(cash) && Number.isFinite(copay)) ? Math.max(cash - copay, 0) : null;
 
           const fy = Number(d.fills_per_year);
@@ -1019,7 +902,23 @@
           if (rxAboutDesc  && d.description) rxAboutDesc.textContent  = d.description;
           if (rxAbout && (d.drug_class || d.indication || d.description)) rxAbout.style.display = '';
 
-          window.__manufacturerUrl = d.manufacturerUrl || '/';
+          // Do not let an unavailable program silently route to the homepage.
+          const sourceReady = /^https?:\/\//i.test(String(d.manufacturerUrl || ''));
+          const sourceStatus = document.querySelector('.relief-source-status');
+          if (sourceStatus) {
+            sourceStatus.hidden = sourceReady;
+            sourceStatus.textContent = 'Current savings information is unavailable. Please try again later or contact help@saverx.ai. No price or eligibility is confirmed.';
+          }
+          document.querySelectorAll('.js-check-savings, .js-accordion-cta, #footerSubmit').forEach(el => {
+            if (el.tagName === 'BUTTON') el.disabled = !sourceReady;
+            el.setAttribute('aria-disabled', String(!sourceReady));
+            if (!sourceReady && el.tagName === 'A') {
+              el.setAttribute('tabindex', '-1');
+              el.addEventListener('click', event => event.preventDefault(), {capture:true});
+              el.onclick = () => false;
+            }
+          });
+          window.__manufacturerUrl = sourceReady ? d.manufacturerUrl : '';
           window.__drugName = model.brand || slug;
           const modalDrug = $("#modal-drug");
           if (modalDrug) modalDrug.value = window.__drugName;
@@ -1092,6 +991,14 @@
         }
       }
 
+      // No form should open a misleading destination when the data source fails.
+      for (const formId of ['modal-lead-form', 'footerForm']) {
+        document.getElementById(formId)?.addEventListener('submit', event => {
+          if (!/^https?:\/\//i.test(String(window.__manufacturerUrl || ''))) {
+            event.preventDefault(); event.stopImmediatePropagation();
+          }
+        }, {capture:true});
+      }
       // Modal lead submit
       $("#modal-lead-form")?.addEventListener("submit", (e)=>{
         e.preventDefault();
@@ -1258,5 +1165,5 @@
       return false;
     };
   </script>
-</body>
+<script defer src="/assets/js/relief.js"></script></body>
 </html>

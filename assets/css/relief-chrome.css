@@ -1,0 +1,38 @@
+/* Shared identity; intentionally separate from page-specific legacy styles. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+.relief-header, .relief-footer { font-family:var(--font-sans); color:var(--text); box-sizing:border-box; }
+.relief-header { position:relative; z-index:30; height:98px; margin:0 5%; padding:0; display:flex; align-items:center; justify-content:space-between; border:0; border-bottom:1px solid var(--border); background:var(--bg); }
+.relief-header .relief-logo, .relief-footer .relief-logo { display:inline-flex; align-items:center; gap:10px; font:800 29px Manrope,sans-serif; letter-spacing:-1.7px; text-decoration:none; color:var(--text); white-space:nowrap; }
+.relief-logo .relief-mark { color:var(--teal); font-size:40px; display:inline-block; transform:rotate(-14deg); line-height:1; }
+.relief-logo small { font-size:15px; font-weight:500; color:var(--text-2); margin:10px 0 0 -6px; letter-spacing:-.5px; }
+.relief-header .relief-nav { display:flex; align-items:center; gap:30px; font:500 13px var(--font-sans); }
+.relief-nav a { color:var(--text); text-decoration:none; padding:9px 0; }
+.relief-nav a[aria-current=page] { color:var(--teal); }
+.relief-header .relief-nav .relief-nav-cta { border:1px solid var(--border-strong); border-radius:30px; padding:12px 20px; }
+.relief-menu { display:none; background:var(--surface); border:1px solid var(--border-strong); border-radius:10px; padding:10px 14px; font:13px var(--font-sans); color:var(--text); cursor:pointer; }
+.relief-header a:focus-visible, .relief-header button:focus-visible, .relief-footer a:focus-visible { outline:3px solid var(--teal); outline-offset:5px; }
+.relief-footer { background:var(--bg); margin:40px 5% 0; padding:34px 0 25px; border:0; border-top:1px solid var(--border); }
+.relief-footer-top { display:flex; justify-content:space-between; align-items:start; gap:35px; }
+.relief-footer p { font-size:12px; color:var(--text-2); line-height:1.7; }
+.relief-footer-nav { display:flex; gap:20px; flex-wrap:wrap; max-width:540px; font-size:12px; line-height:1.7; }
+.relief-footer a { text-decoration:none; color:var(--text); }
+.relief-footer .relief-legal { margin:30px 0 0; max-width:900px; font-size:11px; }
+.relief-newsletter { margin-top:22px; max-width:360px; }
+.relief-newsletter form { display:flex; gap:8px; flex-wrap:wrap; }
+.relief-newsletter input[type=email] { background:var(--surface); border:1px solid var(--border-strong); border-radius:9px; padding:10px 12px; color:var(--text); min-width:0; flex:1; }
+.relief-newsletter button { border:0; background:var(--teal); color:var(--surface-2); border-radius:9px; padding:10px 14px; cursor:pointer; }
+.relief-newsletter .form-msg { flex-basis:100%; font-size:12px; }
+.relief-skip { position:absolute; top:-80px; }
+.relief-skip:focus { top:0; left:5%; padding:10px; background:var(--surface); z-index:100; }
+@media(max-width:760px) {
+  .relief-header { height:80px; }
+  .relief-header .relief-logo { font-size:25px; }
+  .relief-menu { display:block; }
+  .relief-header .relief-nav { display:none; position:absolute; top:79px; left:0; right:0; flex-direction:column; align-items:stretch; background:var(--surface); border:1px solid var(--border); border-radius:0 0 16px 16px; padding:16px; box-shadow:var(--shadow-md); gap:6px; }
+  .relief-header .relief-nav.is-open { display:flex; }
+  .relief-nav a { padding:12px; }
+  .relief-footer-top { flex-direction:column; gap:24px; }
+}
+@media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+/* Override the prototype's collapsed-nav link rule when the menu opens. */
+.relief-header .relief-nav a { display:block; }
