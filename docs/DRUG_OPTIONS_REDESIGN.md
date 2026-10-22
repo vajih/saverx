@@ -37,3 +37,15 @@ Edit templates/relief/drug/options.html, assets/css/drug-options.css and assets/
 The static checker compares forms, affiliate blocks, preserved scripts and hooks against base c29ac929. It also validates unique IDs, fragment targets, landmarks and absence of duplicate legacy price sections. All 363 drug contracts and the template pass. New model tests cover invalid amounts, quote differences, unverified URLs, checked profile precedence and expiry.
 
 Desktop and 375px mobile checks cover coverage choices, no-price fallback, the same-supply comparator, source links and layouts. No live lead/contact/newsletter forms were submitted. Production release needs the repository's normal human review (DEV_WORKFLOW.md).
+
+## Conversion revision (v2)
+
+The medication name, generic/manufacturer and overview now lead the page. Four coverage choices reveal payment routes only after selection. No commercial price is prefilled in the cost comparator until private insurance is selected.
+
+Directly after the options, every standard page has a guided-enrollment block and an inline email panel, followed by a dedicated pharmacy cash-price section. Guided help links use the existing /get-help/?drug= route; early-access scope and fees remain disclosed. Existing pilot IDs/scripts survive on their five original pages. New guided_enrollment_click analytics events contain placement and public drug slug only, using the existing consent-governed gtag queue.
+
+Email capture reuses footerForm, backend endpoint and submission handler. It now includes a required, unchecked email-updates consent checkbox and explains that submission opens the official program site and sends medication-related emails/follow-ups. No live submission or delivery test was performed. The existing server's email sequence and opt-out behavior are unchanged; the new checkbox is not a new backend consent-audit field.
+
+A dismissible sticky guided-help CTA appears after coverage selection when the main conversion block is out of view, hides around the footer or an open dialog, and stays dismissed for this page load. A departure prompt is shown at most once per page load: desktop top-edge exit after 20 seconds and coverage selection; mobile after 45 seconds near the lower page, as a nonmodal reminder. It skips active forms, typed email and completed submissions. Its email button focuses the same inline form; no duplicate capture form or history interception. All reminder state is in memory, not cookies/localStorage.
+
+scripts/upgrade-drug-conversion.py applies this revision idempotently and is invoked by build-drug-options.py. Shared conversion styling/behavior are assets/css/drug-conversion.css and assets/js/drug-conversion.js. Existing forms are compared against the merged base after excluding only the new consent label. Tests in test/drug-conversion.test.mjs cover reminder gating, dismissal, mobile nonmodal behavior, typed-email suppression and sticky dismissal. Desktop/mobile Repatha and Ozempic layouts were reviewed; the native required-checkbox contract and CTA destinations were checked without submitting forms.

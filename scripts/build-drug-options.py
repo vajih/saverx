@@ -40,3 +40,7 @@ for p in pages:
  # Existing guarded rendering finds no rx-ph-grid and leaves the API/forms unchanged.
  p.write_text(s);count+=1
 print(f'Migrated {count} standard drug pages/templates.')
+
+# Apply the conversion layout after migrating any newly generated pages.
+import subprocess,sys
+subprocess.run([sys.executable,str(ROOT/"scripts/upgrade-drug-conversion.py")],check=True)

@@ -23,7 +23,7 @@
  if(typeof document==='undefined')return;
  const page=document.querySelector('.drug-options-page');if(!page)return;
  const profile=JSON.parse(document.getElementById('drug-page-profile')?.textContent||'{}');
- let record={},coverage='all',loaded=!!window.__saverxDrugRecord;
+ let record={},coverage=null,loaded=!!window.__saverxDrugRecord;
  const $=s=>document.querySelector(s);
  const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:2}).format(n);
  const set=(selector,value)=>{const el=$(selector);if(el)el.textContent=value;};
@@ -39,22 +39,26 @@
   set('[data-drug-supply]',profile.copay?.supply?`For an eligible ${profile.copay.supply}`:'Eligible supply and program terms vary');
   if(profile.copay?.eligibility)set('[data-drug-eligibility]',profile.copay.eligibility);
   set('[data-drug-price-source]',profile.checkedAt?`Manufacturer source checked ${profile.checkedAt}.${o.price===null?' Recheck the current offer.':' Program limits apply.'}`:'SaveRx feed lists this offer when available. Confirm current price and terms on the official site.');
+  link('[data-program-link="self"]',o.url,'Or enroll yourself on the official site ↗');
   link('[data-program-link="copay"]',o.url,o.url?'Review official program ↗':'Program link unavailable');
   link('[data-program-link="source"]',o.url,o.url?'Official program website ↗':'See payment options ↑');
   if(profile.assistance){set('[data-drug-assistance]',profile.assistance.text);link('[data-program-link="assistance"]',profile.assistance.url,`Check ${profile.assistance.name} ↗`);}
+  const cashLink=$('[data-program-link="cash"]');if(cashLink)cashLink.hidden=!profile.cash;
   if(profile.cash){set('[data-drug-cash]',profile.cash.text);link('[data-program-link="cash"]',profile.cash.url,`Review ${profile.cash.name} ↗`);set('[data-drug-cash-note]','Separate manufacturer cash-pay option. Confirm the price and terms before using it.');}
   const desc=profile.about?.text||record.description;
   if(desc)set('#rx-about-desc',desc);
   for(const [id,value] of [['rx-about-class',profile.about?.class||record.drug_class],['rx-about-indication',record.indication]]){const el=document.getElementById(id);if(el){el.hidden=!value;if(value)el.textContent=value;}}
-  if(profile.about?.url)link('[data-drug-about-link]',profile.about.url,'Official drug & safety information ↗');
+  if(profile.about?.url){link('[data-drug-about-link]',profile.about.url,'Official drug & safety information ↗');link('[data-full-drug-info]',profile.about.url,'Official drug & safety information ↗');}
   if(profile.sources){const box=$('[data-drug-sources]');box.replaceChildren();const note=document.createElement('p');note.textContent=`Manufacturer sources checked ${profile.checkedAt}. Offers may change; recheck before using a program.`;box.append(note);for(const source of profile.sources){if(!safeUrl(source.url))continue;const a=document.createElement('a');a.className='drug-text-link';a.href=source.url;a.target='_blank';a.rel='noopener';a.textContent=source.label+' ↗';box.append(a);}}
   const status=$('.drug-source-status');if(status){status.hidden=!!o.url;if(!o.url)status.textContent=loaded?'The manufacturer program link is unavailable. You can still explore assistance resources, compare pharmacy prices, or try again later. No price is confirmed.':'Loading program details. No personal price is confirmed.';}
   // No automatic calculation; the visitor explicitly compares matching supply quotes.
-  const target=$('#your-target');if(o.price!==null&&!target.dataset.edited&&coverage!=='government'&&coverage!=='cash'){target.value=o.price;target.dataset.suggested='true';set('[data-calculator-note]',`The manufacturer program minimum is prefilled as an illustration${profile.copay?.supply?' for a '+profile.copay.supply:''}. Confirm eligibility and use the same supply for both prices.`);}
+  const target=$('#your-target');if(o.price!==null&&!target.dataset.edited&&coverage==='private'){target.value=o.price;target.dataset.suggested='true';set('[data-calculator-note]',`The manufacturer program minimum is prefilled as an illustration${profile.copay?.supply?' for a '+profile.copay.supply:''}. Confirm eligibility and use the same supply for both prices.`);}
  }
  const guidance={all:'Start with the option that matches your coverage. More than one route may be worth checking.',private:'Start with the manufacturer co-pay program. Your plan’s coverage and the program’s limits still determine eligibility and cost.',government:'Commercial co-pay cards generally exclude government coverage. Ask your plan about your benefits; Medicare patients can also check Extra Help. Separate assistance and cash-pay programs have their own rules.',cash:'Compare cash quotes and check assistance criteria. A commercial co-pay card typically requires private prescription insurance.',unsure:'Check your prescription insurance card or ask your pharmacy which plan is being billed. Until then, browse the options without assuming eligibility.'};
  for(const button of document.querySelectorAll('[data-coverage]'))button.addEventListener('click',()=>{
   coverage=button.dataset.coverage;
+  const results=$('[data-payment-results]');if(results)results.hidden=false;
+  window.dispatchEvent(new CustomEvent('saverx:coverage-chosen'));
   for(const b of document.querySelectorAll('[data-coverage]'))b.setAttribute('aria-pressed',String(b===button));
   $('[data-option="copay"]').hidden=['government','cash'].includes(coverage);
   set('#coverage-guidance',guidance[coverage]);
