@@ -29,7 +29,7 @@ body.design-relief { background:var(--bg); color:var(--text); font-family:var(--
 .design-relief .ia-price { color:var(--teal); }
 .design-relief .rx-hero { margin:0; display:block; border:1px solid var(--border-strong); border-radius:22px; background:var(--surface); overflow:hidden; box-shadow:0 8px 0 -3px var(--border); }
 .design-relief .rx-hero-media { height:145px; min-height:0; background:var(--brand-50); overflow:hidden; border:0; border-radius:0; position:relative; }
-.design-relief .rx-hero-media:after { content:'✳'; position:absolute; inset:0; display:grid; place-items:center; color:var(--teal); font-size:90px; font-weight:400; }
+.design-relief .rx-hero-media:after { content:''; width:1em; height:1em; background:currentColor; -webkit-mask:url('/assets/icons/spark.svg') center/contain no-repeat; mask:url('/assets/icons/spark.svg') center/contain no-repeat; position:absolute; inset:0; margin:auto; display:grid; place-items:center; color:var(--teal); font-size:90px; font-weight:400; }
 .design-relief .rx-hero-media picture { display:none; }
 .design-relief .rx-overlay { position:static; transform:none; width:auto; margin:0; padding:0; display:block; }
 .design-relief .rx-card { background:transparent; box-shadow:none; border:0; border-radius:0; padding:25px; width:auto; min-width:0; }

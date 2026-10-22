@@ -1,6 +1,7 @@
 """Apply the Relief reading UI; preserve published article bodies and integrations."""
 from pathlib import Path
 import re,html
+SPARK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:-.125em"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg>'
 ROOT=Path(__file__).resolve().parents[1]
 LEARN=sorted(p for p in (ROOT/'learn').glob('*.html') if p.name!='index.html')
 COMPARE=[ROOT/n for n in ['ozempic-vs-wegovy.html','mounjaro-vs-ozempic.html','wegovy-vs-mounjaro.html']]
@@ -8,12 +9,12 @@ CSS='<link rel="stylesheet" href="/assets/css/article-pages.css">'
 JS='<script src="/assets/js/article-pages.js" defer></script>'
 def plain(s):return html.unescape(re.sub('<[^>]*>','',s)).strip()
 def art(comparison=False,brands=()):
- if comparison:return '<div class="reader-art reader-art-pair" aria-hidden="true"><div class="reader-orbit"></div><div class="reader-note"><small>ONE OPTION</small><span>'+brands[0]+'</span></div><div class="reader-note"><small>ANOTHER OPTION</small><span>'+brands[1]+'</span></div><i>✳</i><p>A little perspective.</p></div>'
- return '<div class="reader-art" aria-hidden="true"><div class="reader-orbit"></div><div class="reader-book"><small>THE SAVERX<br>FIELD GUIDE</small><span>A little<br>clarity.</span><b>✳</b></div><i>✳</i><p>Good questions. Clearer answers.</p></div>'
+ if comparison:return '<div class="reader-art reader-art-pair" aria-hidden="true"><div class="reader-orbit"></div><div class="reader-note"><small>ONE OPTION</small><span>'+brands[0]+'</span></div><div class="reader-note"><small>ANOTHER OPTION</small><span>'+brands[1]+'</span></div><i>'+SPARK+'</i><p>A little perspective.</p></div>'
+ return '<div class="reader-art" aria-hidden="true"><div class="reader-orbit"></div><div class="reader-book"><small>THE SAVERX<br>FIELD GUIDE</small><span>A little<br>clarity.</span><b>'+SPARK+'</b></div><i>'+SPARK+'</i><p>Good questions. Clearer answers.</p></div>'
 def toc(links,mobile=False):
  nav='<nav aria-label="'+('Mobile article contents' if mobile else 'Article contents')+'"><ol class="reader-contents">'+''.join(f'<li><a href="#{id}">{label}</a></li>' for id,label in links)+'</ol></nav>'
  if mobile:return '<details class="reader-mobile-contents"><summary>In this guide <span aria-hidden="true">↗</span></summary>'+nav+'</details>'
- return '<aside class="article-sidebar"><div class="toc-card"><p class="reader-kicker">A LITTLE DIRECTION</p><h2>In this guide</h2>'+nav+'</div><div class="reader-sidebar-note"><span aria-hidden="true">✳</span><h3>Your next small step.</h3><p>Find your medication and explore official manufacturer programs.</p><a href="/drugs/">Explore savings ↗</a></div></aside>'
+ return '<aside class="article-sidebar"><div class="toc-card"><p class="reader-kicker">A LITTLE DIRECTION</p><h2>In this guide</h2>'+nav+'</div><div class="reader-sidebar-note"><span aria-hidden="true">'+SPARK+'</span><h3>Your next small step.</h3><p>Find your medication and explore official manufacturer programs.</p><a href="/drugs/">Explore savings ↗</a></div></aside>'
 def related(current,comparison=False):
  pages=[p for p in (COMPARE if comparison else LEARN) if p!=current][:3]
  cards=[]
