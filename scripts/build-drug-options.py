@@ -44,3 +44,7 @@ print(f'Migrated {count} standard drug pages/templates.')
 # Apply the conversion layout after migrating any newly generated pages.
 import subprocess,sys
 subprocess.run([sys.executable,str(ROOT/"scripts/upgrade-drug-conversion.py")],check=True)
+
+# Restore shared browser/sharing identity after page generation.
+import subprocess, sys
+subprocess.run([sys.executable, str(ROOT / "scripts/build-brand-assets.py")], check=True)

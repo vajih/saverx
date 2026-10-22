@@ -223,3 +223,7 @@ subprocess.run([sys.executable, str(ROOT / "scripts/build-support-pages.py")], c
 
 # Apply the options-first layout to new standard drug pages.
 subprocess.run([sys.executable,str(ROOT/"scripts/build-drug-options.py")],check=True)
+
+# Restore shared browser/sharing identity after page generation.
+import subprocess, sys
+subprocess.run([sys.executable, str(ROOT / "scripts/build-brand-assets.py")], check=True)
