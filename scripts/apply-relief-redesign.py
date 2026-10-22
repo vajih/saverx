@@ -115,6 +115,8 @@ paths += [p for p in (ROOT/'drugs').rglob('*.html') if p != ROOT/'drugs/index.ht
 paths += [ROOT/'templates/index.html', ROOT/'get-help/index.html']
 changed=0
 for p in paths:
+    if p.relative_to(ROOT).as_posix() in {'about.html', 'contact.html', 'comparisons.html'}:
+        continue
     s=p.read_text()
     if 'design-relief' in s:continue
     s=re.sub(r'<body([^>]*)class="([^"]*)"',r'<body\1class="\2 design-relief"',s,count=1)
@@ -214,3 +216,7 @@ for p in footer_paths:
 for p in footer_paths | set(paths + [ROOT/'index.html', ROOT/'drugs/index.html', ROOT/'categories/index.html', ROOT/'learn/index.html'] + list((ROOT/'categories').glob('*/index.html'))):
     if p.exists():
         p.write_text('\n'.join(line.rstrip() for line in p.read_text().splitlines())+'\n')
+
+# Supporting-page templates own their structure after the base migration.
+import subprocess, sys
+subprocess.run([sys.executable, str(ROOT / "scripts/build-support-pages.py")], check=True)
