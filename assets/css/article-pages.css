@@ -159,3 +159,6 @@ body.reader-comparison .reader-table-wrap table { margin:0; }
 @media(prefers-reduced-motion:reduce) { .reader-related-card { transition:none; } }
 /* Keep the first mobile screen focused on the title and reading controls. */
 @media(max-width:800px) { .reader-page .article-hero .reader-art { display:none; } }
+
+/* Respect dismissed dialogs and other native hidden states on reading pages. */
+.reader-page [hidden] { display:none!important; }
