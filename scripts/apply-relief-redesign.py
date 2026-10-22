@@ -14,7 +14,7 @@ CATEGORIES = json.loads((ROOT / 'data/categories.json').read_text())['categories
 ITEMS = json.loads((ROOT / 'data/drugs.json').read_text())['items']
 ITEMS = [m for m in ITEMS if re.fullmatch(r'[a-z0-9-]+', m.get('slug', '')) and (ROOT / 'drugs' / m['slug'] / 'index.html').exists()]
 HEADER = (TEMPLATES / 'header.html').read_text()
-FOOTER = (TEMPLATES / 'footer.html').read_text()
+FOOTER = (TEMPLATES / 'footer.html').read_text().rstrip()
 # Existing category mappings occasionally use aliases instead of directory slugs.
 ALIASES = {'trelegy': 'trelegy-ellipta', 'nurtec': 'nurtec-odt'}
 def category_slugs(cat):
@@ -193,7 +193,24 @@ for p in list((ROOT/'drugs').glob('*/index.html')) + [ROOT/'templates/index.html
         s = s.replace('<span data-bind="brand"></span>', '<span data-bind="brand">'+name+'</span>')
     p.write_text(s)
 
+# Keep the shared footer current even on pages already migrated to the redesign.
+# Internal tools, email templates, prototypes, and test fixtures use separate shells.
+footer_paths = set(paths + [ROOT/'index.html', ROOT/'drugs/index.html',
+    ROOT/'categories/index.html', ROOT/'learn/index.html', ROOT/'conditions/index.html',
+    ROOT/'get-glp1.html'] + list((ROOT/'categories').glob('*/index.html')))
+for p in footer_paths:
+    source = p.read_text()
+    match = re.search(r'<footer\b[^>]*class="[^"]*(?:relief-footer|footer)[^"]*"[^>]*>.*?</footer>', source, re.S)
+    shared = FOOTER.replace('{{NEWSLETTER}}', newsletter(match[0]) if match else '')
+    if match:
+        source = source[:match.start()] + shared + source[match.end():]
+    else:
+        source = source.replace('</body>', shared + '</body>', 1)
+    if '/assets/css/relief-chrome.css' not in source:
+        source = source.replace('</head>', '<link rel="stylesheet" href="/assets/css/relief-chrome.css"></head>', 1)
+    p.write_text(source)
+
 # Stable formatting keeps generated changes reviewable and reruns byte-identical.
-for p in set(paths + [ROOT/'index.html', ROOT/'drugs/index.html', ROOT/'categories/index.html', ROOT/'learn/index.html'] + list((ROOT/'categories').glob('*/index.html'))):
+for p in footer_paths | set(paths + [ROOT/'index.html', ROOT/'drugs/index.html', ROOT/'categories/index.html', ROOT/'learn/index.html'] + list((ROOT/'categories').glob('*/index.html'))):
     if p.exists():
         p.write_text('\n'.join(line.rstrip() for line in p.read_text().splitlines())+'\n')

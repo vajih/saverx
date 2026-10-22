@@ -26,8 +26,8 @@
 
 /* Base (unchanged for desktop) */
 #saverx-chat { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-#saverx-panel { 
-  width: 340px; height: 420px; 
+#saverx-panel {
+  width: 340px; height: 420px;
   display: grid; grid-template-rows: auto 1fr auto; gap: 8px;
   background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px;
   box-shadow: 0 10px 30px rgba(0,0,0,.18); margin-bottom: 10px;
@@ -63,4 +63,3 @@
   /* Let the log area scroll comfortably */
   #srx-log { overflow: auto; -webkit-overflow-scrolling: touch; }
 }
-
