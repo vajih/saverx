@@ -1,23 +1,23 @@
 :root {
   /* === Canvas (Asma's paper palette) === */
-  --bg: #f1efe8;                /* warm cream body background */
-  --surface: #fdfcfa;           /* card/panel background */
+  --bg: #f8f7f2;                /* warm cream body background */
+  --surface: #fffefa;           /* card/panel background */
   --surface-2: #ffffff;         /* elevated surface when needed */
   --bg-soft: #fdfcfa;           /* alias for legacy components */
 
   /* === Text === */
-  --text: #2c2c2a;              /* primary text, warm near-black */
-  --text-2: #5f5e5a;            /* secondary text */
+  --text: #26362f;              /* primary text, warm near-black */
+  --text-2: #6b716a;            /* secondary text */
   --text-3: #9a9a92;            /* tertiary / metadata */
-  --text-muted: #5f5e5a;        /* alias for legacy components */
+  --text-muted: #6b716a;        /* alias for legacy components */
 
   /* === Borders === */
   --border: rgba(44, 44, 42, 0.12);
   --border-strong: rgba(44, 44, 42, 0.20);
 
   /* === Primary (teal) === */
-  --teal: #0b6e5c;
-  --teal-dark: #084d3f;
+  --teal: #313dc5;
+  --teal-dark: #272e9a;
   --teal-mid: #1a9478;
   --teal-light: #e1f5ee;
 
@@ -53,7 +53,7 @@
   --radius-pill: 999px;
 
   /* === Typography === */
-  --font-sans: -apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans: "DM Sans", -apple-system, "system-ui", "Segoe UI", Helvetica, Arial, sans-serif;
   --fs-hero: clamp(28px, 5vw, 48px);
   --fs-h1: 32px;
   --fs-h2: 24px;
@@ -95,4 +95,135 @@ h1, h2, h3, h4 {
   font-weight: var(--fw-medium);
   color: var(--text);
   line-height: 1.15;
+}
+
+/* Relief identity: intentional evolution of the shared brand aliases. */
+:root {
+  --brand: var(--teal);
+  --accent: var(--teal);
+  --brand-500: var(--teal);
+  --brand-600: var(--teal);
+  --brand-700: var(--teal-dark);
+  --brand-50: #eaeaf8;
+  --border: #dedfd5;
+  --border-strong: #c9cdbd;
+}
+
+/* Soft sculpture, focus and surface tones used by relief.css. */
+:root {
+  --relief-art-1: #eee;
+  --relief-art-2: #fff;
+  --relief-art-3: #3331;
+  --relief-art-4: #3d428a;
+  --relief-art-5: #526140;
+  --relief-art-6: #53568f;
+  --relief-art-7: #535ba1;
+  --relief-art-8: #5c6c4d;
+  --relief-art-9: #5d8ea7;
+  --relief-art-10: #5f704e;
+  --relief-art-11: #637659;
+  --relief-art-12: #638c61;
+  --relief-art-13: #64734e;
+  --relief-art-14: #66715c;
+  --relief-art-15: #686f66;
+  --relief-art-16: #687161;
+  --relief-art-17: #697358;
+  --relief-art-18: #6b65a3;
+  --relief-art-19: #6c7464;
+  --relief-art-20: #718e68;
+  --relief-art-21: #737871;
+  --relief-art-22: #74796e;
+  --relief-art-23: #777c71;
+  --relief-art-24: #787de2;
+  --relief-art-25: #788960;
+  --relief-art-26: #82afcb;
+  --relief-art-27: #83877d;
+  --relief-art-28: #8b8f7d;
+  --relief-art-29: #a8afa1;
+  --relief-art-30: #a95865;
+  --relief-art-31: #afb9a3;
+  --relief-art-32: #b1c39e;
+  --relief-art-33: #b8a36c;
+  --relief-art-34: #b8bcae;
+  --relief-art-35: #b8c2a4;
+  --relief-art-36: #bbc3ae;
+  --relief-art-37: #c2bee9;
+  --relief-art-38: #c5ccb3;
+  --relief-art-39: #c7cbb7;
+  --relief-art-40: #c7cbbf;
+  --relief-art-41: #c8c29d;
+  --relief-art-42: #c9cafa;
+  --relief-art-43: #c9cdbd;
+  --relief-art-44: #cdd1c3;
+  --relief-art-45: #cfd4c3;
+  --relief-art-46: #d2d7c8;
+  --relief-art-47: #d4dbe8;
+  --relief-art-48: #d8dccc;
+  --relief-art-49: #d9b85c;
+  --relief-art-50: #d9ddce;
+  --relief-art-51: #d9ddcf;
+  --relief-art-52: #d9dfc7;
+  --relief-art-53: #dadcd0;
+  --relief-art-54: #dde2d1;
+  --relief-art-55: #dedfd4;
+  --relief-art-56: #dedfd5;
+  --relief-art-57: #e1e8d3;
+  --relief-art-58: #e2e2f1;
+  --relief-art-59: #e2eaf0;
+  --relief-art-60: #e3e6ef;
+  --relief-art-61: #e3e99e;
+  --relief-art-62: #e4c56e;
+  --relief-art-63: #e4e2ff;
+  --relief-art-64: #e4e9dd;
+  --relief-art-65: #e6e5f4;
+  --relief-art-66: #e6e6f3;
+  --relief-art-67: #e6e7de;
+  --relief-art-68: #e6e7f2;
+  --relief-art-69: #e7e7dc;
+  --relief-art-70: #e8eade;
+  --relief-art-71: #e8eadf;
+  --relief-art-72: #e9e7f7;
+  --relief-art-73: #e9e8f4;
+  --relief-art-74: #e9eadf;
+  --relief-art-75: #e9ecdf;
+  --relief-art-76: #e9edde;
+  --relief-art-77: #eaece0;
+  --relief-art-78: #ebecfa;
+  --relief-art-79: #eceee3;
+  --relief-art-80: #edaaa5;
+  --relief-art-81: #edeee6;
+  --relief-art-82: #edefe5;
+  --relief-art-83: #eeeddf;
+  --relief-art-84: #eeeee4;
+  --relief-art-85: #eeeee5;
+  --relief-art-86: #eefcff;
+  --relief-art-87: #eff0e7;
+  --relief-art-88: #f0ebd8;
+  --relief-art-89: #f0f2e8;
+  --relief-art-90: #f1e3df;
+  --relief-art-91: #f1f1fc;
+  --relief-art-92: #f3f5e7;
+  --relief-art-93: #f4e5d7;
+  --relief-art-94: #fafaf5;
+  --relief-art-95: #fff0b4;
+  --relief-art-96: #fff7c7;
+  --relief-art-97: #fffdf2;
+  --relief-art-98: #fffefa;
+  --relief-art-99: #fffff9;
+  --relief-art-100: #ffffff;
+  --relief-art-101: #26362f09;
+  --relief-art-102: #26362f25;
+  --relief-art-103: #29362d09;
+  --relief-art-104: #3c3b4020;
+  --relief-art-105: #53624626;
+  --relief-art-106: #54549824;
+  --relief-art-107: #57557f25;
+  --relief-art-108: #63724a20;
+  --relief-art-109: #71805b10;
+  --relief-art-110: #73835c25;
+  --relief-art-111: #756f4420;
+  --relief-art-112: #7c73ac40;
+  --relief-art-113: #7c86562a;
+  --relief-art-114: #87987436;
+  --relief-art-115: #a38c4930;
 }
