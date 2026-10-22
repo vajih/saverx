@@ -220,3 +220,6 @@ for p in footer_paths | set(paths + [ROOT/'index.html', ROOT/'drugs/index.html',
 # Supporting-page templates own their structure after the base migration.
 import subprocess, sys
 subprocess.run([sys.executable, str(ROOT / "scripts/build-support-pages.py")], check=True)
+
+# Apply the options-first layout to new standard drug pages.
+subprocess.run([sys.executable,str(ROOT/"scripts/build-drug-options.py")],check=True)

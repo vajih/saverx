@@ -10,7 +10,8 @@ let scripts=0,drugs=0;
 for(const file of files){
  const html=fs.readFileSync(file,'utf8');
  for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)){
-  if(!match[2].trim() || /type=["']application\/ld\+json/.test(match[1]))continue;
+  if(!match[2].trim())continue;
+  if (/type=["']application\/(?:ld\+)?json/.test(match[1])) { JSON.parse(match[2]); continue; }
   new vm.Script(match[2],{filename:file});scripts++;
  }
  if(/^drugs\/[^/]+\/index.html$/.test(file) && html.includes('SaveRxDrugData.load')){

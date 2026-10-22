@@ -1,0 +1,38 @@
+{
+  "repatha": {
+    "brand": "Repatha",
+    "generic": "evolocumab",
+    "manufacturer": "Amgen",
+    "checkedAt": "2026-10-22",
+    "copay": {
+      "price": 25,
+      "supply": "1-month supply",
+      "maxAgeDays": 30,
+      "url": "https://www.repatha.com/enrollment",
+      "terms": "https://www.repatha.com/copaytcs",
+      "source": "https://www.repatha.com/repatha-cost",
+      "eligibility": "For eligible patients with commercial prescription insurance. Government-insured patients cannot use this co-pay card. Program limits and plan requirements apply."
+    },
+    "assistance": {
+      "name": "Amgen Safety Net Foundation",
+      "url": "https://www.amgensafetynetfoundation.com/",
+      "text": "Financial-need and coverage requirements apply. Use the foundation’s eligibility criteria to check your situation; assistance is not guaranteed."
+    },
+    "cash": {
+      "name": "AmgenNow",
+      "url": "https://www.amgennow.com/",
+      "text": "Amgen offers a separate cash-pay route. Check its current price and terms, then compare with your insurance cost."
+    },
+    "about": {
+      "class": "PCSK9 inhibitor",
+      "text": "Repatha is an injectable prescription medicine used to lower LDL cholesterol and, for certain adults, reduce the risk of major cardiovascular events. Your prescriber can explain whether it is appropriate for you.",
+      "url": "https://www.repatha.com/"
+    },
+    "sources": [
+      {"label": "Repatha cost & coverage", "url": "https://www.repatha.com/repatha-cost"},
+      {"label": "Co-pay card terms", "url": "https://www.repatha.com/copaytcs"},
+      {"label": "Amgen financial support", "url": "https://www.amgensupportplus.com/repatha/financial-support"},
+      {"label": "About Repatha & safety information", "url": "https://www.repatha.com/"}
+    ]
+  }
+}
