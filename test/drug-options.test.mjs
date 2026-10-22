@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const ctx=vm.createContext({URL});vm.runInContext(fs.readFileSync('assets/js/drug-options.js','utf8'),ctx);const api=ctx.SaveRxDrugOptions;
+const profile=JSON.parse(fs.readFileSync('data/drug-option-profiles.json','utf8')).repatha;
+const now=Date.parse('2026-10-22T12:00:00Z');
+test('unknown, invalid and negative amounts never become a free offer',()=>{for(const value of [null,undefined,'',true,false,'bad',-1,Infinity])assert.equal(api.amount(value),null);assert.equal(api.amount(0),0);assert.equal(api.amount('$1,234.50'),1234.5);});
+test('quote comparison uses the visitor quote and allows a higher compared price',()=>{assert.equal(api.difference(100,25),75);assert.equal(api.difference(10,25),-15);assert.equal(api.difference(25,25),0);assert.equal(api.difference('',25),null);});
+test('Repatha uses the checked manufacturer offer rather than older feed values',()=>{const x=api.offer({copay_price:5,manufacturerUrl:'https://example.com'},profile,now);assert.equal(x.price,25);assert.equal(x.url,'https://www.repatha.com/enrollment');});
+test('expired checked offer cannot fall back to stale feed pricing',()=>{const x=api.offer({copay_price:5},profile,Date.parse('2027-01-01T00:00:00Z'));assert.equal(x.price,null);assert.equal(x.url,'https://www.repatha.com/enrollment');});
+test('no program URL means no displayed program price',()=>{assert.equal(api.offer({copay_price:0,manufacturerUrl:'javascript:alert(1)'},{},now).price,null);assert.equal(api.safeUrl('/'),null);assert.equal(api.safeUrl('http://example.com'),null);assert.equal(api.offer({copay_price:0,manufacturerUrl:'https://example.com'},{},now).price,0);});

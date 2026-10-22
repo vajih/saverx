@@ -255,9 +255,9 @@
     window.SAVERX_API = "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
     window.SAVERX_FORM_API = "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
   </script>
-<link rel="stylesheet" href="/assets/css/relief-legacy.css"><link rel="stylesheet" href="/assets/css/relief-chrome.css"><script src="/assets/js/drug-data.js"></script></head>
+<link rel="stylesheet" href="/assets/css/relief-legacy.css"><link rel="stylesheet" href="/assets/css/relief-chrome.css"><script src="/assets/js/drug-data.js"></script><link rel="stylesheet" href="/assets/css/drug-options.css"></head>
 
-<body class="design-v2 theme-light design-relief">
+<body class="design-v2 theme-light design-relief drug-options-page">
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -281,255 +281,37 @@
   <!-- =======================
        ORIGINAL MAIN CONTENT (unchanged)
        ======================= -->
-  <main id="main-content" class="container section-pad">
-    <div class="relief-source-status" role="status" aria-live="polite">Loading current program information…</div><section class="rx-lede"><div class="relief-breadcrumb"><a href="/">Home</a> / <a href="/drugs/">Medications</a> / <span data-bind="brand">Tresiba</span></div>
-      <h1 class="rx-title"><span data-bind="brand">Tresiba</span><span class="relief-drug-subtitle">Let’s explore your options.</span></h1>
-      <p class="rx-sub">
-        <b>(<span data-bind="generic"></span>) •  <span data-bind="manufacturer"></span></b><br>
-        Lower your out-of-pocket cost on <span data-bind="brand">Tresiba</span>.
-        Eligible patients may qualify for a manufacturer copay program.
-      </p>
-      <!-- Drug class + indication badges (populated by JS from API) -->
-      <div class="rx-meta-tags" id="rx-meta-tags" style="display:none">
-        <span class="rx-tag rx-tag--class" id="rx-tag-class"></span>
-        <span class="rx-tag rx-tag--indication" id="rx-tag-indication"></span>
-      </div>
-    </section>
-
-    <!-- Hero: image + overlay price card -->
-    <div class="relief-drug-layout"><section class="insurance-accordion" data-saverx-insurance-accordion aria-labelledby="ia-title">
-    <h2 class="insurance-accordion__title" id="ia-title">What will I pay?</h2>
-
-    <!-- ── Card 1: Private / Commercial Insurance (open by default) ── -->
-    <details open>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">Private insurance</span>
-          <span class="ia-sub">Employer or marketplace plan</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price" data-bind="copay_price_formatted">$—</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <div class="ia-hero-price" data-bind="copay_price_formatted">$—</div>
-        <p class="ia-hero-label">per 30-day supply with copay card</p>
-        <p class="ia-cash-strike">Typical cash price: <s data-bind="cash_price_formatted">$—</s>/mo</p>
-        <span class="ia-savings-pill">Save up to <span data-bind="per_fill_savings">$—</span> per fill</span>
-        <div>
-          <a class="btn-primary-pill js-accordion-cta" href="#" target="_blank" rel="noopener" onclick="return window.__openAccordionCta(event)">
-            Get <span data-bind="manufacturer">Manufacturer</span> Savings Card ↗
-          </a>
-        </div>
-      </div>
-    </details>
-
-    <!-- ── Card 2: Government Insurance (collapsed by default) ── -->
-    <details>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">Government insurance</span>
-          <span class="ia-sub">Medicare, Medicaid, CHIP, TRICARE</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price--unavail">Unavailable</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <span class="ia-warn-label">Not eligible</span>
-        <div class="ia-explanation">
-          <strong>Manufacturer copay cards cannot legally be used with Medicare, Medicaid, CHIP, or other government insurance.</strong>
-          Federal anti-kickback regulations prohibit using these programs when any portion of the drug is paid by a federal health plan.
-          <br><br>
-          <strong>Options for government beneficiaries:</strong>
-          <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 14px;">
-            <li><a href="https://www.medicare.gov/drug-coverage-part-d" target="_blank" rel="noopener">Medicare Part D Extra Help (LIS)</a> — low-income subsidy program</li>
-            <li><a href="https://www.needymeds.org/" target="_blank" rel="noopener">NeedyMeds.org</a> — patient assistance programs by drug</li>
-            <li><a href="https://www.rxassist.org/" target="_blank" rel="noopener">RxAssist.org</a> — manufacturer patient assistance programs</li>
-          </ul>
-        </div>
-      </div>
-    </details>
-
-    <!-- ── Card 3: No Insurance / Cash Pay (collapsed by default) ── -->
-    <details>
-      <summary>
-        <div class="ia-left">
-          <span class="ia-type">No insurance / cash pay</span>
-          <span class="ia-sub">Self-pay patients</span>
-        </div>
-        <div class="ia-right">
-          <span class="ia-price" style="font-size:14px;">See options</span>
-          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </summary>
-      <div class="ia-body">
-        <p style="font-size:15px; color:var(--text); margin:16px 0 8px;">
-          Without insurance, the manufacturer may offer a separate <strong>Patient Assistance Program (PAP)</strong>
-          for patients who qualify based on income. These programs can provide the medication at low or no cost.
-        </p>
-        <div class="ia-explanation" style="background:var(--info-bg); border-left-color:var(--info);">
-          <strong style="color:var(--info);">Manufacturer Patient Assistance:</strong><br>
-          Many patients without insurance qualify directly through the manufacturer.
-          <a class="js-accordion-cta" href="#" onclick="return window.__openAccordionCta(event)" style="color:var(--teal); font-weight:600;">
-            Check <span data-bind="manufacturer">manufacturer</span> patient assistance →
-          </a>
-        </div>
-        <p style="font-size:13px; color:var(--text-3); margin:12px 0 0;">
-          Eligibility and income limits vary by program. Visit the manufacturer's official site for current terms.
-        </p>
-      </div>
-    </details>
-  </section><section class="rx-hero">
-      <div class="rx-hero-media">
-        <picture>
-          <source media="(max-width: 640px)" srcset="/assets/img/hero-1200.jpg" data-src="hero_portrait">
-          <img src="/assets/img/hero-1200.jpg" alt="" data-src="hero_landscape" loading="eager">
-        </picture>
-      </div>
-
-      <div class="rx-overlay">
-        <div class="rx-card">
-          <p class="rx-head">Prescription Cost</p>
-          <div class="rx-row">
-            <div class="rx-k">Without copay card</div>
-            <div class="rx-v"><s data-bind="cash_price_formatted">$—</s></div>
-          </div>
-          <div class="rx-row">
-            <div class="rx-k">With copay card</div>
-            <div class="rx-v" data-bind="copay_price_formatted">$—</div>
-          </div>
-          <div class="rx-row">
-            <div class="rx-k">Savings per prescription</div>
-            <div class="rx-v" data-bind="per_fill_savings">$—</div>
-          </div>
-          <div class="rx-row">
-            <div class="rx-k">Potential annual savings</div>
-            <div class="rx-v" data-bind="annual_savings_formatted">$—</div>
-          </div>
-          <div class="rx-cta">
-            <button class="btn btn-primary js-check-savings" type="button">Check savings</button>
-          </div>
-        </div>
-      </div>
-    <p class="relief-source-note">Manufacturer savings are subject to eligibility and program limits. Confirm the current terms on the official program website.</p></section></div>
-
-    <!-- Body: titles, bullets, testimonial, table, disclaimer -->
-    <section class="rx-body" style="margin-top:16px;">
-      <div class="rx-left">
-        <h2 class="rx-title"><span data-bind="brand">Tresiba</span> Savings</h2>
-        <p class="rx-sub"><b><span data-bind="generic"></span> by <span data-bind="manufacturer"></span></b></p>
-
-        <ul class="rx-bullets" id="rx-bullets"><!-- Bullets inserted here --></ul>
+  <script type="application/json" id="drug-page-profile">{"brand": "Tresiba"}</script>
+<main id="main-content" class="drug-main">
+ <nav class="drug-crumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/drugs/">Medications</a><span>/</span><span data-bind="brand">Tresiba</span></nav>
+ <header class="drug-intro"><div><p class="drug-eyebrow">A LITTLE CLARITY ON COST</p><h1><span data-bind="brand">Tresiba</span><em>Your options, unpacked.</em></h1><p class="drug-identity" data-drug-identity>Prescription medication</p><p class="drug-deck">Start with your coverage. Compare ways to pay. Leave with a next step.</p></div><div class="drug-paper-art" aria-hidden="true"><div class="drug-paper-circle"></div><div class="drug-paper"><small>THE SAVERX FIELD NOTES</small><span>A little less<br>out of pocket.</span><b>✳</b></div><i>✳</i><p>Let’s make the fine print feel smaller.</p></div></header>
+ <nav class="drug-jump" aria-label="On this page"><a href="#payment-options">Ways to pay</a><a href="#your-savings">Your savings</a><a href="#about-medication">About this medication</a><a href="#next-steps">Next steps</a></nav>
+ <section id="payment-options" class="drug-section"><div class="drug-section-heading"><div><p class="drug-eyebrow">01 / FIND YOUR STARTING POINT</p><h2>How are you paying?</h2></div><p>Coverage changes which programs may fit.<br>You can explore without sharing personal information.</p></div>
+ <div class="drug-coverage" role="group" aria-label="Your coverage"><button type="button" data-coverage="all" aria-pressed="true">Show all options</button><button type="button" data-coverage="private" aria-pressed="false">Private insurance</button><button type="button" data-coverage="government" aria-pressed="false">Medicare / government</button><button type="button" data-coverage="cash" aria-pressed="false">No insurance / cash pay</button><button type="button" data-coverage="unsure" aria-pressed="false">I’m not sure</button></div>
+ <p id="coverage-guidance" class="drug-coverage-guidance" role="status" aria-live="polite">Start with the option that matches your coverage. More than one route may be worth checking.</p>
+ <p class="drug-government-resources" data-government-resources hidden><a href="https://www.ssa.gov/medicare/part-d-extra-help" target="_blank" rel="noopener">Check Medicare Extra Help ↗</a> · For Medicaid or other government coverage, ask your plan about benefits and available support.</p>
+ <div class="relief-source-status drug-source-status" role="status" aria-live="polite">Loading program details. No personal price is confirmed.</div>
+ <div class="drug-options-grid">
+ <article class="drug-option drug-option-copay" data-option="copay"><div class="drug-option-top"><span class="drug-option-symbol" aria-hidden="true">✳</span><span class="drug-audience">COMMERCIAL INSURANCE</span></div><h3>Manufacturer co-pay card</h3><span class="drug-price-prefix" data-drug-price-prefix hidden>As little as</span><div class="drug-price"><span data-drug-copay>Check current offer</span></div><p class="drug-price-label" data-drug-supply>Eligible supply and program terms vary</p><p data-drug-eligibility>A manufacturer card may reduce your share of an insured prescription. Check the specific program’s eligibility, coverage requirements, and benefit limits.</p><a class="drug-button drug-official" data-program-link="copay" href="#program-sources" aria-disabled="true">Review official program ↗</a><p class="drug-option-foot" data-drug-price-source>Offer not independently verified. Confirm current terms with the program.</p></article>
+ <article class="drug-option drug-option-assistance" data-option="assistance"><div class="drug-option-top"><span class="drug-option-symbol" aria-hidden="true">↗</span><span class="drug-audience">FINANCIAL NEED / ELIGIBILITY RULES</span></div><h3>Patient assistance</h3><div class="drug-price drug-price-text">Check eligibility</div><p class="drug-price-label">Availability depends on the program</p><p data-drug-assistance>Some manufacturers or independent foundations offer assistance. Income, insurance, medication, and funding rules vary. A co-pay card link is not confirmation of a separate assistance program.</p><a class="drug-button drug-button-light" data-program-link="assistance" href="https://www.needymeds.org/" target="_blank" rel="noopener">Look up assistance resources ↗</a></article>
+ <article class="drug-option drug-option-cash" data-option="cash"><div class="drug-option-top"><span class="drug-option-symbol" aria-hidden="true">≈</span><span class="drug-audience">PAYING WITHOUT INSURANCE</span></div><h3>Cash & pharmacy discounts</h3><div class="drug-price drug-price-text">Compare quotes</div><p class="drug-price-label">Pharmacy, dose, quantity, and location matter</p><p data-drug-cash>Compare a pharmacy’s cash or discount price with what you would pay using insurance. A discount may not combine with insurance or count toward your deductible.</p><a class="drug-button drug-button-light js-grx-all" data-program-link="cash" href="https://www.goodrx.com/tresiba" target="_blank" rel="noopener sponsored">Compare on GoodRx ↗</a><a class="drug-text-link drug-cash-secondary" data-cash-secondary href="https://www.goodrx.com/tresiba" target="_blank" rel="noopener sponsored" hidden>Also compare pharmacy prices ↗</a><p class="drug-option-foot" data-drug-cash-note>External price comparison. SaveRx does not provide a pharmacy quote.</p></article>
+ </div>
+ <p class="drug-shared-note">Program minimums are not your confirmed price. Eligibility, supply, insurance, benefit limits, and current terms determine what you pay. SaveRx is not a pharmacy or insurer.</p>
+ </section>
+ <section id="your-savings" class="drug-section drug-calculator"><div><p class="drug-eyebrow">02 / PUT IT IN YOUR TERMS</p><h2>What could <em>you</em> save?</h2><p>Use your own out-of-pocket quote, rather than the drug’s list price, to compare the difference for the same medication, dose, quantity, and supply.</p><p class="drug-calculator-note">This calculation stays on this page. No email required.</p></div><form id="drug-savings-calculator"><label for="your-quote">Your current out-of-pocket quote ($)</label><input id="your-quote" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="e.g., 100" required><label for="your-target">Price you want to compare ($)</label><input id="your-target" type="number" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Enter a quoted or program price" required><p class="drug-input-note" data-calculator-note>Enter another price for the same supply. A program minimum is only an illustration until eligibility is confirmed.</p><button class="drug-button" type="submit">Compare my costs ↗</button><output id="drug-savings-result" aria-live="polite">Add both prices to see the difference.</output><p class="drug-input-note">Illustration only. This does not estimate insurance benefits, remaining program limits, deductible credit, or annual savings.</p></form></section>
+ <section id="about-medication" class="drug-section drug-about"><div><p class="drug-eyebrow">03 / THE MEDICATION AT A GLANCE</p><h2>About <span data-bind="brand">Tresiba</span></h2><p class="drug-about-sub">A starting point for your conversation with your care team.</p></div><div id="rx-about"><div class="drug-about-tags"><span id="rx-about-class" hidden></span><span id="rx-about-indication" hidden></span></div><p id="rx-about-desc">A medication overview is not available yet. Ask your prescriber or pharmacist about uses, side effects, interactions, and how to take your prescription.</p><a class="drug-text-link" data-drug-about-link href="#program-sources">See available sources ↗</a><p class="drug-small">This is not a complete medication guide or medical advice. Follow your prescription and the official prescribing information. Discuss treatment changes with your prescriber.</p></div></section>
+ <section id="next-steps" class="drug-section"><div class="drug-section-heading"><div><p class="drug-eyebrow">04 / ONE SMALL STEP AT A TIME</p><h2>Make your next fill easier.</h2></div><a class="drug-text-link" href="/learn/">Visit the savings guides ↗</a></div><ol class="drug-next-steps"><li><span>01</span><h3>Confirm the quote.</h3><p>Ask your pharmacy for the cost of your prescribed dose and supply, using your current coverage.</p></li><li><span>02</span><h3>Check the right program.</h3><p data-next-step>Use the official links above to check eligibility, limits, expiration, and any application requirements.</p></li><li><span>03</span><h3>Confirm before filling.</h3><p>Ask whether the pharmacy can process the program and what you will pay. If coverage is denied, ask your prescriber about the next steps.</p></li></ol></section>
 
 
-
-        <p class="rx-disclaimer" data-bind="disclaimer">*Eligibility and terms apply. Final costs depend on insurance coverage and manufacturer program.</p>
-      </div>
-
-      <div class="rx-right">
-        <table class="rx-table" aria-label="Savings comparison">
-          <thead>
-            <tr><th>Scenario</th><th>Estimated cost</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Typical cash price</td><td><s data-bind="cash_price_formatted">$—</s></td></tr>
-            <tr><td>With copay card</td><td data-bind="copay_price_formatted">$—</td></tr>
-            <tr><td><span data-bind="period_label">Typical monthly prescription</span> savings</td><td data-bind="per_fill_savings">$—</td></tr>
-          </tbody>
-          <tfoot>
-            <tr><td>Potential annual savings</td><td data-bind="annual_savings_formatted">$—</td></tr>
-          </tfoot>
-        </table>
-
-        <div style="margin-top:10px;">
-          <button class="btn btn-primary btn-block-sm js-check-savings" type="button">Get your savings card</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ── About This Medication ────────────────────────────────────────────── -->
-  <section class="rx-about" id="rx-about" aria-labelledby="rxAboutTitle" style="display:none">
-    <div class="container rx-about-inner">
-      <h2 class="rx-about-heading" id="rxAboutTitle">About <span data-bind="brand">Tresiba</span></h2>
-      <div class="rx-about-tags">
-        <span class="rx-tag rx-tag--class" id="rx-about-class"></span>
-        <span class="rx-tag rx-tag--indication" id="rx-about-indication"></span>
-      </div>
-      <p class="rx-about-desc" id="rx-about-desc"></p>
-    </div>
-  </section>
-  <!-- End About This Medication -->
-
-  <!-- ── Pharmacy Price Comparison (GoodRx-powered) ───────────────────────────
-       White-labeled: SaveRx branding is primary. GoodRx attribution is small.
-       GoodRx publisher widget slot: set data-publisher-id once approved.
-       Apply at: https://www.goodrx.com/business/solutions/publisher-products
-  ──────────────────────────────────────────────────────────────────────────── -->
-  <section class="rx-compare" aria-labelledby="rxCompareTitle">
-    <div class="container rx-compare-inner">
-      <div class="rx-compare-head">
-        <h2 id="rxCompareTitle" class="rx-compare-title">Compare Cash Prices at Your Pharmacy</h2>
-        <p class="rx-compare-sub">
-          Cash prices for <strong class="js-grx-drug"></strong> vary by pharmacy.
-          Use a free coupon to pay less — no insurance needed.
-        </p>
-      </div>
-      <div class="rx-ph-grid" id="rx-ph-grid"><!-- Populated by JS --></div>
-      <div class="goodrx-widget-slot">
-        <div id="goodrx-publisher-widget"
-             class="goodrx-widget"
-             data-drug=""
-             data-publisher-id=""
-             data-quantity="1">
-        </div>
-      </div>
-      <a class="rx-compare-all js-grx-all" href="#" target="_blank" rel="noopener sponsored">
-        View all pharmacy prices on GoodRx &rarr;
-      </a>
-      <p class="rx-compare-attr">Coupon prices provided by <strong>GoodRx</strong>. Estimates only — final price at pharmacy.</p>
-    </div>
-  </section>
-  <!-- End Pharmacy Price Comparison -->
-
-
-  <!-- =====================================================
-       Insurance Tier Accordion (Phase 3 — Asma's design)
-       ===================================================== -->
-
-  <!-- End Insurance Tier Accordion -->
-
-<!-- Footer email capture (kept as-is) -->
-  <section class="cta-band" aria-labelledby="ctaTitle">
-    <div class="cta-wrap">
-      <div class="cta-card">
-        <h2 id="ctaTitle" class="cta-title">Start saving on <span data-bind="brand">Tresiba</span></h2>
-        <p class="cta-sub">Enter your email and we’ll take you to the official savings page.</p>
-        <form class="form" id="footerForm">
+ <section class="drug-details-section"><details><summary>Questions worth asking at the pharmacy <span aria-hidden="true">+</span></summary><ul><li>Is this quote for the prescribed dose, quantity, and supply?</li><li>Does my plan require prior authorization or a particular pharmacy?</li><li>Can this savings option be combined with my coverage?</li><li>What happens when a card expires or its benefit limit is reached?</li><li>Will the amount I pay count toward my deductible?</li></ul></details><details id="program-sources"><summary>Program sources & information notes <span aria-hidden="true">+</span></summary><div data-drug-sources><p>Prices and program details are supplied through the SaveRx data feed when available. Confirm them on the official program website.</p><a class="drug-text-link" data-program-link="source" href="#payment-options">See payment options ↑</a></div></details><details class="drug-email-details"><summary>Email me the official program link <span aria-hidden="true">+</span></summary><p>Optional. You can use the official links above without entering an email address.</p><form class="form" id="footerForm">
           <div class="form-row">
             <label class="sr-only" for="footerEmail">Email address</label>
             <input id="footerEmail" name="email" class="input" type="email" placeholder="you@example.com" required autocomplete="email">
           </div>
           <button id="footerSubmit" class="btn" type="submit">Continue</button>
           <p class="form-msg" id="footerMsg" role="status" aria-live="polite"></p>
-        </form>
-      </div>
-      <div class="cta-card">
-        <h3 class="cta-title">Questions?</h3>
-        <p class="cta-sub">We’ll send you directly to the manufacturer’s official program.</p>
-        <p><a href="mailto:questions@saverx.ai">questions@saverx.ai</a></p>
-      </div>
-    </div>
-  </section>
+        </form></details></section>
+ </main>
 
   <!-- Modal (same pattern) -->
   <div id="email-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="emailModalTitle" aria-modal="true">
@@ -709,6 +491,7 @@
         try{
           let d = await window.SaveRxDrugData.load(API, slug);
           d = d || {};
+          window.__saverxDrugRecord = d;
 
           const cash = window.SaveRxDrugData.amount(d.cash_price);
           const copay = window.SaveRxDrugData.amount(d.copay_price);
@@ -840,6 +623,7 @@
               }
             });
           }
+          window.dispatchEvent(new CustomEvent('saverx:drug-data', {detail:d}));
           // ── End GoodRx section ────────────────────────────────────────────────
         } catch(err){
           console.error("Load failed", err);
@@ -1018,5 +802,5 @@
       return false;
     };
   </script>
-<script defer src="/assets/js/relief.js"></script></body>
+<script defer src="/assets/js/relief.js"></script><script src="/assets/js/drug-options.js" defer></script></body>
 </html>
