@@ -7,6 +7,7 @@ import html
 import json
 import re
 
+SPARK = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:-.125em"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg>'
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / 'templates/relief'
 ESC = html.escape
@@ -58,7 +59,7 @@ def card(m):
     categories = [c for c in CATEGORIES if m['slug'] in category_slugs(c)]
     label = ' · '.join(c['short_name'] for c in categories) or 'Manufacturer savings information'
     attrs = ' '.join(c['slug'] for c in categories)
-    return '<a class="drug" data-name="'+ESC((name+' '+m.get('generic','')).lower(),quote=True)+'" data-categories="'+ESC(attrs)+'" href="/drugs/'+m['slug']+'/"><div class="drug-top"><span class="drug-badge" aria-hidden="true">✳</span><small>Medication savings</small></div><h3>'+ESC(name)+'</h3><p>'+ESC(label)+'</p><div class="drug-bottom"><span>Explore savings options</span><b aria-hidden="true">↗</b></div></a>'
+    return '<a class="drug" data-name="'+ESC((name+' '+m.get('generic','')).lower(),quote=True)+'" data-categories="'+ESC(attrs)+'" href="/drugs/'+m['slug']+'/"><div class="drug-top"><span class="drug-badge" aria-hidden="true">'+SPARK+'</span><small>Medication savings</small></div><h3>'+ESC(name)+'</h3><p>'+ESC(label)+'</p><div class="drug-bottom"><span>Explore savings options</span><b aria-hidden="true">↗</b></div></a>'
 
 def catalog(selected=None):
     items = sorted(ITEMS, key=lambda m:(m.get('brand') or m['name']).lower())
