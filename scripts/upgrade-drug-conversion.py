@@ -50,3 +50,7 @@ for p in list((ROOT/'drugs').glob('*/index.html'))+[ROOT/'templates/index.html']
  s=s.replace('\n \n','\n\n')
  p.write_text(s)
 print('Updated identity-first drug pages with enrollment, email and pharmacy sections.')
+
+# New and existing pages finish with the approved at-a-glance summary.
+import subprocess,sys
+subprocess.run([sys.executable,str(ROOT/"scripts/upgrade-drug-summary.py")],check=True)
