@@ -115,7 +115,7 @@ paths += [p for p in (ROOT/'drugs').rglob('*.html') if p != ROOT/'drugs/index.ht
 paths += [ROOT/'templates/index.html', ROOT/'get-help/index.html']
 changed=0
 for p in paths:
-    if p.relative_to(ROOT).as_posix() in {'about.html', 'contact.html', 'comparisons.html'}:
+    if p.relative_to(ROOT).as_posix() in {'about.html', 'contact.html', 'comparisons.html', 'ozempic-vs-wegovy.html', 'mounjaro-vs-ozempic.html', 'wegovy-vs-mounjaro.html'}:
         continue
     s=p.read_text()
     if 'design-relief' in s:continue

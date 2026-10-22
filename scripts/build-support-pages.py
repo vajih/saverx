@@ -53,3 +53,7 @@ for p in ROOT.rglob('*.html'):
  s=p.read_text();new=s.replace('href="/contact.html">Request a medication','href="/request-medication.html">Request a medication')
  if s!=new:p.write_text(new)
 print('Rendered five supporting pages; retained contact handlers and guide content.')
+
+# Keep individual guides on the current reading UI after hub generation.
+import subprocess,sys
+subprocess.run([sys.executable,str(ROOT/"scripts/build-article-pages.py")],check=True)
