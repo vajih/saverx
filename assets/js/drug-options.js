@@ -35,6 +35,7 @@
   set('[data-drug-copay]',o.price===null?'Check current offer':money(o.price));
   const prefix=$('[data-drug-price-prefix]');if(prefix)prefix.hidden=o.price===null;
   const secondary=$('[data-cash-secondary]');if(secondary)secondary.hidden=!profile.cash;
+  set('[data-summary-source]',profile.checkedAt?`Manufacturer sources checked ${profile.checkedAt}. Confirm current terms; your actual cost depends on eligibility, coverage, and supply.`:'Program minimums are not your confirmed price. Confirm current terms; your actual cost depends on eligibility, coverage, and supply.');
   const priceEl=$('[data-drug-copay]');priceEl?.parentElement.classList.toggle('drug-price-text',o.price===null);
   set('[data-drug-supply]',profile.copay?.supply?`For an eligible ${profile.copay.supply}`:'Eligible supply and program terms vary');
   if(profile.copay?.eligibility)set('[data-drug-eligibility]',profile.copay.eligibility);
@@ -42,7 +43,7 @@
   link('[data-program-link="self"]',o.url,'Or enroll yourself on the official site ↗');
   link('[data-program-link="copay"]',o.url,o.url?'Review official program ↗':'Program link unavailable');
   link('[data-program-link="source"]',o.url,o.url?'Official program website ↗':'See payment options ↑');
-  if(profile.assistance){set('[data-drug-assistance]',profile.assistance.text);link('[data-program-link="assistance"]',profile.assistance.url,`Check ${profile.assistance.name} ↗`);}
+  if(profile.assistance){link('[data-government-assistance-link]',profile.assistance.url,'Check assistance eligibility ↗');set('[data-drug-assistance]',profile.assistance.text);link('[data-program-link="assistance"]',profile.assistance.url,`Check ${profile.assistance.name} ↗`);}
   const cashLink=$('[data-program-link="cash"]');if(cashLink)cashLink.hidden=!profile.cash;
   if(profile.cash){set('[data-drug-cash]',profile.cash.text);link('[data-program-link="cash"]',profile.cash.url,`Review ${profile.cash.name} ↗`);set('[data-drug-cash-note]','Separate manufacturer cash-pay option. Confirm the price and terms before using it.');}
   const desc=profile.about?.text||record.description;
@@ -54,16 +55,13 @@
   // No automatic calculation; the visitor explicitly compares matching supply quotes.
   const target=$('#your-target');if(o.price!==null&&!target.dataset.edited&&coverage==='private'){target.value=o.price;target.dataset.suggested='true';set('[data-calculator-note]',`The manufacturer program minimum is prefilled as an illustration${profile.copay?.supply?' for a '+profile.copay.supply:''}. Confirm eligibility and use the same supply for both prices.`);}
  }
- const guidance={all:'Start with the option that matches your coverage. More than one route may be worth checking.',private:'Start with the manufacturer co-pay program. Your plan’s coverage and the program’s limits still determine eligibility and cost.',government:'Commercial co-pay cards generally exclude government coverage. Ask your plan about your benefits; Medicare patients can also check Extra Help. Separate assistance and cash-pay programs have their own rules.',cash:'Compare cash quotes and check assistance criteria. A commercial co-pay card typically requires private prescription insurance.',unsure:'Check your prescription insurance card or ask your pharmacy which plan is being billed. Until then, browse the options without assuming eligibility.'};
- for(const button of document.querySelectorAll('[data-coverage]'))button.addEventListener('click',()=>{
-  coverage=button.dataset.coverage;
-  const results=$('[data-payment-results]');if(results)results.hidden=false;
+ // All three summaries stay visible. Expansion only supplies optional next steps.
+ for(const row of document.querySelectorAll('[data-payment-row]'))row.addEventListener('toggle',()=>{
+  if(!row.open)return;
+  coverage=row.dataset.paymentRow;
   window.dispatchEvent(new CustomEvent('saverx:coverage-chosen'));
-  for(const b of document.querySelectorAll('[data-coverage]'))b.setAttribute('aria-pressed',String(b===button));
-  $('[data-option="copay"]').hidden=['government','cash'].includes(coverage);
-  set('#coverage-guidance',guidance[coverage]);
-  const gov=$('[data-government-resources]');if(gov)gov.hidden=coverage!=='government';
-  const target=$('#your-target');if(['government','cash'].includes(coverage)&&target.dataset.suggested){target.value='';delete target.dataset.suggested;set('[data-calculator-note]','Enter a confirmed price for the same supply. The commercial co-pay minimum does not apply to this selected coverage.');set('#drug-savings-result','Add both prices to see the difference.');}
+  const target=$('#your-target');
+  if(coverage!=='private'&&target.dataset.suggested){target.value='';delete target.dataset.suggested;set('[data-calculator-note]','Enter a price for the same supply. A commercial co-pay minimum does not apply to government or cash-pay routes.');set('#drug-savings-result','Add both prices to see the difference.');}
   render();
  });
  $('#your-target').addEventListener('input',e=>{e.target.dataset.edited='true';delete e.target.dataset.suggested;set('[data-calculator-note]','Compare prices for the same supply. Confirm any program eligibility before relying on a price.');set('#drug-savings-result','Compare again to update the difference.');});

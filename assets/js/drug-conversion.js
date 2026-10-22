@@ -34,6 +34,11 @@
  prompt.addEventListener('close',schedule);
  $('[data-save-email]').addEventListener('click',()=>{prompt.close();$('#save-options').scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});email.focus({preventScroll:true});schedule();});
  $('[data-sticky-close]').addEventListener('click',()=>{stickyDismissed=true;sticky.hidden=true;});
+ // Reading the visible payment summary counts as engagement; no coverage choice is required.
+ if('IntersectionObserver' in window){
+  const seen=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){chosen=true;schedule();seen.disconnect();}},{threshold:.2});
+  seen.observe(payment);
+ }
  window.addEventListener('saverx:coverage-chosen',()=>{chosen=true;schedule();});
  document.addEventListener('scroll',schedule,{capture:true,passive:true});
  window.addEventListener('resize',schedule);

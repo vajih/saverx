@@ -31,7 +31,12 @@ for p in list((ROOT/'drugs').glob('*/index.html'))+[ROOT/'templates/index.html']
   assert duplicate not in s,(path,'repeated legacy cost section')
  if 'drug-conversion-v2' in s:
   assert s.index('<header class="drug-intro">') < s.index('id="rx-about-desc"') < s.index('id="payment-options"') < s.index('id="enroll-help"') < s.index('id="pharmacy-prices"') < s.index('id="your-savings"'),(path,'conversion order')
-  assert 'data-payment-results hidden' in s,(path,'coverage must precede results')
+  if 'drug-summary-v3' in s:
+   assert 'data-payment-results' not in s and 'data-coverage=' not in s,(path,'summary must be immediate')
+   for coverage in ['private','government','cash']:
+    assert f'data-payment-row="{coverage}"' in s,(path,'missing summary route')
+   assert 'Plan-dependent' in s and 'Prices vary' in s,path
+  else:assert 'data-payment-results hidden' in s,(path,'coverage must precede results')
   assert 'data-guided-placement="main"' in s and 'data-guided-placement="sticky"' in s,path
   assert 'type="checkbox" required form="footerForm"' in s,path
   assert s.count('id="footerForm"')==1 and s.count('id="drug-save-prompt"')==1,path
