@@ -70,3 +70,7 @@ for p in LEARN+COMPARE:
   s=s[:end]+'\n</main>'+s[end:]
  p.write_text(s)
 print('Applied article UI to five learning guides and three comparisons.')
+
+# Restore shared browser/sharing identity after page generation.
+import subprocess, sys
+subprocess.run([sys.executable, str(ROOT / "scripts/build-brand-assets.py")], check=True)
