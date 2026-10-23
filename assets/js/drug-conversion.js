@@ -44,6 +44,7 @@
  window.addEventListener('resize',schedule);
  document.addEventListener('mouseleave',event=>{if(event.clientY<=0&&matchMedia('(hover:hover) and (min-width: 801px)').matches)showPrompt();});
  $('#footerForm').addEventListener('submit',()=>{submitted=true;sticky.hidden=true;prompt.close();});
+ window.addEventListener('saverx:email-queued',()=>{submitted=true;sticky.hidden=true;prompt.close();});
  // Placement-only events use the site's existing consent-governed analytics queue.
  for(const anchor of page.querySelectorAll('[data-guided-placement]'))anchor.addEventListener('click',()=>{
   if(typeof window.gtag==='function')window.gtag('event','guided_enrollment_click',{placement:anchor.dataset.guidedPlacement,drug_slug:location.pathname.split('/')[2]||''});
