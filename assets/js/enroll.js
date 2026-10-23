@@ -66,84 +66,12 @@
     return slug.replace(/-/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
   }
 
-  // Resolve brand name from the static drug index (best effort, silent fallback)
-  function resolveDrugName() {
-    if (!state.drug_slug) return;
-    state.drug_brand = prettyName(state.drug_slug);
-    updateDrugLabels();
-    fetch("/data/drugs.json", { cache: "force-cache" })
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        var m = (j.items || []).filter(function (i) { return i.slug === state.drug_slug; })[0];
-        if (m && (m.brand || m.name)) { state.drug_brand = m.brand || m.name; updateDrugLabels(); }
-      })
-      .catch(function () {});
-  }
-
   function updateDrugLabels() {
     $$("[data-drug-name]").forEach(function (el) {
       el.textContent = state.drug_brand || "your medication";
     });
   }
 
-  // ── Step navigation ───────────────────────────────────────────────────────
-  var STEP_ORDER = ["drug", "insurance", "prescription", "difficulty", "preference", "contact", "checkout", "done"];
-  var current = null;
-
-  function stepEl(id) { return $('[data-step="' + id + '"]'); }
-
-  function show(id) {
-    $$("[data-step]").forEach(function (el) { el.hidden = el.getAttribute("data-step") !== id; });
-    current = id;
-    var idx = STEP_ORDER.indexOf(id);
-    var visibleSteps = state.drug_slug ? 5 : 6; // question steps before checkout/done
-    var qIdx = state.drug_slug ? idx - 1 : idx; // drug step skipped when prefilled
-    var bar = $("#progressBar");
-    if (bar) {
-      var pct = Math.max(0, Math.min(100, Math.round((qIdx / visibleSteps) * 100)));
-      if (id === "done" || id === "checkout") pct = 100;
-      bar.style.width = pct + "%";
-    }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function next(fromId) {
-    var idx = STEP_ORDER.indexOf(fromId);
-    var nextId = STEP_ORDER[idx + 1];
-    if (nextId === "checkout" && state.service_preference.indexOf("paid") !== 0) nextId = "done";
-    show(nextId);
-  }
-
-  function firstStep() { return state.drug_slug ? "insurance" : "drug"; }
-
-  function markStarted() {
-    if (state.started) return;
-    state.started = true;
-    track("intake_start", { drug_slug: state.drug_slug || "none" });
-    beacon("intake_start");
-  }
-
-  function stepComplete(id) {
-    markStarted();
-    track("intake_step", { step_id: id, drug_slug: state.drug_slug || "none" });
-  }
-
-  // ── Option buttons ────────────────────────────────────────────────────────
-  function wireOptions(stepId, field, onSelect) {
-    var root = stepEl(stepId);
-    if (!root) return;
-    $$(".opt", root).forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        $$(".opt", root).forEach(function (b) { b.classList.remove("selected"); });
-        btn.classList.add("selected");
-        state[field] = btn.getAttribute("data-value");
-        if (onSelect) onSelect(btn.getAttribute("data-value"));
-        setTimeout(function () { stepComplete(stepId); next(stepId); }, 220);
-      });
-    });
-  }
-
-  // ── Submit ────────────────────────────────────────────────────────────────
   function postIntake() {
     var body = new URLSearchParams({
       form_type: "enroll_intake",
@@ -171,153 +99,139 @@
     }).toString();
 
     try {
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(FORM_API, new Blob([body], { type: "application/x-www-form-urlencoded" }));
-      } else {
-        fetch(FORM_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          mode: "no-cors",
-          body: body,
-          keepalive: true
-        });
-      }
-    } catch (_) { /* backend write must never block the user */ }
+      if (navigator.sendBeacon && navigator.sendBeacon(FORM_API, new Blob([body], { type: "application/x-www-form-urlencoded" }))) return Promise.resolve();
+      return fetch(FORM_API, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, mode: "no-cors", body: body, keepalive: true });
+    } catch (error) { return Promise.reject(error); }
   }
 
-  // ── Checkout step ─────────────────────────────────────────────────────────
-  function setupCheckout() {
-    var link = STRIPE_LINKS[state.service_preference] || "";
-    var payWrap = $("#checkoutPay");
-    var reserveWrap = $("#checkoutReserve");
-    var tierLabel = state.service_preference === "paid_1999" ? "$19.99 — guided enrollment + follow-up & renewal" : "$9.99 — guided enrollment";
-    $$("[data-tier-label]").forEach(function (el) { el.textContent = tierLabel; });
-
-    if (link) {
-      payWrap.hidden = false; reserveWrap.hidden = true;
-      var btn = $("#checkoutBtn");
-      btn.addEventListener("click", function () {
-        state.checkout_result = "started";
-        track("checkout_started", { tier: state.service_preference, drug_slug: state.drug_slug || "none" });
-        beacon("checkout_started", state.service_preference);
-        postIntake(); // re-post with updated checkout_result
-        window.open(link + (link.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + state.intake_id, "_blank");
-      });
-      $("#checkoutSkip").addEventListener("click", function (e) {
-        e.preventDefault();
-        state.checkout_result = "abandoned";
-        postIntake();
-        show("done");
-      });
-    } else {
-      payWrap.hidden = true; reserveWrap.hidden = false;
-      $("#reserveContinue").addEventListener("click", function () { show("done"); });
+  var ORDER = ["insurance", "difficulty", "preference", "contact", "checkout", "done"];
+  var current = "insurance";
+  var busy = false;
+  var items = [];
+  var labels = {free_self:"Free self-service checklist",free_only:"Free help only",paid_999:"Guided enrollment · $9.99 service fee",paid_1999:"Guidance + follow-up · $19.99 service fee"};
+  var insuranceLabels = {commercial:"Private insurance",medicare:"Medicare",medicaid:"Medicaid / CHIP",uninsured:"No insurance",unsure:"Insurance not sure"};
+  function isPaid() { return state.service_preference.indexOf("paid") === 0; }
+  function show(id, focus) {
+    $$("[data-step]").forEach(function(el){el.hidden=el.getAttribute("data-step")!==id;});
+    current=id;
+    var idx=ORDER.indexOf(id),stage=idx<2?0:idx===2?1:2;
+    $$("[data-stage]").forEach(function(el,i){
+      el.removeAttribute("aria-current");
+      if(i===stage)el.setAttribute("aria-current","step");
+      el.classList.toggle("completed",i<stage);
+    });
+    var pct=[10,30,55,80,100,100][idx];
+    $("#progressBar").style.width=pct+"%";
+    $(".progress").setAttribute("aria-valuenow",String(pct));
+    if(id==="preference") {
+      var gov=state.insurance_category==="medicare"||state.insurance_category==="medicaid";
+      $("#routeNote").textContent=gov?"For your coverage, we’ll look at assistance routes rather than manufacturer copay cards. Help does not guarantee eligibility.":state.insurance_category==="uninsured"?"Without insurance, we can help explore patient assistance or cash-price resources. Availability varies by medication.":"We’ll use your coverage and situation to help identify the next steps to explore. The program makes the final eligibility decision.";
+    }
+    if(id==="contact") {
+      $("#recapDrug").textContent=state.drug_brand+" · "+insuranceLabels[state.insurance_category];
+      $("#recapService").textContent=labels[state.service_preference];
+      $("#contactIntro").textContent=isPaid()?"A guide will review your request and follow up by email, usually within 1 business day.":"Get a confirmation by email and start with your free steps on the next screen.";
+      $("#submitIntake").textContent=isPaid()?"Request my guided help →":"Get my free next steps →";
+      $("#submitNote").textContent=isPaid()?"No card required. No payment today.":"Free to use. No payment details needed.";
+    }
+    if(id==="done") {
+      $("#doneMessage").textContent=isPaid()?"Your request is on its way. A guide will follow up by email, usually within 1 business day. If you don’t hear from us, contact help@saverx.ai.":"Your free starting steps are below. Look out for a confirmation email, and check spam if it doesn’t arrive.";
+      var gov=state.insurance_category==="medicare"||state.insurance_category==="medicaid";
+      $("#checklistRoute").textContent=gov?"Explore patient assistance programs and ask your plan about cost support. Medicare users can also check Extra Help eligibility. Manufacturer copay cards generally exclude government coverage.":state.insurance_category==="uninsured"?"Check whether the manufacturer offers an income-based patient assistance program. Compare cash prices if assistance isn’t available.":state.insurance_category==="unsure"?"Check your insurance card or contact your plan to confirm your coverage type before choosing a program.":"Review the manufacturer’s copay program rules, including insurance coverage requirements, savings limits, and excluded plans.";
+      $("#checklistRx").textContent=state.prescription_status==="yes"?"Keep your prescription and coverage details ready. Submit only on the official program website; you complete your own eligibility attestations.":"Talk with your prescriber about a valid prescription before applying for medication assistance. SaveRx does not prescribe or dispense medication.";
+      $("#doneOfficialLink").href=items.some(function(i){return i.slug===state.drug_slug;})?"/drugs/"+state.drug_slug+"/":"/drugs/";
+    }
+    if(focus!==false){
+      var heading=$('[data-step="'+id+'"] h2');
+      if(heading){heading.focus({preventScroll:true}); $(".help-workspace").scrollIntoView({block:"start",behavior:"auto"});}
     }
   }
-
-  // ── Init ──────────────────────────────────────────────────────────────────
-  function init() {
-    resolveDrugName();
-    track("enroll_intake_view", { drug_slug: state.drug_slug || "none" });
-    beacon("enroll_view");
-
-    // Returning from a Stripe success redirect
-    if (qs.get("checkout") === "success") {
-      track("checkout_completed", { tier: qs.get("tier") || "unknown", drug_slug: state.drug_slug || "none" });
-      show("done");
-      var doneMsg = $("#doneCheckoutMsg");
-      if (doneMsg) doneMsg.hidden = false;
-      return;
-    }
-
-    // Step 0 — drug picker (only when not prefilled)
-    var drugInput = $("#drugInput");
-    if (drugInput) {
-      fetch("/data/drugs.json", { cache: "force-cache" })
-        .then(function (r) { return r.json(); })
-        .then(function (j) {
-          var dl = $("#drugList");
-          (j.items || []).forEach(function (i) {
-            var o = document.createElement("option");
-            o.value = i.brand || i.name;
-            o.setAttribute("data-slug", i.slug);
-            dl.appendChild(o);
-          });
-          drugInput._items = j.items || [];
-        })
-        .catch(function () {});
-      $("#drugContinue").addEventListener("click", function () {
-        var v = (drugInput.value || "").trim();
-        if (!v) { $("#drugMsg").textContent = "Please enter your medication name."; return; }
-        state.drug_brand = v;
-        var items = drugInput._items || [];
-        var m = items.filter(function (i) { return (i.brand || i.name).toLowerCase() === v.toLowerCase(); })[0];
-        state.drug_slug = m ? m.slug : v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-        updateDrugLabels();
-        stepComplete("drug");
-        next("drug");
-      });
-    }
-
-    // Steps 1–4
-    wireOptions("insurance", "insurance_category", function (v) {
-      var notice = $("#govNotice");
-      if (notice) notice.hidden = !(v === "medicare" || v === "medicaid");
-    });
-    wireOptions("prescription", "prescription_status");
-    wireOptions("difficulty", "primary_difficulty");
-    wireOptions("preference", "service_preference", function (v) {
-      track("price_tier_selected", { tier: v, drug_slug: state.drug_slug || "none" });
-    });
-
-    // Government-insurance notice: informational, user still continues (PAP-help demand is a finding)
-
-    // Step 5 — contact
-    var phoneInput = $("#phoneInput");
-    if (phoneInput) {
-      phoneInput.addEventListener("input", function () {
-        $("#smsConsentRow").hidden = !phoneInput.value.trim();
-      });
-    }
-    $("#contactForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var email = ($("#emailInput").value || "").trim();
-      var msg = $("#contactMsg");
-      if (!/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = "Please enter a valid email address."; return; }
-      if (!$("#consentCheck").checked) { msg.textContent = "Please check the consent box so we're allowed to contact you."; return; }
-      state.email = email;
-      state.phone = (phoneInput && phoneInput.value.trim()) || "";
-      state.consent_contact = true;
-      state.consent_sms = !!(state.phone && $("#smsConsent") && $("#smsConsent").checked);
-      state.difficulty_text = ($("#difficultyText") && $("#difficultyText").value.trim().slice(0, 500)) || "";
-
-      state.submitted = true;
-      stepComplete("contact");
-      track("intake_complete", {
-        drug_slug: state.drug_slug || "none",
-        insurance_category: state.insurance_category,
-        tier: state.service_preference
-      });
-      postIntake();
-
-      if (state.service_preference.indexOf("paid") === 0) { setupCheckout(); show("checkout"); }
-      else { show("done"); }
-    });
-
-    // Back buttons
-    $$("[data-back]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var idx = STEP_ORDER.indexOf(current);
-        var prev = STEP_ORDER[idx - 1];
-        if (prev === "drug" && state.drug_slug && qs.get("drug")) prev = null; // can't go before prefilled start
-        if (prev === "checkout") prev = "contact";
-        if (prev) show(prev);
-      });
-    });
-
-    show(firstStep());
+  function markStarted() {
+    if(!state.started){state.started=true;track("intake_start",{drug_slug:state.drug_slug||"none"});beacon("intake_start");}
   }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  function stepComplete(id) {
+    markStarted();
+    track("intake_step",{step_id:id,drug_slug:state.drug_slug||"none"});
+  }
+  function wire(group,field,onSelect){
+    var root=$('[data-group="'+group+'"]');
+    $$(".opt",root).forEach(function(btn){btn.addEventListener("click",function(){
+      $$(".opt",root).forEach(function(b){var selected=b===btn;b.classList.toggle("selected",selected);b.setAttribute("aria-pressed",String(selected));});
+      markStarted();
+      state[field]=btn.getAttribute("data-value");
+      if(onSelect)onSelect(state[field]);
+    });});
+  }
+  function error(id,message,target){$(id).textContent=message;if(target)$(target).focus();}
+  function init(){
+    state.drug_brand=prettyName(state.drug_slug);
+    updateDrugLabels();
+    $("#drugInput").value=state.drug_brand;
+    $("#drugInput").addEventListener("input",markStarted);
+    fetch("/data/drugs.json",{cache:"force-cache"}).then(function(r){return r.json();}).then(function(j){
+      items=j.items||[];
+      items.forEach(function(i){var o=document.createElement("option");o.value=i.brand||i.name;$("#drugList").appendChild(o);});
+      var m=items.filter(function(i){return i.slug===state.drug_slug;})[0];
+      if(m&&!state.started&&$("#drugInput").value===prettyName(state.drug_slug)){state.drug_brand=m.brand||m.name;$("#drugInput").value=state.drug_brand;updateDrugLabels();}
+    }).catch(function(){});
+    track("enroll_intake_view",{drug_slug:state.drug_slug||"none"});beacon("enroll_view");
+    wire("insurance","insurance_category",function(v){$("#govNotice").hidden=!(v==="medicare"||v==="medicaid");});
+    wire("prescription","prescription_status",function(v){$("#rxNotice").hidden=v==="yes";});
+    wire("difficulty","primary_difficulty");
+    wire("preference","service_preference",function(v){track("price_tier_selected",{tier:v,drug_slug:state.drug_slug||"none"});});
+    $("#situationContinue").addEventListener("click",function(){
+      var v=$("#drugInput").value.trim();
+      if(!v)return error("#drugMsg","Add your medication name to continue.","#drugInput");
+      $("#drugMsg").textContent="";
+      if(!state.insurance_category)return error("#situationMsg","Choose your insurance type, or select ‘I’m not sure’.",'[data-group="insurance"] .opt');
+      if(!state.prescription_status)return error("#situationMsg","Choose your prescription status to continue.",'[data-group="prescription"] .opt');
+      var m=items.filter(function(i){return(i.brand||i.name).toLowerCase()===v.toLowerCase();})[0];
+      state.drug_brand=v;state.drug_slug=m?m.slug:"";
+      updateDrugLabels();$("#situationMsg").textContent="";stepComplete("insurance");stepComplete("prescription");show("difficulty");
+    });
+    $("#difficultyContinue").addEventListener("click",function(){
+      if(!state.primary_difficulty)return error("#difficultyMsg","Choose the closest match to continue.",'[data-group="difficulty"] .opt');
+      $("#difficultyMsg").textContent="";stepComplete("difficulty");show("preference");
+    });
+    $("#preferenceContinue").addEventListener("click",function(){
+      if(!state.service_preference)return error("#preferenceMsg","Choose the help you’d like. There’s a free option, too.",'[data-group="preference"] .opt');
+      $("#preferenceMsg").textContent="";stepComplete("preference");show("contact");
+    });
+    $("#phoneInput").addEventListener("input",function(){
+      var empty=!this.value.trim();$("#smsConsentRow").hidden=empty;if(empty)$("#smsConsent").checked=false;
+    });
+    $("#contactForm").addEventListener("submit",function(e){
+      e.preventDefault();if(busy||state.submitted)return;
+      var email=$("#emailInput").value.trim();
+      if(!$("#emailInput").checkValidity()||!/^\S+@\S+\.\S+$/.test(email))return error("#contactMsg","Add a valid email so we can send your next steps.","#emailInput");
+      if(!$("#consentCheck").checked)return error("#contactMsg","Please agree to email contact before we send your request.","#consentCheck");
+      state.email=email;state.phone=$("#phoneInput").value.trim();state.consent_contact=true;state.consent_sms=!!(state.phone&&$("#smsConsent").checked);state.difficulty_text=$("#difficultyText").value.trim().slice(0,500);
+      busy=true;$("#submitIntake").disabled=true;$("#contactMsg").textContent="Sending your request…";
+      postIntake().then(function(){
+        state.submitted=true;stepComplete("contact");track("intake_complete",{drug_slug:state.drug_slug||"none",insurance_category:state.insurance_category,tier:state.service_preference});
+        if(isPaid()){setupCheckout();show("checkout");}else show("done");
+      }).catch(function(){error("#contactMsg","We couldn’t send your request. Please try again, or email help@saverx.ai.");}).finally(function(){busy=false;$("#submitIntake").disabled=false;});
+    });
+    $$("[data-back]").forEach(function(b){b.addEventListener("click",function(){show(ORDER[Math.max(0,ORDER.indexOf(current)-1)]);});});
+    $$("[data-edit]").forEach(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-edit"));});});
+    $("#reserveContinue").addEventListener("click",function(){show("done");});
+    $("#checkoutBtn").addEventListener("click",function(){
+      var link=STRIPE_LINKS[state.service_preference];if(!link)return;
+      state.checkout_result="started";track("checkout_started",{tier:state.service_preference,drug_slug:state.drug_slug||"none"});beacon("checkout_started",state.service_preference);postIntake().catch(function(){});
+      window.open(link+(link.indexOf("?")===-1?"?":"&")+"client_reference_id="+encodeURIComponent(state.intake_id),"_blank","noopener");
+    });
+    $("#checkoutSkip").addEventListener("click",function(e){e.preventDefault();state.checkout_result="abandoned";postIntake().catch(function(){});show("done");});
+    show("insurance",false);
+    if(qs.get("checkout")==="success"){
+      // A URL parameter is not proof of payment; Stripe supplies the receipt.
+      track("checkout_returned",{tier:qs.get("tier")==="paid_1999"?"paid_1999":"paid_999",drug_slug:state.drug_slug||"none"});
+      show("done",false);$("#doneCheckoutMsg").hidden=false;
+    }
+  }
+  function setupCheckout(){
+    var link=STRIPE_LINKS[state.service_preference]||"";
+    $("#checkoutPay").hidden=!link;$("#checkoutReserve").hidden=!!link;
+    $$("[data-tier-label]").forEach(function(el){el.textContent=labels[state.service_preference];});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
