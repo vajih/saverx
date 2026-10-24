@@ -36,3 +36,5 @@
 @media(max-width:340px){.directory-compact .grid{grid-template-columns:1fr!important}.directory-compact .drug{padding:16px!important}}
 @media(prefers-reduced-motion:reduce){.drug-affiliate>summary>span{transition:none!important}}
 .directory-compact .catalog-layout>*{min-width:0}.directory-compact .catalog-search{min-width:0;box-sizing:border-box}.directory-compact .catalog-search input{min-width:0;max-width:100%}.directory-compact .filters{max-width:100%}
+/* Long generic/manufacturer names must wrap within narrow directory cards. */
+.directory-compact .drug { overflow-wrap:anywhere; }
