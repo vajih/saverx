@@ -20,3 +20,7 @@ for p in list((ROOT/'drugs').glob('*/index.html'))+[ROOT/'templates/index.html']
  s=s.replace('</head>','<link rel="stylesheet" href="/assets/css/drug-summary.css"></head>',1)
  p.write_text(s)
 print('Applied always-visible summary rows to standard drug pages and template.')
+
+# Final shared polish (also updates the directory after it is regenerated).
+import runpy
+runpy.run_path(str(ROOT/'scripts/upgrade-drug-polish.py'),run_name='__main__')
