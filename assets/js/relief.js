@@ -1,3 +1,34 @@
+/* Keep emoji-capable arrows as monochrome text, including dynamically added UI.
+ * U+FE0E explicitly requests text presentation on iOS and other platforms.
+ */
+(() => {
+  'use strict';
+  const arrows = /([↖↗↘↙↔↕⬅⬆⬇➡])[\uFE0E\uFE0F]?/gu;
+  const excluded = 'script,style,textarea,input,pre,code,svg,[contenteditable]:not([contenteditable="false"])';
+  function normalize(node) {
+    if (!node.parentElement || node.parentElement.closest(excluded)) return;
+    const text = node.data.replace(arrows, '$1\uFE0E');
+    if (text !== node.data) node.data = text;
+  }
+  function scan(root) {
+    if (root.nodeType === Node.TEXT_NODE) { normalize(root); return; }
+    if (root.nodeType !== Node.ELEMENT_NODE || root.closest(excluded)) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) normalize(walker.currentNode);
+  }
+  function init() {
+    scan(document.body);
+    new MutationObserver(records => {
+      for (const record of records) {
+        if (record.type === 'characterData') normalize(record.target);
+        else for (const node of record.addedNodes) scan(node);
+      }
+    }).observe(document.body, {subtree:true, childList:true, characterData:true});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
+  else init();
+})();
+
 /* SaveRx relief UI: local medication search and progressive catalog filtering.
  * No search text or insurance selection is sent to analytics or external services.
  */
