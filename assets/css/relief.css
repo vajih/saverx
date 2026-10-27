@@ -320,7 +320,7 @@ font:italic 17px Georgia;
 color:var(--relief-art-17);
 transform:rotate(7deg)}
 .note:after {
-content:'↙';
+content:'↙\FE0E';
 display:block;
 font:38px Georgia;
 margin-left:26px}
