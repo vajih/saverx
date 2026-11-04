@@ -84,13 +84,10 @@ modal.addEventListener('click', event => {
   const r = modal.getBoundingClientRect();
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) modal.close();
 });
-const toggle = document.querySelector('.mobile-toggle');
-toggle.onclick = () => {
-  const nav = document.querySelector('header nav');
-  nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(nav.classList.contains('open')));
-};
-document.querySelectorAll('header nav a, header nav [data-flow]').forEach(link => link.addEventListener('click', () => {
-  document.querySelector('header nav').classList.remove('open'); toggle.setAttribute('aria-expanded','false');
-}));
+// Match the shared header's mobile-menu behavior when a signup CTA opens.
+document.querySelector('.relief-header [data-flow="expert"]').addEventListener('click', () => {
+  document.querySelector('#relief-navigation').classList.remove('is-open');
+  document.querySelector('.relief-menu').setAttribute('aria-expanded','false');
+});
 
 document.querySelector('.guidance-card').addEventListener('click', event => { if (!event.target.closest('[data-flow]')) openFlow('person'); });
