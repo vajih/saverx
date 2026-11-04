@@ -74,3 +74,6 @@ for name in files:
         p.write_text(updated)
     count += 1
 print(f'Installed supplied brand icons and sharing metadata on {count} public pages/templates.')
+
+# Keep the public Experts route available after page regeneration.
+subprocess.run([__import__("sys").executable, str(ROOT / "scripts/install-experts-nav.py")], check=True)

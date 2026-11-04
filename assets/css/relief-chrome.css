@@ -54,7 +54,7 @@
 }
 .relief-skip { position:absolute; top:-80px; }
 .relief-skip:focus { top:0; left:5%; padding:10px; background:var(--surface); z-index:100; }
-@media(max-width:760px) {
+@media(max-width:1100px) {
   .relief-header { height:80px; }
   .relief-header .relief-logo { font-size:25px; }
   .relief-menu { display:block; }

@@ -2117,4 +2117,5 @@
     <priority>0.8</priority>
   </url>
   <url><loc>https://saverx.ai/request-medication.html</loc></url>
+  <url><loc>https://saverx.ai/experts/</loc><priority>0.7</priority></url>
 </urlset>

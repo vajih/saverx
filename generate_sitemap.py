@@ -17,6 +17,7 @@ def main():
         ("/", "1.0", today),
         ("/about.html", "0.8", today),
         ("/contact.html", "0.7", today),
+        ("/experts/", "0.7", today),
         ("/drugs/", "0.9", today),
         ("/list.html", "0.6", today),
         ("/privacy.html", "0.3", today),
@@ -36,6 +37,7 @@ def main():
             "privacy.html",
             "terms.html",
             "pharmacy.html",
+            "experts.html",
         ]:
             comparison_pages.append((f"/{filename}", "0.9", today))
 
