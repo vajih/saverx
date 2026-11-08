@@ -30,7 +30,7 @@ def newsletter(source):
     extra = ''
     if 'id="newsletter-form"' in form[0]:
         extra = '<p id="newsMsg" role="status" aria-live="polite"></p>'
-    return '<div class="relief-newsletter"><p>Savings tips in your inbox</p>'+markup+extra+'</div>'
+    return '<div class="relief-newsletter"><div class="relief-newsletter-intro"><h2>Prescription savings updates</h2><p>Receive savings information and practical guidance by email.</p></div>'+markup+extra+'</div>'
 
 def head_for(original, title=None, path=None):
     head = re.search(r'<head>(.*?)</head>', original, re.S).group(1) if original else (TEMPLATES / 'head.html').read_text()
