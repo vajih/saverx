@@ -238,3 +238,14 @@ test("LIVE_TEST_ALLOWLIST: live client refuses numbers that are not listed", asy
   assert.equal((await c.sendMessage("+14155550100", "hi")).ok, true);
   assert.equal(seen.length, 1);
 });
+
+test("live client authenticates with an API key when provided, else the auth token", async () => {
+  const auths = [];
+  const f = async (url, opts) => { auths.push(opts.headers.Authorization); return { ok: true, json: async () => ({}) }; };
+  const dec = (h) => Buffer.from(h.replace("Basic ", ""), "base64").toString();
+  const base = { TWILIO_LIVE: "true", TWILIO_ACCOUNT_SID: "ACx", TWILIO_VERIFY_SERVICE_SID: "VAx" };
+  await createTwilioClient({ ...base, TWILIO_API_KEY_SID: "SKx", TWILIO_API_KEY_SECRET: "sec" }, f).startVerification("+14155550100");
+  await createTwilioClient({ ...base, TWILIO_AUTH_TOKEN: "tok" }, f).startVerification("+14155550100");
+  assert.equal(dec(auths[0]), "SKx:sec");
+  assert.equal(dec(auths[1]), "ACx:tok");
+});

@@ -40,7 +40,8 @@ export function mockTwilio() {
 }
 
 function liveTwilio(env, fetchFn) {
-  const auth = "Basic " + btoa(`${env.TWILIO_ACCOUNT_SID}:${env.TWILIO_AUTH_TOKEN}`);
+  // Prefer a restricted API Key (SK...) over the master Auth Token when provided.
+  const auth = "Basic " + btoa(`${env.TWILIO_API_KEY_SID || env.TWILIO_ACCOUNT_SID}:${env.TWILIO_API_KEY_SECRET || env.TWILIO_AUTH_TOKEN}`);
   async function post(path, params) {
     const res = await fetchFn(`${BASE}/${env.TWILIO_VERIFY_SERVICE_SID}/${path}`, {
       method: "POST",
