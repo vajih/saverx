@@ -76,3 +76,6 @@ test('wrong code shows the error and stays on the code step',async()=>{
 test('stylesheet keeps [hidden] elements hidden (the dismissed cookie banner must not block clicks)',()=>{
   assert.match(fs.readFileSync('assets/css/savings-watch.css','utf8'),/\[hidden\]\s*\{\s*display:\s*none\s*!important/);
 });
+test('operating company is named on the signup page, privacy policy and terms (needed for A2P review)',()=>{
+  for(const f of ['savings-watch/index.html','privacy.html','terms.html'])assert.match(fs.readFileSync(f,'utf8'),/operated by Sterling Ridge Management LP/,f);
+});

@@ -1,6 +1,6 @@
 # Savings Watch: A2P 10DLC campaign application (copy-paste answers)
 
-Register under the **legal entity that actually operates SaveRx.ai**, in a Twilio account separate from any other
+Register under **Sterling Ridge Management LP** (confirmed operator of SaveRx.ai; file an assumed-name/DBA for "SaveRx" if not already done), in a Twilio account separate from any other
 business (the dental account's brand is Northwest Dental PC and cannot be reused). Do NOT put SaveRx traffic on
 another product's campaign. Carriers approve one use case per campaign.
 
@@ -10,7 +10,8 @@ another product's campaign. Carriers approve one use case per campaign.
 ## Before submitting (reviewers visit your site)
 - [ ] https://saverx.ai/savings-watch/ is **live** (reviewers open the opt-in page). It is noindex but public.
 - [ ] Privacy policy `/privacy.html#sms` and terms `/terms.html#sms` are live and name the operating company.
-- [ ] Footer/privacy/terms say "SaveRx.ai is operated by <legal entity name>" (+ DBA filing if "SaveRx" is a trade name).
+- [x] Privacy, terms and signup page say "SaveRx.ai is operated by Sterling Ridge Management LP" (added in this branch).
+- [ ] Optional: add the same line to the shared site footer (regenerate via scripts/build-site-footer.py) and file the "SaveRx" assumed-name certificate.
 - [ ] Business info matches the IRS record exactly (legal name, EIN, address). Enter the EIN yourself in Twilio.
 
 ## Campaign fields
