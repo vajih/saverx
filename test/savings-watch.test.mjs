@@ -73,3 +73,6 @@ test('wrong code shows the error and stays on the code step',async()=>{
   h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();h.map['#swCode'].value='000000';h.code();await h.wait();
   assert.equal(h.visible(),'code');assert.match(h.map['#swCodeMsg'].textContent,/didn't match/);
 });
+test('stylesheet keeps [hidden] elements hidden (the dismissed cookie banner must not block clicks)',()=>{
+  assert.match(fs.readFileSync('assets/css/savings-watch.css','utf8'),/\[hidden\]\s*\{\s*display:\s*none\s*!important/);
+});
