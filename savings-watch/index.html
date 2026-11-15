@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google Consent Mode v2 — defaults (before GTM) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      analytics_storage:     'denied',
+      ad_storage:            'denied',
+      ad_user_data:          'denied',
+      ad_personalization:    'denied',
+      personalization_storage: 'denied',
+      wait_for_update:       500
+    });
+  </script>
+  <script src="/assets/js/consent.js"></script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MVZBBF7R');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FCKENS1BWB"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-FCKENS1BWB');
+  </script>
+  <meta charset="utf-8" />
+  <title>Find Savings for Me — Free | SaveRx.ai</title>
+  <meta name="description" content="Share your mobile number and SaveRx will research manufacturer savings options and text you a private link. Free." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- noindex during the Savings Watch pilot -->
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#f8f7f2" />
+  <link rel="canonical" href="https://saverx.ai/savings-watch/" />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/relief-chrome.css">
+  <link rel="stylesheet" href="/assets/css/savings-watch.css">
+</head>
+<body class="design-relief">
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MVZBBF7R"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+  <a class="relief-skip" href="#main-content">Skip to content</a><header class="relief-header"><a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:-.125em"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg></span>SaveRx<small>.ai</small></a><nav class="relief-nav" id="relief-navigation" aria-label="Main navigation"><a href="/drugs/">Explore savings</a><a href="/categories/">Conditions</a><a href="/learn/">A little guidance</a><a href="/experts/">Experts</a><a href="/about.html">Our story</a><a href="/drugs/" class="relief-nav-cta">Find my medication ↗</a></nav><button type="button" class="relief-menu" aria-expanded="false" aria-controls="relief-navigation">Menu</button></header>
+  <main id="main-content" class="sw-layout">
+    <section class="sw-intro">
+      <p class="eyebrow">SAVINGS WATCH · FREE</p>
+      <h1>We’ll look into your savings. <em>You get a text.</em></h1>
+      <p>Tell us which medication you’re interested in. A SaveRx researcher checks the official manufacturer programs and texts you a private link with what we found.</p>
+      <ul class="sw-steps"><li><span>01</span> Verify your mobile number</li><li><span>02</span> We check the official programs</li><li><span>03</span> You get a text with a private link</li></ul>
+      <p class="intro-fine">No account. No payment. We never put your medication name in a text message.</p>
+    </section>
+
+    <section class="sw-card" aria-labelledby="swTitle">
+      <div data-step="form">
+        <h2 id="swTitle">Find savings for <span data-drug-name>your medication</span></h2>
+        <form id="swForm" novalidate>
+          <label class="sw-field"><span>Mobile number (US)</span>
+            <input id="swPhone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(555) 555-0123" required></label>
+          <input type="text" id="swHp" name="website" class="sw-hp" tabindex="-1" aria-hidden="true" autocomplete="off">
+          <label class="sw-consent"><input type="checkbox" id="swConsent" required><span id="swConsentText">Loading…</span></label>
+          <label class="sw-consent"><input type="checkbox" id="swWatch"><span id="swWatchText">Loading…</span></label>
+          <div id="swTurnstile"></div>
+          <button class="btn btn-full" id="swSubmit" type="submit" disabled>Text me a code ↗</button>
+          <p class="sw-msg" id="swFormMsg" role="alert"></p>
+          <p class="sw-fine">Don’t enter medical details here. By continuing you agree to our <a href="/privacy.html">Privacy Policy</a> and <a href="/terms.html">Terms</a>. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help.</p>
+        </form>
+      </div>
+
+      <div data-step="code" hidden>
+        <h2>Enter your code</h2>
+        <p>We texted a 6-digit code to your phone.</p>
+        <form id="swCodeForm" novalidate>
+          <label class="sw-field"><span>Verification code</span>
+            <input id="swCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required></label>
+          <button class="btn btn-full" type="submit">Verify ↗</button>
+          <p class="sw-msg" id="swCodeMsg" role="alert"></p>
+        </form>
+      </div>
+
+      <div data-step="done" hidden>
+        <h2>You’re all set.</h2>
+        <p>Your number is verified. A SaveRx researcher will check the official programs and text you a private link. This can take a little while. We’ll text only about your request.</p>
+        <p><a class="btn" href="/drugs/">Browse other medications</a></p>
+      </div>
+
+      <div data-step="unsupported" hidden>
+        <h2>Coming soon</h2>
+        <p>Savings Watch is in a small pilot. <a href="/drugs/">Browse medications</a> to see official savings programs now.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/assets/js/savings-watch-config.js"></script>
+  <script defer src="/assets/js/savings-watch.js"></script>
+<script defer src="/assets/js/relief.js"></script><footer class="relief-footer">
+  <div class="relief-footer-inner">
+    <div class="relief-footer-top">
+      <div class="relief-footer-brand">
+        <a class="relief-logo" href="/" aria-label="SaveRx.ai home"><span class="relief-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false" style="vertical-align:-.125em"><path d="M12 2v20M2 12h20M5 5l14 14M5 19L19 5"/></svg></span>SaveRx<small>.ai</small></a>
+        <p class="relief-footer-tagline">Prescription savings, made clearer.</p>
+        <p class="relief-footer-description">Explore savings programs and get support with your next steps.</p>
+      </div>
+      <nav class="relief-footer-nav" aria-label="Footer navigation">
+        <div class="relief-footer-group">
+          <h2>Explore savings</h2>
+          <a href="/drugs/">All medications</a>
+          <a href="/categories/">Browse by condition</a>
+          <a href="/comparisons.html">Compare programs</a>
+          <a href="/learn/">Savings guides</a>
+        </div>
+        <div class="relief-footer-group">
+          <h2>Company</h2>
+          <a href="/about.html">About SaveRx</a>
+          <a href="/experts/">Experts</a>
+          <a href="/request-medication.html">Request a medication</a>
+        </div>
+        <div class="relief-footer-group">
+          <h2>Support</h2>
+          <a href="/get-help/">Enrollment help</a>
+          <a href="/contact.html">Contact us</a>
+          <a class="relief-footer-contact" href="mailto:help@saverx.ai">help@saverx.ai</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="relief-footer-disclaimer">
+      <p>SaveRx is not a pharmacy or insurance provider. Information is educational and is not medical advice. Eligibility, savings, and program availability vary; confirm current terms with the manufacturer. Medication names belong to their respective owners.</p>
+    </div>
+    <div class="relief-footer-bottom">
+      <p>© 2026 SaveRx.ai. All rights reserved.</p>
+      <nav aria-label="Legal and privacy"><a href="/privacy.html">Privacy policy</a><a href="/terms.html">Terms of use</a><a href="#" data-consent-toggle>Cookie settings</a></nav>
+    </div>
+  </div>
+</footer>
+
+
+</body>
+</html>

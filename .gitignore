@@ -24,3 +24,4 @@ __pycache__/
 saverx-savings-watch/.wrangler/
 saverx-savings-watch/.dev.vars
 saverx-savings-watch/node_modules/
+saverx-savings-watch/.dev-data/

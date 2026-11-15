@@ -15,12 +15,18 @@
   "vars": {
     "ALLOWED_ORIGINS": "https://saverx.ai,https://www.saverx.ai",
     "PILOT_SLUGS": "repatha",
+    "PUBLIC_BASE_URL": "https://saverx.ai",
+    "ENVIRONMENT": "production",
     "TWILIO_LIVE": "false"
-  }
+  },
+
+  // Daily retention purge (09:17 UTC)
+  "triggers": { "crons": ["17 9 * * *"] }
 
   // Route is added at launch (needs owner approval):
   // "routes": [{ "pattern": "saverx.ai/api/savings/*", "zone_name": "saverx.ai" }]
   //
   // Secrets (never in this file): wrangler secret put <NAME>
-  //   HMAC_KEY, TURNSTILE_SECRET, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SERVICE_SID
+  //   HMAC_KEY, TURNSTILE_SECRET, ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS,
+  //   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SERVICE_SID, TWILIO_MESSAGING_SERVICE_SID
 }

@@ -1,7 +1,7 @@
 # SaveRx Savings Watch — Audit & Implementation Plan
 
-Status: **DRAFT — awaiting owner approval. No implementation has started.**
-Branch: `feature/savings-watch-mvp` (this doc only).
+Status: **APPROVED (all 6 decisions). MVP built locally on `feature/savings-watch-mvp`; pending owner review on localhost and a live Twilio test. Not pushed, not deployed.**
+See `docs/SAVINGS_WATCH_SETUP.md` for run, test and deploy steps.
 
 ## 1. What we are building
 

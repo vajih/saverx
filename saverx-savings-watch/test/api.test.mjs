@@ -14,29 +14,30 @@ test("successful enrollment: start then verify (Repatha pilot)", async () => {
   const { request_id } = await j(r1);
   assert.ok(request_id);
   assert.deepEqual(t.twilio.calls.map((c) => c.op), ["start"]);
-  assert.equal(t.store.consents.length, 2); // transactional + separate watch consent
-  assert.deepEqual(t.store.consents.map((c) => c.type), ["transactional", "watch"]);
-  assert.ok(t.store.consents.every((c) => c.confirmed_at === null));
+  const consents = t.q("SELECT * FROM consents ORDER BY rowid");
+  assert.deepEqual(consents.map((c) => c.type), ["transactional", "watch"]); // separate watch consent
+  assert.ok(consents.every((c) => c.confirmed_at === null));
 
   const r2 = await t.post("/api/savings/verify", { request_id, code: "123456" });
   assert.equal(r2.status, 200);
   assert.equal((await j(r2)).verified, true);
-  assert.equal(t.store.requests.get(request_id).status, "verified");
-  assert.ok(t.store.consents.every((c) => c.confirmed_at));
-  assert.ok([...t.store.events.keys()].some((k) => k.includes("|phone_verified|repatha")));
+  assert.equal(t.q("SELECT status FROM requests WHERE id=?", request_id)[0].status, "verified");
+  assert.ok(t.q("SELECT * FROM consents").every((c) => c.confirmed_at));
+  assert.equal(t.q("SELECT count FROM events WHERE name='phone_verified' AND drug_slug='repatha'")[0].count, 1);
 });
 
 test("consent text is stored from the server, not the client", async () => {
   const t = setup();
   await t.start({ consent_text: "client-forged text" });
-  assert.equal(t.store.consents[0].text_shown, CONSENT_TEXTS[CONSENT_VERSION].transactional);
-  assert.equal(t.store.consents[0].text_version, CONSENT_VERSION);
+  const c = t.q("SELECT * FROM consents")[0];
+  assert.equal(c.text_shown, CONSENT_TEXTS[CONSENT_VERSION].transactional);
+  assert.equal(c.text_version, CONSENT_VERSION);
 });
 
 test("watch consent is not recorded unless explicitly given", async () => {
   const t = setup();
   await t.start();
-  assert.deepEqual(t.store.consents.map((c) => c.type), ["transactional"]);
+  assert.deepEqual(t.q("SELECT type FROM consents").map((c) => c.type), ["transactional"]);
 });
 
 test("responses and storage never echo the raw phone in the response", async () => {
@@ -76,7 +77,7 @@ test("verification failures: wrong code, bad format, unknown request", async () 
   const wrong = await t.post("/api/savings/verify", { request_id, code: "000000" });
   assert.equal(wrong.status, 400);
   assert.equal((await j(wrong)).error, "wrong_code");
-  assert.equal(t.store.requests.get(request_id).status, "new");
+  assert.equal(t.q("SELECT status FROM requests")[0].status, "new");
   assert.equal((await t.post("/api/savings/verify", { request_id, code: "abc" })).status, 400);
   assert.equal((await t.post("/api/savings/verify", { request_id: "nope", code: "123456" })).status, 404);
 });
@@ -87,7 +88,7 @@ test("verify attempts are capped at 5, even with the right code afterwards", asy
   for (let i = 0; i < 5; i++) assert.equal((await t.post("/api/savings/verify", { request_id, code: "000000" })).status, 400);
   const r = await t.post("/api/savings/verify", { request_id, code: "123456" });
   assert.equal(r.status, 429);
-  assert.equal(t.store.requests.get(request_id).status, "new");
+  assert.equal(t.q("SELECT status FROM requests")[0].status, "new");
 });
 
 test("duplicate request within 30 days reuses the same request and consent rows", async () => {
@@ -95,8 +96,8 @@ test("duplicate request within 30 days reuses the same request and consent rows"
   const a = await j(await t.start());
   const b = await j(await t.start());
   assert.equal(a.request_id, b.request_id);
-  assert.equal(t.store.requests.size, 1);
-  assert.equal(t.store.consents.length, 1);
+  assert.equal(t.q("SELECT * FROM requests").length, 1);
+  assert.equal(t.q("SELECT * FROM consents").length, 1);
 });
 
 test("duplicate after verification does not resend a code", async () => {
@@ -133,12 +134,12 @@ test("rate-limit window resets in the next hour", async () => {
 
 test("consent withdrawal: a suppressed (STOP) number cannot start and gets no code", async () => {
   const t = setup();
-  t.store.suppression.add(await t.phoneHmac());
+  await t.store.addSuppression(await t.phoneHmac(), "stop", new Date().toISOString());
   const r = await t.start();
   assert.equal(r.status, 409);
   assert.equal((await j(r)).error, "opted_out");
   assert.equal(t.twilio.calls.length, 0);
-  assert.equal(t.store.requests.size, 0);
+  assert.equal(t.q("SELECT * FROM requests").length, 0);
 });
 
 test("SMS provider failure returns a clean 502 and no secrets", async () => {
@@ -153,7 +154,7 @@ test("honeypot gets a fake success and does nothing", async () => {
   const t = setup();
   const r = await t.start({ hp: "bot" });
   assert.equal(r.status, 200);
-  assert.equal(t.store.requests.size, 0);
+  assert.equal(t.q("SELECT * FROM requests").length, 0);
   assert.equal(t.twilio.calls.length, 0);
 });
 
@@ -224,4 +225,16 @@ test("live Twilio client builds the Verify requests (mocked fetch only)", async 
   assert.ok(seen[0].auth.startsWith("Basic "));
   const failing = createTwilioClient({ TWILIO_LIVE: "true", TWILIO_ACCOUNT_SID: "a", TWILIO_AUTH_TOKEN: "b", TWILIO_VERIFY_SERVICE_SID: "c" }, async () => ({ ok: false, json: async () => ({ code: 20404 }) }));
   assert.deepEqual(await failing.checkVerification("+14155550100", "123456"), { status: "failed" });
+});
+
+test("LIVE_TEST_ALLOWLIST: live client refuses numbers that are not listed", async () => {
+  const seen = [];
+  const fakeFetch = async (url) => { seen.push(url); return { ok: true, json: async () => ({ status: "approved", sid: "SM1" }) }; };
+  const env = { TWILIO_LIVE: "true", TWILIO_ACCOUNT_SID: "a", TWILIO_AUTH_TOKEN: "b", TWILIO_VERIFY_SERVICE_SID: "c", TWILIO_MESSAGING_SERVICE_SID: "d", PUBLIC_BASE_URL: "https://x.test", LIVE_TEST_ALLOWLIST: "+14155550100" };
+  const c = createTwilioClient(env, fakeFetch);
+  assert.deepEqual(await c.startVerification("+14155550111"), { ok: false });
+  assert.equal((await c.sendMessage("+14155550111", "hi")).ok, false);
+  assert.equal(seen.length, 0);
+  assert.equal((await c.sendMessage("+14155550100", "hi")).ok, true);
+  assert.equal(seen.length, 1);
 });
