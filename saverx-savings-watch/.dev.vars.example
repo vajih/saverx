@@ -1,0 +1,16 @@
+# Local development only. Copy to .dev.vars (git-ignored). NEVER commit real values.
+HMAC_KEY=dev-only-change-me
+
+# Safe default: mock Twilio, no real texts. To test with real Twilio (your own phone only):
+#   TWILIO_LIVE=true
+#   TWILIO_ACCOUNT_SID=AC...
+#   TWILIO_AUTH_TOKEN=...
+#   TWILIO_VERIFY_SERVICE_SID=VA...
+#   TWILIO_MESSAGING_SERVICE_SID=MG...   (only needed for the results text; see docs/SAVINGS_WATCH_SETUP.md)
+TWILIO_LIVE=false
+
+# Optional: restrict live testing to specific numbers (comma-separated E.164). Strongly recommended.
+# LIVE_TEST_ALLOWLIST=+1XXXXXXXXXX
+
+# Lets you send the results text at any hour while testing (production keeps the 11am-9pm ET window)
+ALLOW_ANY_HOUR=true
