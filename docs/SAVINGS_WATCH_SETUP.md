@@ -31,7 +31,7 @@ Local data lives in `saverx-savings-watch/.dev-data/` (git-ignored). Delete that
    LIVE_TEST_ALLOWLIST=+1YOURNUMBER
    ```
    With `LIVE_TEST_ALLOWLIST` set the code refuses to contact any other number. Never paste these values into chat, commits, or screenshots.
-3. Trial accounts can only text numbers you have verified in the console (Phone Numbers → Verified Caller IDs).
+3. **Use a dedicated test number, not your personal cell.** Buy a cheap Twilio number (~$1.15/mo) and put it in `LIVE_TEST_ALLOWLIST`. It proves the live route (the form gets a 200 and Twilio logs an inbound text from the Verify sender), and your personal number never touches the project. Caveats: Twilio masks one-time codes in its logs (`**verification code is:**`), so a script cannot read the code back; to complete the code step with real Twilio you need a phone that shows the text, or a temporary inbound webhook (e.g. an ngrok tunnel). Do not reuse a number that already has a webhook (e.g. one routed to another app). Trial accounts can only text numbers verified in the console (Phone Numbers → Verified Caller IDs).
 4. `npm run dev` prints a loud "LIVE TWILIO MODE" banner. Sign up on the form with your number: you should receive a real code from Twilio Verify.
 5. **The results text** (Messaging API) additionally needs `TWILIO_MESSAGING_SERVICE_SID` and a sender that carriers will deliver: US business texting requires A2P 10DLC registration (or a verified toll-free number). Until that is approved, results texts may be blocked by carriers (e.g. error 30034). Verify codes work regardless. For local live testing of the results text, the status callback URL is not reachable from Twilio, so delivery status will not update locally (it is covered by automated tests).
 
