@@ -20,3 +20,7 @@ saverx-chat-proxy/.wrangler/
 .venv/
 __pycache__/
 .vercel
+
+saverx-savings-watch/.wrangler/
+saverx-savings-watch/.dev.vars
+saverx-savings-watch/node_modules/

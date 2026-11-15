@@ -1,0 +1,4 @@
+# Copy to .dev.vars (git-ignored) for local `wrangler dev`. Synthetic values only.
+HMAC_KEY=dev-only-change-me
+TURNSTILE_BYPASS=true
+TWILIO_LIVE=false

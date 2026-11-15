@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "saverx-savings-watch",
+  "main": "src/index.js",
+  "compatibility_date": "2025-10-16",
+  "observability": { "enabled": true },
+  "workers_dev": true,
+
+  // Create with: wrangler d1 create saverx-savings-watch, then paste the id below.
+  // Apply schema: wrangler d1 execute saverx-savings-watch --file=schema.sql
+  "d1_databases": [
+    { "binding": "DB", "database_name": "saverx-savings-watch", "database_id": "REPLACE_AFTER_d1_create" }
+  ],
+
+  "vars": {
+    "ALLOWED_ORIGINS": "https://saverx.ai,https://www.saverx.ai",
+    "PILOT_SLUGS": "repatha",
+    "TWILIO_LIVE": "false"
+  }
+
+  // Route is added at launch (needs owner approval):
+  // "routes": [{ "pattern": "saverx.ai/api/savings/*", "zone_name": "saverx.ai" }]
+  //
+  // Secrets (never in this file): wrangler secret put <NAME>
+  //   HMAC_KEY, TURNSTILE_SECRET, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SERVICE_SID
+}
