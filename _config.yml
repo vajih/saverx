@@ -1,0 +1,54 @@
+# GitHub Pages (Jekyll) build config for saverx.ai
+#
+# Pages publishes every tracked file in the repo root. This list keeps internal docs, tooling, backend
+# source and admin files OFF the public site. It does NOT affect git, Vercel, or Cloudflare deploys.
+# Everything the site actually uses (pages, assets/, data/, emails/, dashboard/, etc.) stays public.
+#
+# Adding a new internal file/folder? Add it here. Verify with: curl -I https://saverx.ai/<path> -> 404.
+exclude:
+  # Jekyll's own defaults (setting `exclude` replaces them, so they are repeated here)
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+
+  # Internal docs, strategy and AI prompts
+  - CLAUDE.md
+  - HANDOFF.md
+  - ROADMAP.md
+  - SETUP_GUIDE.md
+  - STRATEGY_APRIL_2026.md
+  - DEV_WORKFLOW.md
+  - ASMA_DESIGN_ADOPTION.md
+  - ASMA_GIT_GUIDE.md
+  - CATEGORY_BUILD_PROMPT.md
+  - CATEGORY_FIX_PROMPT.md
+  - COOKIE_BANNER_PROMPT.md
+  - VISITOR_ID_AND_BEHAVIOR_LOG_PROMPT.md
+  - docs
+
+  # Build tooling, config and deploy files
+  - scripts
+  - test
+  - generate_drug_pages.py
+  - generate_sitemap.py
+  - package.json
+  - package-lock.json
+  - requirements.txt
+  - env.example
+  - Procfile
+  - vercel.json
+
+  # Backend / server code and admin tooling (never meant to be served as static files)
+  - saverx-savings-watch
+  - saverx-chat-proxy
+  - backend
+  - api
+  - admin-server.js
+  - admin.html
+  - crawler
+
+  # Working files
+  - staging
+  - mockups
+  - templates
