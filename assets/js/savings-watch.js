@@ -4,7 +4,7 @@
  *
  * Privacy rules (do not break):
  *  - GA4 events carry CATEGORICAL values only (drug_slug, step). Phone numbers never go to gtag.
- *  - The consent wording shown is fetched from the server (single source of truth, stored verbatim).
+ *  - The consent wording in the page must equal saverx-savings-watch/src/consent.js (enforced by a test).
  */
 (function () {
   "use strict";
@@ -31,13 +31,9 @@
   Array.prototype.forEach.call(document.querySelectorAll("[data-drug-name]"), function (el) { el.textContent = PILOT[slug]; });
   track("savings_watch_view", { drug_slug: slug });
 
-  // Consent wording comes from the server; the form stays disabled until it loads.
+  // Consent wording is static in the page (so reviewers and users always see it). The server stores
+  // its own copy of the same text by version; a test keeps the two identical.
   var submit = $("#swSubmit");
-  fetch(API + "/consent").then(function (r) { return r.json(); }).then(function (c) {
-    $("#swConsentText").textContent = c.texts.transactional;
-    $("#swWatchText").textContent = c.texts.watch;
-    submit.disabled = false;
-  }).catch(function () { $("#swFormMsg").textContent = "Something went wrong loading this page. Please refresh."; });
 
   // Optional Turnstile (configured at launch)
   if (cfg.turnstileSiteKey) {

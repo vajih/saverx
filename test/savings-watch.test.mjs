@@ -1,17 +1,21 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-import {addCta,MARKER,PILOT_SLUGS} from '../scripts/_add-savings-watch-cta.mjs';
+import {addCta,MARKER,PILOT_SLUGS,PENDING} from '../scripts/_add-savings-watch-cta.mjs';
 const page=fs.readFileSync('savings-watch/index.html','utf8');
 const source=fs.readFileSync('assets/js/savings-watch.js','utf8');
 
 test('CTA injection is idempotent and links to the right medication',()=>{
   const html='<main><section id="enroll-help" class="x"></section></main>';
   const a=addCta(html,'repatha');assert.equal(a.changed,true);assert.match(a.html,/href="\/savings-watch\/\?drug=repatha"/);assert.match(a.html,/Find savings for me — Free/);
+  assert(a.html.includes(PENDING),'ships hidden until launch');
   const b=addCta(a.html,'repatha');assert.equal(b.changed,false);assert.equal(b.html.split(MARKER).length-1,1);
+  const live=addCta(a.html,'repatha',{live:true});assert.equal(live.changed,true);assert(!live.html.includes(PENDING));assert.equal(live.html.split(MARKER).length-1,1);
+  assert.equal(addCta(live.html,'repatha',{live:true}).changed,false);
   assert.equal(addCta('<main></main>','x').error,'anchor not found');
 });
 test('only the pilot page has the button for now',()=>{
   assert.deepEqual(PILOT_SLUGS,['repatha']);
-  assert.equal(fs.readFileSync('drugs/repatha/index.html','utf8').split(MARKER).length-1,1);
+  const rep=fs.readFileSync('drugs/repatha/index.html','utf8');assert.equal(rep.split(MARKER).length-1,1);
+  assert(rep.includes(PENDING),'Repatha card stays hidden until the Worker is live (run --live at launch)');
   assert(!fs.readFileSync('drugs/ozempic/index.html','utf8').includes(MARKER));
 });
 test('signup page: noindex, consent boxes unchecked, honeypot, privacy links',()=>{
@@ -34,7 +38,7 @@ function harness({drug='repatha',startRes,verifyRes}={}){
   const steps=['form','code','done','unsupported'].map(s=>el({'data-step':s}));
   const doc={querySelector:s=>map[s]||null,querySelectorAll:s=>s==='[data-step]'?steps:s==='[data-drug-name]'?[el()]:[],createElement:()=>el(),head:{appendChild(){}}};
   const fetch=async(url,opts)=>{
-    if(!opts){return {json:async()=>({version:'v1',texts:{transactional:'T text',watch:'W text'}})};}
+    if(!opts){throw new Error('unexpected GET');}
     posts.push({url,body:JSON.parse(opts.body)});
     const res=url.endsWith('/start')?(startRes||{ok:true,data:{ok:true,request_id:'req-1'}}):(verifyRes||{ok:true,data:{ok:true,verified:true}});
     return {ok:res.ok,json:async()=>res.data};
@@ -48,8 +52,14 @@ function harness({drug='repatha',startRes,verifyRes}={}){
 test('unsupported medication shows the coming-soon state and makes no API calls',async()=>{
   const h=harness({drug:'ozempic'});await h.wait();assert.equal(h.visible(),'unsupported');assert.equal(h.posts.length,0);
 });
-test('form loads server consent text and enables submit',async()=>{
-  const h=harness();await h.wait();assert.equal(h.map['#swConsentText'].textContent,'T text');assert.equal(h.map['#swWatchText'].textContent,'W text');assert.equal(h.map['#swSubmit'].disabled,false);
+test('consent wording in the page is static and identical to the server copy',async()=>{
+  const consent=fs.readFileSync('saverx-savings-watch/src/consent.js','utf8');
+  const server=Object.fromEntries([...consent.matchAll(/^\s*(transactional|watch):\s*\n?\s*((?:"[^"\n]*"\s*\+?\s*)+),/gm)].map(m=>[m[1],[...m[2].matchAll(/"([^"]*)"/g)].map(x=>x[1]).join('')]));
+  const decode=t=>t.replace(/&amp;/g,'&').replace(/&#39;/g,"'");
+  const grab=id=>decode(page.match(new RegExp('id="'+id+'">([^<]+)</span>'))[1]);
+  assert(server.transactional&&server.watch,'parsed server consent');
+  assert.equal(grab('swConsentText'),server.transactional);assert.equal(grab('swWatchText'),server.watch);
+  assert(!page.includes('Loading…'));
 });
 test('consent and phone are required before any request',async()=>{
   const h=harness();await h.wait();h.map['#swPhone'].value='(415) 555-0100';h.submit();assert.equal(h.posts.length,0);assert.match(h.map['#swFormMsg'].textContent,/agree/);
