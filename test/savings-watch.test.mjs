@@ -30,27 +30,56 @@ test('privacy policy and terms describe text messaging, STOP and no marketing sh
   assert.match(t,/5A\. Text Messages/);assert.match(t,/Consent is not a condition/);
 });
 
-function harness({drug='repatha',startRes,verifyRes}={}){
+function harness({search='?drug=repatha',startRes,verifyRes,drugsFail=false,postFails=false}={}){
   const posts=[],events=[];
-  const el=(a={})=>({hidden:false,value:'',checked:false,disabled:false,textContent:'',attrs:a,listeners:{},focus(){},getAttribute(n){return this.attrs[n]??null;},addEventListener(n,f){this.listeners[n]=f;},querySelector(){return btn;}});
-  const btn=el();const ids=['#swSubmit','#swFormMsg','#swPhone','#swHp','#swConsent','#swWatch','#swConsentText','#swWatchText','#swForm','#swCodeForm','#swCode','#swCodeMsg','#swTurnstile'];
-  const map=Object.fromEntries(ids.map(i=>[i,el()]));map['#swSubmit'].disabled=true;
-  const steps=['form','code','done','unsupported'].map(s=>el({'data-step':s}));
-  const doc={querySelector:s=>map[s]||null,querySelectorAll:s=>s==='[data-step]'?steps:s==='[data-drug-name]'?[el()]:[],createElement:()=>el(),head:{appendChild(){}}};
+  const el=(a={})=>({hidden:false,value:'',checked:false,disabled:false,textContent:'',attrs:a,listeners:{},children:[],focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},addEventListener(n,f){this.listeners[n]=f;},appendChild(c){this.children.push(c);if(c.textContent!==undefined&&this.textContent!==undefined&&c.isLink)this.link=c;},querySelector(){return btn;}});
+  const btn=el();
+  const ids=['#swSubmit','#swFormMsg','#swPhone','#swHp','#swConsent','#swWatch','#swForm','#swCodeForm','#swCode','#swCodeMsg','#swTurnstile','#swDrug','#swDrugList','#swDrugMsg'];
+  const map=Object.fromEntries(ids.map(i=>[i,el()]));map['#swDrug'].value='Repatha';
+  const steps=['form','code','done'].map(x=>el({'data-step':x}));
+  const nameEls=[el(),el()];
+  const doc={querySelector:s=>map[s]||null,querySelectorAll:s=>s==='[data-step]'?steps:s==='[data-drug-name]'?nameEls:[],createElement:t=>{const e=el();e.isLink=t==='a';e.tag=t;return e;},createTextNode:t=>({textContent:t}),head:{appendChild(){}}};
+  const directory={items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'},{name:'Dupixent',brand:'Dupixent',slug:'dupixent',url:'/drugs/dupixent/'}]};
   const fetch=async(url,opts)=>{
-    if(!opts){throw new Error('unexpected GET');}
+    if(!opts){ if(drugsFail)throw new Error('offline'); return {json:async()=>directory}; }
     posts.push({url,body:JSON.parse(opts.body)});
+    if(postFails)throw new Error('offline');
     const res=url.endsWith('/start')?(startRes||{ok:true,data:{ok:true,request_id:'req-1'}}):(verifyRes||{ok:true,data:{ok:true,verified:true}});
     return {ok:res.ok,json:async()=>res.data};
   };
-  const ctx={document:doc,window:{gtag:(...a)=>events.push(a),SAVERX_SAVINGS:{api:'/api/savings',turnstileSiteKey:''}},location:{search:'?drug='+drug},fetch,URLSearchParams};
+  const ctx={document:doc,window:{gtag:(...a)=>events.push(a),SAVERX_SAVINGS:{api:'/api/savings',turnstileSiteKey:''}},location:{search},fetch,URLSearchParams};
   vm.runInNewContext(source,ctx);
   const visible=()=>steps.find(s=>!s.hidden)?.attrs['data-step'];
-  const wait=async()=>{for(let i=0;i<10;i++)await Promise.resolve();};
-  return {map,posts,events,visible,wait,submit:()=>map['#swForm'].listeners.submit({preventDefault(){}}),code:()=>map['#swCodeForm'].listeners.submit({preventDefault(){},target:map['#swCodeForm']})};
+  const wait=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
+  const type=v=>{map['#swDrug'].value=v;map['#swDrug'].listeners.input();};
+  return {map,posts,events,visible,wait,type,nameEls,
+    submit:()=>map['#swForm'].listeners.submit({preventDefault(){}}),
+    code:()=>map['#swCodeForm'].listeners.submit({preventDefault(){},target:map['#swCodeForm']})};
 }
-test('unsupported medication shows the coming-soon state and makes no API calls',async()=>{
-  const h=harness({drug:'ozempic'});await h.wait();assert.equal(h.visible(),'unsupported');assert.equal(h.posts.length,0);
+test('medication defaults to Repatha with no URL parameter and is marked available',async()=>{
+  const h=harness({search:''});await h.wait();assert.equal(h.map['#swDrug'].value,'Repatha');assert.match(h.map['#swDrugMsg'].textContent,/Repatha is available/);assert.doesNotMatch(h.map['#swDrugMsg'].className,/warn/);assert.equal(h.nameEls[0].textContent,'Repatha');
+});
+test('medication suggestions load from the site directory',async()=>{
+  const h=harness();await h.wait();assert.equal(h.map['#swDrugList'].children.length,3);assert.equal(h.map['#swDrugList'].children[0].value,'Repatha');
+});
+test('typing is forgiving: case, spaces and the slug all resolve to Repatha',async()=>{
+  for(const v of ['repatha','REPATHA ','  Repatha','re-patha']){const h=harness();await h.wait();h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.type(v);h.submit();await h.wait();assert.equal(h.posts[0].body.drug_slug,'repatha',v);}
+});
+test('a medication outside the pilot is blocked with a link to its official-programs page, and makes no API call',async()=>{
+  const h=harness();await h.wait();h.type('Ozempic');assert.match(h.map['#swDrugMsg'].textContent,/Ozempic isn't available yet/);assert.equal(h.map['#swDrugMsg'].link.href,'/drugs/ozempic/');assert.match(h.map['#swDrugMsg'].className,/warn/);
+  h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();assert.equal(h.posts.length,0);assert.match(h.map['#swFormMsg'].textContent,/pilot/);
+});
+test('unknown or empty medication is rejected before any API call',async()=>{
+  const h=harness();await h.wait();h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;
+  h.type('zzzzmed');h.submit();await h.wait();assert.equal(h.posts.length,0);assert.match(h.map['#swDrugMsg'].textContent,/couldn't find/);
+  h.type('');h.submit();await h.wait();assert.equal(h.posts.length,0);assert.match(h.map['#swDrugMsg'].textContent,/Enter the medication/);
+});
+test('?drug= prefills the field; a non-pilot slug is not submittable',async()=>{
+  const ok=harness({search:'?drug=repatha'});await ok.wait();assert.equal(ok.map['#swDrug'].value,'Repatha');
+  const no=harness({search:'?drug=dupixent'});await no.wait();assert.equal(no.map['#swDrug'].value,'dupixent');assert.match(no.map['#swDrugMsg'].textContent,/Dupixent isn't available yet/);
+});
+test('page still works for Repatha if the drug directory fails to load',async()=>{
+  const h=harness({drugsFail:true});await h.wait();h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();assert.equal(h.posts[0].body.drug_slug,'repatha');
 });
 test('consent wording in the page is static and identical to the server copy',async()=>{
   const consent=fs.readFileSync('saverx-savings-watch/src/consent.js','utf8');
@@ -88,4 +117,14 @@ test('stylesheet keeps [hidden] elements hidden (the dismissed cookie banner mus
 });
 test('operating company is named on the signup page, privacy policy and terms (needed for A2P review)',()=>{
   for(const f of ['savings-watch/index.html','privacy.html','terms.html'])assert.match(fs.readFileSync(f,'utf8'),/operated by Sterling Ridge Management LP/,f);
+});
+
+test('network failure explains Savings Watch may not be open yet and keeps the form usable',async()=>{
+  const h=harness({postFails:true});await h.wait();h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();
+  assert.match(h.map['#swFormMsg'].textContent,/may not be open yet/);assert.equal(h.visible(),'form');assert.equal(h.map['#swSubmit'].disabled,false);
+});
+test('signup page has the medication field defaulting to Repatha and the full disclaimers',()=>{
+  assert.match(page,/id="swDrug"[^>]*value="Repatha"/);assert.match(page,/<datalist id="swDrugList">/);
+  for(const t of ['not medical advice','not the drug manufacturer','do not guarantee','Reply <strong>STOP</strong>','Texts never include the medication name','never sell it','operated by Sterling Ridge Management LP','Consent to texts is not a condition'])assert(page.includes(t),t);
+  assert(!page.includes('data-step="unsupported"'));
 });

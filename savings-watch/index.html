@@ -60,6 +60,10 @@
       <div data-step="form">
         <h2 id="swTitle">Find savings for <span data-drug-name>your medication</span></h2>
         <form id="swForm" novalidate>
+          <label class="sw-field"><span>Medication you're interested in</span>
+            <input id="swDrug" type="text" list="swDrugList" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Start typing, e.g. Repatha" value="Repatha" required>
+            <datalist id="swDrugList"></datalist></label>
+          <p class="sw-hint" id="swDrugMsg" role="status">✓ Repatha is available in the pilot.</p>
           <label class="sw-field"><span>Mobile number (US)</span>
             <input id="swPhone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(555) 555-0123" required></label>
           <input type="text" id="swHp" name="website" class="sw-hp" tabindex="-1" aria-hidden="true" autocomplete="off">
@@ -88,12 +92,19 @@
         <p>Your number is verified. A SaveRx researcher will check the official programs and text you a private link. This can take a little while. We’ll text only about your request.</p>
         <p><a class="btn" href="/drugs/">Browse other medications</a></p>
       </div>
-
-      <div data-step="unsupported" hidden>
-        <h2>Coming soon</h2>
-        <p>Savings Watch is in a small pilot. <a href="/drugs/">Browse medications</a> to see official savings programs now.</p>
-      </div>
     </section>
+
+    <aside class="sw-disclaimers" aria-labelledby="swDiscTitle">
+      <h2 id="swDiscTitle">Important information</h2>
+      <ul>
+        <li><strong>Pilot.</strong> Savings Watch is a small pilot for Repatha. Other medications are coming later; you can always see official savings programs on each medication's page.</li>
+        <li><strong>Independent and informational.</strong> SaveRx.ai is not the drug manufacturer, a pharmacy, or an insurer, and is not affiliated with or endorsed by any manufacturer. This is not medical advice; talk to your prescriber about your treatment.</li>
+        <li><strong>No guarantees.</strong> Eligibility, savings and program terms are set by the manufacturer and can change. We do not guarantee that you will qualify or save. A SaveRx researcher checks the official programs and you should confirm current terms on the official site before you enroll.</li>
+        <li><strong>How we text you.</strong> We send one text with a private link that expires after 14 days. Texts never include the medication name or health details. Message and data rates may apply. Reply <strong>STOP</strong> at any time to opt out or <strong>HELP</strong> for help (<a href="mailto:help@saverx.ai">help@saverx.ai</a>). Consent to texts is not a condition of using SaveRx.ai.</li>
+        <li><strong>Your privacy.</strong> Don't enter medical details on this page. We use your mobile number only for this service and never sell it or share it with third parties for their marketing. See our <a href="/privacy.html#sms">Privacy Policy</a> and <a href="/terms.html#sms">Terms</a>.</li>
+        <li><strong>Who runs this.</strong> SaveRx.ai is operated by Sterling Ridge Management LP.</li>
+      </ul>
+    </aside>
   </main>
 
   <script src="/assets/js/savings-watch-config.js"></script>

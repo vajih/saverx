@@ -39,7 +39,8 @@ const twilio = createTwilioClient(env);
 const app = createApp({ store: d1Store(db), twilio, env });
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".webmanifest": "application/manifest+json", ".xml": "application/xml", ".txt": "text/plain" };
-const BLOCKED = /^\/(\.|data\/|node_modules\/|saverx-savings-watch\/|scripts\/|saverx-chat-proxy\/)/;
+// data/*.json is public on the real site (drug directory); only the leads CSVs (PII) stay blocked
+const BLOCKED = /^\/(\.|data\/[^?]*\.csv|node_modules\/|saverx-savings-watch\/|scripts\/|saverx-chat-proxy\/)/;
 const WORKER = /^\/(api\/(savings|admin|twilio)\/|admin\/savings|r\/)/;
 
 function serveStatic(pathname, res) {
