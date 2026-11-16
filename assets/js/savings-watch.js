@@ -5,7 +5,7 @@
  * Privacy rules (do not break):
  *  - GA4 events carry CATEGORICAL values only (drug_slug, step). Phone numbers never go to gtag.
  *  - The consent wording in the page must equal saverx-savings-watch/src/consent.js (enforced by a test).
- *  - Pilot: only medications in PILOT can be submitted; the Worker enforces the same list (PILOT_SLUGS).
+ *  - Only drugs in data/savings-watch.json "open" can be submitted; the Worker enforces the same list (PILOT_SLUGS).
  */
 (function () {
   "use strict";
@@ -14,18 +14,25 @@
   function $(s) { return document.querySelector(s); }
   function track(name, params) { try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {} }
 
-  var PILOT = { repatha: "Repatha" };   // keep in sync with PILOT_SLUGS in saverx-savings-watch/wrangler.jsonc
-  var state = { requestId: "", token: "", busy: false, slug: "", drugs: [] };
+  // Fallbacks keep the page working for Repatha even if the data files can't be read.
+  var FALLBACK = { slug: "repatha", name: "Repatha", brand: "Repatha", url: "/drugs/repatha/" };
+  var state = { requestId: "", token: "", busy: false, slug: "", drugs: [], open: ["repatha"] };
 
   function norm(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  function isOpen(slug) { return state.open.indexOf(slug) !== -1; }
+  function nameOf(slug) {
+    for (var i = 0; i < state.drugs.length; i++) if (state.drugs[i].slug === slug) return state.drugs[i].name;
+    return slug === FALLBACK.slug ? FALLBACK.name : slug;
+  }
+  function openNames() { return state.open.map(nameOf).join(", "); }
 
-  // Match what the visitor typed to a medication: pilot list first, then the site's drug directory.
+  // Match what the visitor typed to a medication: the site's drug directory (plus the Repatha fallback).
   function resolve(text) {
     var n = norm(text);
     if (!n) return null;
-    for (var slug in PILOT) { if (norm(slug) === n || norm(PILOT[slug]) === n) return { slug: slug, name: PILOT[slug], url: "/drugs/" + slug + "/" }; }
-    for (var i = 0; i < state.drugs.length; i++) {
-      var d = state.drugs[i];
+    var list = state.drugs.length ? state.drugs : [FALLBACK];
+    for (var i = 0; i < list.length; i++) {
+      var d = list[i];
       if (norm(d.name) === n || norm(d.brand) === n || norm(d.slug) === n) return d;
     }
     return null;
@@ -60,22 +67,27 @@
     Array.prototype.forEach.call(document.querySelectorAll("[data-drug-name]"), function (el) { el.textContent = d ? d.name : "your medication"; });
     if (!typed.trim()) { setDrugMsg("Enter the medication you're interested in."); return; }
     if (!d) { setDrugMsg("We couldn't find that medication. Try the brand name, for example Repatha."); return; }
-    if (!PILOT[d.slug]) {
-      setDrugMsg("Savings Watch is open for Repatha during the pilot, so " + d.name + " isn't available yet.", { href: d.url, label: "See official savings programs for " + d.name + " ↗" });
+    if (!isOpen(d.slug)) {
+      setDrugMsg("Savings Watch is open for " + openNames() + " right now, so " + d.name + " isn't available yet.", { href: d.url, label: "See official savings programs for " + d.name + " ↗" });
       return;
     }
     state.slug = d.slug;
-    setDrugMsg("✓ " + d.name + " is available in the pilot.", null, true);
+    setDrugMsg("✓ " + d.name + " is available now.", null, true);
   }
 
   // Prefill from ?drug= (the Repatha button links here with it); the field defaults to Repatha.
   var param = (new URLSearchParams(location.search).get("drug") || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
-  if (param) drugInput.value = PILOT[param] || param;
+  if (param) drugInput.value = param === FALLBACK.slug ? FALLBACK.name : param;
   updateDrug();
   drugInput.addEventListener("input", updateDrug);
   drugInput.addEventListener("change", updateDrug);
 
-  // Directory for suggestions + resolving non-pilot names (optional: the page works without it)
+  // Which drugs are open (rollout switch file shared with the cards/strips)
+  fetch("/data/savings-watch.json").then(function (r) { return r.json(); }).then(function (cfg) {
+    if (cfg && Array.isArray(cfg.open) && cfg.open.length) { state.open = cfg.open; updateDrug(); }
+  }).catch(function () { /* keep the Repatha fallback */ });
+
+  // Directory for suggestions + resolving names (optional: the page works without it)
   fetch("/data/drugs.json").then(function (r) { return r.json(); }).then(function (data) {
     state.drugs = (data && data.items) || [];
     var list = $("#swDrugList");
@@ -102,7 +114,7 @@
     if (state.busy) return;
     var msg = $("#swFormMsg"); msg.textContent = "";
     updateDrug();
-    if (!state.slug) { msg.textContent = "Choose a medication that's available in the pilot (Repatha)."; drugInput.focus(); return; }
+    if (!state.slug) { msg.textContent = "Choose a medication that's available now (" + openNames() + ")."; drugInput.focus(); return; }
     if (!$("#swPhone").value.trim()) { msg.textContent = "Enter your mobile number."; return; }
     if (!$("#swConsent").checked) { msg.textContent = "Please check the box to agree to receive a text message."; return; }
     setBusy(submit, true, "Sending…");
