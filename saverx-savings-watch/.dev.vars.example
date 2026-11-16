@@ -12,5 +12,5 @@ TWILIO_LIVE=false
 # Optional: restrict live testing to specific numbers (comma-separated E.164). Strongly recommended.
 # LIVE_TEST_ALLOWLIST=+1XXXXXXXXXX
 
-# Lets you send the results text at any hour while testing (production keeps the 11am-9pm ET window)
+# Lets you send the results text at any hour while testing (production keeps the 2pm-9pm ET window)
 ALLOW_ANY_HOUR=true

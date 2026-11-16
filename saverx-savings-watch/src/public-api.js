@@ -53,18 +53,36 @@ async function start(ctx, request) {
 
   // Duplicate request (same phone + medication within 30 days): reuse it, just resend the code.
   const since = new Date(ctx.now() - DEDUPE_DAYS * 86400 * 1000).toISOString();
-  const existing = await store.findRecentRequest(phoneHmac, slug, since);
+  let existing = await store.findRecentRequest(phoneHmac, slug, since);
+  // A request that already burned all verification attempts, or whose phone was purged
+  // under retention, can never verify again: start fresh (still bounded by the per-phone
+  // rate limit above) instead of resending a code into a dead request.
+  if (existing && existing.status === "new" &&
+      ((existing.verify_attempts || 0) >= LIMITS.maxVerifyAttempts || !existing.phone_e164)) {
+    existing = null;
+  }
   let id;
+  const ua = (request.headers.get("User-Agent") || "").slice(0, 200);
   if (existing) {
     id = existing.id;
     if (existing.status !== "new") return reply(request, 200, { ok: true, request_id: id, already_verified: true });
+    // Reusing an unverified request: the new submission's consent choices replace the old
+    // unconfirmed ones (kept as superseded history). Verification confirms only these rows,
+    // so it cannot confirm an opt-in the visitor left unchecked this time, or discard one
+    // they just selected.
+    await store.supersedeUnconfirmedConsents(id, ctx.iso());
+    for (const type of body.consent_watch === true ? ["transactional", "watch"] : ["transactional"]) {
+      await store.addConsent({
+        id: ctx.id(), request_id: id, type, text_version: CONSENT_VERSION,
+        text_shown: texts[type], checked_at: ctx.iso(), ip_hash: ipHash, user_agent: ua,
+      });
+    }
   } else {
     id = ctx.id();
     await store.createRequest({
       id, drug_slug: slug, phone_hmac: phoneHmac, phone_e164: phone, status: "new",
       ip_hash: ipHash, source_page: String(body.source_page || "").slice(0, 200), created_at: ctx.iso(),
     });
-    const ua = (request.headers.get("User-Agent") || "").slice(0, 200);
     for (const type of body.consent_watch === true ? ["transactional", "watch"] : ["transactional"]) {
       await store.addConsent({
         id: ctx.id(), request_id: id, type, text_version: CONSENT_VERSION,

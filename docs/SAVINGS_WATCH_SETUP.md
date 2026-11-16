@@ -51,21 +51,22 @@ for s in HMAC_KEY TURNSTILE_SECRET ACCESS_TEAM_DOMAIN ACCESS_AUD ADMIN_EMAILS \
 done
 ```
 - `HMAC_KEY`: long random string (e.g. `openssl rand -hex 32`). **Changing it later breaks phone matching and STOP suppression**, so store it safely.
+- `TWILIO_ACCOUNT_SID`: use the surviving Twilio account. The duplicate account was closed Nov 15, 2026 (refund pending); do not use its credentials. The SID itself is never written in this repo — take it from the Twilio console at deploy time.
 - `ADMIN_EMAILS`: comma-separated allowlist (you and Asma). `ACCESS_TEAM_DOMAIN` like `yourteam.cloudflareaccess.com`; `ACCESS_AUD` is the Access application's AUD tag.
 - Set `TWILIO_LIVE` to `"true"` in `wrangler.jsonc` only at launch. Do **not** set `ALLOW_ANY_HOUR` or `TURNSTILE_BYPASS` or `ADMIN_DEV_EMAIL` in production.
 - **Turnstile:** Cloudflare dashboard → Turnstile → add site `saverx.ai`; put the *site key* in `assets/js/savings-watch-config.js` and the *secret* in `TURNSTILE_SECRET`. Until then the form cannot submit in production (fails closed).
 - **Cloudflare Access:** Zero Trust → Access → Applications → self-hosted. Protect `saverx.ai/admin/savings*` and `saverx.ai/api/admin/*`, policy = your two emails. Use that app's AUD tag above.
 - **Routes** (uncomment in `wrangler.jsonc`, then `npx wrangler deploy`): `saverx.ai/api/savings/*`, `saverx.ai/api/admin/*`, `saverx.ai/api/twilio/*`, `saverx.ai/admin/savings*`, `saverx.ai/r/*`.
 - **Twilio webhooks:** Messaging Service → Integration: Incoming messages → `https://saverx.ai/api/twilio/inbound` (POST). Status callbacks are set per message automatically (`/api/twilio/status`). Leave Twilio's default opt-out (STOP/HELP) handling on.
-- **Site:** deploy Pages as usual (`wrangler pages deploy . --project-name saverx`). The `/savings-watch/` page is `noindex` during the pilot.
+- **Site:** deploy Pages as the Jekyll output only — `jekyll build && wrangler pages deploy _site --project-name saverx` (never deploy the repo root; see `_config.yml` — the Cloudflare Pages project must also be set to Build command `jekyll build`, Output directory `_site`). The `/savings-watch/` page is `noindex` during the pilot.
 - **Rollout beyond Repatha:** add slugs to `PILOT_SLUGS` in `wrangler.jsonc` and the client list in `assets/js/savings-watch.js`, then run `node scripts/_add-savings-watch-cta.mjs --all`. Only after the pilot passes.
 
 ## 5. Operating it
 
 - Admin → pick a verified request → **Load draft from drug page** → verify every detail on the official sites → tick the verification box → **Save** → **Preview** → **Send text** (two-click confirm).
-- Send window: 11am–9pm ET (keeps every US recipient between 8am and 9pm local). Max 3 sends per request. Links expire 14 days after sending; re-sending rotates the link.
+- Send window: 2pm–9pm ET (keeps every US recipient between 8am and 9pm local, including Hawaii and Alaska — 8am Hawaii time is 2pm ET in daylight time). Max 3 sends per request. Links expire 14 days after sending; re-sending rotates the link.
 - STOP / UNSUBSCRIBE / CANCEL / END / QUIT suppress the number immediately and withdraw consent. START / UNSTOP restores. HELP replies with contact info.
-- Retention (daily cron): phone numbers purged ~30 days after the link expires (or 2 days for never-verified requests); results deleted then too; consent records are kept.
+- Retention (daily cron): phone numbers purged ~30 days after the link expires (or 2 days for never-verified requests); verified requests that never get a successful send have their phones purged 45 days after verification; results deleted then too; consent records are kept.
 
 ## 6. Launch checklist (all must be true)
 

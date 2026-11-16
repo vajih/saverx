@@ -1,7 +1,11 @@
 # GitHub Pages (Jekyll) build config for saverx.ai
 #
 # Pages publishes every tracked file in the repo root. This list keeps internal docs, tooling, backend
-# source and admin files OFF the public site. It does NOT affect git, Vercel, or Cloudflare deploys.
+# source and admin files OFF the public site. It does NOT affect git or Vercel deploys.
+# Cloudflare Pages MUST build with Jekyll and publish only the generated `_site` directory
+# (build command `jekyll build`, output directory `_site`); that is what makes these
+# exclusions apply there too. Deploying the repo root directly (`wrangler pages deploy .`)
+# publishes everything, including the files listed here — never do that.
 # Everything the site actually uses (pages, assets/, data/, emails/, dashboard/, etc.) stays public.
 #
 # Adding a new internal file/folder? Add it here. Verify with: curl -I https://saverx.ai/<path> -> 404.

@@ -149,9 +149,13 @@ test("quiet hours block sends unless ALLOW_ANY_HOUR (test-only) is set", async (
   const t = setup({ env: { ALLOW_ANY_HOUR: "false" }, clock: () => night });
   const id = await readyRequest(t);
   assert.equal((await j(await t.post(`/api/admin/requests/${id}/send`, {}))).error, "quiet_hours");
+  // Noon ET is outside the window too: 8am Hawaii time is 2pm ET in daylight time.
   const noon = setup({ env: { ALLOW_ANY_HOUR: "false" }, clock: () => Date.UTC(2026, 10, 15, 17, 0, 0) });
   const id2 = await readyRequest(noon);
-  assert.equal((await noon.post(`/api/admin/requests/${id2}/send`, {})).status, 200);
+  assert.equal((await j(await noon.post(`/api/admin/requests/${id2}/send`, {}))).error, "quiet_hours");
+  const twoPm = setup({ env: { ALLOW_ANY_HOUR: "false" }, clock: () => Date.UTC(2026, 10, 15, 19, 0, 0) }); // 2pm ET
+  const id3 = await readyRequest(twoPm);
+  assert.equal((await twoPm.post(`/api/admin/requests/${id3}/send`, {})).status, 200);
 });
 
 test("SMS provider failure is recorded, not counted, and sets no token", async () => {
@@ -164,6 +168,22 @@ test("SMS provider failure is recorded, not counted, and sets no token", async (
   assert.equal(t.q("SELECT token_hash FROM results")[0].token_hash, null);
   assert.equal(t.q("SELECT status FROM requests")[0].status, "ready");
   assert.equal(t.q("SELECT count FROM events WHERE name='sms_failed'")[0].count, 1);
+});
+
+test("overlapping sends are blocked; a stale in-flight send releases its slot", async () => {
+  const t = setup();
+  const id = await readyRequest(t);
+  const resultId = t.q("SELECT id FROM results")[0].id;
+  // Simulate a send already in flight: the reservation is held, not yet resolved.
+  assert.equal(await t.store.reserveSendSlot({ id: "msg-inflight", request_id: id, result_id: resultId, status: "sending", created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, 3), true);
+  const r = await t.post(`/api/admin/requests/${id}/send`, {});
+  assert.equal(r.status, 429);
+  assert.equal((await j(r)).error, "send_in_progress");
+  assert.equal(t.twilio.calls.filter((c) => c.op === "send").length, 0);
+  // A stale (>1h) in-flight row releases the slot, so the send can proceed.
+  await t.db.raw.prepare("UPDATE messages SET updated_at=? WHERE id='msg-inflight'").run(new Date(Date.now() - 2 * 3600 * 1000).toISOString());
+  assert.equal((await t.post(`/api/admin/requests/${id}/send`, {})).status, 200);
+  assert.equal(t.q("SELECT status FROM messages WHERE id='msg-inflight'")[0].status, "failed");
 });
 
 test("max 3 successful sends per request", async () => {
@@ -183,6 +203,21 @@ test("outcome feedback is recorded for valid links only", async () => {
   assert.equal(t.q("SELECT count FROM events WHERE name='outcome_worked'")[0].count, 1);
   assert.equal((await t.post("/api/savings/outcome", { token, outcome: "bogus" })).status, 400);
   assert.equal((await t.post("/api/savings/outcome", { token: "x".repeat(43), outcome: "worked" })).status, 404);
+});
+
+test("purge removes phones and unsent drafts of verified requests that never got a send (45 days)", async () => {
+  let ms = Date.UTC(2026, 10, 15, 12, 0, 0);
+  const t = setup({ clock: () => ms });
+  const id = await readyRequest(t); // verified + draft result, never sent
+  assert.deepEqual(await t.store.purge(ms), { phonesPurged: 0, resultsDeleted: 0 });
+  ms += 46 * 86400000;
+  const out = await t.store.purge(ms);
+  assert.equal(out.phonesPurged, 1);
+  assert.equal(out.resultsDeleted, 1);
+  assert.equal(t.q("SELECT phone_e164 FROM requests")[0].phone_e164, null);
+  assert.equal(t.q("SELECT * FROM results").length, 0);
+  assert.equal(t.q("SELECT * FROM consents").length, 1); // consent records kept
+  assert.equal((await t.post(`/api/admin/requests/${id}/send`, {})).status, 409); // phone gone
 });
 
 test("purge removes expired results and phone numbers but keeps consent records", async () => {

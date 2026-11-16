@@ -30,7 +30,7 @@ test('privacy policy and terms describe text messaging, STOP and no marketing sh
   assert.match(t,/5A\. Text Messages/);assert.match(t,/Consent is not a condition/);
 });
 
-function harness({search='?drug=repatha',startRes,verifyRes,drugsFail=false,postFails=false}={}){
+function harness({search='?drug=repatha',startRes,verifyRes,drugsFail=false,postFails=false,turnstileSiteKey=''}={}){
   const posts=[],events=[];
   const el=(a={})=>({hidden:false,value:'',checked:false,disabled:false,textContent:'',attrs:a,listeners:{},children:[],focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},addEventListener(n,f){this.listeners[n]=f;},appendChild(c){this.children.push(c);if(c.textContent!==undefined&&this.textContent!==undefined&&c.isLink)this.link=c;},querySelector(){return btn;}});
   const btn=el();
@@ -38,7 +38,7 @@ function harness({search='?drug=repatha',startRes,verifyRes,drugsFail=false,post
   const map=Object.fromEntries(ids.map(i=>[i,el()]));map['#swDrug'].value='Repatha';
   const steps=['form','code','done'].map(x=>el({'data-step':x}));
   const nameEls=[el(),el()];
-  const doc={querySelector:s=>map[s]||null,querySelectorAll:s=>s==='[data-step]'?steps:s==='[data-drug-name]'?nameEls:[],createElement:t=>{const e=el();e.isLink=t==='a';e.tag=t;return e;},createTextNode:t=>({textContent:t}),head:{appendChild(){}}};
+  const doc={querySelector:s=>map[s]||null,querySelectorAll:s=>s==='[data-step]'?steps:s==='[data-drug-name]'?nameEls:[],createElement:t=>{const e=el();e.isLink=t==='a';e.tag=t;return e;},createTextNode:t=>({textContent:t}),head:{appendChild(el){if(el.onload)el.onload();}}};
   const directory={items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'},{name:'Dupixent',brand:'Dupixent',slug:'dupixent',url:'/drugs/dupixent/'}]};
   const fetch=async(url,opts)=>{
     if(!opts){ if(drugsFail)throw new Error('offline'); return {json:async()=>directory}; }
@@ -47,12 +47,18 @@ function harness({search='?drug=repatha',startRes,verifyRes,drugsFail=false,post
     const res=url.endsWith('/start')?(startRes||{ok:true,data:{ok:true,request_id:'req-1'}}):(verifyRes||{ok:true,data:{ok:true,verified:true}});
     return {ok:res.ok,json:async()=>res.data};
   };
-  const ctx={document:doc,window:{gtag:(...a)=>events.push(a),SAVERX_SAVINGS:{api:'/api/savings',turnstileSiteKey:''}},location:{search},fetch,URLSearchParams};
+  const turnstile=turnstileSiteKey?{widgetId:'widget-1',resets:[],opts:null,
+    render(sel,opts){this.opts=opts;return this.widgetId;},
+    reset(id){this.resets.push(id);},
+    issue(token){this.opts.callback(token);},
+    expire(){this.opts['expired-callback']();},
+  }:undefined;
+  const ctx={document:doc,window:{gtag:(...a)=>events.push(a),SAVERX_SAVINGS:{api:'/api/savings',turnstileSiteKey},...(turnstile?{turnstile}:{})},location:{search},fetch,URLSearchParams};
   vm.runInNewContext(source,ctx);
   const visible=()=>steps.find(s=>!s.hidden)?.attrs['data-step'];
   const wait=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
   const type=v=>{map['#swDrug'].value=v;map['#swDrug'].listeners.input();};
-  return {map,posts,events,visible,wait,type,nameEls,
+  return {map,posts,events,visible,wait,type,nameEls,turnstile,
     submit:()=>map['#swForm'].listeners.submit({preventDefault(){}}),
     code:()=>map['#swCodeForm'].listeners.submit({preventDefault(){},target:map['#swCodeForm']})};
 }
@@ -102,6 +108,28 @@ test('happy path: start -> code step -> verify -> done; watch consent is separat
 });
 test('optional watch consent is sent only when checked',async()=>{
   const h=harness();await h.wait();h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.map['#swWatch'].checked=true;h.submit();await h.wait();assert.equal(h.posts[0].body.consent_watch,true);
+});
+test('a phone-number-like ?drug= value never reaches analytics',async()=>{
+  const h=harness({search:'?drug=14155550100'});await h.wait();
+  assert.ok(h.events.length>=1);
+  assert.ok(!JSON.stringify(h.events).includes('14155550100'));
+  assert.ok(h.events.every(e=>e[2]&&e[2].drug_slug==='none'));
+});
+test('a failed signup resets Turnstile so the retry gets a fresh token',async()=>{
+  const h=harness({turnstileSiteKey:'site-key',startRes:{ok:false,data:{error:'sms_unavailable',message:"We couldn't send the code. Please try again."}}});
+  await h.wait();h.turnstile.issue('tok-1');
+  h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();
+  assert.equal(h.posts[0].body.turnstile_token,'tok-1');
+  assert.deepEqual(h.turnstile.resets,['widget-1']);
+  h.turnstile.issue('tok-2');h.submit();await h.wait();
+  assert.equal(h.posts[1].body.turnstile_token,'tok-2');
+  assert.deepEqual(h.turnstile.resets,['widget-1','widget-1']);
+});
+test('an expired Turnstile token is cleared before the next submit',async()=>{
+  const h=harness({turnstileSiteKey:'site-key'});await h.wait();
+  h.turnstile.issue('tok-1');h.turnstile.expire();
+  h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();
+  assert.equal(h.posts[0].body.turnstile_token,'');
 });
 test('server errors are shown and keep the user on the form',async()=>{
   const h=harness({startRes:{ok:false,data:{error:'invalid_phone',message:'Enter a valid US mobile number.'}}});await h.wait();

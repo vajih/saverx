@@ -163,13 +163,15 @@ The single biggest cause of merge pain is two people editing the same file at th
 
 | Environment | Branch | URL | Who deploys |
 |---|---|---|---|
-| **Production** | `main` | saverx.ai | Cloudflare Pages auto-deploys on push to `main` |
+| **Production** | `main` | saverx.ai | Cloudflare Pages auto-deploys on push to `main` (Jekyll build, output `_site` — see below) |
 | **Staging / preview** | any branch | Cloudflare Pages preview URL per branch | Automatic on push |
 | **Asma's Next.js redesign** | its own repo for now | saverxapril2026.vercel.app | Asma's Vercel |
 
 **The plan:** do not try to merge the Next.js redesign back into the static repo. Instead, port Asma's *design decisions* (tokens, components, page sections) into the static repo via the 3-phase migration in `ASMA_DESIGN_ADOPTION.md`. Keep the Next.js repo as a visual reference and design lab.
 
 **Preview URLs for reviewing:** every PR gets a Cloudflare preview URL automatically. Always review Asma's design PRs on the preview URL, not on localhost, so you see what visitors will see.
+
+**Cloudflare Pages must publish Jekyll output, not the repo root.** The Pages project settings must be Build command `jekyll build`, Output directory `_site`. Jekyll applies the `exclude` list in `_config.yml` when building, so internal docs, backend source and admin files never reach the publish directory. If the project is set to deploy the repo root (no build command, or a manual `wrangler pages deploy .`), those files ARE published — that is the hole PR #14 fixed in the docs. Manual deploys: `jekyll build && wrangler pages deploy _site --project-name saverx`. After changing the setting or deploying, verify: `curl -I https://saverx.ai/docs/SAVINGS_WATCH_PLAN.md` (and `.../saverx-savings-watch/`, `.../scripts/`, `.../admin.html`) must all return 404.
 
 ---
 

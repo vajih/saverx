@@ -1,22 +1,35 @@
 // Twilio Verify clients. The handlers only see { startVerification, checkVerification }.
 //
-// Safety: the live client is used ONLY when TWILIO_LIVE === "true". Everything else gets the
-// mock, which never touches the network, so dev/test can never send a real SMS.
+// Safety: the live client is used ONLY when TWILIO_LIVE === "true". The mock (fixed code
+// "123456", no real texts) is available ONLY in explicit dev/test environments. Anywhere
+// else with live messaging disabled, messaging refuses outright instead of silently
+// verifying arbitrary numbers with the mock: fail closed, never fail open.
 
 const BASE = "https://verify.twilio.com/v2/Services";
 
 export function createTwilioClient(env, fetchFn = fetch) {
-  if (env.TWILIO_LIVE !== "true") return mockTwilio();
-  const live = liveTwilio(env, fetchFn);
-  // Optional guard for live testing: only ever contact the listed numbers (E.164, comma-separated).
-  const allow = (env.LIVE_TEST_ALLOWLIST || "").split(",").map((x) => x.trim()).filter(Boolean);
-  if (!allow.length) return live;
-  const ok = (phone) => allow.includes(phone);
-  return {
-    startVerification: async (p) => (ok(p) ? live.startVerification(p) : { ok: false }),
-    checkVerification: async (p, c) => (ok(p) ? live.checkVerification(p, c) : { status: "failed" }),
-    sendMessage: async (p, b) => (ok(p) ? live.sendMessage(p, b) : { ok: false, code: "not_allowlisted" }),
-  };
+  if (env.TWILIO_LIVE === "true") {
+    const live = liveTwilio(env, fetchFn);
+    // Optional guard for live testing: only ever contact the listed numbers (E.164, comma-separated).
+    const allow = (env.LIVE_TEST_ALLOWLIST || "").split(",").map((x) => x.trim()).filter(Boolean);
+    if (!allow.length) return live;
+    const ok = (phone) => allow.includes(phone);
+    return {
+      startVerification: async (p) => (ok(p) ? live.startVerification(p) : { ok: false }),
+      checkVerification: async (p, c) => (ok(p) ? live.checkVerification(p, c) : { status: "failed" }),
+      sendMessage: async (p, b) => (ok(p) ? live.sendMessage(p, b) : { ok: false, code: "not_allowlisted" }),
+    };
+  }
+  const environment = env.ENVIRONMENT || "production";
+  if (environment === "dev" || environment === "test") return mockTwilio();
+  return refusingTwilio();
+}
+
+/** Fail-closed client: every messaging operation throws. Used when live messaging is
+ *  disabled outside dev/test, so no verification or send can silently succeed. */
+function refusingTwilio() {
+  const refuse = async () => { throw new Error("Twilio live messaging is not enabled in this environment."); };
+  return { startVerification: refuse, checkVerification: refuse, sendMessage: refuse };
 }
 
 /** Mock: code "123456" is approved. Records calls so tests can assert on them. */
@@ -97,10 +110,13 @@ export function safeEqual(a, b) {
 }
 
 /**
- * Conservative US send window: 8am local in the westernmost zone (11am ET) until
- * 9pm local in the easternmost zone (9pm ET). Keeps every recipient inside 8am-9pm.
+ * Conservative US send window: 8am local in the westernmost supported zone until 9pm
+ * local in the easternmost zone, so every recipient stays inside 8am-9pm local. The phone
+ * validator accepts Hawaii and Alaska numbers, and 8am Hawaii time is 2pm Eastern in
+ * daylight time (1pm in standard time), so the window opens at 2pm ET and closes at
+ * 9pm ET. (The old 11am ET opening allowed 6am texts in Hawaii and 7am in Alaska.)
  */
 export function withinSendWindow(nowMs) {
   const h = Number(new Intl.DateTimeFormat("en-US", { hour: "numeric", hourCycle: "h23", timeZone: "America/New_York" }).format(nowMs));
-  return h >= 11 && h < 21;
+  return h >= 14 && h < 21;
 }

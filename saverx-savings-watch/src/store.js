@@ -25,8 +25,18 @@ export function d1Store(db) {
     async markVerified(id, atIso) {
       await db.batch([
         db.prepare("UPDATE requests SET status='verified', verified_at=? WHERE id=?").bind(atIso, id),
-        db.prepare("UPDATE consents SET confirmed_at=? WHERE request_id=?").bind(atIso, id),
+        // Confirm only the consent rows from the current verification flow: rows a later
+        // /start superseded (different checkbox choices) stay unconfirmed, as inactive history.
+        db.prepare("UPDATE consents SET confirmed_at=? WHERE request_id=? AND confirmed_at IS NULL AND superseded_at IS NULL AND withdrawn_at IS NULL").bind(atIso, id),
       ]);
+    },
+    /** A repeated /start replaces the previous unconfirmed consent choices: mark them
+     *  superseded (history is kept) so verification cannot confirm choices the visitor
+     *  did not make in the current flow. */
+    async supersedeUnconfirmedConsents(requestId, atIso) {
+      await db.prepare(
+        "UPDATE consents SET superseded_at=? WHERE request_id=? AND confirmed_at IS NULL AND superseded_at IS NULL"
+      ).bind(atIso, requestId).run();
     },
     async addConsent(c) {
       await db.prepare(
@@ -67,7 +77,7 @@ export function d1Store(db) {
     },
     async consentActive(requestId, type) {
       return !!(await db.prepare(
-        "SELECT 1 AS x FROM consents WHERE request_id=? AND type=? AND confirmed_at IS NOT NULL AND withdrawn_at IS NULL"
+        "SELECT 1 AS x FROM consents WHERE request_id=? AND type=? AND confirmed_at IS NOT NULL AND withdrawn_at IS NULL AND superseded_at IS NULL"
       ).bind(requestId, type).first());
     },
 
@@ -111,11 +121,6 @@ export function d1Store(db) {
     },
 
     // ---- messages ----
-    async createMessage(m) {
-      await db.prepare(
-        "INSERT INTO messages (id,request_id,result_id,status,created_at,updated_at) VALUES (?,?,?,?,?,?)"
-      ).bind(m.id, m.request_id, m.result_id, m.status, m.created_at, m.created_at).run();
-    },
     async updateMessage(id, { sid, status, errorCode }, atIso) {
       await db.prepare(
         "UPDATE messages SET twilio_sid=COALESCE(?,twilio_sid), status=?, error_code=COALESCE(?,error_code), updated_at=? WHERE id=?"
@@ -124,9 +129,29 @@ export function d1Store(db) {
     async getMessageBySid(sid) {
       return db.prepare("SELECT * FROM messages WHERE twilio_sid=?").bind(sid).first();
     },
-    async countMessages(requestId) {
-      const r = await db.prepare("SELECT COUNT(*) AS n FROM messages WHERE request_id=? AND status!='failed'").bind(requestId).first();
-      return r.n;
+    /** Atomically reserve one send slot: inserts the message row only when (a) fewer than
+     *  maxSends non-failed messages exist for the request and (b) no other send for the
+     *  request is currently in flight. A single statement, so two concurrent sends cannot
+     *  both pass the limit or both create a link token for the same result. Returns true
+     *  when the slot was reserved. Stale "sending" rows (older than 1h, e.g. a crashed
+     *  send) are first released so they cannot burn a slot forever. */
+    async reserveSendSlot(m, maxSends) {
+      const staleCutoff = new Date(Date.parse(m.updated_at) - 3600 * 1000).toISOString();
+      await db.prepare(
+        "UPDATE messages SET status='failed', error_code='send_stale', updated_at=? WHERE request_id=? AND status='sending' AND updated_at<?"
+      ).bind(m.updated_at, m.request_id, staleCutoff).run();
+      const r = await db.prepare(
+        "INSERT INTO messages (id,request_id,result_id,status,created_at,updated_at) " +
+        "SELECT ?,?,?,?, ?,? WHERE (SELECT COUNT(*) FROM messages WHERE request_id=? AND status!='failed') < ? " +
+        "AND NOT EXISTS (SELECT 1 FROM messages WHERE request_id=? AND status='sending')"
+      ).bind(m.id, m.request_id, m.result_id, m.status, m.created_at, m.updated_at, m.request_id, maxSends, m.request_id).run();
+      return r.meta.changes > 0;
+    },
+    /** True when a send for this request is currently in flight (reserved, not yet resolved). */
+    async hasInFlightSend(requestId) {
+      return !!(await db.prepare(
+        "SELECT 1 AS x FROM messages WHERE request_id=? AND status='sending'"
+      ).bind(requestId).first());
     },
     async messagesForRequest(requestId) {
       const { results } = await db.prepare("SELECT id,status,error_code,created_at,updated_at FROM messages WHERE request_id=? ORDER BY created_at").bind(requestId).all();
@@ -145,11 +170,21 @@ export function d1Store(db) {
       const a = await db.prepare(
         "UPDATE requests SET phone_e164=NULL WHERE phone_e164 IS NOT NULL AND ((status='new' AND created_at<?) OR id IN (SELECT request_id FROM results WHERE expires_at IS NOT NULL AND expires_at<?))"
       ).bind(d(2), d(30)).run();
+      // Verified/ready/closed requests that never got a successful send have no result
+      // expiry to key off, so they get an age-based deadline instead: their phone numbers
+      // are purged 45 days after verification (privacy policy's ~45-day promise), not kept
+      // indefinitely. Requests with a sent (unexpired) link are untouched here.
+      const c = await db.prepare(
+        "UPDATE requests SET phone_e164=NULL WHERE phone_e164 IS NOT NULL AND status IN ('verified','ready','closed') AND COALESCE(verified_at,created_at)<? AND id NOT IN (SELECT request_id FROM results WHERE expires_at IS NOT NULL)"
+      ).bind(d(45)).run();
       // messages keep their delivery history; only the link to the deleted result is cleared (FK)
       await db.prepare("UPDATE messages SET result_id=NULL WHERE result_id IN (SELECT id FROM results WHERE expires_at IS NOT NULL AND expires_at<?)").bind(d(30)).run();
       const b = await db.prepare("DELETE FROM results WHERE expires_at IS NOT NULL AND expires_at<?").bind(d(30)).run();
+      // Unsent result drafts (never given a link) older than 45 days are deleted too.
+      await db.prepare("UPDATE messages SET result_id=NULL WHERE result_id IN (SELECT id FROM results WHERE token_hash IS NULL AND created_at<?)").bind(d(45)).run();
+      const e = await db.prepare("DELETE FROM results WHERE token_hash IS NULL AND created_at<?").bind(d(45)).run();
       await db.prepare("DELETE FROM rate_limits").run();
-      return { phonesPurged: a.meta.changes, resultsDeleted: b.meta.changes };
+      return { phonesPurged: a.meta.changes + c.meta.changes, resultsDeleted: b.meta.changes + e.meta.changes };
     },
   };
 }
