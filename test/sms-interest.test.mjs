@@ -25,8 +25,8 @@ test('switch file ships with interest OFF and live OFF; Apps Script allows the t
   const gs=fs.readFileSync('scripts/Code.gs','utf8');assert.match(gs,/TRACKED_EVENTS[\s\S]{0,400}"sms_interest_click"/);assert.match(gs,/"sms_interest_email"/);
 });
 
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true}={}){
-  const events=[],images=[],beacons=[],store={};if(storedVariant)store.sr_si_v=storedVariant;
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null}={}){
+  const events=[],images=[],beacons=[],store=prior||{};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
   const block=el({'data-sw-drug':'repatha','data-launch':'pending'});block.hidden=true;block.style={display:'none'};
   const head=el(),brandEls=[el(),el()],btn=el(),after=el(),main=el(),thanks=el(),msg=el(),form=el(),email=el(),consent=el(),hp=el(),intro=el();after.hidden=true;thanks.hidden=true;
@@ -81,4 +81,12 @@ test('email signup still works where sendBeacon is missing (falls back to fetch,
 test('the card never collects a phone number',()=>{
   const html=fs.readFileSync('drugs/repatha/index.html','utf8');const blk=html.slice(html.indexOf(START),html.indexOf(END));
   assert(!/type="tel"|name="phone"|phone/i.test(blk.replace('No phone number needed','')),'no phone field');
+});
+
+test('repeat clicks by the same browser on the same drug are counted once (beacon + GA4); the follow-up still opens',async()=>{
+  const first=harness({cfg:{interest:true,live:false}});await first.wait();first.btn.listeners.click();
+  assert.equal(first.images.length,1);assert.equal(JSON.parse(first.store.sr_si_c).join(','),'repatha');
+  const again=harness({cfg:{interest:true,live:false},store:first.store});await again.wait();again.btn.listeners.click();
+  assert.equal(again.images.length,0,'no second beacon');assert(!again.events.some(e=>e[1]==='sms_interest_click'),'no second GA4 click event');
+  assert.equal(again.after.hidden,false,'visitor still sees the follow-up');assert.equal(JSON.parse(again.store.sr_si_c).length,1);
 });

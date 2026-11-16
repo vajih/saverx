@@ -30,6 +30,11 @@
     }
     return v;
   }
+  // Count each person once per drug: repeat clicks (same browser, same drug) are not re-counted.
+  function clickedBefore(slug) { try { return JSON.parse(window.localStorage.getItem("sr_si_c") || "[]").indexOf(slug) !== -1; } catch (_) { return false; } }
+  function markClicked(slug) {
+    try { var l = JSON.parse(window.localStorage.getItem("sr_si_c") || "[]"); if (l.indexOf(slug) === -1) l.push(slug); window.localStorage.setItem("sr_si_c", JSON.stringify(l.slice(-400))); } catch (_) {}
+  }
   var HEADLINES = {
     coupons: function (b) { return "Want a text when there’s news on " + b + " manufacturer savings and coupons?"; },
     updates: function (b) { return "Want text updates about " + b + "?"; }
@@ -53,8 +58,11 @@
 
       var btn = b.querySelector("[data-si-btn]"), after = b.querySelector("[data-si-after]"), main = b.querySelector("[data-si-main]");
       if (btn) btn.addEventListener("click", function () {
-        track("sms_interest_click", { drug_slug: slug, variant: variant });
-        beacon("sms_interest_click", slug, variant);
+        if (!clickedBefore(slug)) {                                   // first click for this drug in this browser
+          track("sms_interest_click", { drug_slug: slug, variant: variant });
+          beacon("sms_interest_click", slug, variant);
+          markClicked(slug);
+        }
         if (main) main.hidden = true;
         if (after) { after.hidden = false; var em = after.querySelector("input[type=email]"); if (em && em.focus) em.focus(); }
       });

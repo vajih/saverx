@@ -38,6 +38,8 @@ var PILOT_SLUGS = ["repatha", "dupixent", "stelara", "ozempic", "wegovy"]; // ke
 var TRACKED_EVENTS = ["assist_cta_view", "assist_cta_click", "official_site_click", "enroll_view", "intake_start", "checkout_started",
   // SMS-updates demand test (drug pages): anonymous click + email-capture counts. Views are GA4-only (one row per pageview would flood the sheet).
   "sms_interest_click", "sms_interest_email"];
+var SMS_INTEREST_START = "2026-11-16";          // GA4 window start for sms_interest_view (card launch)
+var SMS_INTEREST_SOURCE = "SMS interest";       // lead 'source' prefix set by assets/js/sms-interest.js: "SMS interest (coupons|updates)"
 
 // --- Drug category mapping ---
 
@@ -637,6 +639,75 @@ function testGa4Connection() {
  * Aggregate counts only — no emails, phones, or free text ever leave here.
  * Thresholds per docs/SAVERX_ENROLLMENT_COPILOT_VALIDATION_PLAN.md §6.
  */
+/**
+ * Text-updates demand test (drug-page "coming soon" card). Aggregates only, never PII.
+ *  - interested  = anonymous click beacons (EventLog), one per browser per drug (deduped client-side)
+ *  - emails      = DISTINCT emails in the lead sheet whose source starts with "SMS interest"
+ *  - views       = GA4 event count for sms_interest_view (approximate: GA4 misses visitors who decline analytics)
+ */
+function computeSmsInterest(ss, now) {
+  var d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  var d1 = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  function bump(obj, key) { if (key) obj[key] = (obj[key] || 0) + 1; }
+  var out = {
+    interested: { total: 0, last7: 0, last24: 0 }, by_drug: {},
+    emails: { total: 0, last7: 0, last24: 0 }, emails_by_drug: {},
+    by_variant: { coupons: { interested: 0, emails: 0 }, updates: { interested: 0, emails: 0 } },
+    views: null, view_error: null, interest_rate_pct: null, email_rate_pct: null,
+  };
+  var log = ss.getSheetByName(EVENTLOG_SHEET);
+  if (log) {
+    var rows = log.getDataRange().getValues();
+    for (var i = 1; i < rows.length; i++) {
+      if (String(rows[i][1]) !== "sms_interest_click") continue;
+      var t = new Date(rows[i][0]);
+      out.interested.total++;
+      if (t >= d7) out.interested.last7++;
+      if (t >= d1) out.interested.last24++;
+      bump(out.by_drug, String(rows[i][2] || "").trim());
+      var v = String(rows[i][3] || "").trim();
+      if (out.by_variant[v]) out.by_variant[v].interested++;
+    }
+  }
+  var leads = ss.getSheetByName(SHEET_NAME);
+  if (leads) {
+    var lr = leads.getDataRange().getValues(), seen = {};
+    for (var j = 1; j < lr.length; j++) {
+      var source = String(lr[j][3] || "");
+      if (source.indexOf(SMS_INTEREST_SOURCE) !== 0) continue;
+      var email = String(lr[j][1] || "").trim().toLowerCase();
+      if (!email || seen[email]) continue;                       // distinct people
+      seen[email] = true;
+      var ts = new Date(lr[j][0]);
+      out.emails.total++;
+      if (ts >= d7) out.emails.last7++;
+      if (ts >= d1) out.emails.last24++;
+      bump(out.emails_by_drug, String(lr[j][2] || "").trim().toLowerCase());
+      var m = source.match(/\((coupons|updates)\)/);
+      if (m) out.by_variant[m[1]].emails++;
+    }
+  }
+  var g = fetchGa4SmsViews();
+  out.views = g.views; out.view_error = g.error || null;
+  if (out.views > 0) out.interest_rate_pct = Math.round((out.interested.total / out.views) * 1000) / 10;
+  if (out.interested.total > 0) out.email_rate_pct = Math.round((out.emails.total / out.interested.total) * 1000) / 10;
+  return out;
+}
+
+/** GA4 event count for the card's view event (no custom dimensions needed). */
+function fetchGa4SmsViews() {
+  try {
+    if (typeof AnalyticsData === "undefined") return { views: null, error: "AnalyticsData service not enabled" };
+    var res = AnalyticsData.Properties.runReport({
+      metrics: [{ name: "eventCount" }],
+      dateRanges: [{ startDate: SMS_INTEREST_START, endDate: "today" }],
+      dimensionFilter: { filter: { fieldName: "eventName", stringFilter: { matchType: "EXACT", value: "sms_interest_view" } } },
+    }, "properties/" + GA4_PROPERTY_ID);
+    var r = res.rows || [];
+    return { views: r.length ? (Number(r[0].metricValues[0].value) || 0) : 0 };
+  } catch (e) { return { views: null, error: e.toString() }; }
+}
+
 function computeEnrollMetrics() {
   var ss = SpreadsheetApp.openById(SHEET_ID);
   var now = new Date();
@@ -726,8 +797,12 @@ function computeEnrollMetrics() {
     { name: "Real card entries (checkout completed)", value: it.checkout.completed, unit: "", target: ">=10", status: it.checkout.completed >= 10 ? "green" : (it.checkout.completed >= 3 ? "yellow" : (it.total > 0 ? "red" : "no-data")) },
   ];
 
+  var smsInterest;
+  try { smsInterest = computeSmsInterest(ss, now); } catch (e) { smsInterest = { error: e.toString() }; }
+
   return {
     generated_at: now.toISOString(),
+    sms_interest: smsInterest,
     events: ev,
     intakes: it,
     ga4: ga4,
@@ -776,6 +851,15 @@ function dailyEnrollmentReport() {
       f.cta_views + " card views → " + f.cta_clicks + " clicks → " + f.intake_starts + " intake starts → " +
       f.intake_completes + " completes → " + f.paid_pref + " paid-tier picks → " +
       f.checkout_started + " checkouts started → " + f.checkout_completed + " completed</p>" +
+      (m.sms_interest && !m.sms_interest.error
+        ? "<p style='font-size:15px;margin:10px 0;'><b>Text-updates interest (demand test):</b> " + m.sms_interest.interested.total +
+          " interested (" + m.sms_interest.interested.last24 + " in the last 24h) · " + m.sms_interest.emails.total + " left an email" +
+          (m.sms_interest.email_rate_pct !== null ? " (" + m.sms_interest.email_rate_pct + "% of interested)" : "") +
+          (m.sms_interest.interest_rate_pct !== null ? " · " + m.sms_interest.interest_rate_pct + "% of card views" : "") +
+          "<br><span style='font-size:13px;color:#64748b;'>coupons wording: " + m.sms_interest.by_variant.coupons.interested + " interested / " +
+          m.sms_interest.by_variant.coupons.emails + " emails · updates wording: " + m.sms_interest.by_variant.updates.interested + " / " +
+          m.sms_interest.by_variant.updates.emails + " · top drugs: " + topOf(m.sms_interest.by_drug, 5) + "</span></p>"
+        : "") +
       "<table style='border-collapse:collapse;width:100%;font-size:14px;margin:12px 0;'>" +
       "<tr style='text-align:left;color:#64748b;'><th style='padding:6px 10px;'>Decision threshold</th><th style='padding:6px 10px;text-align:right;'>Now</th><th style='padding:6px 10px;'>Target</th></tr>" +
       rowsHtml + "</table>" +

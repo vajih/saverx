@@ -65,6 +65,20 @@
       <div class="kpi"><b id="k-checkout">–</b><small>Checkouts (started/done)</small></div>
     </div>
 
+    <div class="card" id="smsCard" hidden>
+      <h2>Text-updates interest <span class="muted">(honest "coming soon" card on drug pages. No phone numbers collected)</span></h2>
+      <div class="grid" id="smsKpis">
+        <div class="kpi"><b id="s-total">–</b><small>Interested (all-time)</small></div>
+        <div class="kpi"><b id="s-24h">–</b><small>Last 24 hours</small></div>
+        <div class="kpi"><b id="s-7d">–</b><small>Last 7 days</small></div>
+        <div class="kpi"><b id="s-emails">–</b><small>Left an email</small></div>
+        <div class="kpi"><b id="s-emailrate">–</b><small>Email rate (of interested)</small></div>
+        <div class="kpi"><b id="s-rate">–</b><small>Interest rate (of card views)</small></div>
+      </div>
+      <table><tbody id="smsBody"></tbody></table>
+      <p class="muted" id="smsNote"></p>
+    </div>
+
     <div class="card" id="funnelCard" hidden>
       <h2>Funnel (all-time)</h2>
       <div class="funnel" id="funnel"></div>
@@ -113,6 +127,27 @@
           $("k-paid").textContent = n(f.paid_pref);
           $("k-checkout").textContent = n(f.checkout_started) + " / " + n(f.checkout_completed);
           $("kpis").hidden = false;
+
+          // Text-updates demand test panel (older backends won't have sms_interest yet)
+          var si = m.sms_interest;
+          if (si && !si.error) {
+            $("s-total").textContent = n(si.interested.total);
+            $("s-24h").textContent = n(si.interested.last24);
+            $("s-7d").textContent = n(si.interested.last7);
+            $("s-emails").textContent = n(si.emails.total);
+            $("s-emailrate").textContent = si.email_rate_pct === null ? "–" : si.email_rate_pct + "%";
+            $("s-rate").textContent = si.interest_rate_pct === null ? "–" : si.interest_rate_pct + "%";
+            var v = si.by_variant || {};
+            $("smsBody").innerHTML =
+              "<tr><td style='width:170px;color:#64748b;'>Wording: coupons</td><td><b>" + n((v.coupons || {}).interested) + "</b> interested · <b>" + n((v.coupons || {}).emails) + "</b> emails</td></tr>" +
+              "<tr><td style='width:170px;color:#64748b;'>Wording: updates</td><td><b>" + n((v.updates || {}).interested) + "</b> interested · <b>" + n((v.updates || {}).emails) + "</b> emails</td></tr>" +
+              topRows("Interested by drug", si.by_drug, 10) + topRows("Emails by drug", si.emails_by_drug, 10);
+            $("smsNote").textContent = "Interested = people who tapped “Yes, I’m interested” (counted once per browser per drug). Emails = distinct addresses from the signup that follows. " +
+              "Views come from GA4 and miss visitors who decline analytics, so the interest rate is approximate" + (si.view_error ? " (GA4 views unavailable: " + si.view_error + ")" : "") + ".";
+          } else {
+            $("smsBody").innerHTML = "<tr><td style='color:#94a3b8;'>No data yet" + (si && si.error ? " (" + si.error + ")" : ". Redeploy Code.gs to enable this panel.") + "</td></tr>";
+          }
+          $("smsCard").hidden = false;
 
           var seq = [["Pilot sessions", f.pilot_sessions], ["Card views", f.cta_views], ["CTA clicks", f.cta_clicks], ["Intake starts", f.intake_starts],
                      ["Completes", f.intake_completes], ["Paid picks", f.paid_pref],
