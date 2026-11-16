@@ -8,14 +8,18 @@ const BASE = "https://verify.twilio.com/v2/Services";
 export function createTwilioClient(env, fetchFn = fetch) {
   if (env.TWILIO_LIVE !== "true") return mockTwilio();
   const live = liveTwilio(env, fetchFn);
+  // Dev/test only: keep the results TEXT mocked (e.g. no approved A2P campaign yet) while the signup
+  // verification code is still real. The mock records the message so the dev outbox can show it.
+  const mock = env.TWILIO_MESSAGES_MOCK === "true" ? mockTwilio() : null;
+  const send = mock ? (p, b) => mock.sendMessage(p, b) : (p, b) => live.sendMessage(p, b);
   // Optional guard for live testing: only ever contact the listed numbers (E.164, comma-separated).
   const allow = (env.LIVE_TEST_ALLOWLIST || "").split(",").map((x) => x.trim()).filter(Boolean);
-  if (!allow.length) return live;
-  const ok = (phone) => allow.includes(phone);
+  const ok = (phone) => !allow.length || allow.includes(phone);
   return {
+    calls: mock ? mock.calls : undefined, // lets the dev outbox list mocked texts
     startVerification: async (p) => (ok(p) ? live.startVerification(p) : { ok: false }),
     checkVerification: async (p, c) => (ok(p) ? live.checkVerification(p, c) : { status: "failed" }),
-    sendMessage: async (p, b) => (ok(p) ? live.sendMessage(p, b) : { ok: false, code: "not_allowlisted" }),
+    sendMessage: async (p, b) => (ok(p) ? send(p, b) : { ok: false, code: "not_allowlisted" }),
   };
 }
 

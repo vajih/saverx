@@ -249,3 +249,18 @@ test("live client authenticates with an API key when provided, else the auth tok
   assert.equal(dec(auths[0]), "SKx:sec");
   assert.equal(dec(auths[1]), "ACx:tok");
 });
+
+test("TWILIO_MESSAGES_MOCK: verification is live but the results text is mocked (never hits the network)", async () => {
+  const urls = [];
+  const f = async (url) => { urls.push(String(url)); return { ok: true, json: async () => ({ status: "approved", sid: "SMreal" }) }; };
+  const env = { TWILIO_LIVE: "true", TWILIO_MESSAGES_MOCK: "true", TWILIO_ACCOUNT_SID: "ACx", TWILIO_AUTH_TOKEN: "t", TWILIO_VERIFY_SERVICE_SID: "VAx", PUBLIC_BASE_URL: "https://x.test", LIVE_TEST_ALLOWLIST: "+14155550100" };
+  const c = createTwilioClient(env, f);
+  assert.deepEqual(await c.startVerification("+14155550100"), { ok: true });
+  assert.ok(urls.some((u) => u.includes("verify.twilio.com")));
+  const before = urls.length;
+  const sent = await c.sendMessage("+14155550100", "hello");
+  assert.equal(sent.ok, true); assert.match(sent.sid, /^SMmock/);
+  assert.equal(urls.length, before, "no network call for the mocked text");
+  assert.equal(c.calls.filter((x) => x.op === "send").length, 1);
+  assert.equal((await c.sendMessage("+14155550111", "x")).ok, false, "allowlist still enforced");
+});
