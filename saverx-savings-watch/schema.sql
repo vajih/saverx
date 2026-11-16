@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS consents (
   checked_at   TEXT NOT NULL,
   confirmed_at TEXT,                       -- set when the phone is verified
   withdrawn_at TEXT,                       -- set on STOP; cleared on START
+  superseded_at TEXT,                      -- set when a later /start replaces these unconfirmed choices (kept as inactive history)
   ip_hash      TEXT,
   user_agent   TEXT
 );

@@ -128,9 +128,19 @@ The response should include affiliate provider recommendations.
 ## Part 4: Deploy Drug Pages to Cloudflare Pages
 
 ```bash
-# From the root of the repo
-wrangler pages deploy . --project-name saverx
+# From the root of the repo: build the Jekyll site first, then deploy ONLY the
+# generated output. Never `wrangler pages deploy .` — the repo root contains internal
+# docs, backend source and admin files that must not be published (see _config.yml).
+jekyll build
+wrangler pages deploy _site --project-name saverx
 ```
+
+The Cloudflare Pages project must also be set to build the same way on push
+(Dashboard → Pages → saverx → Settings → Builds & deployments: Build command
+`jekyll build`, Output directory `_site`). Until that setting is changed, pushes to
+`main` keep publishing the repo root. After any deploy, verify internal paths 404:
+`curl -I https://saverx.ai/docs/SAVINGS_WATCH_PLAN.md` (and `.../saverx-savings-watch/`,
+`.../scripts/`, `.../admin.html`) must all return 404.
 
 This deploys all static files including:
 

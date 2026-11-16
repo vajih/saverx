@@ -31,9 +31,13 @@
     return null;
   }
 
+  // Analytics values must stay categorical: only a pilot slug, never raw URL input.
+  // (A phone-number-like ?drug= value must never reach GA4 as drug_slug.)
+  function analyticsSlug() { return PILOT[state.slug] ? state.slug : "none"; }
+
   function show(step) {
     Array.prototype.forEach.call(document.querySelectorAll("[data-step]"), function (el) { el.hidden = el.getAttribute("data-step") !== step; });
-    track("savings_watch_step", { drug_slug: state.slug || "none", step: step });
+    track("savings_watch_step", { drug_slug: analyticsSlug(), step: step });
   }
   function post(path, body) {
     return fetch(API + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), credentials: "same-origin" })
@@ -83,17 +87,30 @@
     updateDrug();
   }).catch(function () { /* suggestions unavailable; pilot drug still works */ });
 
-  track("savings_watch_view", { drug_slug: state.slug || "none" });
+  track("savings_watch_view", { drug_slug: analyticsSlug() });
 
   // Consent wording is static in the page (so reviewers and users always see it). The server stores
   // its own copy of the same text by version; a test keeps the two identical.
 
-  // Optional Turnstile (configured at launch)
+  // Optional Turnstile (configured at launch). Siteverify tokens are single-use, so a failed
+  // submission must reset the widget and clear the token, or every retry would fail the bot
+  // check with the already-consumed token. An expired token is cleared the same way.
+  var turnstileWidgetId = null;
+  function resetTurnstile() {
+    state.token = "";
+    if (window.turnstile && turnstileWidgetId !== null) { try { window.turnstile.reset(turnstileWidgetId); } catch (_) {} }
+  }
   if (cfg.turnstileSiteKey) {
     var s = document.createElement("script");
     s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
     s.async = true;
-    s.onload = function () { window.turnstile.render("#swTurnstile", { sitekey: cfg.turnstileSiteKey, callback: function (t) { state.token = t; } }); };
+    s.onload = function () {
+      turnstileWidgetId = window.turnstile.render("#swTurnstile", {
+        sitekey: cfg.turnstileSiteKey,
+        callback: function (t) { state.token = t; },
+        "expired-callback": function () { state.token = ""; }
+      });
+    };
     document.head.appendChild(s);
   }
 
@@ -111,12 +128,12 @@
       hp: $("#swHp").value, turnstile_token: state.token, source_page: document.referrer ? "referral" : "direct"
     }).then(function (res) {
       setBusy(submit, false, "Text me a code ↗");
-      if (!res.ok) { msg.textContent = res.data.message || "Please try again."; return; }
-      if (res.data.already_verified) { track("savings_watch_duplicate", { drug_slug: state.slug }); show("done"); return; }
+      if (!res.ok) { resetTurnstile(); msg.textContent = res.data.message || "Please try again."; return; }
+      if (res.data.already_verified) { track("savings_watch_duplicate", { drug_slug: analyticsSlug() }); show("done"); return; }
       state.requestId = res.data.request_id;
-      track("savings_watch_code_sent", { drug_slug: state.slug });
+      track("savings_watch_code_sent", { drug_slug: analyticsSlug() });
       show("code"); $("#swCode").focus();
-    }).catch(function () { setBusy(submit, false, "Text me a code ↗"); msg.textContent = NETWORK_MSG; });
+    }).catch(function () { setBusy(submit, false, "Text me a code ↗"); resetTurnstile(); msg.textContent = NETWORK_MSG; });
   });
 
   $("#swCodeForm").addEventListener("submit", function (e) {
@@ -127,7 +144,7 @@
     post("/verify", { request_id: state.requestId, code: $("#swCode").value.trim() }).then(function (res) {
       setBusy(btn, false, "Verify ↗");
       if (!res.ok) { msg.textContent = res.data.message || "That code didn't match."; return; }
-      track("savings_watch_verified", { drug_slug: state.slug });
+      track("savings_watch_verified", { drug_slug: analyticsSlug() });
       show("done");
     }).catch(function () { setBusy(btn, false, "Verify ↗"); msg.textContent = NETWORK_MSG; });
   });

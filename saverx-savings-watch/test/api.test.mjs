@@ -91,13 +91,61 @@ test("verify attempts are capped at 5, even with the right code afterwards", asy
   assert.equal(t.q("SELECT status FROM requests")[0].status, "new");
 });
 
-test("duplicate request within 30 days reuses the same request and consent rows", async () => {
+test("duplicate request within 30 days reuses the request but records the new consent choices", async () => {
   const t = setup();
-  const a = await j(await t.start());
-  const b = await j(await t.start());
+  const a = await j(await t.start({ consent_watch: true }));
+  const b = await j(await t.start()); // repeated with watch unchecked
   assert.equal(a.request_id, b.request_id);
   assert.equal(t.q("SELECT * FROM requests").length, 1);
-  assert.equal(t.q("SELECT * FROM consents").length, 1);
+  const consents = t.q("SELECT * FROM consents ORDER BY rowid");
+  assert.equal(consents.length, 3); // original transactional + watch (superseded) + new transactional
+  assert.ok(consents[0].superseded_at !== null);
+  assert.ok(consents[1].superseded_at !== null);
+  assert.equal(consents[2].type, "transactional");
+  assert.equal(consents[2].superseded_at, null);
+});
+
+test("verification after a repeated signup confirms only the latest consent choices", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start({ consent_watch: true }));
+  await j(await t.start()); // repeat with watch unchecked
+  await t.post("/api/savings/verify", { request_id, code: "123456" });
+  const consents = t.q("SELECT * FROM consents ORDER BY rowid");
+  const confirmed = consents.filter((c) => c.confirmed_at !== null);
+  assert.equal(confirmed.length, 1);
+  assert.equal(confirmed[0].type, "transactional");
+  assert.equal(consents.filter((c) => c.type === "watch")[0].confirmed_at, null);
+});
+
+test("verification confirms a watch opt-in added on a repeated signup", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start());
+  await j(await t.start({ consent_watch: true }));
+  await t.post("/api/savings/verify", { request_id, code: "123456" });
+  const confirmed = t.q("SELECT * FROM consents WHERE confirmed_at IS NOT NULL ORDER BY rowid");
+  assert.deepEqual(confirmed.map((c) => c.type), ["transactional", "watch"]);
+});
+
+test("a fresh request is created after verification lockout", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start());
+  for (let i = 0; i < 5; i++) assert.equal((await t.post("/api/savings/verify", { request_id, code: "000000" })).status, 400);
+  const again = await j(await t.start());
+  assert.notEqual(again.request_id, request_id);
+  assert.equal(t.q("SELECT * FROM requests").length, 2);
+  assert.equal((await t.post("/api/savings/verify", { request_id: again.request_id, code: "123456" })).status, 200);
+});
+
+test("a fresh request is created after the phone number was purged", async () => {
+  let ms = Date.UTC(2026, 10, 15, 12, 0, 0);
+  const t = setup({ clock: () => ms });
+  const { request_id } = await j(await t.start());
+  ms += 3 * 86400000; // past the 2-day purge for never-verified requests
+  await t.store.purge(ms);
+  assert.equal(t.q("SELECT phone_e164 FROM requests")[0].phone_e164, null);
+  const again = await j(await t.start());
+  assert.notEqual(again.request_id, request_id);
+  assert.equal((await t.post("/api/savings/verify", { request_id: again.request_id, code: "123456" })).status, 200);
 });
 
 test("duplicate after verification does not resend a code", async () => {
@@ -200,14 +248,21 @@ test("CORS headers only for allowed origins; responses are no-store", async () =
   assert.equal(pre.headers.get("Access-Control-Allow-Origin"), null);
 });
 
-test("live Twilio is never used unless TWILIO_LIVE=true", async () => {
+test("live Twilio is never used unless TWILIO_LIVE=true; mock only in dev/test, refused elsewhere", async () => {
   let called = false;
   const spy = async () => { called = true; return { ok: true, json: async () => ({}) }; };
-  const c = createTwilioClient({ TWILIO_LIVE: "false", TWILIO_ACCOUNT_SID: "x" }, spy);
-  await c.startVerification("+14155550100");
+  const dev = createTwilioClient({ TWILIO_LIVE: "false", ENVIRONMENT: "dev", TWILIO_ACCOUNT_SID: "x" }, spy);
+  await dev.startVerification("+14155550100");
+  assert.equal(called, false); // mock: no network
+  const testEnv = createTwilioClient({ ENVIRONMENT: "test" }, spy);
+  await testEnv.startVerification("+14155550100");
   assert.equal(called, false);
-  const unset = createTwilioClient({}, spy);
-  await unset.startVerification("+14155550100");
+  // Production without live messaging: every messaging operation refuses, it never
+  // silently verifies with the fixed mock code.
+  const prod = createTwilioClient({ TWILIO_LIVE: "false", ENVIRONMENT: "production" }, spy);
+  await assert.rejects(() => prod.startVerification("+14155550100"));
+  await assert.rejects(() => prod.checkVerification("+14155550100", "123456"));
+  await assert.rejects(() => prod.sendMessage("+14155550100", "hi"));
   assert.equal(called, false);
 });
 

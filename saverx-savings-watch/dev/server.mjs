@@ -80,7 +80,7 @@ http.createServer(async (req, res) => {
     console.error(e.message);
     res.writeHead(500).end("Server error");
   }
-}).listen(PORT, () => {
+}).listen(PORT, "127.0.0.1", () => { // loopback only: the unauthenticated admin GET endpoints and /dev/outbox must never be reachable from the network
   console.log(`Savings Watch dev server: ${base}`);
   console.log(live ? "⚠️  LIVE TWILIO MODE: real texts can be sent" + (env.LIVE_TEST_ALLOWLIST ? ` (allowlist: ${env.LIVE_TEST_ALLOWLIST})` : " (NO allowlist set!)") : "Mock Twilio: no real texts. Verification code: 123456");
   console.log(`  Signup: ${base}/savings-watch/?drug=repatha\n  Admin:  ${base}/admin/savings\n  Outbox: ${base}/dev/outbox`);

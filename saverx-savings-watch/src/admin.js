@@ -85,15 +85,19 @@ async function send(ctx, request, req) {
   if (!result) return fail(request, 409, "no_result", "Save a verified result first.");
   if (!(await store.consentActive(req.id, "transactional"))) return fail(request, 409, "no_consent", "No active text-message consent for this request.");
   if (await store.isSuppressed(await ctx.hash("phone", req.phone_e164))) return fail(request, 409, "opted_out", "This number has opted out.");
-  if (env.ALLOW_ANY_HOUR !== "true" && !withinSendWindow(ctx.now())) return fail(request, 409, "quiet_hours", "Outside the 11am-9pm ET send window. Try again later.");
-  if ((await store.countMessages(req.id)) >= MAX_SENDS) return fail(request, 429, "send_limit", "Send limit reached for this request.");
-
+  if (env.ALLOW_ANY_HOUR !== "true" && !withinSendWindow(ctx.now())) return fail(request, 409, "quiet_hours", "Outside the 2pm-9pm ET send window. Try again later.");
+  // Reserve a send slot atomically (limit + no overlapping send for this request) BEFORE
+  // calling Twilio, so two concurrent sends cannot both pass the count check or both
+  // create a link token for the same result. A failed provider call releases the slot.
+  const msgId = ctx.id();
+  if (!(await store.reserveSendSlot({ id: msgId, request_id: req.id, result_id: result.id, status: "sending", created_at: ctx.iso(), updated_at: ctx.iso() }, MAX_SENDS))) {
+    if (await store.hasInFlightSend(req.id)) return fail(request, 429, "send_in_progress", "Another send is already in progress for this request. Try again shortly.");
+    return fail(request, 429, "send_limit", "Send limit reached for this request.");
+  }
   const token = randomToken();
   const link = `${ctx.baseUrl}/r/${token}`;
   // No medication name or health information in the SMS body.
   const body = `SaveRx: Your savings info is ready: ${link} (expires in ${LINK_DAYS} days). Reply STOP to opt out, HELP for help.`;
-  const msgId = ctx.id();
-  await store.createMessage({ id: msgId, request_id: req.id, result_id: result.id, status: "sending", created_at: ctx.iso() });
   const sent = await twilio.sendMessage(req.phone_e164, body);
   const day = ctx.iso().slice(0, 10);
   if (!sent.ok) {
