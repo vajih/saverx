@@ -35,7 +35,9 @@ var EVENTLOG_SHEET = "EventLog";         // PII-free funnel beacons from pilot p
 var GA4_PROPERTY_ID = "521819447";       // GA4 Admin > Property settings > Property ID (verify with testGa4Connection)
 var TEST_START = "2026-07-18";           // Enrollment demand-test launch date (GA4 report window start)
 var PILOT_SLUGS = ["repatha", "dupixent", "stelara", "ozempic", "wegovy"]; // keep in sync with scripts/_add-enroll-cta.mjs
-var TRACKED_EVENTS = ["assist_cta_view", "assist_cta_click", "official_site_click", "enroll_view", "intake_start", "checkout_started"];
+var TRACKED_EVENTS = ["assist_cta_view", "assist_cta_click", "official_site_click", "enroll_view", "intake_start", "checkout_started",
+  // SMS-updates demand test (drug pages): anonymous click + email-capture counts. Views are GA4-only (one row per pageview would flood the sheet).
+  "sms_interest_click", "sms_interest_email"];
 
 // --- Drug category mapping ---
 
