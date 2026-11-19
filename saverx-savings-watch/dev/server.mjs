@@ -51,6 +51,9 @@ function serveStatic(pathname, res) {
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
   if (!existsSync(file)) { res.writeHead(404).end("Not found"); return; }
   let data = readFileSync(file);
+  if (process.env.SW_DEV_INTEREST && p === "/data/savings-watch.json") { // local preview only: turn the demand-test card on without editing the file
+    const cfg = JSON.parse(data.toString()); cfg.interest = true; data = Buffer.from(JSON.stringify(cfg));
+  }
   if (process.env.NO_BANNER && p === "/assets/js/consent.js") { // screenshots only: pre-dismiss the cookie banner
     data = Buffer.concat([Buffer.from(`localStorage.setItem("saverx_consent",JSON.stringify({timestamp:Date.now(),version:2,analytics:false,advertising:false,personalization:false}));\n`), data]);
   }

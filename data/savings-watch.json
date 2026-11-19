@@ -1,5 +1,8 @@
 {
-  "_note": "Savings Watch rollout switch. 'live' shows the cards/strips site-wide; 'open' lists the drug slugs that can submit. KEEP 'open' IDENTICAL to PILOT_SLUGS in saverx-savings-watch/wrangler.jsonc (a test enforces this). Do not set live:true until the Worker is deployed and the A2P campaign is approved.",
+  "_note": "Savings Watch rollout switch. 'live' shows the cards/strips site-wide; 'open' lists the drug slugs that can submit. KEEP 'open' IDENTICAL to PILOT_SLUGS in saverx-savings-watch/wrangler.jsonc (a test enforces this). Do not set live:true until the Worker is deployed and the A2P campaign is approved. 'interest' shows the honest 'text updates coming soon' demand-test card on drug pages while live is false.",
   "live": false,
-  "open": ["repatha"]
+  "open": [
+    "repatha"
+  ],
+  "interest": false
 }
