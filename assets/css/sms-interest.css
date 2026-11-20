@@ -37,3 +37,7 @@
 .sms-hero-link{margin:14px 0 0;font-size:.95rem}.sms-hero-link[hidden]{display:none!important}
 .sms-hero-link a{color:var(--teal-dark);font-weight:600;text-decoration:underline}
 @media (max-width:640px){.sw-home{margin:12px 16px 24px}.sw-home h2{font-size:1.3rem}.si-home-form .si-btn{align-self:stretch;min-width:0}}
+
+/* Confirmation banner shown on the drug page after a homepage signup */
+.si-flash{position:fixed;top:12px;left:12px;right:12px;margin:0 auto;z-index:60;max-width:560px;text-align:center;padding:12px 18px;background:var(--teal);color:var(--surface-2);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:.92rem;font-weight:600;line-height:1.4;cursor:pointer}
+.si-flash[hidden]{display:none!important}

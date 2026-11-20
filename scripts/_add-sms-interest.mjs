@@ -17,8 +17,8 @@ export const PENDING = ' hidden style="display:none" data-launch="pending"';
 const ANCHOR = '<section id="enroll-help"';
 const ASSETS = '<link rel="stylesheet" href="/assets/css/sms-interest.css"><script defer src="/assets/js/sms-interest.js"></script>';
 
-export const interestHtml = (slug) => `${START}
- <section id="sms-interest" class="sw-interest" data-sms-interest data-sw-drug="${slug}"${PENDING} aria-labelledby="siTitle">
+export const interestHtml = (slug, name = "") => `${START}
+ <section id="sms-interest" class="sw-interest" data-sms-interest data-sw-drug="${slug}"${name ? ` data-si-name="${name}"` : ""}${PENDING} aria-labelledby="siTitle">
   <div data-si-main><p class="si-eyebrow">TEXT ALERTS · FREE · LAUNCHING SOON</p><h2 id="siTitle" data-si-headline>Get text alerts about this medication</h2>
    <p class="si-sub">Add your mobile number and be first to know when there’s news on <span data-si-brand>this medication</span> savings. No account needed.</p>
    <form class="si-form" data-si-phone-form novalidate><label class="si-lbl" for="siPhone">Mobile number</label><input id="siPhone" type="tel" name="phone" autocomplete="tel-national" inputmode="tel" placeholder="(555) 555-5555" maxlength="20" required><input type="text" name="website" class="si-hp" tabindex="-1" aria-hidden="true" autocomplete="off"><button type="submit" class="si-btn" data-si-btn>Get text alerts — free ↗</button><p class="si-msg" data-si-msg role="alert"></p>
@@ -46,6 +46,30 @@ export function addInterest(html, slug) {
   const out = cleaned.slice(0, i) + interestHtml(slug) + cleaned.slice(i);
   return { html: out, changed: out !== html };
 }
+/**
+ * Drug guide / coupon pages directly under drugs/ (no #enroll-help anchor, no drug-page-profile JSON): the card goes right
+ * before the Savings Watch strip (or the footer), and carries the drug's display name itself.
+ * drugs/repatha-enroll.html is a redirect page and is intentionally excluded.
+ */
+export const GUIDE_PAGES = {
+  "drugs/ozempic.html": ["ozempic", "Ozempic"],
+  "drugs/ozempic-savings-guide.html": ["ozempic", "Ozempic"],
+  "drugs/zepbound-savings-card.html": ["zepbound", "Zepbound"],
+  "drugs/repatha-copay-card.html": ["repatha", "Repatha"],
+  "drugs/mounjaro-coupon.html": ["mounjaro", "Mounjaro"],
+  "drugs/wegovy-cost-without-insurance.html": ["wegovy", "Wegovy"],
+  "drugs/glp1-online.html": ["glp1", "GLP-1 medications"],
+};
+const SW_STRIP = "<!-- saverx-savings-watch-cta -->";
+const FOOTER = '<footer class="relief-footer">';
+export function addInterestGuide(html, slug, name) {
+  const cleaned = removeBlock(html);
+  let i = cleaned.indexOf(SW_STRIP);
+  if (i === -1) i = cleaned.indexOf(FOOTER);
+  if (i === -1) return { html, changed: false, error: "anchor not found" };
+  const out = cleaned.slice(0, i) + interestHtml(slug, name) + cleaned.slice(i);
+  return { html: out, changed: out !== html };
+}
 export const drugSlugs = (root = ".") => readdirSync(`${root}/drugs`, { withFileTypes: true }).filter((d) => d.isDirectory() && existsSync(`${root}/drugs/${d.name}/index.html`)).map((d) => d.name);
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -53,6 +77,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const slug of drugSlugs()) {
     const f = `drugs/${slug}/index.html`;
     const r = addInterest(readFileSync(f, "utf8"), slug);
+    if (r.error) { console.warn(f, r.error); errors++; } else if (r.changed) { writeFileSync(f, r.html); changed++; } else same++;
+  }
+  for (const [f, [slug, name]] of Object.entries(GUIDE_PAGES)) {
+    const r = addInterestGuide(readFileSync(f, "utf8"), slug, name);
     if (r.error) { console.warn(f, r.error); errors++; } else if (r.changed) { writeFileSync(f, r.html); changed++; } else same++;
   }
   console.log(`SMS interest card: ${changed} updated, ${same} unchanged, ${errors} skipped`);
