@@ -1,7 +1,8 @@
 /**
  * SaveRx.ai — Cookie Consent Manager
  * Google Consent Mode v2 compliant. Self-contained (injects own CSS).
- * Design: centered modal with backdrop overlay.
+ * Design: slim bottom banner (page stays visible and scrollable; Accept and Reject have equal weight); the Preferences
+ *         screen is a centered modal with a backdrop. Consent logic (Consent Mode v2, GPC, storage) is unchanged.
  * Version: 2
  */
 (function () {
@@ -58,8 +59,16 @@
       '.srxcb__toggle input:checked + .srxcb__slider::before{transform:translateX(18px);}',
       '.srxcb__toggle input:focus-visible + .srxcb__slider{outline:2px solid #1d4ed8;outline-offset:2px;}',
       '.srxcb__prefs-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}',
+      /* bottom-banner mode (main screen): non-modal, page stays usable */
+      '.srxcb-bd--bar{inset:auto 0 0 0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;align-items:flex-end;padding:0 0 max(12px,env(safe-area-inset-bottom));pointer-events:none;}',
+      '.srxcb-bd--bar .srxcb{pointer-events:auto;max-width:720px;margin:0 12px;padding:16px 20px 14px;border:1px solid #e2e8f0;box-shadow:0 -6px 28px rgba(0,0,0,.18),0 2px 10px rgba(0,0,0,.08);}',
+      '.srxcb-bd--bar .srxcb__heading{font-size:16px;margin:0 0 6px;}',
+      '.srxcb-bd--bar .srxcb__text{margin:0 0 12px;font-size:13px;line-height:1.5;}',
+      '.srxcb-bd--bar .srxcb__actions{flex-wrap:nowrap;align-items:center;}',
+      '.srxcb-bd--bar .srxcb__btn{min-width:0;padding:11px 14px;}',
+      '.srxcb__prefslink{background:none;border:none;color:#1d4ed8;text-decoration:underline;font:inherit;font-size:13px;cursor:pointer;padding:8px 6px;white-space:nowrap;}',
       /* mobile */
-      '@media(max-width:480px){.srxcb{padding:24px 20px 20px;}.srxcb__btn,.srxcb__prefs-actions .srxcb__btn{min-width:0;flex:1;}}'
+      '@media(max-width:480px){.srxcb{padding:24px 20px 20px;}.srxcb__btn,.srxcb__prefs-actions .srxcb__btn{min-width:0;flex:1;}.srxcb-bd--bar .srxcb{margin:0 8px;padding:14px 16px 6px;}.srxcb-bd--bar .srxcb__heading{display:none;}.srxcb-bd--bar .srxcb__text{margin:0 28px 10px 0;font-size:12.5px;}.srxcb__prefslink{padding:6px;}.srxcb-bd--bar .srxcb__actions{flex-wrap:wrap;}.srxcb-bd--bar .srxcb__btn{flex:1 1 40%;}.srxcb__prefslink{flex:1 1 100%;text-align:center;}}'
     ].join('');
     (document.head || document.documentElement).appendChild(s);
   })();
@@ -131,6 +140,19 @@
   var backdrop = null;
   var modal    = null;
   var _openerEl = null;
+  var mode = 'bar';   // 'bar' (main screen, non-modal) | 'modal' (preferences)
+
+  // Presentation only: the bar never locks scrolling, traps focus or dims the page; the preferences modal does.
+  function applyMode() {
+    if (!backdrop) return;
+    var isModal = mode === 'modal', visible = !backdrop.hidden;
+    backdrop.classList.toggle('srxcb-bd--bar', !isModal);
+    backdrop.setAttribute('role', isModal ? 'dialog' : 'region');
+    if (isModal) backdrop.setAttribute('aria-modal', 'true'); else backdrop.removeAttribute('aria-modal');
+    document.body.style.overflow = (isModal && visible) ? 'hidden' : '';
+    document.removeEventListener('keydown', trapFocus);
+    if (isModal && visible) document.addEventListener('keydown', trapFocus);
+  }
 
   function hideModal() {
     if (!backdrop) return;
@@ -143,12 +165,11 @@
 
   function revealModal() {
     backdrop.hidden = false;
-    document.body.style.overflow = 'hidden';
+    applyMode();
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { backdrop.classList.add('srxcb-in'); });
     });
-    document.addEventListener('keydown', trapFocus);
-    setTimeout(function () {
+    if (mode === 'modal') setTimeout(function () {
       var els = getFocusable(); if (els.length) els[0].focus();
     }, 300);
   }
@@ -210,50 +231,53 @@
   // ─── Main screen ──────────────────────────────────────────────────────────
 
   function renderMain() {
+    mode = 'bar'; applyMode();
     modal.innerHTML = '';
     modal.appendChild(makeClose());
 
     var h = document.createElement('h2');
     h.className = 'srxcb__heading';
-    h.textContent = 'Cookies Settings';
+    h.textContent = 'Your cookie choices';
     modal.appendChild(h);
 
     var p = document.createElement('p');
     p.className = 'srxcb__text';
-    p.innerHTML = 'We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking accept, you agree to this, as outlined in our <a href="/privacy.html#cookies">Cookie Policy</a>.';
+    p.innerHTML = 'We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. You can accept all, reject all non-essential cookies, or choose. See our <a href="/privacy.html#cookies">Cookie Policy</a>.';
     modal.appendChild(p);
 
     var actions = document.createElement('div');
     actions.className = 'srxcb__actions';
 
+    // Accept and Reject are deliberately identical in size, style and position weight.
     var acceptBtn = document.createElement('button');
     acceptBtn.type = 'button';
     acceptBtn.className = 'srxcb__btn srxcb__btn--primary';
-    acceptBtn.textContent = 'Accept';
+    acceptBtn.textContent = 'Accept all';
     acceptBtn.addEventListener('click', acceptAll);
+
+    var rejectBtn = document.createElement('button');
+    rejectBtn.type = 'button';
+    rejectBtn.className = 'srxcb__btn srxcb__btn--primary';
+    rejectBtn.textContent = 'Reject all';
+    rejectBtn.addEventListener('click', function () { rejectAll(false); });
 
     var prefsBtn = document.createElement('button');
     prefsBtn.type = 'button';
-    prefsBtn.className = 'srxcb__btn srxcb__btn--outline';
+    prefsBtn.className = 'srxcb__prefslink';
     prefsBtn.textContent = 'Preferences';
     prefsBtn.addEventListener('click', renderPrefs);
 
     actions.appendChild(acceptBtn);
+    actions.appendChild(rejectBtn);
     actions.appendChild(prefsBtn);
     modal.appendChild(actions);
-
-    var rejectLink = document.createElement('button');
-    rejectLink.type = 'button';
-    rejectLink.className = 'srxcb__reject';
-    rejectLink.textContent = 'Reject all non-essential cookies';
-    rejectLink.addEventListener('click', function () { rejectAll(false); });
-    modal.appendChild(rejectLink);
   }
 
   // ─── Preferences screen ───────────────────────────────────────────────────
 
   function renderPrefs() {
     var stored = readStored();
+    mode = 'modal'; applyMode();
     modal.innerHTML = '';
     modal.appendChild(makeClose());
 
@@ -319,6 +343,7 @@
 
     pa.appendChild(saveBtn); pa.appendChild(backBtn);
     modal.appendChild(pa);
+    if (backdrop && !backdrop.hidden) setTimeout(function () { var els = getFocusable(); if (els.length) els[0].focus(); }, 0);
   }
 
   // ─── Build backdrop + modal shell ─────────────────────────────────────────
