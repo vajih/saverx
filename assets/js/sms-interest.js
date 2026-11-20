@@ -18,6 +18,8 @@
   var FORM_API = window.SAVERX_FORM_API ||
     "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
   var DONE_KEY = "sr_si_done";               // set by the homepage band right before it sends the visitor to their drug page
+  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+  var UTM_STORE = "sr_utm", UTM_TTL_MS = 7 * 86400000;   // first-touch campaign tag, remembered 7 days (only with analytics consent)
   var CONSENT_VERSION = "2026-11-20-v1";   // bump whenever the disclosure wording in scripts/_add-sms-interest.mjs changes
 
   function track(name, params) { try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {} }
@@ -92,7 +94,58 @@
       if (typeof setTimeout === "function") setTimeout(function () { f.hidden = true; }, 9000);
     } catch (_) {}
   }
-  function utm(k) { try { return new URLSearchParams(window.location.search).get(k) || ""; } catch (_) { return ""; } }
+  // --- utm-sanitizer:start (KEEP IN SYNC with sanitizeUtm() in assets/js/savings-watch.js, saverx-savings-watch/src/validate.js
+  //     and sanitizeUtm_() in scripts/Code.gs; a test runs them on the same inputs) ---
+  function sanitizeUtm(value) {
+    if (typeof value !== "string") return null;
+    var raw = value.trim().toLowerCase();
+    if (!raw || raw.length > 300) return null;
+    if (raw.indexOf("@") !== -1) return null;
+    var runs = raw.match(/[0-9 ().+\-]+/g) || [];
+    for (var i = 0; i < runs.length; i++) if (runs[i].replace(/\D/g, "").length >= 10) return null;
+    var v = raw.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+    if (!v || v.length > 100) return null;
+    return v;
+  }
+  // --- utm-sanitizer:end ---
+  function consentState() {   // "allowed" | "declined" | "unknown" (banner not answered yet)
+    try { var c = JSON.parse(window.localStorage.getItem("saverx_consent") || "null"); return c ? (c.analytics ? "allowed" : "declined") : "unknown"; } catch (_) { return "unknown"; }
+  }
+  function analyticsAllowed() { return consentState() === "allowed"; }
+  function currentUtm() {
+    var out = {};
+    try { var q = new URLSearchParams(window.location.search); UTM_KEYS.forEach(function (k) { var v = sanitizeUtm(q.get(k)); if (v) out[k] = v; }); } catch (_) {}
+    return out;
+  }
+  function storedUtm() {
+    try {
+      var o = JSON.parse(window.localStorage.getItem(UTM_STORE) || "null");
+      if (!o || !o.v || !o.t || (Date.now() - o.t) > UTM_TTL_MS) return null;
+      var out = {}; UTM_KEYS.forEach(function (k) { var v = sanitizeUtm(o.v[k]); if (v) out[k] = v; });
+      return Object.keys(out).length ? out : null;
+    } catch (_) { return null; }
+  }
+  /**
+   * Campaign attribution for a signup. FIRST-TOUCH: a remembered campaign (<= 7 days old) wins over a later one.
+   * Remembering across pages happens ONLY when the visitor allowed analytics in the cookie banner; without it we use just the
+   * UTMs on the current page. Values are campaign labels (sanitized; PII-like values dropped), never sent to analytics.
+   */
+  function attribution() {
+    var cur = currentUtm(), ok = analyticsAllowed(), st = ok ? storedUtm() : null;
+    if (st) return st;
+    if (Object.keys(cur).length && ok) { try { window.localStorage.setItem(UTM_STORE, JSON.stringify({ v: cur, t: Date.now() })); } catch (_) {} }
+    return cur;
+  }
+  attribution();   // on landing: remember an ad click's campaign for later pages (consent permitting)
+  // First visit: the cookie banner is still unanswered when the page loads. Watch for the answer (up to 2 minutes, nothing stored
+  // unless analytics is allowed) so an ad click's campaign is remembered the moment the visitor accepts, while the UTMs are still in the URL.
+  if (Object.keys(currentUtm()).length && consentState() === "unknown" && typeof setInterval === "function") {
+    var polls = 0, watch = setInterval(function () {
+      var st = consentState();
+      if (st === "allowed") attribution();
+      if (st !== "unknown" || ++polls > 120) clearInterval(watch);
+    }, 1000);
+  }
 
   fetch("/data/savings-watch.json").then(function (r) { return r.json(); }).then(function (cfg) {
     if (!cfg || cfg.interest !== true || cfg.live === true) return;   // off, or the real feature is live
@@ -160,13 +213,15 @@
           var phone = normalizePhone(phoneIn && phoneIn.value);
           if (!phone) { if (msg) msg.textContent = "Please enter a valid 10-digit US mobile number."; return; }
           if (msg) msg.textContent = "";
+          var attr = attribution();
           var consentEl = form.querySelector("[data-si-consent]");
           var consentText = consentEl ? String(consentEl.textContent || "").replace(/\s+/g, " ").trim() : "";   // exactly what was on screen
           post({
             form_type: "text_waitlist", phone: phone, drug: drugText, drug_slug: drugSlug, variant: vr,
             consent_version: consentVersion, consent_text: consentText,
             source_page: (window.location && window.location.pathname) || "",
-            utm_source: utm("utm_source"), utm_medium: utm("utm_medium"), utm_campaign: utm("utm_campaign"),
+            utm_source: attr.utm_source || "", utm_medium: attr.utm_medium || "", utm_campaign: attr.utm_campaign || "",
+            utm_content: attr.utm_content || "", utm_term: attr.utm_term || "",
             useragent: navigator.userAgent || ""
           });
           track("sms_waitlist_signup", { drug_slug: evSlug, variant: vr });   // categorical only, never the number

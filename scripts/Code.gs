@@ -444,7 +444,25 @@ var WAITLIST_SHEET = "TextWaitlist";
 var WAITLIST_HEADERS = [
   "timestamp", "phone", "drug", "drug_slug", "variant", "consent_version", "consent_text",
   "source_page", "utm_source", "utm_medium", "utm_campaign", "user_agent", "status",
+  "utm_content", "utm_term",   // appended later: older sheets get these header cells added automatically
 ];
+
+/**
+ * Campaign label: lowercase [a-z0-9_-], or "" (drop) when empty, over 100 chars after cleaning, email-like, or containing a
+ * phone-like run (10+ digits in one run of digits and phone punctuation). KEEP IN SYNC with sanitizeUtm() in
+ * assets/js/sms-interest.js and saverx-savings-watch/src/validate.js (a test runs them on the same inputs).
+ */
+function sanitizeUtm_(value) {
+  if (typeof value !== "string") return "";
+  var raw = value.trim().toLowerCase();
+  if (!raw || raw.length > 300) return "";
+  if (raw.indexOf("@") !== -1) return "";
+  var runs = raw.match(/[0-9 ().+\-]+/g) || [];
+  for (var i = 0; i < runs.length; i++) if (runs[i].replace(/\D/g, "").length >= 10) return "";
+  var v = raw.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+  if (!v || v.length > 100) return "";
+  return v;
+}
 
 /** US (NANP) mobile -> "+1XXXXXXXXXX", or "" if it is not a plausible number. */
 function normalizeUsPhone(raw) {
@@ -476,11 +494,13 @@ function handleTextWaitlist(p) {
       String(p.consent_version || "").trim().slice(0, 40),
       String(p.consent_text || "").trim().slice(0, 1500),
       String(p.source_page || "").trim().slice(0, 200),
-      String(p.utm_source || "").trim().slice(0, 80),
-      String(p.utm_medium || "").trim().slice(0, 80),
-      String(p.utm_campaign || "").trim().slice(0, 120),
+      sanitizeUtm_(p.utm_source),                // sanitized again here: never trust client values
+      sanitizeUtm_(p.utm_medium),
+      sanitizeUtm_(p.utm_campaign),
       String(p.useragent || "").trim().slice(0, 300),
       "waitlist",
+      sanitizeUtm_(p.utm_content),
+      sanitizeUtm_(p.utm_term),
     ];
     var dup = false, sheetErr = null;
     try {
@@ -492,6 +512,11 @@ function handleTextWaitlist(p) {
         sheet.setFrozenRows(1);
       }
       var data = sheet.getDataRange().getValues();
+      // Older sheets were created before utm_content/utm_term: add the missing header cells (existing headers rewritten identically)
+      if (data[0] && data[0].length < WAITLIST_HEADERS.length && sheet.getRange) {
+        sheet.getRange(1, 1, 1, WAITLIST_HEADERS.length).setValues([WAITLIST_HEADERS]);
+      }
+      // First-touch: a repeat signup for the same phone + drug is skipped, so the original campaign is kept.
       for (var i = 1; i < data.length; i++) {
         if (String(data[i][1]) === phone && String(data[i][3]) === slug) { dup = true; break; }
       }
@@ -735,11 +760,12 @@ function computeSmsInterest(ss, now) {
     by_variant: { coupons: { interested: 0, emails: 0, phones: 0 }, updates: { interested: 0, emails: 0, phones: 0 } },
     // Text-alerts waitlist (TextWaitlist tab): signups = rows (one per phone+drug), people = distinct phone numbers.
     waitlist: { signups: 0, people: 0, last7: 0, last24: 0 }, waitlist_by_drug: {},
+    waitlist_by_campaign: {}, waitlist_people_by_campaign: {},   // utm_campaign ("(none)" when untagged); people = distinct phones
     views: null, view_error: null, interest_rate_pct: null, email_rate_pct: null, waitlist_rate_pct: null,
   };
   var wl = ss.getSheetByName(WAITLIST_SHEET);
   if (wl) {
-    var wr = wl.getDataRange().getValues(), seenPhone = {}, seenPair = {};
+    var wr = wl.getDataRange().getValues(), seenPhone = {}, seenPair = {}, seenCampPhone = {};
     for (var k = 1; k < wr.length; k++) {
       var phone = String(wr[k][1] || "").trim(), wslug = String(wr[k][3] || "").trim().toLowerCase();
       if (!phone) continue;
@@ -751,6 +777,9 @@ function computeSmsInterest(ss, now) {
       if (wt >= d7) out.waitlist.last7++;
       if (wt >= d1) out.waitlist.last24++;
       bump(out.waitlist_by_drug, wslug);
+      var camp = String(wr[k][10] || "").trim().toLowerCase() || "(none)";
+      bump(out.waitlist_by_campaign, camp);
+      if (!seenCampPhone[camp + "|" + phone]) { seenCampPhone[camp + "|" + phone] = true; bump(out.waitlist_people_by_campaign, camp); }
       var wv = String(wr[k][4] || "").trim();
       if (out.by_variant[wv]) out.by_variant[wv].phones++;
     }
@@ -956,7 +985,8 @@ function dailyEnrollmentReport() {
         ? "<p style='font-size:15px;margin:10px 0;'><b>Text-alerts waitlist (phone numbers):</b> " + m.sms_interest.waitlist.people +
           " people · " + m.sms_interest.waitlist.signups + " signups (" + m.sms_interest.waitlist.last24 + " in the last 24h)" +
           (m.sms_interest.waitlist_rate_pct !== null ? " · " + m.sms_interest.waitlist_rate_pct + "% of card views" : "") +
-          " · top drugs: " + topOf(m.sms_interest.waitlist_by_drug, 5) + "</p>" +
+          " · top drugs: " + topOf(m.sms_interest.waitlist_by_drug, 5) +
+          "<br><span style='font-size:13px;color:#64748b;'>phones by campaign: " + topOf(m.sms_interest.waitlist_people_by_campaign, 6) + "</span></p>" +
           "<p style='font-size:15px;margin:10px 0;'><b>Text-updates interest (demand test):</b> " + m.sms_interest.interested.total +
           " interested (" + m.sms_interest.interested.last24 + " in the last 24h) · " + m.sms_interest.emails.total + " left an email" +
           (m.sms_interest.email_rate_pct !== null ? " (" + m.sms_interest.email_rate_pct + "% of interested)" : "") +
