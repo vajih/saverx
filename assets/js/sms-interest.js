@@ -64,6 +64,23 @@
     coupons: function (b) { return "Get a text when " + b + " savings or coupons change"; },
     updates: function (b) { return "Get text alerts about " + b; }
   };
+  function slugify(t) { return String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50); }
+  // Homepage only: medication type-ahead. Matching a listed drug gives its real slug; anything else is kept as "custom-<text>".
+  var drugIndex = {};
+  function loadDrugs(listEl) {
+    try {
+      fetch("/data/drugs.json").then(function (r) { return r.json(); }).then(function (d) {
+        (d.items || []).forEach(function (it) {
+          if (!it || !it.slug) return;
+          [it.name, it.brand].forEach(function (n) {
+            n = String(n || "").trim(); if (!n || drugIndex[n.toLowerCase()]) return;
+            drugIndex[n.toLowerCase()] = { name: n, slug: it.slug };
+            if (listEl && typeof document.createElement === "function") { var o = document.createElement("option"); o.value = n; listEl.appendChild(o); }
+          });
+        });
+      }).catch(function () {});
+    } catch (_) {}
+  }
   function utm(k) { try { return new URLSearchParams(window.location.search).get(k) || ""; } catch (_) { return ""; } }
 
   fetch("/data/savings-watch.json").then(function (r) { return r.json(); }).then(function (cfg) {
@@ -74,14 +91,21 @@
 
     Array.prototype.forEach.call(blocks, function (b) {
       var slug = b.getAttribute("data-sw-drug") || "none";
-      var brand = brandName || "this medication";
+      var isHome = b.getAttribute("data-si-home") !== null;                 // homepage band: the visitor types their medication
+      var vr = isHome ? "home" : variant;
+      var brand = isHome ? "your medication" : (brandName || "this medication");
+      var consentVersion = b.getAttribute("data-si-consent-version") || CONSENT_VERSION;
       var q = function (s) { return b.querySelector(s); };
       var head = q("[data-si-headline]");
-      if (head) head.textContent = HEADLINES[variant](brand);
+      if (head && !isHome) head.textContent = HEADLINES[vr](brand);
       Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = brand; });
-      b.setAttribute("data-si-variant", variant);
+      b.setAttribute("data-si-variant", vr);
       b.hidden = false; b.style.display = ""; b.removeAttribute("data-launch");
-      track("sms_interest_view", { drug_slug: slug, variant: variant });
+      if (isHome) {
+        Array.prototype.forEach.call(document.querySelectorAll("[data-si-home-link]"), function (a) { a.hidden = false; a.style.display = ""; });
+        loadDrugs(q("[data-si-drug-list]"));
+      }
+      track("sms_interest_view", { drug_slug: slug, variant: vr });
 
       var main = q("[data-si-main]"), thanks = q("[data-si-thanks]"), emailBox = q("[data-si-email]"),
           bar = q("[data-si-bar]"), done = false;
@@ -97,21 +121,32 @@
           e.preventDefault();
           var hp = form.querySelector("input[name=website]"), msg = form.querySelector("[data-si-msg]");
           if (hp && hp.value) return;                                         // honeypot: bots get nothing
+          var drugText = brandName || slug, drugSlug = slug, evSlug = slug;
+          if (isHome) {
+            var dIn = form.querySelector("input[name=drug]");
+            var typed = String((dIn && dIn.value) || "").replace(/\s+/g, " ").trim();
+            if (typed.length < 2) { if (msg) msg.textContent = "Please enter your medication."; return; }
+            var hit = drugIndex[typed.toLowerCase()];
+            drugText = hit ? hit.name : typed.slice(0, 80);
+            drugSlug = hit ? hit.slug : "custom-" + (slugify(typed) || "other");
+            evSlug = hit ? hit.slug : "custom";                              // typed medication names never go to analytics
+          }
           var phone = normalizePhone(phoneIn && phoneIn.value);
           if (!phone) { if (msg) msg.textContent = "Please enter a valid 10-digit US mobile number."; return; }
           if (msg) msg.textContent = "";
           var consentEl = form.querySelector("[data-si-consent]");
           var consentText = consentEl ? String(consentEl.textContent || "").replace(/\s+/g, " ").trim() : "";   // exactly what was on screen
           post({
-            form_type: "text_waitlist", phone: phone, drug: brandName || slug, drug_slug: slug, variant: variant,
-            consent_version: CONSENT_VERSION, consent_text: consentText,
+            form_type: "text_waitlist", phone: phone, drug: drugText, drug_slug: drugSlug, variant: vr,
+            consent_version: consentVersion, consent_text: consentText,
             source_page: (window.location && window.location.pathname) || "",
             utm_source: utm("utm_source"), utm_medium: utm("utm_medium"), utm_campaign: utm("utm_campaign"),
             useragent: navigator.userAgent || ""
           });
-          track("sms_waitlist_signup", { drug_slug: slug, variant: variant });   // categorical only, never the number
-          if (!seenBefore(slug)) { beacon("sms_interest_click", slug, variant); markSeen(slug); }
+          track("sms_waitlist_signup", { drug_slug: evSlug, variant: vr });   // categorical only, never the number
+          if (!seenBefore(evSlug)) { beacon("sms_interest_click", evSlug, vr); markSeen(evSlug); }
           done = true;
+          if (isHome) Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = drugText; });
           if (main) main.hidden = true;
           if (emailBox) emailBox.hidden = true;
           if (bar) bar.hidden = true;
@@ -119,10 +154,18 @@
         });
       }
 
+      // ---- Homepage quick-pick chips
+      Array.prototype.forEach.call(b.querySelectorAll("[data-si-chip]"), function (c) {
+        c.addEventListener("click", function () {
+          var dIn = form && form.querySelector("input[name=drug]"); if (dIn) dIn.value = c.getAttribute("data-si-chip") || "";
+          var ph = form && form.querySelector("input[name=phone]"); if (ph && ph.focus) ph.focus();
+        });
+      });
+
       // ---- Email fallback (existing consented list)
       var toggle = q("[data-si-email-toggle]");
       if (toggle) toggle.addEventListener("click", function () {
-        if (!seenBefore(slug)) { track("sms_interest_click", { drug_slug: slug, variant: variant }); beacon("sms_interest_click", slug, variant); markSeen(slug); }
+        if (!seenBefore(slug)) { track("sms_interest_click", { drug_slug: slug, variant: vr }); beacon("sms_interest_click", slug, vr); markSeen(slug); }
         if (main) main.hidden = true;
         if (emailBox) { emailBox.hidden = false; var em = emailBox.querySelector("input[type=email]"); if (em && em.focus) em.focus(); }
       });
@@ -134,9 +177,9 @@
         if (hp && hp.value) return;
         if (!email || !email.value || email.value.indexOf("@") < 1) { if (msg) msg.textContent = "Enter a valid email address."; return; }
         if (!consent || !consent.checked) { if (msg) msg.textContent = "Please check the box to agree to receive emails."; return; }
-        post({ email: email.value.trim(), drug: brandName || slug, source: "SMS interest (" + variant + ")", useragent: navigator.userAgent || "", referrer: document.referrer || "" });
-        track("sms_interest_email", { drug_slug: slug, variant: variant });
-        beacon("sms_interest_email", slug, variant);
+        post({ email: email.value.trim(), drug: brandName || slug, source: "SMS interest (" + vr + ")", useragent: navigator.userAgent || "", referrer: document.referrer || "" });
+        track("sms_interest_email", { drug_slug: slug, variant: vr });
+        beacon("sms_interest_email", slug, vr);
         eform.hidden = true;
         var t = q("[data-si-email-thanks]"); if (t) t.hidden = false;
       });
@@ -150,7 +193,7 @@
         };
         var showBar = function () {
           if (done || dismissed || !bar.hidden || cardInView()) return;
-          bar.hidden = false; track("sms_bar_view", { drug_slug: slug, variant: variant });
+          bar.hidden = false; track("sms_bar_view", { drug_slug: slug, variant: vr });
         };
         if (typeof setTimeout === "function") setTimeout(showBar, 12000);
         // Some page layouts scroll <body> instead of the window, so listen in the capture phase and measure whichever element scrolled.
@@ -164,7 +207,7 @@
         }, { passive: true, capture: true });
         var go = q("[data-si-bar-go]"), x = q("[data-si-bar-x]");
         if (go) go.addEventListener("click", function () {
-          track("sms_bar_click", { drug_slug: slug, variant: variant });
+          track("sms_bar_click", { drug_slug: slug, variant: vr });
           bar.hidden = true;
           try { b.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
           var ph = form && form.querySelector("input[name=phone]"); if (ph && ph.focus) ph.focus();
