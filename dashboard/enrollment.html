@@ -66,8 +66,12 @@
     </div>
 
     <div class="card" id="smsCard" hidden>
-      <h2>Text-updates interest <span class="muted">(honest "coming soon" card on drug pages. No phone numbers collected)</span></h2>
+      <h2>Text-alerts waitlist <span class="muted">(phone + drug captured on drug pages; no texts sent until A2P is approved)</span></h2>
       <div class="grid" id="smsKpis">
+        <div class="kpi"><b id="s-phones">–</b><small>Phone numbers (people)</small></div>
+        <div class="kpi"><b id="s-signups">–</b><small>Signups (phone + drug)</small></div>
+        <div class="kpi"><b id="s-w24">–</b><small>Signups, last 24h</small></div>
+        <div class="kpi"><b id="s-wrate">–</b><small>Signup rate (of card views)</small></div>
         <div class="kpi"><b id="s-total">–</b><small>Interested (all-time)</small></div>
         <div class="kpi"><b id="s-24h">–</b><small>Last 24 hours</small></div>
         <div class="kpi"><b id="s-7d">–</b><small>Last 7 days</small></div>
@@ -131,6 +135,11 @@
           // Text-updates demand test panel (older backends won't have sms_interest yet)
           var si = m.sms_interest;
           if (si && !si.error) {
+            var wl = si.waitlist || { people: 0, signups: 0, last24: 0 };
+            $("s-phones").textContent = n(wl.people);
+            $("s-signups").textContent = n(wl.signups);
+            $("s-w24").textContent = n(wl.last24);
+            $("s-wrate").textContent = si.waitlist_rate_pct == null ? "–" : si.waitlist_rate_pct + "%";
             $("s-total").textContent = n(si.interested.total);
             $("s-24h").textContent = n(si.interested.last24);
             $("s-7d").textContent = n(si.interested.last7);
@@ -139,10 +148,10 @@
             $("s-rate").textContent = si.interest_rate_pct === null ? "–" : si.interest_rate_pct + "%";
             var v = si.by_variant || {};
             $("smsBody").innerHTML =
-              "<tr><td style='width:170px;color:#64748b;'>Wording: coupons</td><td><b>" + n((v.coupons || {}).interested) + "</b> interested · <b>" + n((v.coupons || {}).emails) + "</b> emails</td></tr>" +
-              "<tr><td style='width:170px;color:#64748b;'>Wording: updates</td><td><b>" + n((v.updates || {}).interested) + "</b> interested · <b>" + n((v.updates || {}).emails) + "</b> emails</td></tr>" +
-              topRows("Interested by drug", si.by_drug, 10) + topRows("Emails by drug", si.emails_by_drug, 10);
-            $("smsNote").textContent = "Interested = people who tapped “Yes, I’m interested” (counted once per browser per drug). Emails = distinct addresses from the signup that follows. " +
+              "<tr><td style='width:170px;color:#64748b;'>Wording: coupons</td><td><b>" + n((v.coupons || {}).interested) + "</b> interested · <b>" + n((v.coupons || {}).emails) + "</b> emails · <b>" + n((v.coupons || {}).phones) + "</b> phones</td></tr>" +
+              "<tr><td style='width:170px;color:#64748b;'>Wording: updates</td><td><b>" + n((v.updates || {}).interested) + "</b> interested · <b>" + n((v.updates || {}).emails) + "</b> emails · <b>" + n((v.updates || {}).phones) + "</b> phones</td></tr>" +
+              topRows("Phone signups by drug", si.waitlist_by_drug, 10) + topRows("Interested by drug", si.by_drug, 10) + topRows("Emails by drug", si.emails_by_drug, 10);
+            $("smsNote").textContent = "Phone numbers = distinct people on the TextWaitlist tab; a signup is one phone + one drug, so one person can have several. Interested = people who tapped “Yes, I’m interested” (counted once per browser per drug). Emails = distinct addresses from the signup that follows. " +
               "Views come from GA4 and miss visitors who decline analytics, so the interest rate is approximate" + (si.view_error ? " (GA4 views unavailable: " + si.view_error + ")" : "") + ".";
           } else {
             $("smsBody").innerHTML = "<tr><td style='color:#94a3b8;'>No data yet" + (si && si.error ? " (" + si.error + ")" : ". Redeploy Code.gs to enable this panel.") + "</td></tr>";

@@ -402,6 +402,9 @@ function doPost(e) {
     // --- Enrollment Copilot demand test: separate intake pipeline ---
     if ((p.form_type || "") === "enroll_intake") return handleEnrollIntake(p);
 
+    // --- Text-alerts waitlist (phone + drug). Capture only; no texts are sent from here. ---
+    if ((p.form_type || "") === "text_waitlist") return handleTextWaitlist(p);
+
     var email = (p.email || "").trim().toLowerCase();
     var drug = (p.drug || p.medication || "N/A").trim();
     var source = (p.source || "unknown").trim();
@@ -429,6 +432,83 @@ function doPost(e) {
     ).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
     Logger.log("doPost error: " + err.toString());
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "error", message: err.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// --- Text-alerts waitlist (form_type=text_waitlist) ---
+
+var WAITLIST_SHEET = "TextWaitlist";
+var WAITLIST_HEADERS = [
+  "timestamp", "phone", "drug", "drug_slug", "variant", "consent_version", "consent_text",
+  "source_page", "utm_source", "utm_medium", "utm_campaign", "user_agent", "status",
+];
+
+/** US (NANP) mobile -> "+1XXXXXXXXXX", or "" if it is not a plausible number. */
+function normalizeUsPhone(raw) {
+  var d = String(raw || "").replace(/\D/g, "");
+  if (d.length === 11 && d.charAt(0) === "1") d = d.slice(1);
+  if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(d)) return "";
+  if (/^(\d)\1{9}$/.test(d)) return "";                     // 5555555555, 2222222222 ...
+  if (d.slice(3, 6) === "555" && /^01\d\d$/.test(d.slice(6))) return "";   // 555-01xx fictional range
+  return "+1" + d;
+}
+
+/**
+ * Stores one waitlist row per (phone, drug_slug). The exact consent wording the visitor saw, its version, the time and
+ * the page are saved with the row as the consent record. Sheet write first; nothing else can fail the response.
+ * No text message is sent from here: the first message goes out only after A2P approval, and it asks the person to
+ * reply YES to confirm.
+ */
+function handleTextWaitlist(p) {
+  try {
+    var phone = normalizeUsPhone(p.phone);
+    if (!phone) return ContentService.createTextOutput("Invalid phone");
+    var slug = String(p.drug_slug || "").trim().toLowerCase().slice(0, 60);
+    var row = [
+      new Date().toISOString(),
+      phone,
+      String(p.drug || "").trim().slice(0, 80),
+      slug,
+      String(p.variant || "").trim().slice(0, 20),
+      String(p.consent_version || "").trim().slice(0, 40),
+      String(p.consent_text || "").trim().slice(0, 1500),
+      String(p.source_page || "").trim().slice(0, 200),
+      String(p.utm_source || "").trim().slice(0, 80),
+      String(p.utm_medium || "").trim().slice(0, 80),
+      String(p.utm_campaign || "").trim().slice(0, 120),
+      String(p.useragent || "").trim().slice(0, 300),
+      "waitlist",
+    ];
+    var dup = false, sheetErr = null;
+    try {
+      var ss = SpreadsheetApp.openById(SHEET_ID);
+      var sheet = ss.getSheetByName(WAITLIST_SHEET);
+      if (!sheet) {
+        sheet = ss.insertSheet(WAITLIST_SHEET);
+        sheet.appendRow(WAITLIST_HEADERS);
+        sheet.setFrozenRows(1);
+      }
+      var data = sheet.getDataRange().getValues();
+      for (var i = 1; i < data.length; i++) {
+        if (String(data[i][1]) === phone && String(data[i][3]) === slug) { dup = true; break; }
+      }
+      if (!dup) {
+        var r = sheet.getLastRow() + 1;
+        if (sheet.getRange) sheet.getRange(r, 2).setNumberFormat("@");      // keep "+1832..." as text, never a number/formula
+        if (sheet.getRange) sheet.getRange(r, 1, 1, row.length).setValues([row]); else sheet.appendRow(row);
+      }
+    } catch (err) {
+      sheetErr = err.toString();
+      Logger.log("TextWaitlist sheet error: " + sheetErr);
+    }
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "ok", duplicate: dup, sheetError: sheetErr })
+    ).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    Logger.log("handleTextWaitlist error: " + err.toString());
     return ContentService.createTextOutput(
       JSON.stringify({ status: "error", message: err.toString() })
     ).setMimeType(ContentService.MimeType.JSON);
@@ -652,9 +732,29 @@ function computeSmsInterest(ss, now) {
   var out = {
     interested: { total: 0, last7: 0, last24: 0 }, by_drug: {},
     emails: { total: 0, last7: 0, last24: 0 }, emails_by_drug: {},
-    by_variant: { coupons: { interested: 0, emails: 0 }, updates: { interested: 0, emails: 0 } },
-    views: null, view_error: null, interest_rate_pct: null, email_rate_pct: null,
+    by_variant: { coupons: { interested: 0, emails: 0, phones: 0 }, updates: { interested: 0, emails: 0, phones: 0 } },
+    // Text-alerts waitlist (TextWaitlist tab): signups = rows (one per phone+drug), people = distinct phone numbers.
+    waitlist: { signups: 0, people: 0, last7: 0, last24: 0 }, waitlist_by_drug: {},
+    views: null, view_error: null, interest_rate_pct: null, email_rate_pct: null, waitlist_rate_pct: null,
   };
+  var wl = ss.getSheetByName(WAITLIST_SHEET);
+  if (wl) {
+    var wr = wl.getDataRange().getValues(), seenPhone = {}, seenPair = {};
+    for (var k = 1; k < wr.length; k++) {
+      var phone = String(wr[k][1] || "").trim(), wslug = String(wr[k][3] || "").trim().toLowerCase();
+      if (!phone) continue;
+      if (seenPair[phone + "|" + wslug]) continue;               // defensive: backend already dedupes
+      seenPair[phone + "|" + wslug] = true;
+      var wt = new Date(wr[k][0]);
+      out.waitlist.signups++;
+      if (!seenPhone[phone]) { seenPhone[phone] = true; out.waitlist.people++; }
+      if (wt >= d7) out.waitlist.last7++;
+      if (wt >= d1) out.waitlist.last24++;
+      bump(out.waitlist_by_drug, wslug);
+      var wv = String(wr[k][4] || "").trim();
+      if (out.by_variant[wv]) out.by_variant[wv].phones++;
+    }
+  }
   var log = ss.getSheetByName(EVENTLOG_SHEET);
   if (log) {
     var rows = log.getDataRange().getValues();
@@ -691,6 +791,7 @@ function computeSmsInterest(ss, now) {
   out.views = g.views; out.view_error = g.error || null;
   if (out.views > 0) out.interest_rate_pct = Math.round((out.interested.total / out.views) * 1000) / 10;
   if (out.interested.total > 0) out.email_rate_pct = Math.round((out.emails.total / out.interested.total) * 1000) / 10;
+  if (out.views > 0) out.waitlist_rate_pct = Math.round((out.waitlist.signups / out.views) * 1000) / 10;
   return out;
 }
 
@@ -852,7 +953,11 @@ function dailyEnrollmentReport() {
       f.intake_completes + " completes → " + f.paid_pref + " paid-tier picks → " +
       f.checkout_started + " checkouts started → " + f.checkout_completed + " completed</p>" +
       (m.sms_interest && !m.sms_interest.error
-        ? "<p style='font-size:15px;margin:10px 0;'><b>Text-updates interest (demand test):</b> " + m.sms_interest.interested.total +
+        ? "<p style='font-size:15px;margin:10px 0;'><b>Text-alerts waitlist (phone numbers):</b> " + m.sms_interest.waitlist.people +
+          " people · " + m.sms_interest.waitlist.signups + " signups (" + m.sms_interest.waitlist.last24 + " in the last 24h)" +
+          (m.sms_interest.waitlist_rate_pct !== null ? " · " + m.sms_interest.waitlist_rate_pct + "% of card views" : "") +
+          " · top drugs: " + topOf(m.sms_interest.waitlist_by_drug, 5) + "</p>" +
+          "<p style='font-size:15px;margin:10px 0;'><b>Text-updates interest (demand test):</b> " + m.sms_interest.interested.total +
           " interested (" + m.sms_interest.interested.last24 + " in the last 24h) · " + m.sms_interest.emails.total + " left an email" +
           (m.sms_interest.email_rate_pct !== null ? " (" + m.sms_interest.email_rate_pct + "% of interested)" : "") +
           (m.sms_interest.interest_rate_pct !== null ? " · " + m.sms_interest.interest_rate_pct + "% of card views" : "") +

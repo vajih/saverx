@@ -4,90 +4,126 @@ import {START as SW_START,END as SW_END} from '../scripts/_add-savings-watch-cta
 const src=fs.readFileSync('assets/js/sms-interest.js','utf8');
 const count=(h,t)=>h.split(t).length-1;
 
-test('injection: hidden, before enroll-help, idempotent, upgradeable, honest copy',()=>{
+test('injection: hidden, before enroll-help, idempotent, upgradeable; phone-first with the full consent disclosure',()=>{
   const html='<main><section id="enroll-help"></section></main>';
   const a=addInterest(html,'repatha');assert.equal(a.changed,true);assert(a.html.includes(PENDING));assert(a.html.indexOf(START)<a.html.indexOf('id="enroll-help"'));
-  assert.match(a.html,/COMING SOON/);assert.match(a.html,/aren’t live yet/);assert.match(a.html,/No phone number needed/);
+  assert.match(a.html,/LAUNCHING SOON/);assert.match(a.html,/type="tel"[^>]*name="phone"|name="phone"[^>]*type="tel"/);
+  const c=a.html.match(/<p class="si-consent"[\s\S]*?<\/p>/)[0];
+  for(const must of [/recurring automated text messages/,/SaveRx\.ai/,/not a condition of any purchase/,/Message frequency varies/,/Message and data rates may apply/,/Reply STOP to cancel/,/HELP for help/,/privacy\.html#sms/,/terms\.html/,/never put medication names in a text/,/first message asking you to confirm/])
+    assert.match(c,must,`consent disclosure must include ${must}`);
+  assert(a.html.indexOf('data-si-btn')<a.html.indexOf('si-consent'),'disclosure sits directly under the button');
   const b=addInterest(a.html,'repatha');assert.equal(b.changed,false);assert.equal(count(b.html,START),1);assert.equal(removeBlock(a.html).trim(),html);
   assert.equal(addInterest('<main></main>','x').error,'anchor not found');
 });
-test('all 363+ drug pages: exactly one hidden card, own slug, GTM + footer + Savings Watch card intact, no marker collision',()=>{
+test('all 363+ drug pages: exactly one hidden card, own slug, phone field + disclosure, GTM + footer + Savings Watch card intact',()=>{
   let n=0;
   for(const slug of drugSlugs()){const h=fs.readFileSync(`drugs/${slug}/index.html`,'utf8');if(!h.includes('id="enroll-help"'))continue;n++;
     assert.equal(count(h,START),1,slug);assert.equal(count(h,END),1,slug);assert(h.includes(`id="sms-interest"`)&&h.includes(`data-sw-drug="${slug}"`),slug);
     const m=h.match(/<section id="sms-interest"[^>]*>/)[0];assert(m.includes('hidden')&&m.includes('display:none'),`${slug} must ship hidden`);
+    assert(h.includes('name="phone"')&&h.includes('data-si-consent')&&h.includes('Reply STOP to cancel'),`${slug} phone form + disclosure`);
     assert.equal(count(h,SW_START),1,`${slug} Savings Watch card must remain`);assert.equal(count(h,SW_END),1,slug);
     assert(h.includes('GTM-MVZBBF7R'),slug);assert.equal(count(h,'<footer class="relief-footer">'),1,slug);assert(h.indexOf(START)<h.indexOf('id="enroll-help"'),slug);}
   assert(n>=363,`checked ${n}`);
 });
-test('switch file: demand test ON (interest) while Savings Watch stays OFF (live); Apps Script allows the two new events',()=>{
+test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); Apps Script allows the tracked events',()=>{
   // Interest card is enabled (2026-11-20, Code.gs v20 deployed). live must stay false until the Worker is deployed and A2P is approved.
   const c=JSON.parse(fs.readFileSync('data/savings-watch.json','utf8'));assert.equal(c.interest,true);assert.equal(c.live,false);
   const gs=fs.readFileSync('scripts/Code.gs','utf8');assert.match(gs,/TRACKED_EVENTS[\s\S]{0,400}"sms_interest_click"/);assert.match(gs,/"sms_interest_email"/);
 });
 
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null}={}){
-  const events=[],images=[],beacons=[],store=prior||{};if(storedVariant)store.sr_si_v=storedVariant;
+const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false}={}){
+  const events=[],images=[],sent=[],timers=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
   const block=el({'data-sw-drug':'repatha','data-launch':'pending'});block.hidden=true;block.style={display:'none'};
-  const head=el(),brandEls=[el(),el()],btn=el(),after=el(),main=el(),thanks=el(),msg=el(),form=el(),email=el(),consent=el(),hp=el(),intro=el();after.hidden=true;thanks.hidden=true;
-  const email_q={'input[type=email]':email,'input[type=checkbox]':consent,'input[name=website]':hp,'[data-si-msg]':msg};
-  form.querySelector=s=>email_q[s]||null;after.querySelector=s=>s==='input[type=email]'?email:null;
-  const map={'[data-si-headline]':head,'[data-si-btn]':btn,'[data-si-after]':after,'[data-si-main]':main,'[data-si-form]':form,'[data-si-thanks]':thanks,'[data-si-intro]':intro};
+  block.getBoundingClientRect=()=>inView?{top:100,bottom:600}:{top:5000,bottom:5500};block.scrollIntoView=()=>{block.scrolled=true;};
+  const head=el(),brandEls=[el(),el(),el()],main=el(),thanks=el(),emailBox=el(),bar=el(),go=el(),x=el(),toggle=el(),emailThanks=el();
+  const form=el(),phone=el(),hp=el(),msg=el(),consentEl=el(),eform=el(),email=el(),consent=el(),ehp=el(),emsg=el();
+  consentEl.textContent=CONSENT;thanks.hidden=true;emailBox.hidden=true;bar.hidden=true;emailThanks.hidden=true;
+  const fq={'input[name=phone]':phone,'input[name=website]':hp,'[data-si-msg]':msg,'[data-si-consent]':consentEl};form.querySelector=s=>fq[s]||null;
+  const eq={'input[type=email]':email,'input[type=checkbox]':consent,'input[name=website]':ehp,'[data-si-email-msg]':emsg};eform.querySelector=s=>eq[s]||null;emailBox.querySelector=s=>s==='input[type=email]'?email:null;
+  const map={'[data-si-headline]':head,'[data-si-main]':main,'[data-si-thanks]':thanks,'[data-si-email]':emailBox,'[data-si-bar]':bar,'[data-si-phone-form]':form,'[data-si-email-toggle]':toggle,'[data-si-email-form]':eform,'[data-si-email-thanks]':emailThanks,'[data-si-bar-go]':go,'[data-si-bar-x]':x};
   block.querySelector=s=>map[s]||null;block.querySelectorAll=s=>s==='[data-si-brand]'?brandEls:[];
-  const doc={querySelectorAll:s=>s==='[data-sms-interest]'?[block]:[],getElementById:id=>id==='drug-page-profile'?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/'};
-  const ctx={document:doc,window:{gtag:(...a)=>events.push(a),localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}}},
-    navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{beacons.push({u,b});return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
-    fetch:async()=>{if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON};
-  ctx.window.localStorage=ctx.window.localStorage;ctx.localStorage=ctx.window.localStorage;
+  const doc={querySelectorAll:s=>s==='[data-sms-interest]'?[block]:[],getElementById:id=>id==='drug-page-profile'?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
+  const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
+    localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;}}};
+  const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
+    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;}};
+  ctx.localStorage=win.localStorage;
   vm.runInNewContext(src,ctx);
-  return {intro,block,head,brandEls,btn,after,main,thanks,msg,form,email,consent,hp,events,images,beacons,store,
+  return {block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
     wait:async()=>{for(let i=0;i<12;i++)await Promise.resolve();},
-    submit:()=>form.listeners.submit({preventDefault(){}})};
+    submit:()=>form.listeners.submit({preventDefault(){}}),esubmit:()=>eform.listeners.submit({preventDefault(){}})};
 }
+const ON={interest:true,live:false};
 test('stays hidden when interest is off, live is true, the file is unreadable, or interest is not exactly true',async()=>{
   for(const o of [{cfg:{interest:false,live:false}},{cfg:{interest:true,live:true}},{cfg:{interest:'true',live:false}},{cfg:null},{cfg:{},fail:false},{cfg:{interest:true},fail:true}]){
     const h=harness(o);await h.wait();assert.equal(h.block.hidden,true,JSON.stringify(o));
   }
 });
 test('interest on + live off: shown with the brand filled; variant copy and persistence',async()=>{
-  const c=harness({cfg:{interest:true,live:false},random:0.1});await c.wait();assert.equal(c.block.hidden,false);assert.equal(c.block.style.display,'');
-  assert.equal(c.store.sr_si_v,'coupons');assert.match(c.head.textContent,/Want a text when there’s news on Repatha manufacturer savings and coupons\?/);assert.equal(c.brandEls[0].textContent,'Repatha');
-  const u=harness({cfg:{interest:true,live:false},random:0.9});await u.wait();assert.equal(u.store.sr_si_v,'updates');assert.equal(u.head.textContent,'Want text updates about Repatha?');
-  const sticky=harness({cfg:{interest:true,live:false},storedVariant:'updates',random:0.1});await sticky.wait();assert.equal(sticky.store.sr_si_v,'updates','returning visitor keeps their variant');
+  const c=harness({cfg:ON,random:0.1});await c.wait();assert.equal(c.block.hidden,false);assert.equal(c.block.style.display,'');
+  assert.equal(c.store.sr_si_v,'coupons');assert.equal(c.head.textContent,'Get a text when Repatha savings or coupons change');assert.equal(c.brandEls[0].textContent,'Repatha');
+  const u=harness({cfg:ON,random:0.9});await u.wait();assert.equal(u.store.sr_si_v,'updates');assert.equal(u.head.textContent,'Get text alerts about Repatha');
+  const sticky=harness({cfg:ON,storedVariant:'updates',random:0.1});await sticky.wait();assert.equal(sticky.store.sr_si_v,'updates','returning visitor keeps their variant');
   assert(c.events.some(e=>e[1]==='sms_interest_view'&&e[2].drug_slug==='repatha'&&e[2].variant==='coupons'));
   assert.equal(c.images.length,0,'views are GA4-only: no sheet beacon per pageview');
 });
-test('click: anonymous beacon + GA4 (slug + variant only), reveals the honest follow-up',async()=>{
-  const h=harness({cfg:{interest:true,live:false}});await h.wait();h.btn.listeners.click();
-  assert.equal(h.images.length,1);assert.match(h.images[0],/mode=track&ev=sms_interest_click&slug=repatha&x=coupons/);
-  assert.equal(h.main.hidden,true);assert.equal(h.after.hidden,false);assert.equal(h.email.focused,true);
-  assert(h.events.some(e=>e[1]==='sms_interest_click'));assert(!JSON.stringify([h.events,h.images]).includes('@'));
+test('phone submit: rejects bad numbers with a message and sends nothing',async()=>{
+  const h=harness({cfg:ON});await h.wait();
+  for(const bad of ['','12345','(123) 456-7890','(832) 056-7788','5555555555','(832) 555-0142','abcdefghij','1234567890123']){
+    h.phone.value=bad;h.submit();assert.match(h.msg.textContent,/valid 10-digit US mobile number/,bad);assert.equal(h.sent.length,0,bad);}
+  assert.equal(h.main.hidden,false);
 });
-test('email signup: validates, needs consent, honeypot ignored, posts to the lead endpoint with a tagged source, analytics stay anonymous',async()=>{
-  const h=harness({cfg:{interest:true,live:false}});await h.wait();h.btn.listeners.click();
-  h.email.value='nope';h.submit();assert.match(h.msg.textContent,/valid email/);assert.equal(h.beacons.length,0);
-  h.email.value='person@example.test';h.consent.checked=false;h.submit();assert.match(h.msg.textContent,/check the box/);assert.equal(h.beacons.length,0);
-  h.hp.value='bot';h.consent.checked=true;h.submit();assert.equal(h.beacons.length,0,'honeypot');h.hp.value='';
-  h.submit();assert.equal(h.beacons.length,1);const body=new URLSearchParams(h.beacons[0].b.text);
-  assert.equal(body.get('email'),'person@example.test');assert.equal(body.get('drug'),'Repatha');assert.equal(body.get('source'),'SMS interest (coupons)');
-  assert.equal(h.form.hidden,true);assert.equal(h.intro.hidden,true);assert.equal(h.thanks.hidden,false);
+test('phone submit: posts phone + drug + variant + the exact consent text; analytics and beacons never carry the number',async()=>{
+  const h=harness({cfg:ON,search:'?utm_source=fb&utm_medium=cpc&utm_campaign=nov'});await h.wait();
+  h.phone.value='(832) 456-7788';h.submit();
+  assert.equal(h.sent.length,1);const b=new URLSearchParams(h.sent[0]);
+  assert.equal(b.get('form_type'),'text_waitlist');assert.equal(b.get('phone'),'+18324567788');assert.equal(b.get('drug'),'Repatha');assert.equal(b.get('drug_slug'),'repatha');assert.equal(b.get('variant'),'coupons');
+  assert.equal(b.get('consent_version'),'2026-11-20-v1');assert.equal(b.get('consent_text'),CONSENT,'saves the exact wording that was on screen');
+  assert.equal(b.get('source_page'),'/drugs/repatha/');assert.equal(b.get('utm_source'),'fb');assert.equal(b.get('utm_medium'),'cpc');assert.equal(b.get('utm_campaign'),'nov');assert.equal(b.get('useragent'),'test-agent');
+  assert.equal(h.main.hidden,true);assert.equal(h.thanks.hidden,false);assert.equal(h.bar.hidden,true);
+  assert(h.events.some(e=>e[1]==='sms_waitlist_signup'&&e[2].drug_slug==='repatha'));
+  const leak=JSON.stringify([h.events,h.images]);assert(!/8324567788|\(832\)/.test(leak),'number must never reach analytics or beacon URLs');
+  assert.equal(h.images.length,1);assert.match(h.images[0],/ev=sms_interest_click&slug=repatha&x=coupons/);
+  assert(h.sent.every(s=>!s.includes('undefined')));
+});
+test('phone submit: accepts +1 / dashes / spaces; honeypot gets nothing; repeat on same drug counts one click but still stores the signup',async()=>{
+  const h=harness({cfg:ON});await h.wait();h.phone.value='1-832-456-7788';h.hp.value='bot';h.submit();assert.equal(h.sent.length,0,'honeypot');h.hp.value='';
+  h.submit();assert.equal(new URLSearchParams(h.sent[0]).get('phone'),'+18324567788');
+  const again=harness({cfg:ON,store:h.store});await again.wait();again.phone.value='832 456 7788';again.submit();
+  assert.equal(again.sent.length,1,'signup still stored');assert.equal(again.images.length,0,'no second interest beacon for the same drug');
+});
+test('phone submit still works where sendBeacon is missing (falls back to fetch, silently)',async()=>{
+  const h=harness({cfg:ON,beacon:false});await h.wait();h.phone.value='8324567788';h.submit();assert.equal(h.sent.length,1);assert.equal(h.thanks.hidden,false);
+});
+test('email fallback: counted once, validates, needs its own consent, posts with a tagged source, analytics stay anonymous',async()=>{
+  const h=harness({cfg:ON});await h.wait();h.toggle.listeners.click();
+  assert.equal(h.images.length,1);assert.match(h.images[0],/mode=track&ev=sms_interest_click&slug=repatha&x=coupons/);assert.equal(h.main.hidden,true);assert.equal(h.emailBox.hidden,false);assert.equal(h.email.focused,true);
+  h.email.value='nope';h.esubmit();assert.match(h.emsg.textContent,/valid email/);assert.equal(h.sent.length,0);
+  h.email.value='person@example.test';h.consent.checked=false;h.esubmit();assert.match(h.emsg.textContent,/check the box/);assert.equal(h.sent.length,0);
+  h.ehp.value='bot';h.consent.checked=true;h.esubmit();assert.equal(h.sent.length,0,'honeypot');h.ehp.value='';
+  h.esubmit();assert.equal(h.sent.length,1);const body=new URLSearchParams(h.sent[0]);
+  assert.equal(body.get('email'),'person@example.test');assert.equal(body.get('drug'),'Repatha');assert.equal(body.get('source'),'SMS interest (coupons)');assert(!body.get('form_type'));
+  assert.equal(h.eform.hidden,true);assert.equal(h.emailThanks.hidden,false);
   assert(!JSON.stringify(h.events).includes('person@example.test'),'email never goes to analytics');
   assert(h.images.some(i=>/ev=sms_interest_email&slug=repatha&x=coupons/.test(i)));assert(!h.images.join('').includes('person@example.test'));
 });
-test('email signup still works where sendBeacon is missing (falls back to fetch, silently)',async()=>{
-  const h=harness({cfg:{interest:true,live:false},beacon:false});await h.wait();h.btn.listeners.click();h.email.value='a@b.test';h.consent.checked=true;h.submit();
-  assert.equal(h.thanks.hidden,false);
+test('slim bar: not shown at first, appears once after the delay if the card is off-screen, never if the card is visible',async()=>{
+  const h=harness({cfg:ON});await h.wait();assert.equal(h.bar.hidden,true);assert.equal(h.timers.length,1);
+  h.timers[0]();assert.equal(h.bar.hidden,false);assert(h.events.some(e=>e[1]==='sms_bar_view'));
+  const seen=harness({cfg:ON,inView:true});await seen.wait();seen.timers[0]();assert.equal(seen.bar.hidden,true,'card already visible: no bar');
 });
-test('the card never collects a phone number',()=>{
-  const html=fs.readFileSync('drugs/repatha/index.html','utf8');const blk=html.slice(html.indexOf(START),html.indexOf(END));
-  assert(!/type="tel"|name="phone"|phone/i.test(blk.replace('No phone number needed','')),'no phone field');
+test('slim bar: scroll trigger at ~40%, "Add my number" scrolls to + focuses the phone field, dismiss persists for the session',async()=>{
+  const h=harness({cfg:ON});await h.wait();h.win.scrollY=800;h.wl.scroll();assert.equal(h.bar.hidden,true,'25% scrolled: not yet');
+  h.win.scrollY=1600;h.wl.scroll();assert.equal(h.bar.hidden,false,'50% scrolled: shown');assert(h.events.some(e=>e[1]==='sms_bar_view'));
+  h.go.listeners.click();assert.equal(h.bar.hidden,true);assert.equal(h.block.scrolled,true);assert.equal(h.phone.focused,true);assert(h.events.some(e=>e[1]==='sms_bar_click'));
+  const d=harness({cfg:ON});await d.wait();d.timers[0]();d.x.listeners.click();assert.equal(d.bar.hidden,true);assert.equal(d.sstore.sr_si_bx,'1');
+  const next=harness({cfg:ON,sstore:d.sstore});await next.wait();next.timers[0]();assert.equal(next.bar.hidden,true,'stays dismissed for the session');
 });
-
-test('repeat clicks by the same browser on the same drug are counted once (beacon + GA4); the follow-up still opens',async()=>{
-  const first=harness({cfg:{interest:true,live:false}});await first.wait();first.btn.listeners.click();
-  assert.equal(first.images.length,1);assert.equal(JSON.parse(first.store.sr_si_c).join(','),'repatha');
-  const again=harness({cfg:{interest:true,live:false},store:first.store});await again.wait();again.btn.listeners.click();
-  assert.equal(again.images.length,0,'no second beacon');assert(!again.events.some(e=>e[1]==='sms_interest_click'),'no second GA4 click event');
-  assert.equal(again.after.hidden,false,'visitor still sees the follow-up');assert.equal(JSON.parse(again.store.sr_si_c).length,1);
+test('slim bar: never appears after a successful signup',async()=>{
+  const h=harness({cfg:ON});await h.wait();h.phone.value='8324567788';h.submit();h.timers[0]();assert.equal(h.bar.hidden,true);
+});
+test('copy stays honest: text alerts are "launching soon", never claims texts are already being sent',()=>{
+  const s=fs.readFileSync('scripts/_add-sms-interest.mjs','utf8');assert.match(s,/LAUNCHING SOON/);assert.match(s,/We’ll text you when/);assert(!/we(?:’|')ll text you (?:now|right away|instantly)/i.test(s));
 });
