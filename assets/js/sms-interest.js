@@ -17,6 +17,7 @@
   if (!blocks.length) return;
   var FORM_API = window.SAVERX_FORM_API ||
     "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
+  var DONE_KEY = "sr_si_done";               // set by the homepage band right before it sends the visitor to their drug page
   var CONSENT_VERSION = "2026-11-20-v1";   // bump whenever the disclosure wording in scripts/_add-sms-interest.mjs changes
 
   function track(name, params) { try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {} }
@@ -74,11 +75,21 @@
           if (!it || !it.slug) return;
           [it.name, it.brand].forEach(function (n) {
             n = String(n || "").trim(); if (!n || drugIndex[n.toLowerCase()]) return;
-            drugIndex[n.toLowerCase()] = { name: n, slug: it.slug };
+            drugIndex[n.toLowerCase()] = { name: n, slug: it.slug, url: it.url || ("/drugs/" + it.slug + "/") };
             if (listEl && typeof document.createElement === "function") { var o = document.createElement("option"); o.value = n; listEl.appendChild(o); }
           });
         });
       }).catch(function () {});
+    } catch (_) {}
+  }
+  // Small non-blocking confirmation shown on the drug page after a homepage signup (replaces a separate "thanks" page).
+  function flash(text) {
+    try {
+      if (!document.createElement || !document.body) return;
+      var f = document.createElement("div"); f.className = "si-flash"; f.setAttribute("role", "status"); f.textContent = text;
+      f.addEventListener("click", function () { f.hidden = true; });
+      document.body.appendChild(f);
+      if (typeof setTimeout === "function") setTimeout(function () { f.hidden = true; }, 9000);
     } catch (_) {}
   }
   function utm(k) { try { return new URLSearchParams(window.location.search).get(k) || ""; } catch (_) { return ""; } }
@@ -93,7 +104,9 @@
       var slug = b.getAttribute("data-sw-drug") || "none";
       var isHome = b.getAttribute("data-si-home") !== null;                 // homepage band: the visitor types their medication
       var vr = isHome ? "home" : variant;
-      var brand = isHome ? "your medication" : (brandName || "this medication");
+      var nameAttr = b.getAttribute("data-si-name") || "";                       // guide pages (no drug profile JSON) carry the name themselves
+      var pageName = brandName || nameAttr;
+      var brand = isHome ? "your medication" : (pageName || "this medication");
       var consentVersion = b.getAttribute("data-si-consent-version") || CONSENT_VERSION;
       var q = function (s) { return b.querySelector(s); };
       var head = q("[data-si-headline]");
@@ -109,6 +122,19 @@
 
       var main = q("[data-si-main]"), thanks = q("[data-si-thanks]"), emailBox = q("[data-si-email]"),
           bar = q("[data-si-bar]"), done = false;
+      // Arrived from the homepage band right after signing up for this drug: show "you're on the list" instead of asking again.
+      if (!isHome) {
+        var arrived = null;
+        try { arrived = JSON.parse(window.sessionStorage.getItem(DONE_KEY) || "null"); } catch (_) {}
+        if (arrived && arrived.slug === slug && (Date.now() - (arrived.t || 0)) < 600000) {
+          try { window.sessionStorage.removeItem(DONE_KEY); } catch (_) {}
+          done = true;
+          Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = arrived.name || brand; });
+          if (main) main.hidden = true;
+          if (thanks) thanks.hidden = false;
+          flash("✓ You’re on the list for " + (arrived.name || brand) + " text alerts. Your savings options are below.");
+        }
+      }
 
       // ---- Phone waitlist
       var form = q("[data-si-phone-form]");
@@ -121,7 +147,7 @@
           e.preventDefault();
           var hp = form.querySelector("input[name=website]"), msg = form.querySelector("[data-si-msg]");
           if (hp && hp.value) return;                                         // honeypot: bots get nothing
-          var drugText = brandName || slug, drugSlug = slug, evSlug = slug;
+          var drugText = pageName || slug, drugSlug = slug, evSlug = slug;
           if (isHome) {
             var dIn = form.querySelector("input[name=drug]");
             var typed = String((dIn && dIn.value) || "").replace(/\s+/g, " ").trim();
@@ -146,7 +172,14 @@
           track("sms_waitlist_signup", { drug_slug: evSlug, variant: vr });   // categorical only, never the number
           if (!seenBefore(evSlug)) { beacon("sms_interest_click", evSlug, vr); markSeen(evSlug); }
           done = true;
-          if (isHome) Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = drugText; });
+          if (isHome) {
+            Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = drugText; });
+            if (hit && hit.url) {                                              // listed drug: straight to its page, no separate confirmation step
+              try { window.sessionStorage.setItem(DONE_KEY, JSON.stringify({ slug: hit.slug, name: hit.name, t: Date.now() })); } catch (_) {}
+              var go = function () { try { window.location.assign(hit.url); } catch (_) {} };
+              if (typeof setTimeout === "function") setTimeout(go, 250); else go();   // brief delay so the beacon request is queued first
+            }
+          }
           if (main) main.hidden = true;
           if (emailBox) emailBox.hidden = true;
           if (bar) bar.hidden = true;
@@ -177,7 +210,7 @@
         if (hp && hp.value) return;
         if (!email || !email.value || email.value.indexOf("@") < 1) { if (msg) msg.textContent = "Enter a valid email address."; return; }
         if (!consent || !consent.checked) { if (msg) msg.textContent = "Please check the box to agree to receive emails."; return; }
-        post({ email: email.value.trim(), drug: brandName || slug, source: "SMS interest (" + vr + ")", useragent: navigator.userAgent || "", referrer: document.referrer || "" });
+        post({ email: email.value.trim(), drug: pageName || slug, source: "SMS interest (" + vr + ")", useragent: navigator.userAgent || "", referrer: document.referrer || "" });
         track("sms_interest_email", { drug_slug: slug, variant: vr });
         beacon("sms_interest_email", slug, vr);
         eform.hidden = true;

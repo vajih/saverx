@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
-import {addInterest,removeBlock,START,END,PENDING,drugSlugs} from '../scripts/_add-sms-interest.mjs';
+import {addInterest,addInterestGuide,GUIDE_PAGES,removeBlock,START,END,PENDING,drugSlugs} from '../scripts/_add-sms-interest.mjs';
 import {addSmsHome,removeSmsHome,START as HOME_START,END as HOME_END,LINK_START,LINK_END,PENDING as HOME_PENDING} from '../scripts/_add-sms-home.mjs';
 import {START as SW_START,END as SW_END} from '../scripts/_add-savings-watch-cta.mjs';
 const src=fs.readFileSync('assets/js/sms-interest.js','utf8');
@@ -26,6 +26,17 @@ test('all 363+ drug pages: exactly one hidden card, own slug, phone field + disc
     assert(h.includes('GTM-MVZBBF7R'),slug);assert.equal(count(h,'<footer class="relief-footer">'),1,slug);assert(h.indexOf(START)<h.indexOf('id="enroll-help"'),slug);}
   assert(n>=363,`checked ${n}`);
 });
+test('guide/coupon pages under drugs/: exactly one hidden card each, carrying the drug name; redirect page excluded; GTM + footer intact',()=>{
+  for(const [f,[slug,name]] of Object.entries(GUIDE_PAGES)){const h=fs.readFileSync(f,'utf8');
+    assert.equal(count(h,START),1,f);assert(h.includes('id="sms-interest"')&&h.includes(`data-sw-drug="${slug}"`)&&h.includes(`data-si-name="${name}"`),f);
+    const m=h.match(/<section id="sms-interest"[^>]*>/)[0];assert(m.includes('hidden')&&m.includes('display:none'),`${f} ships hidden`);
+    assert(h.includes('name="phone"')&&h.includes('Reply STOP to cancel')&&h.includes('sms-interest.js'),f);assert(h.includes('GTM-MVZBBF7R'),f);assert.equal(count(h,'<footer class="relief-footer">'),1,f);
+    assert(h.indexOf(START)<h.indexOf('<footer class="relief-footer">'),`${f}: card before footer`);}
+  assert(!('drugs/repatha-enroll.html' in GUIDE_PAGES));assert(!fs.readFileSync('drugs/repatha-enroll.html','utf8').includes('id="sms-interest"'));
+  const base='<main></main><!-- saverx-savings-watch-cta --><aside></aside><footer class="relief-footer"></footer>';
+  const a=addInterestGuide(base,'ozempic','Ozempic');assert.equal(a.changed,true);assert(a.html.indexOf(START)<a.html.indexOf('<!-- saverx-savings-watch-cta -->'));
+  assert.equal(addInterestGuide(a.html,'ozempic','Ozempic').changed,false);assert.equal(removeBlock(a.html).trim(),base.trim());assert.equal(addInterestGuide('<main></main>','x','X').error,'anchor not found');
+});
 test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); Apps Script allows the tracked events',()=>{
   // Interest card is enabled (2026-11-20, Code.gs v20 deployed). live must stay false until the Worker is deployed and A2P is approved.
   const c=JSON.parse(fs.readFileSync('data/savings-watch.json','utf8'));assert.equal(c.interest,true);assert.equal(c.live,false);
@@ -33,10 +44,10 @@ test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); 
 });
 
 const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false}={}){
-  const events=[],images=[],sent=[],timers=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName=''}={}){
+  const events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
-  const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending'});block.hidden=true;block.style={display:'none'};
+  const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
   block.getBoundingClientRect=()=>inView?{top:100,bottom:600}:{top:5000,bottom:5500};block.scrollIntoView=()=>{block.scrolled=true;};
   const head=el(),brandEls=[el(),el(),el()],main=el(),thanks=el(),emailBox=el(),bar=el(),go=el(),x=el(),toggle=el(),emailThanks=el();
   const form=el(),phone=el(),hp=el(),msg=el(),consentEl=el(),eform=el(),email=el(),consent=el(),ehp=el(),emsg=el();
@@ -46,14 +57,14 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   const eq={'input[type=email]':email,'input[type=checkbox]':consent,'input[name=website]':ehp,'[data-si-email-msg]':emsg};eform.querySelector=s=>eq[s]||null;emailBox.querySelector=s=>s==='input[type=email]'?email:null;
   const map={'[data-si-drug-list]':drugList,'[data-si-headline]':head,'[data-si-main]':main,'[data-si-thanks]':thanks,'[data-si-email]':emailBox,'[data-si-bar]':bar,'[data-si-phone-form]':form,'[data-si-email-toggle]':toggle,'[data-si-email-form]':eform,'[data-si-email-thanks]':emailThanks,'[data-si-bar-go]':go,'[data-si-bar-x]':x};
   block.querySelector=s=>map[s]||null;block.querySelectorAll=s=>s==='[data-si-brand]'?brandEls:s==='[data-si-chip]'?chips:[];
-  const doc={createElement:()=>({}),querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
-  const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
-    localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;}}};
+  const doc={createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
+  const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
+    localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
-    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;}};
+    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;}};
   ctx.localStorage=win.localStorage;
   vm.runInNewContext(src,ctx);
-  return {drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
+  return {assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
     wait:async()=>{for(let i=0;i<12;i++)await Promise.resolve();},
     submit:()=>form.listeners.submit({preventDefault(){}}),esubmit:()=>eform.listeners.submit({preventDefault(){}})};
 }
@@ -180,4 +191,30 @@ test('home submit: an unlisted medication is still captured (custom slug, text k
 test('home: honeypot gets nothing; quick-pick chips fill the medication and jump to the phone field',async()=>{
   const h=harness({cfg:ON,home:true});await h.wait();h.drugIn.value='Ozempic';h.phone.value='8324567788';h.hp.value='bot';h.submit();assert.equal(h.sent.length,0);
   h.chips[1].listeners.click();assert.equal(h.drugIn.value,'Ozempic');assert.equal(h.phone.focused,true);h.chips[0].listeners.click();assert.equal(h.drugIn.value,'Repatha');
+});
+
+// ---- Fewer clicks: homepage signup goes straight to the drug page; the drug page confirms in place
+test('home signup with a listed drug: after a brief beat, goes straight to that drug page and leaves a hand-off note',async()=>{
+  const h=harness({cfg:ON,home:true});await h.wait();h.drugIn.value='ozempic';h.phone.value='8324567788';h.submit();
+  assert.equal(h.sent.length,1,'signup is posted first');assert.equal(h.assigned.length,0,'not navigated until the timer fires (beacon is queued first)');
+  const note=JSON.parse(h.sstore.sr_si_done);assert.equal(note.slug,'ozempic');assert.equal(note.name,'Ozempic');
+  h.timers[h.timers.length-1]();assert.deepEqual(h.assigned,['/drugs/ozempic/']);
+});
+test('home signup with an unlisted drug: stays on the page with the thank-you (no page to send them to)',async()=>{
+  const h=harness({cfg:ON,home:true});await h.wait();h.drugIn.value='Some New Drug';h.phone.value='8324567788';h.submit();
+  assert.equal(h.sent.length,1);assert.equal(h.thanks.hidden,false);h.timers.forEach(t=>t());assert.equal(h.sstore.sr_si_done,undefined);assert.equal(h.assigned.length,0,'nothing navigates even after every timer fires');
+});
+test('arriving on the drug page after a homepage signup: card shows "you\'re on the list" (not asked again) + a small confirmation banner',async()=>{
+  const note=JSON.stringify({slug:'repatha',name:'Repatha',t:Date.now()});
+  const h=harness({cfg:ON,sstore:{sr_si_done:note}});await h.wait();
+  assert.equal(h.main.hidden,true);assert.equal(h.thanks.hidden,false);assert.equal(h.brandEls[0].textContent,'Repatha');assert.equal(h.sstore.sr_si_done,undefined,'note is single-use');
+  assert.equal(h.appended.length,1);assert.match(h.appended[0].textContent,/on the list for Repatha text alerts/);assert.equal(h.appended[0].className,'si-flash');assert.equal(h.sent.length,0,'nothing is re-posted');
+  h.timers.forEach(t=>t());assert.equal(h.bar.hidden,true,'no bar after signing up');
+  const other=harness({cfg:ON,sstore:{sr_si_done:JSON.stringify({slug:'ozempic',name:'Ozempic',t:Date.now()})}});await other.wait();assert.equal(other.main.hidden,false,'different drug: normal card');assert.equal(other.appended.length,0);
+  const stale=harness({cfg:ON,sstore:{sr_si_done:JSON.stringify({slug:'repatha',name:'Repatha',t:Date.now()-3600e3})}});await stale.wait();assert.equal(stale.main.hidden,false,'stale note ignored');
+  const junk=harness({cfg:ON,sstore:{sr_si_done:'{not json'}});await junk.wait();assert.equal(junk.main.hidden,false,'bad note ignored');
+});
+test('guide pages: the card uses the name on the block when the page has no drug profile',async()=>{
+  const h=harness({cfg:ON,guideName:'Ozempic'});await h.wait();assert.match(h.head.textContent,/Ozempic/);assert.equal(h.brandEls[0].textContent,'Ozempic');
+  h.phone.value='8324567788';h.submit();assert.equal(new URLSearchParams(h.sent[0]).get('drug'),'Ozempic');
 });
