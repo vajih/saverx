@@ -249,3 +249,118 @@ test("live client authenticates with an API key when provided, else the auth tok
   assert.equal(dec(auths[0]), "SKx:sec");
   assert.equal(dec(auths[1]), "ACx:tok");
 });
+
+// ---------------- UTM attribution (paid-test reporting) ----------------
+import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
+import { sanitizeUtm, readUtm } from "../src/validate.js";
+const UTM = { utm_source: "facebook", utm_medium: "paid_social", utm_campaign: "smoke-test", utm_content: "ad-a", utm_term: "repatha-cost" };
+const row = (t, id) => t.q("SELECT * FROM requests WHERE id=?", id)[0];
+const ipN = (n) => ({ ipAddr: `203.0.113.${100 + n}` });
+
+test("UTMs from the landing page are stored on the created request and survive verification", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start({ source_page: "referral", ...UTM }));
+  const r = row(t, request_id);
+  assert.deepEqual({ s: r.utm_source, m: r.utm_medium, c: r.utm_campaign, ct: r.utm_content, tm: r.utm_term }, { s: "facebook", m: "paid_social", c: "smoke-test", ct: "ad-a", tm: "repatha-cost" });
+  assert.equal(r.source_page, "referral", "source_page is unchanged");
+  await t.post("/api/savings/verify", { request_id, code: "123456" });
+  const after = row(t, request_id);
+  assert.equal(after.status, "verified");assert.equal(after.utm_campaign, "smoke-test");
+});
+
+test("UTM values are normalized server-side (lowercase, [a-z0-9_-]) even if the client did not", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start({ utm_source: " Facebook ", utm_campaign: "Spring Sale!! 2026", utm_content: "Ad_Set-B", utm_medium: "paid social" }));
+  const r = row(t, request_id);
+  assert.equal(r.utm_source, "facebook");assert.equal(r.utm_campaign, "spring-sale-2026");assert.equal(r.utm_content, "ad_set-b");assert.equal(r.utm_medium, "paid-social");
+});
+
+test("PII-like and overlong UTM values are dropped, never stored; the signup itself still succeeds", async () => {
+  const t = setup();
+  const bad = {
+    utm_source: "415-555-0100", utm_medium: "4155550100", utm_campaign: "call+1 (415) 555 0100", utm_content: "someone@example.com", utm_term: "x".repeat(101),
+  };
+  const res = await t.start(bad);
+  assert.equal(res.status, 200);
+  const { request_id } = await j(res);
+  const r = row(t, request_id);
+  for (const k of Object.keys(bad)) assert.equal(r[k], null, `${k} must be dropped`);
+  assert.equal(t.q("SELECT utm_source||utm_medium||utm_campaign||utm_content||utm_term AS x FROM requests")[0].x, null, "all five columns are NULL");
+  assert.equal(sanitizeUtm("x".repeat(100)), "x".repeat(100), "exactly 100 characters is allowed");
+  assert.equal(sanitizeUtm("q4-2026-nov-20-v2"), "q4-2026-nov-20-v2", "dates and short ids are not mistaken for phone numbers");
+  assert.equal(sanitizeUtm(12345), null);assert.equal(sanitizeUtm(["a"]), null);assert.equal(sanitizeUtm({ a: 1 }), null);assert.equal(sanitizeUtm("   "), null);assert.equal(sanitizeUtm("!!!"), null);
+});
+
+test("missing UTMs are stored as NULL", async () => {
+  const t = setup();
+  const { request_id } = await j(await t.start());
+  const r = row(t, request_id);
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) assert.equal(r[k], null, k);
+  assert.deepEqual(Object.values(readUtm({})), [null, null, null, null, null]);assert.deepEqual(Object.values(readUtm(null)), [null, null, null, null, null]);
+});
+
+test("a duplicate /start keeps the original (first-touch) UTMs", async () => {
+  const t = setup();
+  const first = await j(await t.start({ ...UTM }));
+  const second = await j(await t.start({ utm_source: "google", utm_campaign: "other-campaign", utm_content: "ad-z" }));
+  assert.equal(second.request_id, first.request_id, "same request reused");
+  assert.equal(t.q("SELECT COUNT(*) AS n FROM requests")[0].n, 1);
+  const r = row(t, first.request_id);
+  assert.equal(r.utm_source, "facebook");assert.equal(r.utm_campaign, "smoke-test");assert.equal(r.utm_content, "ad-a");
+});
+
+test("honeypot, consent and drug checks are unchanged by UTMs", async () => {
+  const t = setup();
+  assert.equal(t.q("SELECT COUNT(*) AS n FROM requests")[0].n, 0);
+  await t.start({ hp: "bot", ...UTM });assert.equal(t.q("SELECT COUNT(*) AS n FROM requests")[0].n, 0, "honeypot still stops it");
+  assert.equal((await t.start({ consent_transactional: false, ...UTM })).status, 400);
+  assert.equal((await t.start({ drug_slug: "ozempic", ...UTM })).status, 400);
+});
+
+test("admin request list returns utm_campaign (and utm_content); detail carries them too", async () => {
+  const t = setup();
+  const id = await t.verified({ ...UTM });
+  const list = (await j(await t.call("GET", "/api/admin/requests"))).requests;
+  assert.equal(list[0].utm_campaign, "smoke-test");assert.equal(list[0].utm_content, "ad-a");assert.equal(list[0].utm_source, "facebook");
+  const detail = await j(await t.call("GET", `/api/admin/requests/${id}`));
+  assert.equal(detail.request.utm_campaign, "smoke-test");
+});
+
+test("verifiedByCampaign counts verified phones per campaign, keeps counting after the admin moves them on, honors the window, and reports (none)", async () => {
+  const t = setup();
+  const mk = async (n, utm) => { const { request_id } = await j(await t.start({ phone: `(415) 555-01${String(n).padStart(2, "0")}`, ...utm }, ipN(n))); await t.post("/api/savings/verify", { request_id, code: "123456" }, ipN(n)); return request_id; };
+  const a1 = await mk(1, { utm_campaign: "campaign-a" }), a2 = await mk(2, { utm_campaign: "campaign-a" }), b1 = await mk(3, { utm_campaign: "campaign-b" }), n1 = await mk(4, {});
+  // a started-but-unverified request must not count
+  await t.start({ phone: "(415) 555-0105", utm_campaign: "campaign-a" }, ipN(5));
+  // admin progress: verified -> ready -> sent -> closed are all still verified phones
+  await t.store.setRequestStatus(a1, "ready");await t.store.setRequestStatus(a2, "sent");await t.store.setRequestStatus(b1, "closed");
+  const since = new Date(Date.now() - 86400000).toISOString();
+  const plain = (x) => JSON.parse(JSON.stringify(x));   // D1/SQLite rows are null-prototype objects
+  assert.deepEqual(plain(await t.store.verifiedByCampaign(since)), [{ campaign: "campaign-a", verified: 2 }, { campaign: "(none)", verified: 1 }, { campaign: "campaign-b", verified: 1 }]);   // by count, ties by name
+  // window: push one verification into the past
+  t.db.raw.prepare("UPDATE requests SET verified_at='2020-01-01T00:00:00.000Z' WHERE id=?").run(a2);
+  assert.deepEqual(plain((await t.store.verifiedByCampaign(since)).find((x) => x.campaign === "campaign-a")), { campaign: "campaign-a", verified: 1 });
+  assert.equal(n1 != null, true);
+});
+
+test("admin stats endpoint exposes by_campaign (30-day window) and the admin page shows it", async () => {
+  const t = setup();
+  await t.verified({ utm_campaign: "smoke-test" });
+  const s = await j(await t.call("GET", "/api/admin/stats"));
+  assert.deepEqual(JSON.parse(JSON.stringify(s.by_campaign)), [{ campaign: "smoke-test", verified: 1 }]);assert.ok(s.totals && s.daily, "existing stats keep their shape");
+  const html = await (await t.call("GET", "/admin/savings")).text();
+  assert.match(html, /Verified phones by campaign/);assert.match(html, /id="campaigns"/);assert.match(html, /<th>Campaign<\/th>/);
+});
+
+test("migration 0002 upgrades an existing database and matches schema.sql; schema.sql already has the columns", () => {
+  const cols = (db) => db.prepare("SELECT name FROM pragma_table_info('requests')").all().map((c) => c.name);
+  const schema = readFileSync(new URL("../schema.sql", import.meta.url), "utf8");
+  const old = new DatabaseSync(":memory:");
+  old.exec(schema.split("\n").filter((l) => !/^\s*utm_(source|medium|campaign|content|term)\s/.test(l)).join("\n"));   // the pre-UTM schema
+  assert(!cols(old).includes("utm_campaign"), "old schema has no UTM columns");
+  old.exec(readFileSync(new URL("../migrations/0002_utm_attribution.sql", import.meta.url), "utf8"));
+  const fresh = new DatabaseSync(":memory:");fresh.exec(schema);
+  assert.deepEqual([...cols(old)].sort(), [...cols(fresh)].sort(), "upgraded and fresh databases have the same columns");
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) assert(cols(fresh).includes(k), k);
+});

@@ -1,5 +1,5 @@
 // Public visitor API: consent text, start, verify, outcome.
-import { normalizeUsPhone, isValidSlug, isValidCode } from "./validate.js";
+import { normalizeUsPhone, isValidSlug, isValidCode, readUtm } from "./validate.js";
 import { CONSENT_VERSION, CONSENT_TEXTS } from "./consent.js";
 import { verifyTurnstile } from "./turnstile.js";
 
@@ -60,9 +60,12 @@ async function start(ctx, request) {
     if (existing.status !== "new") return reply(request, 200, { ok: true, request_id: id, already_verified: true });
   } else {
     id = ctx.id();
+    // Campaign attribution is FIRST-TOUCH: it is written only here, when the request is first created. A duplicate /start
+    // (the "existing" branch above) reuses the request and never overwrites its UTMs. Values are re-sanitized server-side.
     await store.createRequest({
       id, drug_slug: slug, phone_hmac: phoneHmac, phone_e164: phone, status: "new",
       ip_hash: ipHash, source_page: String(body.source_page || "").slice(0, 200), created_at: ctx.iso(),
+      ...readUtm(body),
     });
     const ua = (request.headers.get("User-Agent") || "").slice(0, 200);
     for (const type of body.consent_watch === true ? ["transactional", "watch"] : ["transactional"]) {

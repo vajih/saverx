@@ -188,3 +188,26 @@ test('signup page follows the switch file: a drug added to open[] becomes submit
   h.map['#swPhone'].value='4155550100';h.map['#swConsent'].checked=true;h.submit();await h.wait();assert.equal(h.posts[0].body.drug_slug,'ozempic');
   h.type('Dupixent');assert.match(h.map['#swDrugMsg'].textContent,/open for Repatha, Ozempic right now, so Dupixent isn't available yet/);
 });
+
+// ---- UTM attribution (client side). Server rules live in saverx-savings-watch/src/validate.js.
+import {sanitizeUtm as serverSanitize,UTM_KEYS as SERVER_KEYS} from '../saverx-savings-watch/src/validate.js';
+const clientSanitize=(()=>{
+  const m=source.match(/\/\/ --- utm-sanitizer:start[^\n]*\n([\s\S]*?)\/\/ --- utm-sanitizer:end ---/);assert(m,'sanitizer block markers present');
+  return vm.runInNewContext(`(function(){${m[1]};return sanitizeUtm;})()`,{});
+})();
+test('utm: the page sanitizer and the Worker sanitizer agree on every input (same allowlist, same drops)',()=>{
+  const cases=['facebook','Facebook',' paid_social ','Spring Sale!! 2026','ad_set-B','','   ','!!!','x'.repeat(100),'x'.repeat(101),'x'.repeat(301),
+    '(415) 555-0100','415-555-0100','4155550100','+1 415 555 0100','call 415.555.0100 now','someone@example.com','a@b','q4-2026-nov-20-v2','black-friday-2026-11-20','2026-11-20','1234567890','123456789',
+    'ünïcode-campaign','campaign%20one','a/b/c','---a---','a--b',null,undefined,12345,['a'],{a:1}];
+  for(const c of cases)assert.equal(clientSanitize(c),serverSanitize(c),`mismatch for ${JSON.stringify(c)}`);
+  assert.equal(clientSanitize('Spring Sale!! 2026'),'spring-sale-2026');assert.equal(clientSanitize('(415) 555-0100'),null);assert.equal(clientSanitize('someone@example.com'),null);assert.equal(clientSanitize('x'.repeat(101)),null);
+});
+test('utm: the start request carries the five utm_* fields; nothing UTM-related goes to analytics; no new third-party scripts',()=>{
+  assert.deepEqual(SERVER_KEYS,['utm_source','utm_medium','utm_campaign','utm_content','utm_term']);
+  for(const k of SERVER_KEYS)assert(source.includes(`"${k}"`),`client reads ${k}`);
+  assert(/UTM_KEYS\.forEach\(function \(k\) \{ if \(UTM\[k\]\) startBody\[k\] = UTM\[k\]; \}\);\s*post\("\/start", startBody\)/.test(source),'UTMs are added to the /start body only');
+  assert(!/track\([^)]*utm/i.test(source),'UTMs never go into a track() call');assert(!/gtag\([^)]*utm/i.test(source));
+  assert(!/\/verify[^;]*utm/i.test(source.split('$("#swCodeForm")')[1]||''),'/verify needs no UTM');
+  assert(!/fbq|connect\.facebook|googleadservices|analytics\.js/i.test(source),'no pixel / ad tag');
+  assert.match(source,/source_page: document\.referrer \? "referral" : "direct"/,'source_page unchanged');
+});
