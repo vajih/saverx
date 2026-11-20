@@ -45,7 +45,7 @@ test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); 
 
 const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
 function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName=''}={}){
-  const events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
+  const intervals=[],cleared=[],events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
   const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
   block.getBoundingClientRect=()=>inView?{top:100,bottom:600}:{top:5000,bottom:5500};block.scrollIntoView=()=>{block.scrolled=true;};
@@ -61,10 +61,10 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
-    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;}};
+    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;},setInterval:f=>{intervals.push(f);return intervals.length;},clearInterval:i=>{cleared.push(i);}};
   ctx.localStorage=win.localStorage;
   vm.runInNewContext(src,ctx);
-  return {assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
+  return {intervals,cleared,assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
     wait:async()=>{for(let i=0;i<12;i++)await Promise.resolve();},
     submit:()=>form.listeners.submit({preventDefault(){}}),esubmit:()=>eform.listeners.submit({preventDefault(){}})};
 }
@@ -217,4 +217,64 @@ test('arriving on the drug page after a homepage signup: card shows "you\'re on 
 test('guide pages: the card uses the name on the block when the page has no drug profile',async()=>{
   const h=harness({cfg:ON,guideName:'Ozempic'});await h.wait();assert.match(h.head.textContent,/Ozempic/);assert.equal(h.brandEls[0].textContent,'Ozempic');
   h.phone.value='8324567788';h.submit();assert.equal(new URLSearchParams(h.sent[0]).get('drug'),'Ozempic');
+});
+
+// ---- Campaign (UTM) attribution for waitlist signups
+const extract=(file,start,end)=>{const t=fs.readFileSync(file,'utf8');const i=t.indexOf(start);assert(i>=0,`${file}: ${start}`);return t.slice(i,t.indexOf(end,i)+end.length);};
+const pageSan=vm.runInNewContext(`(function(){${extract('assets/js/sms-interest.js','function sanitizeUtm(value)','\n  }')};return sanitizeUtm;})()`,{});
+const gsSan=vm.runInNewContext(`(function(){${extract('scripts/Code.gs','function sanitizeUtm_(value)','\n}')};return sanitizeUtm_;})()`,{});
+test('utm: the page and Apps Script sanitizers both produce the expected value for every case (same rules as the Worker)',()=>{
+  // Golden table: also the contract for saverx-savings-watch/src/validate.js (its own tests cover the same rules).
+  const T=[['facebook','facebook'],['Facebook','facebook'],[' paid_social ','paid_social'],['Spring Sale!! 2026','spring-sale-2026'],['ad_set-B','ad_set-b'],['',null],['   ',null],['!!!',null],
+    ['x'.repeat(100),'x'.repeat(100)],['x'.repeat(101),null],['(415) 555-0100',null],['415-555-0100',null],['4155550100',null],['+1 415 555 0100',null],['call 415.555.0100 now',null],
+    ['someone@example.com',null],['q4-2026-nov-20-v2','q4-2026-nov-20-v2'],['2026-11-20','2026-11-20'],['1234567890',null],['123456789','123456789'],['campaign%20one','campaign-20one'],
+    [null,null],[undefined,null],[12345,null],[['a'],null]];
+  for(const [input,want] of T){assert.equal(pageSan(input),want,`page: ${JSON.stringify(input)}`);assert.equal(gsSan(input)||null,want,`Apps Script: ${JSON.stringify(input)}`);}
+});
+const UTM_URL='?utm_source=Facebook&utm_medium=paid_social&utm_campaign=Nov-Test&utm_content=ad-a&utm_term=repatha';
+const CONSENT_ON=JSON.stringify({analytics:true,advertising:false,personalization:false,version:2,timestamp:1}),CONSENT_OFF=JSON.stringify({analytics:false,advertising:false,personalization:false,version:2,timestamp:1});
+const attrOf=h=>{const b=new URLSearchParams(h.sent[0]);return Object.fromEntries(['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].map(k=>[k,b.get(k)]));};
+const go=async(o,phone='8324567788')=>{const h=harness({cfg:ON,...o});await h.wait();h.phone.value=phone;h.submit();return h;};
+test('attribution: sanitized UTMs (including content + term) ride along with the signup',async()=>{
+  const h=await go({search:UTM_URL});
+  assert.deepEqual(attrOf(h),{utm_source:'facebook',utm_medium:'paid_social',utm_campaign:'nov-test',utm_content:'ad-a',utm_term:'repatha'});
+  assert(!JSON.stringify([h.events,h.images]).includes('nov-test'),'campaign labels never go to analytics or beacons');
+});
+test('attribution: phone-like / email-like / overlong values are dropped on the page; the signup still goes through',async()=>{
+  const h=await go({search:'?utm_source=4155550100&utm_campaign=a@b.com&utm_content='+'x'.repeat(101)+'&utm_medium=paid_social'});
+  assert.equal(h.sent.length,1);assert.deepEqual(attrOf(h),{utm_source:'',utm_medium:'paid_social',utm_campaign:'',utm_content:'',utm_term:''});
+});
+test('attribution: the campaign is remembered across pages ONLY with analytics consent',async()=>{
+  const on=harness({cfg:ON,search:UTM_URL,store:{saverx_consent:CONSENT_ON}});await on.wait();
+  const saved=JSON.parse(on.store.sr_utm);assert.equal(saved.v.utm_campaign,'nov-test');assert(Date.now()-saved.t<5000);
+  const off=harness({cfg:ON,search:UTM_URL,store:{saverx_consent:CONSENT_OFF}});await off.wait();assert.equal(off.store.sr_utm,undefined,'analytics declined: nothing stored');
+  const none=harness({cfg:ON,search:UTM_URL});await none.wait();assert.equal(none.store.sr_utm,undefined,'no choice made yet: nothing stored');
+  const later=await go({search:'',store:on.store});assert.equal(attrOf(later).utm_campaign,'nov-test','a later page with no UTMs still attributes to the ad click');
+  const declined=await go({search:'',store:{sr_utm:on.store.sr_utm,saverx_consent:CONSENT_OFF}});assert.equal(attrOf(declined).utm_campaign,'','consent withdrawn: the remembered tag is ignored');
+});
+test('attribution: first-touch wins within 7 days; an expired or corrupt tag is replaced; fields stay independent',async()=>{
+  const first=harness({cfg:ON,search:'?utm_source=facebook&utm_campaign=first-camp',store:{saverx_consent:CONSENT_ON}});await first.wait();
+  const second=await go({search:'?utm_source=google&utm_campaign=second-camp&utm_content=ad-z',store:first.store});
+  assert.equal(attrOf(second).utm_campaign,'first-camp','first touch kept');assert.equal(attrOf(second).utm_source,'facebook');
+  assert.equal(JSON.parse(second.store.sr_utm).v.utm_campaign,'first-camp','stored tag not overwritten');
+  const old=JSON.parse(first.store.sr_utm);old.t=Date.now()-8*86400000;
+  const renewed=harness({cfg:ON,search:'?utm_campaign=new-camp',store:{saverx_consent:CONSENT_ON,sr_utm:JSON.stringify(old)}});await renewed.wait();
+  assert.equal(JSON.parse(renewed.store.sr_utm).v.utm_campaign,'new-camp','expired first touch replaced by the new campaign');
+  const corrupt=await go({search:'?utm_campaign=ok-camp',store:{saverx_consent:CONSENT_ON,sr_utm:'{nope'}});assert.equal(attrOf(corrupt).utm_campaign,'ok-camp');
+  const tampered=await go({search:'',store:{saverx_consent:CONSENT_ON,sr_utm:JSON.stringify({t:Date.now(),v:{utm_campaign:'4155550100',utm_source:'fine'}})}});
+  assert.equal(attrOf(tampered).utm_campaign,'','a tampered stored value is re-sanitized');assert.equal(attrOf(tampered).utm_source,'fine');
+});
+test('attribution: no UTMs anywhere means empty fields and nothing stored',async()=>{
+  const h=await go({search:'',store:{saverx_consent:CONSENT_ON}});assert.deepEqual(attrOf(h),{utm_source:'',utm_medium:'',utm_campaign:'',utm_content:'',utm_term:''});assert.equal(h.store.sr_utm,undefined);
+});
+
+test('attribution: first visit — the campaign is remembered the moment the cookie banner is ACCEPTED (watching stops once answered); never if declined',async()=>{
+  const h=harness({cfg:ON,search:UTM_URL});await h.wait();
+  assert.equal(h.intervals.length,1,'watching for the banner answer');assert.equal(h.store.sr_utm,undefined,'nothing stored while unanswered');
+  h.intervals[0]();assert.equal(h.store.sr_utm,undefined,'still unanswered: still nothing');assert.equal(h.cleared.length,0);
+  h.store.saverx_consent=CONSENT_ON;h.intervals[0]();assert.equal(JSON.parse(h.store.sr_utm).v.utm_campaign,'nov-test','accepted: remembered');assert.equal(h.cleared.length,1,'watch stopped');
+  const d=harness({cfg:ON,search:UTM_URL});await d.wait();d.store.saverx_consent=CONSENT_OFF;d.intervals[0]();assert.equal(d.store.sr_utm,undefined,'declined: nothing stored');assert.equal(d.cleared.length,1);
+  const noUtm=harness({cfg:ON,search:''});await noUtm.wait();assert.equal(noUtm.intervals.length,0,'no UTMs in the URL: no watching');
+  const answered=harness({cfg:ON,search:UTM_URL,store:{saverx_consent:CONSENT_OFF}});await answered.wait();assert.equal(answered.intervals.length,0,'already answered: no watching');
+  const long=harness({cfg:ON,search:UTM_URL});await long.wait();for(let i=0;i<121;i++)long.intervals[0]();assert.equal(long.cleared.length>=1,true,'gives up after ~2 minutes');
 });

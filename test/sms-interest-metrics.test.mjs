@@ -110,3 +110,31 @@ test('Code.gs normalizeUsPhone matches the page script on the same inputs',()=>{
   for(const x of ['(832) 456-7788','1-832-456-7788','8324567788','832.456.7788','123','5555555555','(832) 555-0142','(123) 456-7890','(832) 056-7788','','+44 20 7946 0958'])
     assert.equal(ctx.normalizeUsPhone(x)||null,page(x),`mismatch for "${x}"`);
 });
+
+// ---- Campaign attribution in the TextWaitlist
+const H15=[...WL_HEAD,'utm_content','utm_term'];
+test('doPost waitlist: campaign labels are sanitized server-side; utm_content and utm_term are stored in their own columns',()=>{
+  const rows=[H15];post(rows,{...GOOD,utm_source:'Facebook',utm_medium:'paid social',utm_campaign:'Nov Test!',utm_content:'Ad-A',utm_term:'repatha cost'});
+  const r=rows[1];assert.equal(r.length,15);assert.deepEqual([r[8],r[9],r[10],r[13],r[14]],['facebook','paid-social','nov-test','ad-a','repatha-cost']);
+  assert.equal(r[12],'waitlist','existing column positions are unchanged');assert.equal(r[11],'ua');
+});
+test('doPost waitlist: phone-like, email-like and overlong labels are dropped (blank), never stored; the signup is still saved',()=>{
+  const rows=[H15];const {out}=post(rows,{...GOOD,utm_source:'4155550100',utm_medium:'(415) 555-0100',utm_campaign:'someone@example.com',utm_content:'x'.repeat(101),utm_term:'+1 415 555 0100'});
+  assert.equal(JSON.parse(out).status,'ok');assert.equal(rows.length,2);const r=rows[1];assert.deepEqual([r[8],r[9],r[10],r[13],r[14]],['','','','','']);
+  assert(!JSON.stringify(r.slice(7)).includes('415'),'no phone digits in the attribution/user-agent columns');
+});
+test('doPost waitlist: first-touch (a repeat signup for the same phone + drug keeps the original campaign); an older 13-column sheet gets the new header cells',()=>{
+  const rows=[H15];post(rows,{...GOOD,utm_campaign:'first-camp'});post(rows,{...GOOD,utm_campaign:'second-camp'});
+  assert.equal(rows.length,2);assert.equal(rows[1][10],'first-camp');
+  const old=[WL_HEAD];post(old,GOOD);assert.equal(old[0].length,15,'header extended on first write after upgrade');assert.deepEqual(JSON.parse(JSON.stringify(old[0].slice(13))),['utm_content','utm_term']);assert.deepEqual(JSON.parse(JSON.stringify(old[0].slice(0,13))),WL_HEAD,'existing headers unchanged');
+  assert.equal(old.length,2);
+});
+test('waitlist metrics: signups and distinct phones per campaign; untagged rows are "(none)"; no phone numbers in the output',()=>{
+  const w=(h,phone,slug,camp)=>{const r=wrow(h,phone,'X',slug,'coupons');r[10]=camp;return r;};
+  const rows=[H15,w(1,'+18324567788','repatha','nov-test'),w(2,'+18324567788','ozempic','nov-test'),w(3,'+12145550123','repatha','nov-test'),w(4,'+13125550188','repatha','Other-Camp'),w(5,'+19725550111','dupixent','')];
+  const m=compute({eventLog:EL,leads:LEADS,waitlist:rows,ga4Views:200}).sms_interest;
+  assert.deepEqual(m.waitlist_by_campaign,{'nov-test':3,'other-camp':1,'(none)':1},'signups (phone + drug) per campaign');
+  assert.deepEqual(m.waitlist_people_by_campaign,{'nov-test':2,'other-camp':1,'(none)':1},'distinct phones per campaign: the cost-per-phone denominator');
+  const out=JSON.stringify(m);assert(!/\+1\d{10}/.test(out));
+  const none=compute({eventLog:EL,leads:LEADS,ga4Views:200}).sms_interest;assert.deepEqual(none.waitlist_by_campaign,{});assert.deepEqual(none.waitlist_people_by_campaign,{});
+});

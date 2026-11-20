@@ -150,7 +150,7 @@
             $("smsBody").innerHTML =
               "<tr><td style='width:170px;color:#64748b;'>Wording: coupons</td><td><b>" + n((v.coupons || {}).interested) + "</b> interested · <b>" + n((v.coupons || {}).emails) + "</b> emails · <b>" + n((v.coupons || {}).phones) + "</b> phones</td></tr>" +
               "<tr><td style='width:170px;color:#64748b;'>Wording: updates</td><td><b>" + n((v.updates || {}).interested) + "</b> interested · <b>" + n((v.updates || {}).emails) + "</b> emails · <b>" + n((v.updates || {}).phones) + "</b> phones</td></tr>" +
-              topRows("Phone signups by drug", si.waitlist_by_drug, 10) + topRows("Interested by drug", si.by_drug, 10) + topRows("Emails by drug", si.emails_by_drug, 10);
+              topRows("Phone numbers by campaign (utm_campaign)", si.waitlist_people_by_campaign, 10) + topRows("Phone signups by drug", si.waitlist_by_drug, 10) + topRows("Interested by drug", si.by_drug, 10) + topRows("Emails by drug", si.emails_by_drug, 10);
             $("smsNote").textContent = "Phone numbers = distinct people on the TextWaitlist tab; a signup is one phone + one drug, so one person can have several. Interested = people who tapped “Yes, I’m interested” (counted once per browser per drug). Emails = distinct addresses from the signup that follows. " +
               "Views come from GA4 and miss visitors who decline analytics, so the interest rate is approximate" + (si.view_error ? " (GA4 views unavailable: " + si.view_error + ")" : "") + ".";
           } else {
