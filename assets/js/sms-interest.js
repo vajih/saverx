@@ -293,8 +293,13 @@
         var cardInView = function () {
           try { var r = b.getBoundingClientRect(); return r.top < window.innerHeight && r.bottom > 0; } catch (_) { return false; }
         };
+        // The bar must never cover the footer (cookie settings, privacy and terms links live there): hide it while the footer is on screen.
+        var footerInView = function () {
+          try { var f = typeof document.querySelector === "function" && document.querySelector("footer"); return !!f && f.getBoundingClientRect().top < (window.innerHeight || 0); } catch (_) { return false; }
+        };
+        var autoHidden = false;
         var showBar = function () {
-          if (done || dismissed || !bar.hidden || cardInView()) return;
+          if (done || dismissed || !bar.hidden || cardInView() || footerInView()) return;
           bar.hidden = false; track("sms_bar_view", { drug_slug: slug, variant: vr });
         };
         if (typeof setTimeout === "function") setTimeout(showBar, 12000);
@@ -305,6 +310,8 @@
           return max > 0 ? (el.scrollTop || window.scrollY || 0) / max : 0;
         };
         if (typeof window.addEventListener === "function") window.addEventListener("scroll", function (ev) {
+          if (footerInView()) { if (!bar.hidden) { bar.hidden = true; autoHidden = true; } return; }       // footer on screen: step aside
+          if (autoHidden && bar.hidden && !dismissed && !done && !cardInView()) { bar.hidden = false; autoHidden = false; return; }   // footer left the screen: come back
           if (progress(ev) >= 0.4) showBar();
         }, { passive: true, capture: true });
         var go = q("[data-si-bar-go]"), x = q("[data-si-bar-x]");

@@ -44,7 +44,7 @@ test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); 
 });
 
 const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName='',noJump=false}={}){
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName='',noJump=false,footerTop=null}={}){
   const intervals=[],cleared=[],events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({children:[],appendChild(c){this.children.push(c);},attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
   const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
@@ -58,7 +58,8 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   const map={'[data-si-drug-list]':drugList,'[data-si-headline]':head,'[data-si-main]':main,'[data-si-thanks]':thanks,'[data-si-email]':emailBox,'[data-si-bar]':bar,'[data-si-phone-form]':form,'[data-si-email-toggle]':toggle,'[data-si-email-form]':eform,'[data-si-email-thanks]':emailThanks,'[data-si-bar-go]':go,'[data-si-bar-x]':x};
   block.querySelector=s=>map[s]||null;block.querySelectorAll=s=>s==='[data-si-brand]'?brandEls:s==='[data-si-chip]'?chips:[];
   const inserted=[],jump={parentNode:{insertBefore:(n,ref)=>inserted.push({n,ref})}};
-  const doc={querySelector:s=>s==='.drug-jump'&&!noJump?jump:null,createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
+  const footer={getBoundingClientRect:()=>({top:footerTop===null?99999:footerTop})};
+  const doc={querySelector:s=>s==='.drug-jump'&&!noJump?jump:s==='footer'&&footerTop!==null?footer:null,createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
   const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
@@ -293,4 +294,17 @@ test('top link: not on the homepage band, not when the page has no nav (guide pa
   const guide=harness({cfg:ON,guideName:'Ozempic',noJump:true});await guide.wait();assert.equal(guide.inserted.length,0);assert.equal(guide.block.hidden,false,'card itself still works without the nav');
   const arrived=harness({cfg:ON,sstore:{sr_si_done:JSON.stringify({slug:'repatha',name:'Repatha',t:Date.now()})}});await arrived.wait();assert.equal(arrived.inserted.length,0,'already on the list: no prompt');
   const off=harness({cfg:{interest:false,live:false}});await off.wait();assert.equal(off.inserted.length,0);
+});
+
+// ---- The text-alert bar must never cover the footer (cookie settings / privacy links live there)
+test('bar: steps aside while the footer is on screen, comes back when it leaves, and never shows over the footer',async()=>{
+  let top=99999;const h=harness({cfg:ON,footerTop:99999});await h.wait();
+  // swap in a movable footer position
+  const f=h.doc.querySelector('footer');f.getBoundingClientRect=()=>({top});
+  h.win.scrollY=1600;h.wl.scroll();assert.equal(h.bar.hidden,false,'mid-page: shown');
+  top=300;h.wl.scroll();assert.equal(h.bar.hidden,true,'footer on screen (top < viewport height): hidden');
+  top=99999;h.wl.scroll();assert.equal(h.bar.hidden,false,'footer left the screen: back');
+  top=300;h.wl.scroll();assert.equal(h.bar.hidden,true);h.timers.forEach(t=>t());assert.equal(h.bar.hidden,true,'the delayed timer also respects the footer');
+  top=99999;h.x.listeners.click();top=300;h.wl.scroll();top=99999;h.wl.scroll();assert.equal(h.bar.hidden,true,'a dismissed bar stays dismissed');
+  const done=harness({cfg:ON,footerTop:99999});await done.wait();done.phone.value='8324567788';done.submit();const d=done.doc.querySelector('footer');d.getBoundingClientRect=()=>({top:300});d.getBoundingClientRect=()=>({top:99999});done.wl.scroll();assert.equal(done.bar.hidden,true,'after signing up the bar never returns');
 });
