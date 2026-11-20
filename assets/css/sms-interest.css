@@ -41,3 +41,7 @@
 /* Confirmation banner shown on the drug page after a homepage signup */
 .si-flash{position:fixed;top:12px;left:12px;right:12px;margin:0 auto;z-index:60;max-width:560px;text-align:center;padding:12px 18px;background:var(--teal);color:var(--surface-2);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:.92rem;font-weight:600;line-height:1.4;cursor:pointer}
 .si-flash[hidden]{display:none!important}
+
+/* Top-of-page text-alert link on drug pages */
+.si-top-link{margin:12px 0 4px;font-size:.95rem}
+.si-top-link a{color:var(--teal-dark);font-weight:600;text-decoration:underline}

@@ -44,9 +44,9 @@ test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); 
 });
 
 const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName=''}={}){
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName='',noJump=false}={}){
   const intervals=[],cleared=[],events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
-  const el=(a={})=>({attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
+  const el=(a={})=>({children:[],appendChild(c){this.children.push(c);},attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
   const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
   block.getBoundingClientRect=()=>inView?{top:100,bottom:600}:{top:5000,bottom:5500};block.scrollIntoView=()=>{block.scrolled=true;};
   const head=el(),brandEls=[el(),el(),el()],main=el(),thanks=el(),emailBox=el(),bar=el(),go=el(),x=el(),toggle=el(),emailThanks=el();
@@ -57,14 +57,15 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   const eq={'input[type=email]':email,'input[type=checkbox]':consent,'input[name=website]':ehp,'[data-si-email-msg]':emsg};eform.querySelector=s=>eq[s]||null;emailBox.querySelector=s=>s==='input[type=email]'?email:null;
   const map={'[data-si-drug-list]':drugList,'[data-si-headline]':head,'[data-si-main]':main,'[data-si-thanks]':thanks,'[data-si-email]':emailBox,'[data-si-bar]':bar,'[data-si-phone-form]':form,'[data-si-email-toggle]':toggle,'[data-si-email-form]':eform,'[data-si-email-thanks]':emailThanks,'[data-si-bar-go]':go,'[data-si-bar-x]':x};
   block.querySelector=s=>map[s]||null;block.querySelectorAll=s=>s==='[data-si-brand]'?brandEls:s==='[data-si-chip]'?chips:[];
-  const doc={createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
+  const inserted=[],jump={parentNode:{insertBefore:(n,ref)=>inserted.push({n,ref})}};
+  const doc={querySelector:s=>s==='.drug-jump'&&!noJump?jump:null,createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
   const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
     fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;},setInterval:f=>{intervals.push(f);return intervals.length;},clearInterval:i=>{cleared.push(i);}};
   ctx.localStorage=win.localStorage;
   vm.runInNewContext(src,ctx);
-  return {intervals,cleared,assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
+  return {inserted,jump,intervals,cleared,assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
     wait:async()=>{for(let i=0;i<12;i++)await Promise.resolve();},
     submit:()=>form.listeners.submit({preventDefault(){}}),esubmit:()=>eform.listeners.submit({preventDefault(){}})};
 }
@@ -277,4 +278,19 @@ test('attribution: first visit — the campaign is remembered the moment the coo
   const noUtm=harness({cfg:ON,search:''});await noUtm.wait();assert.equal(noUtm.intervals.length,0,'no UTMs in the URL: no watching');
   const answered=harness({cfg:ON,search:UTM_URL,store:{saverx_consent:CONSENT_OFF}});await answered.wait();assert.equal(answered.intervals.length,0,'already answered: no watching');
   const long=harness({cfg:ON,search:UTM_URL});await long.wait();for(let i=0;i<121;i++)long.intervals[0]();assert.equal(long.cleared.length>=1,true,'gives up after ~2 minutes');
+});
+
+// ---- Top-of-page entry on drug pages
+test('top link: a text-alert link is inserted above the "On this page" nav, jumps to the card, tracks the click, and focuses the phone field',async()=>{
+  const h=harness({cfg:ON});await h.wait();
+  assert.equal(h.inserted.length,1);assert.equal(h.inserted[0].ref,h.jump,'placed right before .drug-jump');
+  const p=h.inserted[0].n;assert.equal(p.className,'si-top-link');const a=p.children[0];assert.equal(a.textContent,'Get text alerts for Repatha ↓');assert.equal(a.href,'#sms-interest');
+  a.listeners.click();assert(h.events.some(e=>e[1]==='sms_toplink_click'&&e[2].drug_slug==='repatha'));h.timers[h.timers.length-1]();assert.equal(h.phone.focused,true);
+  assert(!JSON.stringify(h.events).includes('8324567788'));
+});
+test('top link: not on the homepage band, not when the page has no nav (guide pages), not after signing up, not when the switch is off',async()=>{
+  const home=harness({cfg:ON,home:true});await home.wait();assert.equal(home.inserted.length,0);
+  const guide=harness({cfg:ON,guideName:'Ozempic',noJump:true});await guide.wait();assert.equal(guide.inserted.length,0);assert.equal(guide.block.hidden,false,'card itself still works without the nav');
+  const arrived=harness({cfg:ON,sstore:{sr_si_done:JSON.stringify({slug:'repatha',name:'Repatha',t:Date.now()})}});await arrived.wait();assert.equal(arrived.inserted.length,0,'already on the list: no prompt');
+  const off=harness({cfg:{interest:false,live:false}});await off.wait();assert.equal(off.inserted.length,0);
 });

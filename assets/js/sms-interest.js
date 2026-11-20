@@ -189,6 +189,20 @@
         }
       }
 
+      // ---- Top-of-page entry (drug pages): a text-alert link above the fold, right above the "On this page" nav, that jumps to the card.
+      if (!isHome && !done && typeof document.querySelector === "function" && typeof document.createElement === "function") {
+        var jump = document.querySelector(".drug-jump");
+        if (jump && jump.parentNode) {
+          var tl = document.createElement("p"); tl.className = "si-top-link";
+          var ta = document.createElement("a"); ta.href = "#" + (b.id || "sms-interest"); ta.textContent = "Get text alerts for " + brand + " ↓";
+          tl.appendChild(ta); jump.parentNode.insertBefore(tl, jump);
+          ta.addEventListener("click", function () {
+            track("sms_toplink_click", { drug_slug: slug, variant: vr });
+            if (typeof setTimeout === "function") setTimeout(function () { var ph = form && form.querySelector("input[name=phone]"); if (ph && ph.focus) { try { ph.focus({ preventScroll: true }); } catch (_) { ph.focus(); } } }, 450);
+          });
+        }
+      }
+
       // ---- Phone waitlist
       var form = q("[data-si-phone-form]");
       if (form) {
