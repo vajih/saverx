@@ -34,7 +34,11 @@ export async function adminRoutes(ctx, request, url) {
     return new Response(renderResult({ content: JSON.parse(row.content_json), nonce, preview: true }), { headers: pageHeaders(nonce) });
   }
 
-  if (request.method === "GET" && pathname === "/api/admin/stats") return reply(request, 200, await store.stats());
+  if (request.method === "GET" && pathname === "/api/admin/stats") {
+    // by_campaign: verified phones per utm_campaign over the last 30 days (cost per verified phone = ad spend / this)
+    const since = new Date(ctx.now() - 30 * 86400000).toISOString();
+    return reply(request, 200, { ...(await store.stats()), by_campaign: await store.verifiedByCampaign(since) });
+  }
   if (request.method === "GET" && pathname === "/api/admin/requests") {
     const status = url.searchParams.get("status");
     if (status && !STATUSES.includes(status)) return fail(request, 400, "bad_request", "Unknown status.");
@@ -49,7 +53,7 @@ export async function adminRoutes(ctx, request, url) {
   if (request.method === "GET" && !m[2]) {
     const result = await store.latestResult(req.id);
     return reply(request, 200, {
-      request: { id: req.id, drug_slug: req.drug_slug, status: req.status, created_at: req.created_at, verified_at: req.verified_at, phone_last4: (req.phone_e164 || "").slice(-4) },
+      request: { id: req.id, drug_slug: req.drug_slug, status: req.status, created_at: req.created_at, verified_at: req.verified_at, phone_last4: (req.phone_e164 || "").slice(-4), utm_source: req.utm_source, utm_campaign: req.utm_campaign, utm_content: req.utm_content },
       result: result && { id: result.id, content: JSON.parse(result.content_json), source_note: result.source_note, verified_by: result.verified_by, verified_at: result.verified_at, sent: !!result.token_hash, expires_at: result.expires_at, viewed_at: result.viewed_at, outcome: result.outcome },
       messages: await store.messagesForRequest(req.id),
     });

@@ -9,6 +9,11 @@ CREATE TABLE IF NOT EXISTS requests (
   verify_attempts INTEGER NOT NULL DEFAULT 0,
   ip_hash         TEXT,
   source_page     TEXT,
+  utm_source      TEXT,                    -- first-touch campaign attribution (sanitized; not PII; see migrations/0002)
+  utm_medium      TEXT,
+  utm_campaign    TEXT,
+  utm_content     TEXT,
+  utm_term        TEXT,
   created_at      TEXT NOT NULL,
   verified_at     TEXT
 );

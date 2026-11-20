@@ -12,8 +12,10 @@ button{background:var(--teal,#313dc5);color:#fff;border:0;border-radius:100px;pa
 input.chk{width:auto}.opt{border:1px dashed var(--border-strong,#aaa);border-radius:10px;padding:10px;margin:8px 0}#msg{font-weight:600;margin-top:10px}</style></head>
 <body><main><h1>Savings Watch admin</h1><div id="msg" role="status"></div>
 <div class="card"><h2>Funnel (all time)</h2><div class="stats" id="stats"></div></div>
+<div class="card"><h2>Verified phones by campaign (last 30 days)</h2><table><thead><tr><th>utm_campaign</th><th>Verified phones</th></tr></thead><tbody id="campaigns"></tbody></table>
+<p>Cost per verified phone = ad spend for that campaign in Ads Manager ÷ the number here. Requests without a campaign show as (none).</p></div>
 <div class="card"><h2>Requests</h2><select id="filter"><option value="">All</option><option>verified</option><option>ready</option><option>sent</option><option>new</option></select>
-<table><thead><tr><th>Created</th><th>Medication</th><th>Phone</th><th>Status</th><th>Watch</th></tr></thead><tbody id="rows"></tbody></table></div>
+<table><thead><tr><th>Created</th><th>Medication</th><th>Phone</th><th>Status</th><th>Watch</th><th>Campaign</th></tr></thead><tbody id="rows"></tbody></table></div>
 <div class="card" id="detail" hidden><h2 id="dtitle"></h2><p id="dmeta"></p>
 <button class="alt" id="draft" type="button">Load draft from drug page</button>
 <label>Headline</label><input id="headline" maxlength="120"><label>Summary</label><textarea id="summary" rows="2" maxlength="600"></textarea>
@@ -29,9 +31,10 @@ function say(t,bad){var m=$("#msg");m.textContent=t;m.style.color=bad?"#b00020":
 function api(p,o){o=o||{};if(o.body&&typeof o.body!=="string"){o.body=JSON.stringify(o.body);o.headers={"Content-Type":"application/json"}}
 return fetch(p,o).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.message||"Request failed");return j})})}
 function cell(tr,t){var td=document.createElement("td");td.textContent=t;tr.appendChild(td)}
-function loadStats(){api("/api/admin/stats").then(function(s){var el=$("#stats");el.textContent="";Object.keys(s.totals).forEach(function(k){var d=document.createElement("div");d.className="stat";d.textContent=k.replace(/_/g," ")+": "+s.totals[k];el.appendChild(d)})}).catch(function(e){say(e.message,1)})}
+function loadStats(){api("/api/admin/stats").then(function(s){var el=$("#stats");el.textContent="";Object.keys(s.totals).forEach(function(k){var d=document.createElement("div");d.className="stat";d.textContent=k.replace(/_/g," ")+": "+s.totals[k];el.appendChild(d)});
+var cb=$("#campaigns");cb.textContent="";(s.by_campaign||[]).forEach(function(c){var tr=document.createElement("tr");cell(tr,c.campaign);cell(tr,String(c.verified));cb.appendChild(tr)});if(!(s.by_campaign||[]).length){var e=document.createElement("tr");cell(e,"No verified phones yet");cell(e,"");cb.appendChild(e)}}).catch(function(e){say(e.message,1)})}
 function loadList(){api("/api/admin/requests"+($("#filter").value?"?status="+$("#filter").value:"")).then(function(d){var b=$("#rows");b.textContent="";d.requests.forEach(function(r){var tr=document.createElement("tr");tr.setAttribute("data-id",r.id);
-cell(tr,r.created_at.slice(0,16).replace("T"," "));cell(tr,r.drug_slug);cell(tr,r.phone_last4?"…"+r.phone_last4:"(deleted)");cell(tr,r.status);cell(tr,r.watch_opt_in?"yes":"");b.appendChild(tr)})}).catch(function(e){say(e.message,1)})}
+cell(tr,r.created_at.slice(0,16).replace("T"," "));cell(tr,r.drug_slug);cell(tr,r.phone_last4?"…"+r.phone_last4:"(deleted)");cell(tr,r.status);cell(tr,r.watch_opt_in?"yes":"");cell(tr,r.utm_campaign||"");b.appendChild(tr)})}).catch(function(e){say(e.message,1)})}
 function addItem(it){it=it||{};var d=document.createElement("div");d.className="opt";["title","text","url","terms_url"].forEach(function(k){var l=document.createElement("label");l.textContent=k==="terms_url"?"Terms link (optional, https)":k==="url"?"Official link (https)":k==="text"?"Description":"Title";var i=document.createElement(k==="text"?"textarea":"input");i.setAttribute("data-k",k);i.value=it[k]||"";d.appendChild(l);d.appendChild(i)});$("#items").appendChild(d)}
 function readItems(){return Array.prototype.map.call(document.querySelectorAll("#items .opt"),function(d){var o={};d.querySelectorAll("[data-k]").forEach(function(i){if(i.value.trim())o[i.getAttribute("data-k")]=i.value.trim()});return o})}
 function open(id){api("/api/admin/requests/"+id).then(function(d){cur=d.request;curResult=d.result;$("#detail").hidden=false;$("#dtitle").textContent=cur.drug_slug+" · …"+cur.phone_last4;

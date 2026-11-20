@@ -10,8 +10,11 @@ export function d1Store(db) {
     },
     async createRequest(r) {
       await db.prepare(
-        "INSERT INTO requests (id,drug_slug,phone_hmac,phone_e164,status,ip_hash,source_page,created_at) VALUES (?,?,?,?,?,?,?,?)"
-      ).bind(r.id, r.drug_slug, r.phone_hmac, r.phone_e164, r.status, r.ip_hash, r.source_page, r.created_at).run();
+        "INSERT INTO requests (id,drug_slug,phone_hmac,phone_e164,status,ip_hash,source_page,created_at,utm_source,utm_medium,utm_campaign,utm_content,utm_term) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+      ).bind(
+        r.id, r.drug_slug, r.phone_hmac, r.phone_e164, r.status, r.ip_hash, r.source_page, r.created_at,
+        r.utm_source ?? null, r.utm_medium ?? null, r.utm_campaign ?? null, r.utm_content ?? null, r.utm_term ?? null
+      ).run();
     },
     async getRequest(id) {
       return db.prepare("SELECT * FROM requests WHERE id=?").bind(id).first();
@@ -75,7 +78,7 @@ export function d1Store(db) {
     async listRequests(status, limit = 100) {
       const where = status ? "WHERE r.status=?" : "";
       const sql =
-        "SELECT r.id, r.drug_slug, r.status, r.created_at, r.verified_at, substr(r.phone_e164,-4) AS phone_last4, " +
+        "SELECT r.id, r.drug_slug, r.status, r.created_at, r.verified_at, substr(r.phone_e164,-4) AS phone_last4, r.utm_source, r.utm_campaign, r.utm_content, " +
         "EXISTS(SELECT 1 FROM consents c WHERE c.request_id=r.id AND c.type='watch' AND c.confirmed_at IS NOT NULL AND c.withdrawn_at IS NULL) AS watch_opt_in " +
         `FROM requests r ${where} ORDER BY r.created_at DESC LIMIT ?`;
       const st = db.prepare(sql);
@@ -138,6 +141,17 @@ export function d1Store(db) {
       const { results: totals } = await db.prepare("SELECT name, SUM(count) AS count FROM events GROUP BY name").all();
       const { results: daily } = await db.prepare("SELECT day,name,drug_slug,count FROM events ORDER BY day DESC LIMIT 500").all();
       return { totals: Object.fromEntries(totals.map((t) => [t.name, t.count])), daily };
+    },
+    /**
+     * Verified phones per campaign since a date (the headline number for a paid test: ad spend / verified phones).
+     * Counts verified_at, NOT status='verified': the admin workflow moves requests on to ready/sent/closed, and those are
+     * still verified phones. Requests without a campaign are reported as "(none)".
+     */
+    async verifiedByCampaign(sinceIso) {
+      const { results } = await db.prepare(
+        "SELECT COALESCE(utm_campaign,'(none)') AS campaign, COUNT(*) AS verified FROM requests WHERE verified_at IS NOT NULL AND verified_at>=? GROUP BY COALESCE(utm_campaign,'(none)') ORDER BY verified DESC, campaign"
+      ).bind(sinceIso).all();
+      return results;
     },
     /** Daily cron: purge phone numbers and results once no longer needed. */
     async purge(nowMs) {

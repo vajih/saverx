@@ -6,6 +6,8 @@
  *  - GA4 events carry CATEGORICAL values only (drug_slug, step). Phone numbers never go to gtag.
  *  - The consent wording in the page must equal saverx-savings-watch/src/consent.js (enforced by a test).
  *  - Only drugs in data/savings-watch.json "open" can be submitted; the Worker enforces the same list (PILOT_SLUGS).
+ *  - Campaign tags (utm_*) go to our Worker only (stored on the request row), never to GA4 events; values that look like a
+ *    phone number or email are dropped. No ad pixel or third-party tracker here, by design.
  */
 (function () {
   "use strict";
@@ -17,6 +19,27 @@
   // Fallbacks keep the page working for Repatha even if the data files can't be read.
   var FALLBACK = { slug: "repatha", name: "Repatha", brand: "Repatha", url: "/drugs/repatha/" };
   var state = { requestId: "", token: "", busy: false, slug: "", drugs: [], open: ["repatha"] };
+
+  // --- utm-sanitizer:start (KEEP IN SYNC with sanitizeUtm() in saverx-savings-watch/src/validate.js; a test runs both) ---
+  function sanitizeUtm(value) {
+    if (typeof value !== "string") return null;
+    var raw = value.trim().toLowerCase();
+    if (!raw || raw.length > 300) return null;
+    if (raw.indexOf("@") !== -1) return null;
+    var runs = raw.match(/[0-9 ().+\-]+/g) || [];
+    for (var i = 0; i < runs.length; i++) if (runs[i].replace(/\D/g, "").length >= 10) return null;
+    var v = raw.replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+    if (!v || v.length > 100) return null;
+    return v;
+  }
+  // --- utm-sanitizer:end ---
+  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+  function readUtm() {
+    var out = {};
+    try { var q = new URLSearchParams(location.search); UTM_KEYS.forEach(function (k) { var v = sanitizeUtm(q.get(k)); if (v) out[k] = v; }); } catch (_) {}
+    return out;
+  }
+  var UTM = readUtm();   // read once on landing: the visitor stays on this page through start -> verify
 
   function norm(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, ""); }
   function isOpen(slug) { return state.open.indexOf(slug) !== -1; }
@@ -118,10 +141,12 @@
     if (!$("#swPhone").value.trim()) { msg.textContent = "Enter your mobile number."; return; }
     if (!$("#swConsent").checked) { msg.textContent = "Please check the box to agree to receive a text message."; return; }
     setBusy(submit, true, "Sending…");
-    post("/start", {
+    var startBody = {
       drug_slug: state.slug, phone: $("#swPhone").value, consent_transactional: true, consent_watch: $("#swWatch").checked,
       hp: $("#swHp").value, turnstile_token: state.token, source_page: document.referrer ? "referral" : "direct"
-    }).then(function (res) {
+    };
+    UTM_KEYS.forEach(function (k) { if (UTM[k]) startBody[k] = UTM[k]; });
+    post("/start", startBody).then(function (res) {
       setBusy(submit, false, "Text me a code ↗");
       if (!res.ok) { msg.textContent = res.data.message || "Please try again."; return; }
       if (res.data.already_verified) { track("savings_watch_duplicate", { drug_slug: state.slug }); show("done"); return; }
