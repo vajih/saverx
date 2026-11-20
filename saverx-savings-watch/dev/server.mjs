@@ -57,12 +57,25 @@ function serveStatic(pathname, res) {
   if (process.env.NO_BANNER && p === "/assets/js/consent.js") { // screenshots only: pre-dismiss the cookie banner
     data = Buffer.concat([Buffer.from(`localStorage.setItem("saverx_consent",JSON.stringify({timestamp:Date.now(),version:2,analytics:false,advertising:false,personalization:false}));\n`), data]);
   }
+  if (process.env.SW_DEV_INTEREST && extname(file) === ".html") { // local preview only: form posts + beacons go to /dev/form-capture, never the production sheet
+    data = Buffer.from(data.toString().replace("<head>", '<head><script>Object.defineProperty(window,"SAVERX_FORM_API",{get:function(){return"/dev/form-capture"},set:function(){},configurable:true});</script>'));
+  }
   res.writeHead(200, { "Content-Type": TYPES[extname(file)] || "application/octet-stream" }).end(data);
 }
+const captured = []; // dev-only: what the Apps Script endpoint would have received
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, base);
   try {
+    if (url.pathname === "/dev/form-capture") {
+      const chunks = [];
+      for await (const c of req) chunks.push(c);
+      const raw = Buffer.concat(chunks).toString();
+      captured.push({ at: new Date().toISOString(), method: req.method, query: Object.fromEntries(url.searchParams), body: raw ? Object.fromEntries(new URLSearchParams(raw)) : null });
+      res.writeHead(200, { "Content-Type": "text/plain" }).end("1");
+      return;
+    }
+    if (url.pathname === "/dev/captured") { res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify(captured, null, 2)); return; }
     if (url.pathname === "/dev/outbox") { // dev-only: shows the texts the mock "sent"
       const sent = (twilio.calls || []).filter((c) => c.op === "send").map((c) => c.body);
       res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({ live, mock_verification_code: live ? null : "123456", sent }, null, 2));

@@ -1,13 +1,15 @@
 /**
- * SaveRx.ai — "text updates" demand test on drug pages (fake-door, honest about it).
+ * SaveRx.ai — text-alerts waitlist on drug pages (phone + drug capture; no texts are sent from here).
  * Shown only when data/savings-watch.json has { interest: true } AND live is not true
  * (once Savings Watch is live, its own card replaces this).
  *
- * Flow: "Yes, I'm interested" -> anonymous click counted -> "Text updates aren't live yet" + optional email signup
- *       (existing consented email list, source tagged) -> thanks.
- * NO phone numbers are collected here. Analytics carry only drug_slug + variant. Email goes only to the
- * Apps Script lead endpoint (same as the other drug-page forms), never to gtag.
- * Variant (A/B copy): "coupons" vs "updates", stored per visitor in localStorage.
+ * Flow: enter mobile number -> consent is the button tap, with the full disclosure printed directly beneath it
+ *       (the exact text on screen is saved with the row as the consent record) -> thanks.
+ *       Fallback: "Prefer email instead?" -> the existing consented email list, source tagged.
+ * A slim dismissible bar appears after ~12s or ~40% scroll if the card isn't in view (never a full-screen popup).
+ * Analytics (GA4 + EventLog beacons) carry only drug_slug + variant. The phone number goes ONLY to the Apps Script
+ * endpoint (same as the other forms), never to gtag or any beacon URL.
+ * Variant (A/B headline): "coupons" vs "updates", stored per visitor in localStorage.
  */
 (function () {
   "use strict";
@@ -15,11 +17,17 @@
   if (!blocks.length) return;
   var FORM_API = window.SAVERX_FORM_API ||
     "https://script.google.com/macros/s/AKfycbxFzCPGBdOz215LTi97zqgyCAzd2fACiVcBh4Ic6emYhfoL9JcH0Ns09cvbpWZ-qJs6sA/exec";
+  var CONSENT_VERSION = "2026-11-20-v1";   // bump whenever the disclosure wording in scripts/_add-sms-interest.mjs changes
 
   function track(name, params) { try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {} }
-  // PII-free beacon -> EventLog (event + slug + variant only). Clicks and email signups only; views are GA4-only.
+  // PII-free beacon -> EventLog (event + slug + variant only).
   function beacon(ev, slug, variant) {
     try { new Image().src = FORM_API + "?mode=track&ev=" + encodeURIComponent(ev) + "&slug=" + encodeURIComponent(slug) + "&x=" + encodeURIComponent(variant) + "&t=" + Date.now(); } catch (_) {}
+  }
+  function post(fields) {
+    var body = new URLSearchParams(fields).toString(), sent = false;
+    try { if (navigator.sendBeacon) sent = navigator.sendBeacon(FORM_API, new Blob([body], { type: "application/x-www-form-urlencoded" })); } catch (_) {}
+    if (!sent) { try { fetch(FORM_API, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, mode: "no-cors", body: body, keepalive: true }); } catch (_) {} }
   }
   function pickVariant() {
     var v = null;
@@ -30,15 +38,33 @@
     }
     return v;
   }
-  // Count each person once per drug: repeat clicks (same browser, same drug) are not re-counted.
-  function clickedBefore(slug) { try { return JSON.parse(window.localStorage.getItem("sr_si_c") || "[]").indexOf(slug) !== -1; } catch (_) { return false; } }
-  function markClicked(slug) {
+  // Count each person once per drug as "interested" (same browser, same drug).
+  function seenBefore(slug) { try { return JSON.parse(window.localStorage.getItem("sr_si_c") || "[]").indexOf(slug) !== -1; } catch (_) { return false; } }
+  function markSeen(slug) {
     try { var l = JSON.parse(window.localStorage.getItem("sr_si_c") || "[]"); if (l.indexOf(slug) === -1) l.push(slug); window.localStorage.setItem("sr_si_c", JSON.stringify(l.slice(-400))); } catch (_) {}
   }
+  // US mobile -> +1XXXXXXXXXX, or null. Mirrors normalizeUsPhone() in scripts/Code.gs (which re-validates server-side).
+  function normalizePhone(raw) {
+    var d = String(raw || "").replace(/\D/g, "");
+    if (d.length === 11 && d.charAt(0) === "1") d = d.slice(1);
+    if (!/^[2-9]\d{2}[2-9]\d{6}$/.test(d)) return null;
+    if (/^(\d)\1{9}$/.test(d)) return null;
+    if (d.slice(3, 6) === "555" && /^01\d\d$/.test(d.slice(6))) return null;
+    return "+1" + d;
+  }
+  function formatAsTyped(raw) {
+    var d = String(raw || "").replace(/\D/g, "");
+    if (d.length === 11 && d.charAt(0) === "1") d = d.slice(1);
+    d = d.slice(0, 10);
+    if (d.length < 4) return d;
+    if (d.length < 7) return "(" + d.slice(0, 3) + ") " + d.slice(3);
+    return "(" + d.slice(0, 3) + ") " + d.slice(3, 6) + "-" + d.slice(6);
+  }
   var HEADLINES = {
-    coupons: function (b) { return "Want a text when there’s news on " + b + " manufacturer savings and coupons?"; },
-    updates: function (b) { return "Want text updates about " + b + "?"; }
+    coupons: function (b) { return "Get a text when " + b + " savings or coupons change"; },
+    updates: function (b) { return "Get text alerts about " + b; }
   };
+  function utm(k) { try { return new URLSearchParams(window.location.search).get(k) || ""; } catch (_) { return ""; } }
 
   fetch("/data/savings-watch.json").then(function (r) { return r.json(); }).then(function (cfg) {
     if (!cfg || cfg.interest !== true || cfg.live === true) return;   // off, or the real feature is live
@@ -49,46 +75,105 @@
     Array.prototype.forEach.call(blocks, function (b) {
       var slug = b.getAttribute("data-sw-drug") || "none";
       var brand = brandName || "this medication";
-      var head = b.querySelector("[data-si-headline]");
+      var q = function (s) { return b.querySelector(s); };
+      var head = q("[data-si-headline]");
       if (head) head.textContent = HEADLINES[variant](brand);
       Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = brand; });
       b.setAttribute("data-si-variant", variant);
       b.hidden = false; b.style.display = ""; b.removeAttribute("data-launch");
       track("sms_interest_view", { drug_slug: slug, variant: variant });
 
-      var btn = b.querySelector("[data-si-btn]"), after = b.querySelector("[data-si-after]"), main = b.querySelector("[data-si-main]");
-      if (btn) btn.addEventListener("click", function () {
-        if (!clickedBefore(slug)) {                                   // first click for this drug in this browser
-          track("sms_interest_click", { drug_slug: slug, variant: variant });
-          beacon("sms_interest_click", slug, variant);
-          markClicked(slug);
-        }
-        if (main) main.hidden = true;
-        if (after) { after.hidden = false; var em = after.querySelector("input[type=email]"); if (em && em.focus) em.focus(); }
-      });
+      var main = q("[data-si-main]"), thanks = q("[data-si-thanks]"), emailBox = q("[data-si-email]"),
+          bar = q("[data-si-bar]"), done = false;
 
-      var form = b.querySelector("[data-si-form]");
-      if (form) form.addEventListener("submit", function (e) {
+      // ---- Phone waitlist
+      var form = q("[data-si-phone-form]");
+      if (form) {
+        var phoneIn = form.querySelector("input[name=phone]");
+        if (phoneIn && phoneIn.addEventListener) phoneIn.addEventListener("input", function () {
+          var f = formatAsTyped(phoneIn.value); if (f !== phoneIn.value) phoneIn.value = f;
+        });
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var hp = form.querySelector("input[name=website]"), msg = form.querySelector("[data-si-msg]");
+          if (hp && hp.value) return;                                         // honeypot: bots get nothing
+          var phone = normalizePhone(phoneIn && phoneIn.value);
+          if (!phone) { if (msg) msg.textContent = "Please enter a valid 10-digit US mobile number."; return; }
+          if (msg) msg.textContent = "";
+          var consentEl = form.querySelector("[data-si-consent]");
+          var consentText = consentEl ? String(consentEl.textContent || "").replace(/\s+/g, " ").trim() : "";   // exactly what was on screen
+          post({
+            form_type: "text_waitlist", phone: phone, drug: brandName || slug, drug_slug: slug, variant: variant,
+            consent_version: CONSENT_VERSION, consent_text: consentText,
+            source_page: (window.location && window.location.pathname) || "",
+            utm_source: utm("utm_source"), utm_medium: utm("utm_medium"), utm_campaign: utm("utm_campaign"),
+            useragent: navigator.userAgent || ""
+          });
+          track("sms_waitlist_signup", { drug_slug: slug, variant: variant });   // categorical only, never the number
+          if (!seenBefore(slug)) { beacon("sms_interest_click", slug, variant); markSeen(slug); }
+          done = true;
+          if (main) main.hidden = true;
+          if (emailBox) emailBox.hidden = true;
+          if (bar) bar.hidden = true;
+          if (thanks) thanks.hidden = false;
+        });
+      }
+
+      // ---- Email fallback (existing consented list)
+      var toggle = q("[data-si-email-toggle]");
+      if (toggle) toggle.addEventListener("click", function () {
+        if (!seenBefore(slug)) { track("sms_interest_click", { drug_slug: slug, variant: variant }); beacon("sms_interest_click", slug, variant); markSeen(slug); }
+        if (main) main.hidden = true;
+        if (emailBox) { emailBox.hidden = false; var em = emailBox.querySelector("input[type=email]"); if (em && em.focus) em.focus(); }
+      });
+      var eform = q("[data-si-email-form]");
+      if (eform) eform.addEventListener("submit", function (e) {
         e.preventDefault();
-        var email = form.querySelector("input[type=email]"), consent = form.querySelector("input[type=checkbox]"),
-            hp = form.querySelector("input[name=website]"), msg = form.querySelector("[data-si-msg]");
-        if (hp && hp.value) return;                                          // honeypot: bots get nothing
+        var email = eform.querySelector("input[type=email]"), consent = eform.querySelector("input[type=checkbox]"),
+            hp = eform.querySelector("input[name=website]"), msg = eform.querySelector("[data-si-email-msg]");
+        if (hp && hp.value) return;
         if (!email || !email.value || email.value.indexOf("@") < 1) { if (msg) msg.textContent = "Enter a valid email address."; return; }
         if (!consent || !consent.checked) { if (msg) msg.textContent = "Please check the box to agree to receive emails."; return; }
-        var body = new URLSearchParams({
-          email: email.value.trim(), drug: brandName || slug, source: "SMS interest (" + variant + ")",
-          useragent: navigator.userAgent || "", referrer: document.referrer || ""
-        }).toString();
-        try {
-          if (navigator.sendBeacon) navigator.sendBeacon(FORM_API, new Blob([body], { type: "application/x-www-form-urlencoded" }));
-          else fetch(FORM_API, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, mode: "no-cors", body: body, keepalive: true });
-        } catch (_) { /* the visitor still sees success, per site rule: capture failures are silent */ }
-        track("sms_interest_email", { drug_slug: slug, variant: variant });   // categorical only, never the address
+        post({ email: email.value.trim(), drug: brandName || slug, source: "SMS interest (" + variant + ")", useragent: navigator.userAgent || "", referrer: document.referrer || "" });
+        track("sms_interest_email", { drug_slug: slug, variant: variant });
         beacon("sms_interest_email", slug, variant);
-        form.hidden = true;
-        var intro = b.querySelector("[data-si-intro]"); if (intro) intro.hidden = true;
-        var thanks = b.querySelector("[data-si-thanks]"); if (thanks) thanks.hidden = false;
+        eform.hidden = true;
+        var t = q("[data-si-email-thanks]"); if (t) t.hidden = false;
       });
+
+      // ---- Slim bottom bar: appears once, only if the card isn't in view; dismissible; never blocks the page
+      if (bar) {
+        var dismissed = false;
+        try { dismissed = window.sessionStorage.getItem("sr_si_bx") === "1"; } catch (_) {}
+        var cardInView = function () {
+          try { var r = b.getBoundingClientRect(); return r.top < window.innerHeight && r.bottom > 0; } catch (_) { return false; }
+        };
+        var showBar = function () {
+          if (done || dismissed || !bar.hidden || cardInView()) return;
+          bar.hidden = false; track("sms_bar_view", { drug_slug: slug, variant: variant });
+        };
+        if (typeof setTimeout === "function") setTimeout(showBar, 12000);
+        // Some page layouts scroll <body> instead of the window, so listen in the capture phase and measure whichever element scrolled.
+        var progress = function (ev) {
+          var t = ev && ev.target, el = (t && t.nodeType === 1) ? t : (document.scrollingElement || document.documentElement) || {};
+          var max = (el.scrollHeight || 0) - (el.clientHeight || window.innerHeight || 0);
+          return max > 0 ? (el.scrollTop || window.scrollY || 0) / max : 0;
+        };
+        if (typeof window.addEventListener === "function") window.addEventListener("scroll", function (ev) {
+          if (progress(ev) >= 0.4) showBar();
+        }, { passive: true, capture: true });
+        var go = q("[data-si-bar-go]"), x = q("[data-si-bar-x]");
+        if (go) go.addEventListener("click", function () {
+          track("sms_bar_click", { drug_slug: slug, variant: variant });
+          bar.hidden = true;
+          try { b.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+          var ph = form && form.querySelector("input[name=phone]"); if (ph && ph.focus) ph.focus();
+        });
+        if (x) x.addEventListener("click", function () {
+          bar.hidden = true; dismissed = true;
+          try { window.sessionStorage.setItem("sr_si_bx", "1"); } catch (_) {}
+        });
+      }
     });
   }).catch(function () { /* switch unreadable: stay hidden */ });
 })();

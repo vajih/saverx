@@ -1,16 +1,24 @@
-/* "Text updates" demand-test card (drug pages). Tokens only (assets/css/tokens.css). */
+/* Text-alerts waitlist card + slim bar (drug pages). Tokens only (assets/css/tokens.css). */
 [data-sms-interest][hidden]{display:none!important}
 .sw-interest{max-width:900px;margin:28px auto;padding:22px 24px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
-.sw-interest h2{font-size:1.25rem;line-height:1.3;margin:4px 0 14px}
+.sw-interest h2{font-size:1.3rem;line-height:1.3;margin:4px 0 8px}
 .sw-interest h3{font-size:1.05rem;margin:0 0 6px}.sw-interest p{margin:0 0 12px}
 .sw-interest .si-eyebrow{font-size:.72rem;letter-spacing:.08em;color:var(--text-2);margin:0}
-.si-btn{display:inline-block;background:var(--teal);color:var(--surface-2);border:0;border-radius:100px;padding:12px 24px;font:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
+.sw-interest .si-sub{color:var(--text-2)}
+.si-btn{display:inline-block;background:var(--teal);color:var(--surface-2);border:0;border-radius:100px;padding:13px 26px;font:inherit;font-size:.95rem;font-weight:700;cursor:pointer}
 .si-btn:hover{background:var(--teal-dark)}
 .si-form{display:flex;flex-direction:column;gap:10px;max-width:460px}
-.si-form input[type=email]{padding:13px;font-size:1rem;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface-2);color:var(--text)}
-.si-form .si-consent{display:flex;gap:9px;align-items:flex-start;font-size:.8rem;line-height:1.5;color:var(--text-2)}
-.si-form .si-consent input{margin-top:3px;flex:none}
+.si-form .si-lbl{font-size:.8rem;font-weight:600;color:var(--text-2)}
+.si-form input[type=tel],.si-form input[type=email]{padding:14px;font-size:1.05rem;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface-2);color:var(--text)}
+.si-form .si-consent{font-size:.76rem;line-height:1.55;color:var(--text-2);margin:2px 0 0}
+.si-form .si-consent a{color:inherit;text-decoration:underline}
+.si-form .si-consent-row{display:flex;gap:9px;align-items:flex-start;font-size:.8rem;line-height:1.5;color:var(--text-2)}
+.si-form .si-consent-row input{margin-top:3px;flex:none}
+.si-link{background:none;border:0;padding:6px 0;font:inherit;font-size:.85rem;color:var(--teal-dark);text-decoration:underline;cursor:pointer}
 .si-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 .si-msg{min-height:1.1em;font-size:.82rem;color:var(--warn);margin:0}
-.si-fine{font-size:.75rem;color:var(--text-2)}
-@media (max-width:640px){.sw-interest{margin:20px 16px;padding:18px}.si-btn{width:100%}}
+.si-bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 44px 10px 16px;background:var(--surface);border-top:1px solid var(--border-strong);box-shadow:0 -4px 16px rgba(0,0,0,.08);font-size:.9rem;color:var(--text)}
+.si-bar[hidden]{display:none!important}
+.si-bar-go{background:var(--teal);color:var(--surface-2);border:0;border-radius:100px;padding:9px 18px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+.si-bar-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;font-size:1.4rem;line-height:1;color:var(--text-2);cursor:pointer;padding:6px 10px}
+@media (max-width:640px){.sw-interest{margin:20px 16px;padding:18px}.si-btn{width:100%}.si-bar{justify-content:space-between;padding-right:40px}}
