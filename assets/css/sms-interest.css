@@ -22,3 +22,18 @@
 .si-bar-go{background:var(--teal);color:var(--surface-2);border:0;border-radius:100px;padding:9px 18px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
 .si-bar-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;font-size:1.4rem;line-height:1;color:var(--text-2);cursor:pointer;padding:6px 10px}
 @media (max-width:640px){.sw-interest{margin:20px 16px;padding:18px}.si-btn{width:100%}.si-bar{justify-content:space-between;padding-right:40px}}
+
+/* Homepage band (medication + phone) and hero link */
+.sw-home{max-width:1100px;margin:12px auto 28px;border:2px solid var(--teal)}
+.sw-home h2{font-size:1.6rem}
+.sw-home .si-form,.sw-home .si-home-form{max-width:none}
+.si-row{display:flex;gap:14px;flex-wrap:wrap}
+.si-field{flex:1 1 240px;display:flex;flex-direction:column;gap:6px}
+.si-home-form .si-btn{align-self:flex-start;min-width:260px}
+.si-form input[type=text]{padding:14px;font-size:1.05rem;border:1px solid var(--border-strong);border-radius:12px;background:var(--surface-2);color:var(--text)}
+.si-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:.85rem;color:var(--text-2)}
+.si-chips button{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:100px;padding:6px 14px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--text)}
+.si-chips button:hover{border-color:var(--teal)}
+.sms-hero-link{margin:14px 0 0;font-size:.95rem}.sms-hero-link[hidden]{display:none!important}
+.sms-hero-link a{color:var(--teal-dark);font-weight:600;text-decoration:underline}
+@media (max-width:640px){.sw-home{margin:12px 16px 24px}.sw-home h2{font-size:1.3rem}.si-home-form .si-btn{align-self:stretch;min-width:0}}
