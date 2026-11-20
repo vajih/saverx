@@ -20,8 +20,9 @@ test('all 363+ drug pages: exactly one hidden card, own slug, GTM + footer + Sav
     assert(h.includes('GTM-MVZBBF7R'),slug);assert.equal(count(h,'<footer class="relief-footer">'),1,slug);assert(h.indexOf(START)<h.indexOf('id="enroll-help"'),slug);}
   assert(n>=363,`checked ${n}`);
 });
-test('switch file ships with interest OFF and live OFF; Apps Script allows the two new events',()=>{
-  const c=JSON.parse(fs.readFileSync('data/savings-watch.json','utf8'));assert.equal(c.interest,false);assert.equal(c.live,false);
+test('switch file: demand test ON (interest) while Savings Watch stays OFF (live); Apps Script allows the two new events',()=>{
+  // Interest card is enabled (2026-11-20, Code.gs v20 deployed). live must stay false until the Worker is deployed and A2P is approved.
+  const c=JSON.parse(fs.readFileSync('data/savings-watch.json','utf8'));assert.equal(c.interest,true);assert.equal(c.live,false);
   const gs=fs.readFileSync('scripts/Code.gs','utf8');assert.match(gs,/TRACKED_EVENTS[\s\S]{0,400}"sms_interest_click"/);assert.match(gs,/"sms_interest_email"/);
 });
 
