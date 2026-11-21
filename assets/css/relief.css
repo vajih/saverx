@@ -1319,3 +1319,7 @@ font-size:10px}
 .results a { min-height:44px; }
 .search input:focus-visible,.catalog-search:focus-within { outline:2px solid var(--teal); outline-offset:3px; border-radius:5px; }
 @media(max-width:760px) { .relief-alert { grid-template-columns:1fr; padding:24px; gap:15px; } .relief input,.relief select,.relief textarea { font-size:16px; } .relief .grid { grid-template-columns:1fr; } .relief .drug { min-height:180px; } }
+
+/* Grid children may shrink below their content width: stops the category pages' filter row from widening the whole page past a phone screen (the directory page already has this via drug-polish.css). */
+.catalog-layout>*{min-width:0}
+.filters{max-width:100%}

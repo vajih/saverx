@@ -21,3 +21,8 @@ test('consent logic is untouched: Consent Mode v2 update, stored shape, GPC hono
     "var STORAGE_KEY = 'saverx_consent'","var CONSENT_TTL = 365 * 24 * 60 * 60 * 1000","navigator.globalPrivacyControl === true","[data-consent-toggle]","gtag('event', 'consent_accept_all')","gtag('event', 'consent_reject_all')","rejectAll(true)"])assert(src.includes(must),must);
   assert.match(src,/function acceptAll\(\) \{\s*var prefs = \{ analytics: true, advertising: true, personalization: true \}/);assert.match(src,/function rejectAll\(silent\) \{\s*var prefs = \{ analytics: false, advertising: false, personalization: false \}/);
 });
+
+test('a dismissed banner is removed from layout even on pages without a global [hidden] rule (it must not swallow taps)',()=>{
+  assert.match(src,/\.srxcb-bd\[hidden\]\{display:none!important;\}/);
+  assert(src.indexOf(".srxcb-bd[hidden]")>src.indexOf(".srxcb-bd{position:fixed"),"rule comes after the base .srxcb-bd rule");
+});
