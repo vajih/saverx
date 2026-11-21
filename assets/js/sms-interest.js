@@ -23,9 +23,14 @@
   var CONSENT_VERSION = "2026-11-20-v1";   // bump whenever the disclosure wording in scripts/_add-sms-interest.mjs changes
 
   function track(name, params) { try { if (typeof window.gtag === "function") window.gtag("event", name, params || {}); } catch (_) {} }
+  // NOTE: Google batches events and sends them ~5s later, and a pending batch is DROPPED if the page changes first (measured; the
+  // transport_type hint does not help). So an event must never be fired right before navigating: see the home -> drug page hand-off below.
   // PII-free beacon -> EventLog (event + slug + variant only).
   function beacon(ev, slug, variant) {
-    try { new Image().src = FORM_API + "?mode=track&ev=" + encodeURIComponent(ev) + "&slug=" + encodeURIComponent(slug) + "&x=" + encodeURIComponent(variant) + "&t=" + Date.now(); } catch (_) {}
+    var url = FORM_API + "?mode=track&ev=" + encodeURIComponent(ev) + "&slug=" + encodeURIComponent(slug) + "&x=" + encodeURIComponent(variant) + "&t=" + Date.now();
+    // keepalive fetch survives the page change (the homepage redirects right after a signup); an <img> request can be cancelled.
+    try { if (typeof fetch === "function") { fetch(url, { mode: "no-cors", keepalive: true }); return; } } catch (_) {}
+    try { new Image().src = url; } catch (_) {}
   }
   function post(fields) {
     var body = new URLSearchParams(fields).toString(), sent = false;
@@ -186,6 +191,7 @@
           if (main) main.hidden = true;
           if (thanks) thanks.hidden = false;
           flash("✓ You’re on the list for " + (arrived.name || brand) + " text alerts. Your savings options are below.");
+          if (arrived.ev) track("sms_waitlist_signup", { drug_slug: slug, variant: "home" });   // the homepage hands the conversion event to this page
         }
       }
 
@@ -238,13 +244,15 @@
             utm_content: attr.utm_content || "", utm_term: attr.utm_term || "",
             useragent: navigator.userAgent || ""
           });
-          track("sms_waitlist_signup", { drug_slug: evSlug, variant: vr });   // categorical only, never the number
+          var redirecting = isHome && hit && hit.url;
+          if (!redirecting) track("sms_waitlist_signup", { drug_slug: evSlug, variant: vr });   // categorical only, never the number
+          // (when redirecting, the destination drug page sends this event: see the arrival block, so it is not lost on unload)
           if (!seenBefore(evSlug)) { beacon("sms_interest_click", evSlug, vr); markSeen(evSlug); }
           done = true;
           if (isHome) {
             Array.prototype.forEach.call(b.querySelectorAll("[data-si-brand]"), function (el) { el.textContent = drugText; });
             if (hit && hit.url) {                                              // listed drug: straight to its page, no separate confirmation step
-              try { window.sessionStorage.setItem(DONE_KEY, JSON.stringify({ slug: hit.slug, name: hit.name, t: Date.now() })); } catch (_) {}
+              try { window.sessionStorage.setItem(DONE_KEY, JSON.stringify({ slug: hit.slug, name: hit.name, t: Date.now(), ev: 1 })); } catch (_) {}
               var go = function () { try { window.location.assign(hit.url); } catch (_) {} };
               if (typeof setTimeout === "function") setTimeout(go, 250); else go();   // brief delay so the beacon request is queued first
             }
