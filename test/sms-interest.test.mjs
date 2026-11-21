@@ -63,7 +63,7 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
-    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;},setInterval:f=>{intervals.push(f);return intervals.length;},clearInterval:i=>{cleared.push(i);}};
+    fetch:async(u,o)=>{if(o&&o.method==='POST'){sent.push(o.body);return {};}if(typeof u==='string'&&u.includes('mode=track')){images.push(u);return {};}if(u==='/data/drugs.json')return {json:async()=>({items:[{name:'Repatha',brand:'Repatha',slug:'repatha',url:'/drugs/repatha/'},{name:'Ozempic',brand:'Ozempic',slug:'ozempic',url:'/drugs/ozempic/'}]})};if(fail)throw new Error('x');return {json:async()=>cfg};},Math:{...Math,random:()=>random},encodeURIComponent,Date,JSON,setTimeout:f=>{timers.push(f);return 1;},setInterval:f=>{intervals.push(f);return intervals.length;},clearInterval:i=>{cleared.push(i);}};
   ctx.localStorage=win.localStorage;
   vm.runInNewContext(src,ctx);
   return {inserted,jump,intervals,cleared,assigned,appended,drugIn,drugList,chips,homeLink,block,head,brandEls,main,thanks,emailBox,emailThanks,bar,go,x,toggle,form,phone,hp,msg,eform,email,consent,ehp,emsg,events,images,sent,timers,store,sstore,win,doc,wl,
@@ -180,7 +180,7 @@ test('home submit: needs a medication and a valid number; listed drug gets its r
   assert.equal(b.get('form_type'),'text_waitlist');assert.equal(b.get('phone'),'+18324567788');assert.equal(b.get('drug'),'Repatha','canonical name');assert.equal(b.get('drug_slug'),'repatha');
   assert.equal(b.get('variant'),'home');assert.equal(b.get('consent_version'),'2026-11-21-home-v1');assert.equal(b.get('source_page'),'/drugs/repatha/'.replace('/drugs/repatha/','/drugs/repatha/'));
   assert.equal(h.main.hidden,true);assert.equal(h.thanks.hidden,false);assert.equal(h.brandEls[0].textContent,'Repatha');
-  assert(h.events.some(e=>e[1]==='sms_waitlist_signup'&&e[2].drug_slug==='repatha'&&e[2].variant==='home'));assert.match(h.images[0],/ev=sms_interest_click&slug=repatha&x=home/);
+  assert(!h.events.some(e=>e[1]==='sms_waitlist_signup'),'redirecting: the GA event is NOT fired here (it would be dropped on unload); the destination page sends it');assert.equal(JSON.parse(h.sstore.sr_si_done).ev,1);assert.match(h.images[0],/ev=sms_interest_click&slug=repatha&x=home/);
   assert(!/8324567788|\(832\)/.test(JSON.stringify([h.events,h.images])),'number never reaches analytics');
 });
 test('home submit: an unlisted medication is still captured (custom slug, text kept) but never sent to analytics',async()=>{
@@ -307,4 +307,21 @@ test('bar: steps aside while the footer is on screen, comes back when it leaves,
   top=300;h.wl.scroll();assert.equal(h.bar.hidden,true);h.timers.forEach(t=>t());assert.equal(h.bar.hidden,true,'the delayed timer also respects the footer');
   top=99999;h.x.listeners.click();top=300;h.wl.scroll();top=99999;h.wl.scroll();assert.equal(h.bar.hidden,true,'a dismissed bar stays dismissed');
   const done=harness({cfg:ON,footerTop:99999});await done.wait();done.phone.value='8324567788';done.submit();const d=done.doc.querySelector('footer');d.getBoundingClientRect=()=>({top:300});d.getBoundingClientRect=()=>({top:99999});done.wl.scroll();assert.equal(done.bar.hidden,true,'after signing up the bar never returns');
+});
+
+// ---- GA4 conversion hand-off (Google drops a pending batch when the page changes)
+test('home signup, unlisted drug: no redirect, so the GA conversion is sent right here (slug "custom", no medication text)',async()=>{
+  const h=harness({cfg:ON,home:true});await h.wait();h.drugIn.value='Some New Drug';h.phone.value='8324567788';h.submit();
+  const e=h.events.find(x=>x[1]==='sms_waitlist_signup');assert(e);assert.deepEqual(JSON.parse(JSON.stringify(e[2])),{drug_slug:'custom',variant:'home'});assert(!JSON.stringify(h.events).toLowerCase().includes('some new drug'));
+});
+test('arriving from the homepage signup: the drug page sends the GA conversion once (variant "home"); a reload or an older note does not re-send it',async()=>{
+  const note=ev=>JSON.stringify({slug:'repatha',name:'Repatha',t:Date.now(),...(ev?{ev:1}:{})});
+  const a=harness({cfg:ON,sstore:{sr_si_done:note(true)}});await a.wait();const ev=a.events.filter(x=>x[1]==='sms_waitlist_signup');
+  assert.equal(ev.length,1);assert.deepEqual(JSON.parse(JSON.stringify(ev[0][2])),{drug_slug:'repatha',variant:'home'});assert.equal(a.sstore.sr_si_done,undefined,'single-use');
+  const again=harness({cfg:ON,sstore:a.sstore});await again.wait();assert.equal(again.events.filter(x=>x[1]==='sms_waitlist_signup').length,0,'reload: nothing re-sent');
+  const old=harness({cfg:ON,sstore:{sr_si_done:note(false)}});await old.wait();assert.equal(old.events.filter(x=>x[1]==='sms_waitlist_signup').length,0,'note without the flag: no event');
+  assert(!JSON.stringify(a.events).includes('8324567788'));
+});
+test('Apps Script click beacon uses a keepalive request so it survives the homepage redirect (falls back to an image)',()=>{
+  const src=fs.readFileSync('assets/js/sms-interest.js','utf8');assert.match(src,/fetch\(url, \{ mode: "no-cors", keepalive: true \}\)/);assert.match(src,/new Image\(\)\.src = url/);
 });

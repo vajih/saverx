@@ -1,3 +1,18 @@
+// --- ga-guard:start (runs first on every page, before GTM/gtag load) ---
+// Analytics only reports from the real site, and never from a browser that opted out. Localhost, Cloudflare preview URLs and
+// staging hosts send nothing (their hits would pollute the property). Owner opt-out: open any page with ?no_analytics=1 once
+// (re-enable with ?no_analytics=0). Uses Google's documented ga-disable flag, which both the page's gtag and the GTM Google tag honor.
+(function () {
+  try {
+    var GA_ID = 'G-FCKENS1BWB';
+    var q = new URLSearchParams(window.location.search).get('no_analytics');
+    if (q === '1') window.localStorage.setItem('sr_no_ga', '1');
+    else if (q === '0') window.localStorage.removeItem('sr_no_ga');
+    var onProduction = /^(www\.)?saverx\.ai$/.test(window.location.hostname || '');
+    if (!onProduction || window.localStorage.getItem('sr_no_ga') === '1') window['ga-disable-' + GA_ID] = true;
+  } catch (e) { /* never break the page */ }
+})();
+// --- ga-guard:end ---
 /**
  * SaveRx.ai — Cookie Consent Manager
  * Google Consent Mode v2 compliant. Self-contained (injects own CSS).
