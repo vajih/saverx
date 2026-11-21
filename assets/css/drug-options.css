@@ -6,3 +6,26 @@ body.drug-options-page {background:#f8f7f2;color:#26362f;--drug-blue:#313dc5;--d
 .drug-price-prefix{font-size:11px;margin-bottom:6px;color:var(--text-2)}.drug-options-page .drug-cash-secondary{font-size:10px;margin-top:15px}
 @media(min-width:801px){.drug-options-grid:has([data-option="copay"][hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}.drug-crumb{margin-bottom:28px}.drug-intro{margin-bottom:26px}.drug-paper-art{height:230px}.drug-section{margin-top:40px}}
 @media(max-width:800px){.drug-options-page h1{font-size:39px}.drug-options-page h1 em{font-size:.84em;letter-spacing:-1px}.drug-intro{margin-bottom:24px}.drug-options-page .drug-deck{font-size:14px}.drug-crumb{margin-bottom:25px}.drug-section{margin-top:30px}.drug-section-heading{margin-bottom:18px}}
+/* Manufacturer benefit program (profile.program): benefit section + "already received" section. Tokens only. */
+.drug-program-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;max-width:860px}   /* one reading column: coverage rules and exclusions come before the CTA */
+.drug-program-main,.drug-program-action{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px}
+.drug-program-amount{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin:0 0 12px;color:var(--drug-ink)}
+.drug-program-amount strong{font-size:clamp(34px,6vw,48px);line-height:1;letter-spacing:-1.5px;color:var(--drug-ink)}
+.drug-program-amount span{font:600 13px/1.4 Manrope,var(--font-sans);color:var(--text-2)}
+.drug-program-note{margin:0 0 10px;color:var(--text-2);font-size:14px;line-height:1.6}
+.drug-program-flag{margin:0 0 14px;padding:11px 14px;border-left:3px solid var(--warn);background:var(--brand-50);border-radius:0 10px 10px 0;color:var(--drug-ink);font-size:13px;line-height:1.55}
+.drug-program-facts{margin:18px 0 0;display:grid;gap:0}
+.drug-program-facts>div{padding:13px 0;border-top:1px solid var(--border)}
+.drug-program-facts dt{font:700 11px/1.5 Manrope,var(--font-sans);letter-spacing:1.2px;text-transform:uppercase;color:var(--drug-ink);margin:0 0 5px}
+.drug-program-facts dd{margin:0;color:var(--text-2);font-size:14px;line-height:1.6}
+.drug-program-facts .drug-program-warn{border-left:3px solid var(--warn);padding-left:13px;background:var(--brand-50);border-radius:0 10px 10px 0}
+.drug-program-facts .drug-program-warn dd{color:var(--drug-ink);font-weight:600}
+.drug-program-list{margin:0;padding-left:18px}.drug-program-list li{margin:0 0 4px}
+.drug-program-action{display:grid;gap:12px}
+.drug-program-cta{width:100%;text-align:center}
+@media(min-width:801px){.drug-program-cta{width:auto;justify-self:start;padding-left:26px;padding-right:26px}}
+.drug-program-action .drug-small,.drug-program-followup .drug-small{font-size:12px;line-height:1.6;color:var(--text-2)}
+.drug-program-secondary{display:inline-block}
+.drug-program-followup{max-width:760px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px}
+.drug-program-followup h2{margin:0 0 12px}.drug-program-followup h3{margin:18px 0 8px;font-size:16px}.drug-program-followup p{color:var(--text-2);font-size:14px;line-height:1.65}
+@media(max-width:800px){.drug-program-grid{gap:14px}.drug-program-main,.drug-program-action,.drug-program-followup{padding:20px}.drug-program-followup{margin-top:26px}}

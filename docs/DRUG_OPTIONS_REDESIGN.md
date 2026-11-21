@@ -59,3 +59,32 @@ Medication identity remains first. Guided help and consented email capture follo
 The sticky and departure aids now recognize viewing the payment summary as engagement; visitors need not select or disclose an insurance type. The summary toggle remains local, with no insurance values sent to analytics. Native keyboard operation, all summaries visible initially, simultaneous rows, desktop/mobile layouts, consent association and unchanged forms/integrations were checked. No live form submissions were sent.
 
 scripts/upgrade-drug-summary.py is the final idempotent migration, called after upgrade-drug-conversion.py. assets/css/drug-summary.css provides the approved row layout and pharmacy illustration styling. All pages retain their prior metadata, consent scripts, backend endpoints and affiliate blocks. The package includes all previous unmerged drug redesign commits and replaces earlier drug-page ZIPs.
+
+## Manufacturer benefit programs (`profile.program`)
+
+For drugs whose manufacturer program is a benefit **cap over a period** (oncology and rare-disease infusions) rather than a per-fill price,
+a profile in `data/drug-option-profiles.json` may carry a `program` object. `assets/js/drug-options.js` (`programView` + `renderProgram`) then:
+- replaces the private-insurance summary price with `Up to $X` and the period, and labels the row CTA with `program.cta.label`;
+- inserts `#program-benefit` (amount + period, who can use it, **not available with** government plans, what you pay, what it covers /
+  does not cover, conditions) directly after `#payment-options`, with the CTA, official-terms link and **Last verified** date after those facts;
+- inserts `#program-followup` (the "already received?" section: window wording, what to have ready, contact) when `program.followup` exists.
+
+Fields: `name, cap (number), period (exact wording), capStatus ("verified" | "source-dated"), sourceNote, periodNote, insurance, government,
+patientPays, covers[], notCovered[], conditions[], note, cta{label,url}, secondaryCta, terms{label,url}, followup{heading, paragraphs[],
+readyHeading, ready[], readyIsGuidance, contactNote, contact{label,url}}, verification{checkedAt, basis, sources[]}`. A program with no valid
+cap, period or https CTA renders nothing. Only `capStatus: "verified"` is shown as verified; anything else gets the cautious "confirm with the
+program" wording. `copay.price` must be `null` for these drugs so a stale Sheet-feed price (e.g. `0`) can never display; `copay.url` overrides
+the feed's `manufacturerUrl` for the CTA and the email hand-off.
+
+**Verification rules.** Every number, period, window and exclusion must be read from the manufacturer's current page or terms and recorded with
+the source and date (`verification`). A claim that cannot be confirmed is omitted, not softened. Keep an *earlier-bill window* (lookback)
+distinct from a *claim-submission deadline*, and state windows conditionally ("may apply"). Never imply renewal unless the terms say so.
+Lists marked `readyIsGuidance: true` are SaveRx guidance, not program rules, and say so.
+
+**Maintain.** Edit the profile, then run `python3 scripts/sync-drug-profiles.py` (idempotent; refreshes the embedded `drug-page-profile` JSON on
+already-built pages, which `build-drug-options.py` skips). Run `node --test test/drug-program.test.mjs test/drug-options.test.mjs`. Re-verify
+and bump `checkedAt` at least every 120 days; older profiles show a visible "last checked more than four months ago" notice.
+
+**Current programs (checked 2026-11-21):** Keytruda (Merck, $25,000 per 12-month eligibility period, first $25 per administration), Phesgo
+(Genentech, $25,000 per calendar year, 180-day retroactive window), Evkeeza (myRARE, $25,000 per calendar year, **source-dated 07/2025**; the live
+myRARE/Evkeeza pages no longer restate the terms). Takhzyro and Rybrevant are intentionally not included pending current manufacturer confirmation.

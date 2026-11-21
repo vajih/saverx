@@ -34,5 +34,255 @@
       {"label": "Amgen financial support", "url": "https://www.amgensupportplus.com/repatha/financial-support"},
       {"label": "About Repatha & safety information", "url": "https://www.repatha.com/"}
     ]
+  },
+  "keytruda": {
+    "brand": "Keytruda",
+    "checkedAt": "2026-11-21",
+    "copay": {
+      "price": null,
+      "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcc/",
+      "terms": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html",
+      "source": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html",
+      "eligibility": "For patients with private health insurance that covers Keytruda. Not valid for Medicare, Medicaid, TRICARE or other government coverage, or for uninsured patients."
+    },
+    "program": {
+      "name": "Merck Co-pay Assistance Program for KEYTRUDA",
+      "manufacturerShort": "Merck",
+      "cap": 25000,
+      "period": "per 12-month eligibility period",
+      "capStatus": "verified",
+      "periodNote": "Merck’s terms allow one eligibility period per patient during the program term, so don’t assume the benefit renews.",
+      "insurance": "Requires private health insurance that covers Keytruda.",
+      "government": "Not valid for patients covered by Medicare (including Part D and Medicare Advantage), Medicaid, TRICARE or other government health plans, or for uninsured patients.",
+      "patientPays": "You pay the first $25 of your co-pay for each administration. The program then covers the rest of your eligible out-of-pocket cost for Keytruda, up to the maximum.",
+      "covers": [
+        "Your out-of-pocket cost for the Keytruda drug itself"
+      ],
+      "notCovered": [
+        "Office visit charges",
+        "Medication administration charges"
+      ],
+      "note": "Your actual assistance depends on your eligible out-of-pocket charges and Merck’s program terms.",
+      "cta": {
+        "label": "Check eligibility with Merck",
+        "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcc/"
+      },
+      "terms": {
+        "label": "Merck program terms",
+        "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html"
+      },
+      "followup": {
+        "heading": "Already received Keytruda? Check whether an earlier bill qualifies.",
+        "paragraphs": [
+          "Merck’s terms say the program may apply to out-of-pocket costs for Keytruda administered up to 90 days before your eligibility period starts. Whether a specific earlier bill qualifies is decided under Merck’s program terms, so ask before assuming it will.",
+          "That 90-day window is separate from the claim deadline. Merck’s terms require claim documentation to be submitted within 180 days of the date the claim was processed."
+        ],
+        "readyHeading": "What to have ready when you contact Merck or your treatment center",
+        "readyIsGuidance": false,
+        "ready": [
+          "Your insurer’s Explanation of Benefits (EOB) or Remittance Advice (RA) for each Keytruda dose",
+          "The date each dose was administered, and the amount you owed",
+          "Proof that Keytruda was billed and paid separately from other services and products",
+          "Your insurance plan details as shown on the EOB"
+        ],
+        "contactNote": "Merck’s terms say the claim for Keytruda must be submitted by your healthcare provider or pharmacy, separately from other services. Ask your treatment center’s billing team to confirm how your doses were billed. You can also call the Merck Access Program at 855-257-3932 (Monday–Friday, 8 AM–8 PM ET).",
+        "contact": {
+          "label": "Merck Access Program enrollment and terms",
+          "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html"
+        }
+      },
+      "verification": {
+        "checkedAt": "2026-11-21",
+        "basis": "Read directly from Merck’s program pages on 2026-11-21.",
+        "sources": [
+          {
+            "label": "Merck program terms (enrollment page)",
+            "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html"
+          },
+          {
+            "label": "Merck Access Program for KEYTRUDA, patient page",
+            "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcc/"
+          }
+        ]
+      }
+    },
+    "sources": [
+      {
+        "label": "Merck program terms (enrollment page)",
+        "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcp/enrollment.html"
+      },
+      {
+        "label": "Merck Access Program for KEYTRUDA, patient page",
+        "url": "https://www.merckaccessprogram-keytruda.com/keytrudaqlex/hcc/"
+      }
+    ]
+  },
+  "phesgo": {
+    "brand": "Phesgo",
+    "checkedAt": "2026-11-21",
+    "copay": {
+      "price": null,
+      "url": "https://www.phesgo.com/financial-support/assistance-options.html",
+      "terms": "https://www.phesgo.com/financial-support/assistance-options.html",
+      "source": "https://www.phesgo.com/financial-support/assistance-options.html",
+      "eligibility": "For patients with commercial (private or non-governmental) insurance. Not available to Medicare, Medicaid, VA, TRICARE or other government program beneficiaries."
+    },
+    "program": {
+      "name": "Genentech Oncology Co-pay Assistance Program",
+      "manufacturerShort": "Genentech",
+      "cap": 25000,
+      "period": "per calendar year",
+      "capStatus": "verified",
+      "periodNote": "Genentech’s terms say the maximum resets every January 1.",
+      "insurance": "Requires commercial (private or non-governmental) insurance, including plans bought through state and federal exchanges.",
+      "government": "Not available to patients in Medicare (including Medicare Advantage and Medigap), Medicaid, VA, TRICARE or other government health programs.",
+      "covers": [
+        "Your co-pay or co-insurance for Phesgo"
+      ],
+      "notCovered": [
+        "Other medicines, procedures or office visit fees"
+      ],
+      "note": "Your actual assistance depends on your eligible out-of-pocket costs for Phesgo and Genentech’s program terms. The benefit cannot exceed what you owe out of pocket for Phesgo.",
+      "cta": {
+        "label": "Visit the official Genentech copay program",
+        "url": "https://www.phesgo.com/financial-support/assistance-options.html"
+      },
+      "secondaryCta": {
+        "label": "Apply at CopayAssistanceNow.com",
+        "url": "https://www.copayassistancenow.com/"
+      },
+      "terms": {
+        "label": "Terms and conditions (on Genentech’s program page)",
+        "url": "https://www.phesgo.com/financial-support/assistance-options.html"
+      },
+      "followup": {
+        "heading": "Already received Phesgo? Ask about help with an earlier bill.",
+        "paragraphs": [
+          "Genentech’s terms say the program may honor claims for treatment with a date of service up to 180 days before you enroll, for patients who met the eligibility criteria when they were treated. Earlier claims are not guaranteed, so ask the program whether your bill qualifies.",
+          "Separately, Genentech’s terms say claims must be submitted within 365 days of the date of service unless otherwise indicated."
+        ],
+        "readyHeading": "Helpful to have on hand",
+        "readyIsGuidance": true,
+        "ready": [
+          "The dates you were treated",
+          "Your insurer’s Explanation of Benefits (EOB) for those visits",
+          "Your treatment center’s billing contact"
+        ],
+        "contactNote": "Your treatment center’s billing team can confirm your dates of service and what was billed to insurance, and can help you gather paperwork before you contact the program. This is general guidance from SaveRx, not a program rule.",
+        "contact": {
+          "label": "Genentech Oncology Co-pay Assistance Program",
+          "url": "https://www.phesgo.com/financial-support/assistance-options.html"
+        }
+      },
+      "verification": {
+        "checkedAt": "2026-11-21",
+        "basis": "Read from Genentech’s Phesgo financial-support page on 2026-11-21. The $25,000 maximum and the 180-day retroactive window also appear in Genentech’s Phesgo Coding and Reimbursement Guide (M-US-00007062 v8.0, 06/2026).",
+        "sources": [
+          {
+            "label": "Genentech Oncology Co-pay Assistance Program (Phesgo)",
+            "url": "https://www.phesgo.com/financial-support/assistance-options.html"
+          },
+          {
+            "label": "Phesgo Coding and Reimbursement Guide (PDF, 06/2026)",
+            "url": "https://www.phesgo-hcp.com/content/dam/gene/phesgo-hcp/pdfs/phesgo-coding-and-reimbursement-guide.pdf"
+          }
+        ]
+      }
+    },
+    "sources": [
+      {
+        "label": "Genentech Oncology Co-pay Assistance Program (Phesgo)",
+        "url": "https://www.phesgo.com/financial-support/assistance-options.html"
+      },
+      {
+        "label": "Phesgo Coding and Reimbursement Guide (PDF, 06/2026)",
+        "url": "https://www.phesgo-hcp.com/content/dam/gene/phesgo-hcp/pdfs/phesgo-coding-and-reimbursement-guide.pdf"
+      }
+    ]
+  },
+  "evkeeza": {
+    "brand": "Evkeeza",
+    "checkedAt": "2026-11-21",
+    "copay": {
+      "price": null,
+      "url": "https://myrare.com/products/evkeeza/",
+      "terms": "https://regeneron.my.site.com/evkeeza/resource/1774434182000/EVKEEZA2022_patient_pdfs/Patient-PSS-Overview-Brochure.pdf",
+      "source": "https://regeneron.my.site.com/evkeeza/resource/1774434182000/EVKEEZA2022_patient_pdfs/Patient-PSS-Overview-Brochure.pdf",
+      "eligibility": "For patients with private (commercial) insurance with approved coverage for Evkeeza. Not available to Medicare, Medicaid, TRICARE or other federal or state government insurance."
+    },
+    "program": {
+      "name": "myRARE Copay Card for EVKEEZA",
+      "manufacturerShort": "myRARE",
+      "cap": 25000,
+      "period": "per calendar year",
+      "capStatus": "source-dated",
+      "sourceNote": "Based on the myRARE patient brochure dated 07/2025. Regeneron’s current myRARE pages (checked 2026-11-21) do not restate the dollar amount, so confirm the current maximum with myRARE before relying on it.",
+      "insurance": "Requires private (commercial) insurance with approved coverage for Evkeeza. There is no income requirement.",
+      "government": "Not available to patients with Medicare, Medicaid, TRICARE or other federal or state government insurance.",
+      "covers": [
+        "Deductibles, copays and coinsurance for the Evkeeza drug",
+        "Deductibles, copays and coinsurance for Evkeeza administration charges (for dates of service on or after January 1, 2023)"
+      ],
+      "notCovered": [
+        "Supplies for Evkeeza",
+        "Other charges, such as office visits or unrelated facility charges (the brochure lists only the drug and its administration)"
+      ],
+      "conditions": [
+        "Residents of Rhode Island and Massachusetts are not eligible for administration assistance.",
+        "This is not an insurance or debit card program, and myRARE can change or end the offer at any time."
+      ],
+      "note": "Your actual assistance depends on your eligible out-of-pocket charges and myRARE’s program terms.",
+      "cta": {
+        "label": "Visit the official myRARE Evkeeza page",
+        "url": "https://myrare.com/products/evkeeza/"
+      },
+      "terms": {
+        "label": "myRARE patient brochure (07/2025)",
+        "url": "https://regeneron.my.site.com/evkeeza/resource/1774434182000/EVKEEZA2022_patient_pdfs/Patient-PSS-Overview-Brochure.pdf"
+      },
+      "followup": {
+        "heading": "Check whether your infusion administration charges qualify.",
+        "paragraphs": [
+          "Per the myRARE brochure, the copay card can apply to Evkeeza administration charges as well as the drug, for dates of service on or after January 1, 2023. Residents of Rhode Island and Massachusetts are excluded from administration assistance, and other charges (such as office visits) are not listed as covered.",
+          "Ask your infusion center to show the drug and administration charges as separate lines on your bill, so you can see which part may be eligible."
+        ],
+        "readyHeading": "Helpful to have on hand",
+        "readyIsGuidance": true,
+        "ready": [
+          "Your infusion center’s itemized bill or statement",
+          "Your insurer’s Explanation of Benefits (EOB)",
+          "Your insurance plan details"
+        ],
+        "contactNote": "myRARE Patient Navigators answer enrollment questions at 1-833-469-7273, Option 1 (Monday–Friday, 9 AM–9 PM ET). Itemizing your bill is general guidance from SaveRx, not a program rule.",
+        "contact": {
+          "label": "myRARE Evkeeza support",
+          "url": "https://myrare.com/products/evkeeza/"
+        }
+      },
+      "verification": {
+        "checkedAt": "2026-11-21",
+        "basis": "Program terms are from the myRARE patient brochure (07/2025). Regeneron’s live myRARE and Evkeeza pages were checked 2026-11-21 and do not restate the co-pay terms; the evkeeza.com support URLs return “not found”.",
+        "sources": [
+          {
+            "label": "myRARE patient brochure (PDF, 07/2025)",
+            "url": "https://regeneron.my.site.com/evkeeza/resource/1774434182000/EVKEEZA2022_patient_pdfs/Patient-PSS-Overview-Brochure.pdf"
+          },
+          {
+            "label": "myRARE: Evkeeza patient support",
+            "url": "https://myrare.com/products/evkeeza/"
+          }
+        ]
+      }
+    },
+    "sources": [
+      {
+        "label": "myRARE patient brochure (PDF, 07/2025)",
+        "url": "https://regeneron.my.site.com/evkeeza/resource/1774434182000/EVKEEZA2022_patient_pdfs/Patient-PSS-Overview-Brochure.pdf"
+      },
+      {
+        "label": "myRARE: Evkeeza patient support",
+        "url": "https://myrare.com/products/evkeeza/"
+      }
+    ]
   }
 }
