@@ -44,10 +44,10 @@ test('switch file: waitlist ON (interest) while Savings Watch stays OFF (live); 
 });
 
 const CONSENT='By tapping “Get text alerts,” you agree to receive recurring automated text messages from SaveRx.ai about Repatha savings programs. Reply STOP to cancel.';
-function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName='',noJump=false,footerTop=null}={}){
+function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store:prior=null,sstore:sprior=null,search='',inView=false,home=false,guideName='',noJump=false,footerTop=null,surface=''}={}){
   const intervals=[],cleared=[],events=[],images=[],sent=[],timers=[],assigned=[],appended=[],store=prior||{},sstore=sprior||{},wl={};if(storedVariant)store.sr_si_v=storedVariant;
   const el=(a={})=>({children:[],appendChild(c){this.children.push(c);},attrs:{...a},hidden:false,style:{},value:'',checked:false,textContent:'',listeners:{},focus(){this.focused=true;},getAttribute(n){return this.attrs[n]??null;},setAttribute(n,v){this.attrs[n]=v;},removeAttribute(n){delete this.attrs[n];},addEventListener(n,f){this.listeners[n]=f;}});
-  const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1'}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
+  const block=el(home?{'data-sw-drug':'home','data-launch':'pending','data-si-home':'','data-si-consent-version':'2026-11-21-home-v1',...(surface?{'data-si-surface':surface}:{})}:{'data-sw-drug':'repatha','data-launch':'pending',...(guideName?{'data-si-name':guideName}:{})});block.hidden=true;block.style={display:'none'};
   block.getBoundingClientRect=()=>inView?{top:100,bottom:600}:{top:5000,bottom:5500};block.scrollIntoView=()=>{block.scrolled=true;};
   const head=el(),brandEls=[el(),el(),el()],main=el(),thanks=el(),emailBox=el(),bar=el(),go=el(),x=el(),toggle=el(),emailThanks=el();
   const form=el(),phone=el(),hp=el(),msg=el(),consentEl=el(),eform=el(),email=el(),consent=el(),ehp=el(),emsg=el();
@@ -59,7 +59,7 @@ function harness({cfg,fail=false,storedVariant=null,random=0.1,beacon=true,store
   block.querySelector=s=>map[s]||null;block.querySelectorAll=s=>s==='[data-si-brand]'?brandEls:s==='[data-si-chip]'?chips:[];
   const inserted=[],jump={parentNode:{insertBefore:(n,ref)=>inserted.push({n,ref})}};
   const footer={getBoundingClientRect:()=>({top:footerTop===null?99999:footerTop})};
-  const doc={querySelector:s=>s==='.drug-jump'&&!noJump?jump:s==='footer'&&footerTop!==null?footer:null,createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
+  const doc={querySelector:s=>s==='.drug-jump'&&!noJump?jump:(s==='footer.relief-footer'||s==='footer')&&footerTop!==null?footer:null,createElement:()=>el(),body:{appendChild:n=>appended.push(n)},querySelectorAll:s=>s==='[data-sms-interest]'?[block]:s==='[data-si-home-link]'?[homeLink]:[],getElementById:id=>id==='drug-page-profile'&&!home&&!guideName?{textContent:JSON.stringify({brand:'Repatha'})}:null,referrer:'https://example.test/',documentElement:{scrollHeight:4000}};
   const win={gtag:(...a)=>events.push(a),location:{pathname:'/drugs/repatha/',search,assign:u=>assigned.push(u)},innerHeight:800,scrollY:0,addEventListener:(n,f)=>{wl[n]=f;},
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=v;}},sessionStorage:{getItem:k=>sstore[k]??null,setItem:(k,v)=>{sstore[k]=v;},removeItem:k=>{delete sstore[k];}}};
   const ctx={document:doc,window:win,navigator:{userAgent:'test-agent',...(beacon?{sendBeacon:(u,b)=>{sent.push(b.text);return true;}}:{})},Image:class{set src(v){images.push(v);}},Blob:class{constructor(p){this.text=p.join('');}},URLSearchParams,
@@ -324,4 +324,17 @@ test('arriving from the homepage signup: the drug page sends the GA conversion o
 });
 test('Apps Script click beacon uses a keepalive request so it survives the homepage redirect (falls back to an image)',()=>{
   const src=fs.readFileSync('assets/js/sms-interest.js','utf8');assert.match(src,/fetch\(url, \{ mode: "no-cors", keepalive: true \}\)/);assert.match(src,/new Image\(\)\.src = url/);
+});
+
+// ---- Content-page band surface
+test('content-page band: signups, analytics and the redirect hand-off are labeled with the "content" surface (homepage stays "home")',async()=>{
+  const h=harness({cfg:ON,home:true,surface:'content'});await h.wait();assert.equal(h.block.attrs['data-si-variant'],'content');
+  h.drugIn.value='Some New Drug';h.phone.value='8324567788';h.submit();assert.equal(new URLSearchParams(h.sent[0]).get('variant'),'content');
+  assert(h.events.some(e=>e[1]==='sms_waitlist_signup'&&e[2].variant==='content'&&e[2].drug_slug==='custom'));
+  const l=harness({cfg:ON,home:true,surface:'content'});await l.wait();l.drugIn.value='repatha';l.phone.value='8324567788';l.submit();assert.equal(new URLSearchParams(l.sent[0]).get('variant'),'content');assert.match(l.images[0],/x=content/);
+  const home=harness({cfg:ON,home:true});await home.wait();home.drugIn.value='repatha';home.phone.value='8324567788';home.submit();assert.equal(new URLSearchParams(home.sent[0]).get('variant'),'home','homepage unchanged');
+});
+
+test('bar: uses the site footer (footer.relief-footer) rather than the first <footer> element on the page',()=>{
+  const src=fs.readFileSync('assets/js/sms-interest.js','utf8');assert.match(src,/querySelector\("footer\.relief-footer"\)\s*\|\|\s*document\.querySelector\("body > footer"\)/);
 });

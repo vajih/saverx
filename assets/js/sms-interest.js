@@ -161,7 +161,7 @@
     Array.prototype.forEach.call(blocks, function (b) {
       var slug = b.getAttribute("data-sw-drug") || "none";
       var isHome = b.getAttribute("data-si-home") !== null;                 // homepage band: the visitor types their medication
-      var vr = isHome ? "home" : variant;
+      var vr = isHome ? (b.getAttribute("data-si-surface") || "home") : variant;   // homepage band = "home"; content-page bands = "content"
       var nameAttr = b.getAttribute("data-si-name") || "";                       // guide pages (no drug profile JSON) carry the name themselves
       var pageName = brandName || nameAttr;
       var brand = isHome ? "your medication" : (pageName || "this medication");
@@ -303,7 +303,7 @@
         };
         // The bar must never cover the footer (cookie settings, privacy and terms links live there): hide it while the footer is on screen.
         var footerInView = function () {
-          try { var f = typeof document.querySelector === "function" && document.querySelector("footer"); return !!f && f.getBoundingClientRect().top < (window.innerHeight || 0); } catch (_) { return false; }
+          try { var f = typeof document.querySelector === "function" && (document.querySelector("footer.relief-footer") || document.querySelector("body > footer") || document.querySelector("footer")); return !!f && f.getBoundingClientRect().top < (window.innerHeight || 0); } catch (_) { return false; }   // the SITE footer (other pages have card/article footers earlier in the DOM)
         };
         var autoHidden = false;
         var showBar = function () {

@@ -36,6 +36,8 @@
       /* backdrop */
       '.srxcb-bd{position:fixed;inset:0;z-index:9998;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .25s ease;}',
       '.srxcb-bd.srxcb-in{opacity:1;}',
+      /* the author display:flex above would otherwise beat the UA [hidden] rule on pages without a global one, leaving an invisible banner that swallows taps */
+      '.srxcb-bd[hidden]{display:none!important;}',
       /* modal card */
       '.srxcb{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.18),0 4px 16px rgba(0,0,0,.1);padding:32px 28px 24px;width:100%;max-width:420px;position:relative;transform:translateY(24px) scale(.97);transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .25s ease;opacity:0;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;font-size:15px;color:#1e293b;}',
       '.srxcb-bd.srxcb-in .srxcb{transform:translateY(0) scale(1);opacity:1;}',
